@@ -1,0 +1,257 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<script src="{{ 'mouse-trail.js' | asset_url }}" defer="defer"></script>
+<div class="socials">
+  <div class="socials--title h2">{{ s.text }}</div>
+
+  <mouse-trail>
+    <div class="socials--images" data-trail>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign bs = block.settings
+        -%}
+        <div class="socials--image-wrapper">
+          {%- liquid
+            assign image_alt = bs.image.alt | default: s.text | default: shop.name
+            assign image_alt_escaped = image_alt | strip_html | escape
+          -%}
+          {{
+            bs.image
+            | image_url: width: 750
+            | image_tag:
+              width: bs.image.width,
+              class: 'social--image',
+              sizes: '80vw',
+              widths: '375, 550, 750',
+              fetchpriority: 'auto',
+              alt: image_alt_escaped
+          }}
+        </div>
+      {%- endfor -%}
+    </div>
+  </mouse-trail>
+
+  <div class="socials--bottom text-small">
+    <div class="socials--count">
+      {{ section.blocks | size }}
+    </div>
+    {{ s.bottom }}
+  </div>
+</div>
+
+{% stylesheet %}
+  .socials {
+    overflow: hidden;
+    position: relative;
+    background: var(--color-softorange);
+    z-index: 8;
+  }
+
+  .socials--title {
+    padding: calc(var(--padding) * 3);
+    text-align: center;
+    z-index: 11;
+    position: relative;
+    pointer-events: none;
+  }
+
+  .socials--image-wrapper:active img {
+    transition: all 0.4s var(--ease-out-sine);
+  }
+
+  .socials--bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--padding);
+    z-index: 11;
+    color: var(--color-black);
+    display: inline-flex;
+    text-align: center;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .socials--count {
+    height: 1.88rem;
+    width: 1.88rem;
+    border: 0.06rem solid var(--color-black);
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (width < 47rem) {
+    .socials--images {
+      display: flex;
+      overflow-x: auto;
+      height: 100%;
+      scroll-snap-type: x mandatory;
+      /* gap: var(--padding); */
+      align-items: flex-end;
+      padding: 0 calc(var(--padding) * 1) 0 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .socials--images::-webkit-scrollbar {
+      display: none;
+    }
+
+    .socials--image-wrapper {
+      flex: 1 0 60%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      padding: calc(var(--padding) * 6) 0 calc(var(--padding) * 4);
+      padding-inline-start: calc(var(--padding) * 1);
+    }
+
+    .social--image {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  @media (width >= 47rem) {
+    .socials {
+      height: 100svh;
+      min-height: var(--min-height);
+    }
+
+    .socials--image-wrapper {
+      position: absolute;
+      width: 20vw;
+      cursor: pointer;
+    }
+
+    .social--image {
+      height: 100%;
+      width: 100%;
+    }
+
+    .socials--image-wrapper:active img {
+      transform: scale(0.7) rotate(-20deg) !important;
+    }
+
+    .socials--image-wrapper:nth-child(1) img {
+      transform: rotate(3deg);
+    }
+
+    .socials--image-wrapper:nth-child(2) img {
+      transform: rotate(-2deg);
+    }
+
+    .socials--image-wrapper:nth-child(3) img {
+      transform: rotate(-4deg);
+    }
+
+    .socials--image-wrapper:nth-child(4) img {
+      transform: rotate(1deg);
+    }
+
+    .socials--image-wrapper:nth-child(5) img {
+      transform: rotate(-3deg);
+    }
+
+    .socials--image-wrapper:nth-child(6) img {
+      transform: rotate(4deg);
+    }
+
+    .socials--image-wrapper:nth-child(7) img {
+      transform: rotate(-1deg);
+    }
+
+    .socials--image-wrapper:nth-child(8) img {
+      transform: rotate(2deg);
+    }
+
+    .socials--image-wrapper:nth-child(9) img {
+      transform: rotate(-4deg);
+    }
+
+    .socials--image-wrapper:nth-child(10) img {
+      transform: rotate(3deg);
+    }
+
+    .socials--image-wrapper:nth-child(1) {
+      z-index: 10;
+    }
+    .socials--image-wrapper:nth-child(2) {
+      z-index: 9;
+    }
+    .socials--image-wrapper:nth-child(3) {
+      z-index: 8;
+    }
+    .socials--image-wrapper:nth-child(4) {
+      z-index: 7;
+    }
+    .socials--image-wrapper:nth-child(5) {
+      z-index: 6;
+    }
+    .socials--image-wrapper:nth-child(6) {
+      z-index: 5;
+    }
+    .socials--image-wrapper:nth-child(7) {
+      z-index: 4;
+    }
+    .socials--image-wrapper:nth-child(8) {
+      z-index: 3;
+    }
+    .socials--image-wrapper:nth-child(9) {
+      z-index: 2;
+    }
+    .socials--image-wrapper:nth-child(10) {
+      z-index: 1;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Socials",
+  "class": "socials rounded mt--1",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "blocks": [
+    {
+      "name": "Image",
+      "type": "image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Get featured <br /><em>#wakeywakey</em></p>"
+    },
+    {
+      "type": "richtext",
+      "id": "bottom",
+      "label": "Post loaded text",
+      "default": "<p>Post loaded from #wakeywakey</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Socials"
+    }
+  ]
+}
+{% endschema %}

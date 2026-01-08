@@ -1,0 +1,103 @@
+{%- liquid
+  assign s = section.settings
+  assign heading_html = s.heading | replace: '<p>', '' | replace: '</p>', ''
+-%}
+
+<h2 class="text--heading">
+  {{- heading_html -}}
+</h2>
+<div class="text--content">
+  <div class="text--body">
+    {{- s.body_text -}}
+  </div>
+  {% if s.button_text != '' %}
+    <a href="{{- s.button_url -}}" class="button hover-scale click-scale">
+      {{- s.button_text -}}
+    </a>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .text {
+    background: var(--color-sand);
+    padding: calc(var(--padding) * 2) calc(var(--padding) * 3) calc(var(--padding) * 2) calc(var(--padding) * 2);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .text--heading {
+    font-size: 2.5rem;
+    line-height: 0.9;
+    margin: 0;
+  }
+
+  .text--body {
+    font-family: var(--font-itc);
+    padding-bottom: 1rem;
+  }
+
+  @media (width < 47rem) {
+    .text--body {
+      max-width: 14rem;
+      padding-top: calc(var(--padding) * 11);
+    }
+  }
+
+  @media (width >= 47rem) {
+    .text {
+      padding: calc(var(--padding) * 1) calc(var(--padding) * 2) calc(var(--padding) * 5);
+      display: grid;
+      grid-template-columns: repeat(58, 1fr);
+    }
+
+    .text--content {
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      grid-column: span 15;
+    }
+    .text--heading {
+      font-size: 5rem;
+      grid-column: span 43;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Text",
+  "tag": "section",
+  "class": "text rounded mt--1",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>Morning <em>essentials</em><br> with good <em>intentions</em></p>"
+    },
+
+    {
+      "type": "richtext",
+      "id": "body_text",
+      "label": "Body",
+      "default": "<p>We are plant based, Plastic free, No chemicals, cruelty free. All the good stuff.</p>"
+    },
+    {
+      "type": "text",
+      "label": "button text",
+      "id": "button_text",
+      "default": "Read More"
+    },
+    {
+      "type": "url",
+      "label": "button link",
+      "id": "button_url"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text"
+    }
+  ]
+}
+{% endschema %}

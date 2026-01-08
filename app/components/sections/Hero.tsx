@@ -24,7 +24,7 @@ export function Hero({
   tooltipPosition,
 }: HeroProps) {
   return (
-    <section className="relative w-full min-h-dvh flex items-end justify-start overflow-hidden rounded-[1.25rem] md:rounded-[1.875rem]">
+    <section className="relative w-full min-h-dvh flex items-end justify-start overflow-hidden rounded-card">
       <picture>
         {backgroundImageMobile && (
           <source media="(max-width: 48rem)" srcSet={backgroundImageMobile} />
@@ -54,7 +54,7 @@ interface TextSectionProps {
 
 export function TextSection({ children, className = '' }: TextSectionProps) {
   return (
-    <section className={`p-6 md:p-12 rounded-[1.25rem] md:rounded-[1.875rem] bg-sand ${className}`}>
+    <section className={`p-6 md:p-12 rounded-card bg-sand ${className}`}>
       <div className="prose-wakey">
         {children}
       </div>

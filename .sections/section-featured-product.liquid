@@ -1,0 +1,167 @@
+{%- liquid
+  assign s = section.settings
+-%}
+{%- for block in section.blocks -%}
+  {%- if block.settings.product -%}
+    <script type="application/ld+json">
+      {{ block.settings.product | structured_data }}
+    </script>
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+<div class="fp--wrapper">
+  <div class="fp--image-wrapper">
+    {%- liquid
+      assign featured_image_alt = section.settings.image.alt | default: s.title | default: shop.name
+      assign featured_image_large_alt = section.settings.image_large.alt | default: featured_image_alt
+      assign featured_image_alt_escaped = featured_image_alt | strip_html | escape
+      assign featured_image_large_alt_escaped = featured_image_large_alt | strip_html | escape
+    -%}
+    {{
+      section.settings.image
+      | image_url: width: 1500
+      | image_tag:
+        width: section.settings.image.width,
+        alt: featured_image_alt_escaped,
+        class: 'fp--image',
+        sizes: '100vw',
+        widths: '375, 550, 750, 1100, 1500',
+        fetchpriority: 'auto'
+    }}
+    {{
+      section.settings.image_large
+      | image_url: width: 3840
+      | image_tag:
+        width: section.settings.image_large.width,
+        class: 'fp--image',
+        alt: featured_image_large_alt_escaped,
+        sizes: '100vw',
+        widths: '1500, 1780, 2000, 3000, 3840',
+        fetchpriority: 'auto'
+    }}
+  </div>
+  <div class="fp--text">
+    <h2 class="fp--title h2">{{- s.title -}}</h2>
+    {% if s.button_text != '' %}
+      <a href="{{- s.button_url -}}" class="button">
+        {{- s.button_text -}}
+      </a>
+    {% endif %}
+  </div>
+
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign bs = block.settings
+    -%}
+    {% render 'tooltip', product: bs.product, class: 'fp--tooltip' %}
+  {%- endfor -%}
+</div>
+
+{% stylesheet %}
+  .fp {
+    height: 100svh;
+    min-height: 50rem;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .fp--image-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fp--text {
+    padding: var(--padding);
+    z-index: 2;
+    position: relative;
+    color: var(--color-white);
+  }
+
+  .fp--image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .fp--image:nth-child(2) {
+    display: none;
+  }
+
+  .fp--tooltip {
+    position: absolute;
+    right: 12%;
+    top: 45%;
+  }
+
+  @media (width >= 47rem) {
+    .fp--image:nth-child(1) {
+      display: none;
+    }
+    .fp--image:nth-child(2) {
+      display: block;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured Product",
+  "tag": "section",
+  "class": "fp rounded mt--1",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "title",
+      "label": "text",
+      "default": "<p>Don’t sweat it.</br> <em>Our all new deodorant</em></p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_large",
+      "label": "Image desktop"
+    },
+    {
+      "type": "text",
+      "label": "button text",
+      "id": "button_text",
+      "default": "Read More"
+    },
+    {
+      "type": "url",
+      "label": "button link",
+      "id": "button_url"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Product",
+      "type": "item",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Product"
+    }
+  ]
+}
+{% endschema %}

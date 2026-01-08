@@ -1,0 +1,76 @@
+{%- liquid
+  assign s = section.settings
+-%}
+
+<div class="video--wrapper">
+  {{
+    s.video
+    | video_tag:
+      image_size: '2048x',
+      autoplay: true,
+      loop: true,
+      controls: false,
+      muted: true,
+      preload: 'none',
+      class: 'video--video'
+  }}
+</div>
+<div class="video--text h2">
+  {{- s.title -}}
+</div>
+
+{% stylesheet %}
+  .video-s {
+    overflow: hidden;
+    position: relative;
+    height: 100svh;
+    min-height: var(--min-height);
+    display: flex;
+    align-items: center;
+  }
+
+  .video--wrapper {
+    position: absolute;
+    inset: 0;
+  }
+
+  .video--video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .video--text {
+    padding: var(--padding);
+    z-index: 2;
+    position: relative;
+    color: var(--color-white);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Video",
+  "tag": "section",
+  "class": "video-s rounded mt--1",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "title",
+      "label": "text",
+      "default": "<p>The <em>morning</em> movement</p>"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video"
+    }
+  ]
+}
+{% endschema %}

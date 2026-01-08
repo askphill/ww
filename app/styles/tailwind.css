@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply antialiased;
+    @apply antialiased tracking-tight;
     text-rendering: optimizeLegibility;
   }
 }
@@ -40,6 +40,7 @@
 @theme {
   /* Colors */
   --color-black: #1A1A1A;
+  --color-text: #383838;
   --color-softorange: #FAD103;
   --color-ocher: #E3B012;
   --color-sand: #FFF5EB;
@@ -48,6 +49,113 @@
   /* Fonts */
   --font-display: 'Founders', system-ui, sans-serif;
   --font-body: 'ITC', Georgia, serif;
+
+  /* Border Radius */
+  --radius-card: 1.25rem;
+
+  /* Line Heights */
+  --leading-tight: 0.9;
+  --leading-snug: 1;
+  --leading-normal: 1.1;
+  --leading-relaxed: 1.2;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.01em;
+
+  @media (width >= 48rem) {
+      /* Border Radius */
+    --radius-card: 1.875rem;
+
+  }
+}
+
+/* Responsive utilities */
+@utility rounded-card {
+  border-radius: 1.25rem;
+  @media (width >= 48rem) {
+    border-radius: 1.875rem;
+  }
+}
+
+/* Type Scale - Responsive typography utilities */
+@utility text-display {
+  font-size: 2.56rem;
+  line-height: 0.9;
+  @media (width >= 48rem) {
+    font-size: 8.75rem;
+  }
+}
+
+@utility text-h1 {
+  font-size: 2.5rem;
+  line-height: 0.9;
+  @media (width >= 48rem) {
+    font-size: 5rem;
+  }
+}
+
+@utility text-h2 {
+  font-size: 1.88rem;
+  line-height: 1;
+  @media (width >= 48rem) {
+    font-size: 3.75rem;
+  }
+}
+
+@utility text-h3 {
+  font-size: 1.63rem;
+  line-height: 1.1;
+  @media (width >= 48rem) {
+    font-size: 2.5rem;
+  }
+}
+
+@utility text-s1 {
+  font-size: 1.5rem;
+  line-height: 1;
+  @media (width >= 48rem) {
+    font-size: 1.88rem;
+  }
+}
+
+@utility text-s2 {
+  font-size: 1.13rem;
+  line-height: 1;
+  @media (width >= 48rem) {
+    font-size: 1.44rem;
+  }
+}
+
+@utility text-paragraph {
+  font-size: 1rem;
+  line-height: 1.2;
+  @media (width >= 48rem) {
+    font-size: 1.25rem;
+  }
+}
+
+@utility text-body-small {
+  font-size: 0.81rem;
+  line-height: 1;
+  @media (width >= 48rem) {
+    font-size: 1.06rem;
+  }
+}
+
+@utility text-small {
+  font-size: 0.75rem;
+  line-height: 1;
+  @media (width >= 48rem) {
+    font-size: 0.88rem;
+  }
+}
+
+@utility text-label {
+  font-size: 0.88rem;
+  line-height: 1;
+  @media (width >= 48rem) {
+    font-size: 0.94rem;
+  }
 }
 
 /* Typography for MDX content */
@@ -58,6 +166,7 @@
   line-height: 0.95;
   letter-spacing: -0.02em;
   margin: 0;
+  color: var(--color-text);
 }
 
 .prose-wakey h1 em {

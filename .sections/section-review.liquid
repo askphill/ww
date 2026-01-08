@@ -1,0 +1,369 @@
+{%- liquid
+  assign s = section.settings
+  assign product_ref = s.product
+  if product_ref == blank and product
+    assign product_ref = product
+  endif
+  assign reviews = blank
+  assign total_reviews = 0
+  if product_ref and product_ref.metafields.askphill and product_ref.metafields.askphill.reviews
+    assign reviews = product_ref.metafields.askphill.reviews.value
+    if reviews != blank
+      assign total_reviews = product_ref.metafields.askphill.reviews.value.count
+      if total_reviews == blank
+        assign total_reviews = reviews | size
+      endif
+    endif
+  endif
+  assign initial_batch = 5
+  assign batch_increment = 5
+  assign max_reviews = 25
+  assign render_limit = total_reviews
+  if s.limit_reviews and render_limit > max_reviews
+    assign render_limit = max_reviews
+  endif
+  assign visible_on_load = render_limit
+  if s.limit_reviews and render_limit > initial_batch
+    assign visible_on_load = initial_batch
+  endif
+  assign button_should_render = false
+  if s.limit_reviews and render_limit > visible_on_load
+    assign button_should_render = true
+  endif
+  assign average_rating = 0
+  if product_ref and product_ref.metafields.ask_phill and product_ref.metafields.ask_phill.review_average_rating and product_ref.metafields.ask_phill.review_average_rating.value
+    assign average_rating = product_ref.metafields.ask_phill.review_average_rating.value
+  endif
+-%}
+
+<div class="review" data-review-section>
+  <div class="review--col rounded">
+    <div class="review--score">{{ average_rating | default: 0 | round: 1 }}</div>
+    <div class="review--stars">
+      {% render 'stars', rating: average_rating -%}
+      <span class="text-small">({{ total_reviews }})</span>
+    </div>
+    <ol
+      class="review--list"
+      data-review-list
+      data-initial-count="{{ visible_on_load }}"
+      data-batch-size="{{ batch_increment }}"
+      data-max-visible="{{ render_limit }}"
+    >
+      {% for review in reviews limit: render_limit %}
+        {%- assign review_index = forloop.index -%}
+        <li
+          class="review--item{% if s.limit_reviews and review_index > visible_on_load %} is-hidden{% endif %}"
+          data-review-index="{{ review_index }}"
+        >
+          <div class="review--item-info">
+            <div class="s2 review--item-writer">{{ review.name }}</div>
+            {% render 'stars', rating: review.rating -%}
+          </div>
+          <div class="review--item-text">
+            <div class="review--item-title">{{ review.title }}</div>
+            <div class="review--item-body">{{ review.body }}</div>
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
+    {% if button_should_render %}
+      <div class="review--button hover-scale click-scale">
+        <button
+          class="button review--load-more"
+          type="button"
+          data-review-load-more
+          aria-disabled="false"
+        >
+          {{ s.button_text | default: 'More reviews' }}
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="review--col ">
+    <div class="review--sticky">
+      <div class="review--video-wrapper rounded">
+        {% render 'tooltip', product: s.product, class: 'review--tooltip' %}
+        {{
+          s.video
+          | video_tag:
+            image_size: '2048x',
+            autoplay: true,
+            loop: true,
+            controls: false,
+            muted: true,
+            preload: 'none',
+            class: 'video--video'
+        }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .review {
+    position: relative;
+    width: 100vw;
+  }
+
+  .review--col {
+    position: relative;
+  }
+
+  .review--col:first-of-type {
+    background: var(--color-sand);
+  }
+
+  .review--col:first-of-type {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .review--score {
+    font-size: 12.81rem;
+    line-height: 0.8;
+    padding-top: calc(var(--padding) * 4);
+    padding-bottom: calc(var(--padding) * 2);
+  }
+
+  .review--stars {
+    fill: var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: calc(var(--padding) * 4);
+  }
+
+  .review--stars span {
+    padding-left: 0.5rem;
+  }
+
+  .review--item {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: var(--padding);
+    border-bottom: 0.06rem solid rgba(56, 56, 56, 0.2);
+  }
+
+  .review--item:last-child {
+    border-bottom: none;
+  }
+
+  .review--item-text {
+    grid-column: span 2;
+  }
+
+  .review--item-writer {
+    padding-bottom: 0.5rem;
+    font-family: var(--font-itc-italic);
+  }
+
+  .review--item-title {
+    padding-bottom: 0.5rem;
+  }
+
+  .review--item-info .stars--icon {
+    width: 0.81rem;
+    height: 0.81rem;
+  }
+
+  .review--video-wrapper {
+    overflow: hidden;
+    display: flex;
+  }
+
+  .review--button {
+    width: 100%;
+    padding: var(--padding);
+  }
+
+  .review--button button {
+    width: 100%;
+  }
+
+  .review--tooltip {
+    position: absolute;
+    bottom: var(--padding);
+    right: var(--padding);
+  }
+
+  .review--item.is-hidden {
+    display: none;
+  }
+
+  .review--load-more {
+    background-color: transparent;
+    color: var(--color-black);
+  }
+
+  .review--load-more[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @media (width >= 47rem) {
+    .review {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .review--score {
+      font-size: 19.38rem;
+      padding-top: calc(var(--padding) * 4);
+      padding-bottom: var(--padding);
+    }
+
+    .review--item {
+      padding: 2.19rem calc(var(--padding) * 2) var(--padding) var(--padding);
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .review--item:first-child {
+      border: 0.06rem solid rgba(56, 56, 56, 0.2);
+    }
+
+    .review--item-text {
+      grid-column: span 1;
+    }
+    .review--sticky {
+      position: sticky;
+      top: 0;
+    }
+    .review--video-wrapper {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      height: 100svh;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var initReviewSection = function (sectionEl) {
+      if (!sectionEl) return;
+
+      var list = sectionEl.querySelector('[data-review-list]');
+      var loadMoreButton = sectionEl.querySelector('[data-review-load-more]');
+
+      if (!list || !loadMoreButton || list.getAttribute('data-review-initialized') === 'true') {
+        return;
+      }
+
+      var batchSize = parseInt(list.getAttribute('data-batch-size'), 10) || 5;
+      var maxVisible = parseInt(list.getAttribute('data-max-visible'), 10) || 25;
+      var initialCount = parseInt(list.getAttribute('data-initial-count'), 10) || 0;
+      var items = Array.prototype.slice.call(list.querySelectorAll('[data-review-index]'));
+
+      if (!items.length) {
+        loadMoreButton.disabled = true;
+        loadMoreButton.setAttribute('aria-disabled', 'true');
+        list.setAttribute('data-review-initialized', 'true');
+        return;
+      }
+
+      var totalRenderable = Math.min(items.length, maxVisible);
+      var visibleCount = Math.min(initialCount, totalRenderable);
+
+      if (visibleCount < 1) {
+        visibleCount = Math.min(batchSize, totalRenderable);
+      }
+
+      var updateVisibility = function () {
+        items.forEach(function (item, index) {
+          if (index < visibleCount) {
+            item.classList.remove('is-hidden');
+          } else {
+            item.classList.add('is-hidden');
+          }
+        });
+      };
+
+      var updateButtonState = function () {
+        var shouldDisable = visibleCount >= totalRenderable;
+        loadMoreButton.disabled = shouldDisable;
+        loadMoreButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+      };
+
+      loadMoreButton.addEventListener('click', function () {
+        visibleCount = Math.min(visibleCount + batchSize, totalRenderable);
+        updateVisibility();
+        updateButtonState();
+      });
+
+      updateVisibility();
+      updateButtonState();
+      list.setAttribute('data-review-initialized', 'true');
+    };
+
+    var initializeAll = function (scope) {
+      var context = scope || document;
+      var sections = context.querySelectorAll('[data-review-section]');
+      Array.prototype.forEach.call(sections, initReviewSection);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeAll();
+      });
+    } else {
+      initializeAll();
+    }
+
+    document.addEventListener('shopify:section:load', function (event) {
+      initializeAll(event.target);
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Reviews",
+  "class": "review mt--1",
+  "settings": [
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "number",
+      "id": "limit",
+      "label": "limit",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "limit_reviews",
+      "label": "Limit reviews?",
+      "default": true
+    },
+    {
+      "type": "text",
+      "label": "button text",
+      "id": "button_text",
+      "default": "More reviews"
+    },
+    {
+      "type": "url",
+      "label": "button link",
+      "id": "button_url"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews"
+    }
+  ]
+}
+{% endschema %}

@@ -306,6 +306,19 @@ If a value isn't in the design system, add it to `@theme` in `tailwind.css`:
 }
 ```
 
+### Converting from Reference Theme
+When converting CSS from the Liquid reference theme (`.sections/` files), **always use the closest standard Tailwind value** rather than exact pixel/rem conversions:
+
+| Reference Value | Tailwind Approach |
+|-----------------|-------------------|
+| `calc(var(--padding) * 5)` (5rem) | Use `p-20` or closest (`p-24` if visually better) |
+| `grid-template-columns: repeat(58, 1fr)` | Use `grid-cols-12` (standard 12-column grid) |
+| `grid-column: span 43` (43/58 ≈ 74%) | Use `col-span-9` (9/12 = 75%) |
+| `grid-column: span 15` (15/58 ≈ 26%) | Use `col-span-3` (3/12 = 25%) |
+| `max-width: 14rem` | Use `max-w-56` (14rem) or closest |
+
+**Rationale**: Standard Tailwind values are more maintainable and consistent than custom values that match exact reference measurements.
+
 ---
 
 ## API Routes Pattern
