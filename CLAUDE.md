@@ -289,22 +289,76 @@ Font files in `public/fonts/`:
 <p className="font-body text-softorange">
 ```
 
-### Design System First
-**Always use design system values** - avoid arbitrary values like `text-[14px]` or `p-[20px]`.
+### Design System First (STRICT RULE)
+**NEVER use arbitrary Tailwind values.** Always use design system utilities.
 
-Instead:
-- Use theme colors: `text-sand`, `bg-softorange`, `border-ocher`
-- Use theme fonts: `font-display`, `font-body`
-- Use Tailwind spacing scale: `p-4`, `gap-2`, `mt-8`
-- Use Tailwind text sizes: `text-sm`, `text-lg`, `text-xl`
+Forbidden (arbitrary values):
+- `text-[14px]`, `text-[1.25rem]` → Use type scale utilities (see below)
+- `text-sm`, `text-lg`, `text-xl` → Use type scale utilities (see below)
+- `p-[20px]`, `m-[1.5rem]` → Use `p-5`, `m-6` (standard spacing scale)
+- `w-[300px]`, `h-[50vh]` → Use `w-72`, `w-80`, `h-screen/2`
+- `bg-[#ff6600]` → Add to `@theme` first, then use `bg-mycolor`
+- `grid-cols-[repeat(5,1fr)]` → Use `grid-cols-5`
 
-If a value isn't in the design system, add it to `@theme` in `tailwind.css`:
+### Type Scale (ONLY use these for text sizing)
+Custom responsive utilities defined in `tailwind.css`. **Never use standard Tailwind text sizes.**
+
+| Utility | Mobile | Desktop (≥768px) | Use for |
+|---------|--------|------------------|---------|
+| `text-display` | 2.56rem | 8.75rem | Hero headlines |
+| `text-h1` | 2.5rem | 5rem | Page titles |
+| `text-h2` | 1.88rem | 3.75rem | Section headings |
+| `text-h3` | 1.63rem | 2.5rem | Subsection headings |
+| `text-s1` | 1.5rem | 1.88rem | Large UI text |
+| `text-s2` | 1.13rem | 1.44rem | Medium UI text |
+| `text-paragraph` | 1rem | 1.25rem | Body text |
+| `text-body-small` | 0.81rem | 1.06rem | Secondary body text |
+| `text-small` | 0.75rem | 0.88rem | Captions, fine print |
+| `text-label` | 0.88rem | 0.94rem | Form labels, buttons |
+
+```tsx
+// Correct - type scale utilities (have built-in responsive sizing)
+<h1 className="text-h1">Title</h1>
+<p className="text-paragraph">Body text</p>
+
+// Correct - can override at breakpoints with other type scale utilities
+<span className="text-s2 md:text-h1">Responsive text</span>
+
+// Wrong - never use standard Tailwind text sizes
+<h1 className="text-4xl md:text-6xl">Title</h1>
+<p className="text-base md:text-lg">Body text</p>
+```
+
+### Border Radius
+Use `rounded-card` for cards, panels, and contained items. **Never use arbitrary rounded values.**
+
+| Utility | Mobile | Desktop (≥768px) |
+|---------|--------|------------------|
+| `rounded-card` | 1.25rem | 1.875rem |
+
+```tsx
+// Correct
+<div className="rounded-card bg-sand">Card content</div>
+
+// Wrong
+<div className="rounded-[20px]">Card content</div>
+<div className="rounded-2xl md:rounded-3xl">Card content</div>
+```
+
+### Other Design System Rules
+Required:
+- Theme colors: `text-sand`, `bg-softorange`, `border-ocher`
+- Theme fonts: `font-display`, `font-body`
+- Tailwind spacing: `p-4`, `gap-2`, `mt-8`
+
+If a value doesn't exist, **add it to `@theme` in `tailwind.css` first**:
 ```css
 @theme {
   --spacing-18: 4.5rem;
   --color-newcolor: #123456;
 }
 ```
+Then use the utility: `p-18`, `bg-newcolor`
 
 ### Converting from Reference Theme
 When converting CSS from the Liquid reference theme (`.sections/` files), **always use the closest standard Tailwind value** rather than exact pixel/rem conversions:
