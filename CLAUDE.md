@@ -199,3 +199,195 @@ const { product } = await storefront.query(PRODUCT_QUERY, {
   variables: { handle: 'my-product' }
 });
 ```
+
+---
+
+## Source Theme Reference
+
+The original Shopify Liquid theme is used as reference for styling and structure.
+
+**Location**: `/Users/bd/Documents/GitHub/wakey-source`
+
+If not found, clone it:
+```bash
+git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wakey-source
+```
+
+**Useful reference files:**
+- `snippets/` - Reusable Liquid components (tooltip, stars, icons)
+- `blocks/` - Section blocks with positioning logic
+- `assets/base.css` - CSS styling reference
+- `templates/index.json` - Homepage structure and tooltip positions
+
+---
+
+## Content Architecture (MDX)
+
+This project uses MDX for content-as-code (inspired by Lee Robinson's approach).
+
+### Structure
+```
+app/
+├── content/
+│   └── home.mdx           # Homepage content
+├── components/
+│   └── sections/
+│       ├── Hero.tsx       # Hero with logo + tooltip
+│       ├── index.ts       # Section exports
+│       └── ...
+└── routes/
+    └── api.product.$handle.tsx  # Product data API
+```
+
+### How it works
+1. MDX files import section components
+2. Components receive props (e.g., `productHandle="deodorant"`)
+3. Components fetch data from Shopify via API routes
+4. API routes query Storefront API with metafields
+
+### Example MDX
+```mdx
+import {Hero, TextSection} from '~/components/sections'
+
+<Hero
+  backgroundImage="https://cdn.shopify.com/..."
+  productHandle="deodorant"
+  tooltipPosition={{ top: '33%', left: '19%' }}
+/>
+
+<TextSection>
+# Morning *essentials*
+</TextSection>
+```
+
+---
+
+## Shopify Metafields
+
+Product metafields used in this project:
+
+| Namespace | Key | Type | Description |
+|-----------|-----|------|-------------|
+| `ask_phill` | `subtitle` | Single line text | Product subtitle (e.g., "Mighty Citrus") |
+| `ask_phill` | `review_average_rating` | Number | Star rating (e.g., 4.8) |
+| `askphill` | `reviews` | List of metaobjects | Array of review IDs (count for total) |
+
+**Important**: Metafields need **Storefront API access enabled** in Shopify Admin:
+Settings → Custom data → Metafield definitions → Enable Storefront access
+
+### Querying metafields
+```graphql
+product(handle: $handle) {
+  subtitle: metafield(namespace: "ask_phill", key: "subtitle") {
+    value
+  }
+  reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {
+    value
+  }
+  reviews: metafield(namespace: "askphill", key: "reviews") {
+    value
+  }
+}
+```
+
+---
+
+## Theme Styling
+
+### Fonts
+- **`font-display`**: Founders - Used for headings, titles, UI elements
+- **`font-body`**: ITC - Used for body text, prose content
+
+Font files in `public/fonts/`:
+- `founders.woff2`
+- `itc-std.woff2`
+- `itc-italic.woff2`
+
+### Colors
+| Name | Hex | Usage |
+|------|-----|-------|
+| `sand` | `#FFF5EB` | Light background, text on dark |
+| `softorange` | `#FAD103` | Logo, accents |
+| `ocher` | `#E3B012` | Secondary accent |
+| `skyblue` | `#99BDFF` | Links, highlights |
+| `black` | `#1A1A1A` | Body background |
+
+### Usage
+```tsx
+// Tailwind classes
+<div className="bg-black text-sand font-display">
+<p className="font-body text-softorange">
+```
+
+### Design System First
+**Always use design system values** - avoid arbitrary values like `text-[14px]` or `p-[20px]`.
+
+Instead:
+- Use theme colors: `text-sand`, `bg-softorange`, `border-ocher`
+- Use theme fonts: `font-display`, `font-body`
+- Use Tailwind spacing scale: `p-4`, `gap-2`, `mt-8`
+- Use Tailwind text sizes: `text-sm`, `text-lg`, `text-xl`
+
+If a value isn't in the design system, add it to `@theme` in `tailwind.css`:
+```css
+@theme {
+  --spacing-18: 4.5rem;
+  --color-newcolor: #123456;
+}
+```
+
+---
+
+## API Routes Pattern
+
+For fetching Shopify data client-side (used by MDX components):
+
+### Create API route
+```ts
+// app/routes/api.product.$handle.tsx
+export async function loader({params, context}: Route.LoaderArgs) {
+  const {product} = await context.storefront.query(QUERY, {
+    variables: {handle: params.handle},
+  });
+  return {product};
+}
+```
+
+### Use in component with useFetcher
+```tsx
+const fetcher = useFetcher();
+
+useEffect(() => {
+  if (fetcher.state === 'idle' && !fetcher.data) {
+    fetcher.load(`/api/product/${handle}`);
+  }
+}, [handle, fetcher]);
+
+const product = fetcher.data?.product;
+```
+
+---
+
+## Setup Checklist
+
+After cloning this repo:
+
+1. **Link Shopify store**:
+   ```bash
+   npx shopify hydrogen link
+   ```
+
+2. **Pull environment variables**:
+   ```bash
+   npx shopify hydrogen env pull
+   ```
+
+3. **Start dev server**:
+   ```bash
+   npx shopify hydrogen dev
+   ```
+
+4. **Clone source theme** (if needed for reference):
+   ```bash
+   git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wakey-source
+   ```

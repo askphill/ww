@@ -1,6 +1,72 @@
 /**
- * Configure Tailwind v4 in this file using CSS variables and directives:
- * https://tailwindcss.com/docs/v4-beta#css-first-configuration
+ * Tailwind v4 CSS-first configuration
  */
 
 @import 'tailwindcss';
+
+@layer base {
+  body {
+    @apply antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Fonts */
+@font-face {
+  font-family: 'Founders';
+  src: url('/fonts/founders.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ITC';
+  src: url('/fonts/itc-std.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ITC';
+  src: url('/fonts/itc-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Theme tokens */
+@theme {
+  /* Colors */
+  --color-black: #1A1A1A;
+  --color-softorange: #FAD103;
+  --color-ocher: #E3B012;
+  --color-sand: #FFF5EB;
+  --color-skyblue: #99BDFF;
+
+  /* Fonts */
+  --font-display: 'Founders', system-ui, sans-serif;
+  --font-body: 'ITC', Georgia, serif;
+}
+
+/* Typography for MDX content */
+.prose-wakey h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.prose-wakey h1 em {
+  font-family: var(--font-body);
+  font-style: italic;
+}
+
+@media (width >= 48rem) {
+  .prose-wakey h1 {
+    font-size: 5rem;
+  }
+}
