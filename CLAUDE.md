@@ -336,6 +336,43 @@ If a value isn't in the design system, add it to `@theme` in `tailwind.css`:
 }
 ```
 
+### Converting from Reference Theme
+When converting CSS from the Liquid reference theme (`.sections/` files), **always use the closest standard Tailwind value** rather than exact pixel/rem conversions:
+
+| Reference Value | Tailwind Approach |
+|-----------------|-------------------|
+| `calc(var(--padding) * 5)` (5rem) | Use `p-20` or closest (`p-24` if visually better) |
+| `grid-template-columns: repeat(58, 1fr)` | Use `grid-cols-12` (standard 12-column grid) |
+| `grid-column: span 43` (43/58 ≈ 74%) | Use `col-span-9` (9/12 = 75%) |
+| `grid-column: span 15` (15/58 ≈ 26%) | Use `col-span-3` (3/12 = 25%) |
+| `max-width: 14rem` | Use `max-w-56` (14rem) or closest |
+
+**Rationale**: Standard Tailwind values are more maintainable and consistent than custom values that match exact reference measurements.
+
+### Component Conversion Examples
+
+**Button Component** (from `.button` in base.css):
+| Reference | Tailwind |
+|-----------|----------|
+| `border: 0.06rem` (~1px) | `border` (1px) |
+| `padding: 0.88rem 2rem 1rem` | `pt-3.5 px-8 pb-4` |
+| `height: 2.69rem` | `h-11` (2.75rem) |
+| Desktop `padding: 1.06rem 2rem 1.25rem` | `md:pt-4 md:px-8 md:pb-5` |
+| Desktop `height: auto` | `md:h-auto` or fixed `md:h-14` |
+
+**Section Padding** (from section CSS):
+| Reference | Tailwind |
+|-----------|----------|
+| Mobile: `calc(var(--padding) * 2) calc(var(--padding) * 3) calc(var(--padding) * 2) calc(var(--padding) * 2)` | `pt-8 pr-12 pb-8 pl-8` |
+| Desktop: `calc(var(--padding) * 1) calc(var(--padding) * 2) calc(var(--padding) * 5)` | `md:pt-8 md:px-8 md:pb-24` |
+| Body text mobile push: `calc(var(--padding) * 11)` | `pt-44` (11rem) |
+
+**Typography** (`.paragraph` in base.css):
+| Reference | Tailwind |
+|-----------|----------|
+| Mobile: `1rem` | `text-base` or `text-paragraph` |
+| Desktop: `1.25rem` | `md:text-xl` or `text-paragraph` (responsive) |
+
 ---
 
 ## API Routes Pattern

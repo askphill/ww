@@ -1,0 +1,102 @@
+{%- liquid
+  assign s = section.settings
+  assign image_alt = s.image.alt | default: s.title | default: shop.name
+  assign image_alt_escaped = image_alt | strip_html | escape
+-%}
+{% comment %} {% render 'image', image: s.image, class: 'h-full w-full object-cover w-section-h ', lazy: true %} {% endcomment %}
+{{
+  s.image
+  | image_url: width: 3840
+  | image_tag:
+    width: s.image.width,
+    class: 'image-banner--image',
+    sizes: '100vw',
+    widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
+    fetchpriority: 'auto',
+    alt: image_alt_escaped
+}}
+<div class="image-banner--content">
+  <div class="image-banner--subtitle">
+    {{- s.title -}}
+  </div>
+
+  <div class="h2 image-banner--text">
+    {{- s.text -}}
+  </div>
+</div>
+
+{% stylesheet %}
+  .image-banner {
+    height: 100svh;
+    min-height: var(--min-height);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .image-banner--image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    inset: 0;
+  }
+
+  .image-banner--content {
+    z-index: 6;
+    color: var(--color-sand);
+    text-align: center;
+  }
+
+  .image-banner--subtitle {
+    padding-bottom: 1.19rem;
+  }
+
+  .image-banner--text {
+    font-family: var(--font-itc);
+    letter-spacing: -0.04em;
+    padding: 0 calc(var(--padding) * 2);
+  }
+
+  @media (width >= 47rem) {
+    .image-banner--text {
+      font-size: 2.5rem !important;
+      line-height: 0.9 !important;
+      max-width: 43.75rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Image Banner",
+  "class": "image-banner rounded mt--1",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Wakey Fact"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "text",
+      "default": "<p>Most natural deodorants use <em>baking soda</em> which can cause <em>skin irritation</em>. We use safe, natural ingredients to <em>absorb wetness</em> and eliminate <em>odor-causing</em> bactera.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image banner"
+    }
+  ]
+}
+{% endschema %}

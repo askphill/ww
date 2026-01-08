@@ -22,19 +22,15 @@ export function DevGrid() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[9999]"
+      className="pointer-events-none fixed inset-0 z-[9999] grid grid-cols-25 md:grid-cols-60"
       aria-hidden="true"
-      style={{
-        backgroundImage: `
-          repeating-linear-gradient(
-            to right,
-            rgba(255, 0, 0, 0.1) 0,
-            rgba(255, 0, 0, 0.1) 1px,
-            transparent 1px,
-            transparent calc(var(--spacing) * 4)
-          )
-        `,
-      }}
-    />
+    >
+      {Array.from({length: 60}).map((_, i) => (
+        <div
+          key={i}
+          className={`h-full border-r border-red-500/10 ${i >= 25 ? 'hidden md:block' : ''}`}
+        />
+      ))}
+    </div>
   );
 }

@@ -157,7 +157,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
       </head>
       <body className="bg-black">
         {children}
-        <DevGrid />
+        {/* <DevGrid /> */}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
