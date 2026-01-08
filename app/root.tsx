@@ -16,6 +16,7 @@ import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
+import {DevGrid} from './components/DevGrid';
 
 export type RootLoader = typeof loader;
 
@@ -156,6 +157,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
       </head>
       <body className="bg-black">
         {children}
+        <DevGrid />
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
