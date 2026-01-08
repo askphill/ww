@@ -289,6 +289,23 @@ Font files in `public/fonts/`:
 <p className="font-body text-softorange">
 ```
 
+### Design System First
+**Always use design system values** - avoid arbitrary values like `text-[14px]` or `p-[20px]`.
+
+Instead:
+- Use theme colors: `text-sand`, `bg-softorange`, `border-ocher`
+- Use theme fonts: `font-display`, `font-body`
+- Use Tailwind spacing scale: `p-4`, `gap-2`, `mt-8`
+- Use Tailwind text sizes: `text-sm`, `text-lg`, `text-xl`
+
+If a value isn't in the design system, add it to `@theme` in `tailwind.css`:
+```css
+@theme {
+  --spacing-18: 4.5rem;
+  --color-newcolor: #123456;
+}
+```
+
 ---
 
 ## API Routes Pattern
