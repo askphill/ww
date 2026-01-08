@@ -18,12 +18,12 @@ export function Button({
   onClick,
 }: ButtonProps) {
   const baseStyles =
-    'inline-flex items-center justify-center px-6 py-3 font-display text-base rounded-full transition-colors';
+    'inline-flex items-center justify-center px-8 pt-3.5 pb-4 h-11 font-display text-base rounded-full transition-colors md:h-14';
 
   const variants = {
     primary: 'bg-black text-sand hover:bg-black/90',
     secondary: 'bg-sand text-black hover:bg-sand/90',
-    outline: 'bg-transparent text-text border border-text hover:bg-black/5',
+    outline: 'bg-transparent text-text border border-black hover:bg-black/5',
   };
 
   const combinedClassName = `${baseStyles} ${variants[variant]} ${className}`;
