@@ -8,6 +8,7 @@
   body {
     @apply antialiased tracking-tight;
     text-rendering: optimizeLegibility;
+    
   }
 }
 
@@ -61,13 +62,8 @@
 
   /* Letter Spacing */
   --tracking-tight: -0.01em;
-
-  @media (width >= 48rem) {
-      /* Border Radius */
-    --radius-card: 1.875rem;
-
-  }
 }
+
 
 /* Responsive utilities */
 @utility rounded-card {
@@ -159,23 +155,11 @@
 }
 
 /* Typography for MDX content */
-.prose-wakey h1 {
+.prose-wakey  {
   font-family: var(--font-display);
-  font-size: 2.5rem;
-  font-weight: 400;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: var(--color-text);
 }
 
-.prose-wakey h1 em {
+.prose-wakey em {
   font-family: var(--font-body);
   font-style: italic;
-}
-
-@media (width >= 48rem) {
-  .prose-wakey h1 {
-    font-size: 5rem;
-  }
 }
