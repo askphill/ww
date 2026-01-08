@@ -105,6 +105,36 @@ Configured in `.env`:
 - `SESSION_SECRET` - Session encryption
 - `PUBLIC_STOREFRONT_API_TOKEN` - Storefront API access
 - `PUBLIC_STORE_DOMAIN` - Your Shopify store domain
+- `STORE` - Shopify store name (for Admin API)
+- `ADMIN_API_TOKEN` - Shopify Admin API access token
+
+---
+
+## Content Upload (Images/Videos)
+
+**Always upload content to Shopify** using the `/shopify-admin` skill. Never use external hosting or local files for production content.
+
+### Upload Process
+```bash
+# Upload an image
+bash .claude/skills/shopify-admin/scripts/upload-file.sh ./image.jpg "Alt text description"
+
+# Upload a video
+bash .claude/skills/shopify-admin/scripts/upload-file.sh ./video.mp4 "Video description"
+```
+
+### Get the CDN URL
+After upload, query for the file URL:
+```bash
+bash .claude/skills/shopify-admin/scripts/fetch-files.sh --type IMAGE --limit 5
+```
+
+### Use in MDX/Components
+```mdx
+![Alt text](https://cdn.shopify.com/s/files/1/0609/8747/4152/files/your-image.jpg)
+```
+
+Supported formats: jpg, png, gif, webp, svg, mp4, mov, webm, pdf
 
 ---
 
