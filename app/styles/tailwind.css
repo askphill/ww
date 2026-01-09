@@ -65,6 +65,7 @@
   /* Animation eases */
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-out-sine: cubic-bezier(0.39, 0.575, 0.565, 1);
 
   /* Drawer */
   --drawer-width: 35.875rem;
@@ -227,4 +228,15 @@
       transform: scale(1.02);
     }
   }
+}
+
+/* Sticky ATC pop animation */
+@keyframes sticky-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+@utility animate-sticky-pop {
+  animation: sticky-pop 0.2s var(--ease-out-sine);
 }

@@ -10,7 +10,7 @@ export function ProductDescription({
   usps = [],
 }: ProductDescriptionProps) {
   return (
-    <section className="bg-sand rounded-card p-8 md:py-12 md:px-6">
+    <section className="bg-sand rounded-card p-8 md:py-12 md:px-8">
       {/* Title + Description Grid */}
       <div className="grid md:grid-cols-12">
         {/* Title - hidden on mobile, ~4 cols on desktop */}
