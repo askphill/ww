@@ -5,3 +5,4 @@ export {TextMedia} from './TextMedia';
 export {ProductReviews} from './ProductReviews';
 export {Founder} from './Founder';
 export {FAQ} from './FAQ';
+export {IngredientsSection} from './IngredientsSection';

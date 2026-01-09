@@ -1,4 +1,4 @@
-import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder, FAQ} from '~/components/sections'
+import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder, FAQ, IngredientsSection} from '~/components/sections'
 
 <Hero
   backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
@@ -34,6 +34,18 @@ import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder,
 <ProductReviews
   productHandle="deodorant"
   videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+/>
+
+<IngredientsSection
+  title="Ingredients"
+  ingredientsList="Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil."
+  items={[
+    { id: '1', name: 'Sweet <em>Almond</em> Oil', image: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/citrus.jpg?v=1761157287' },
+    { id: '2', name: '<em>Coconut</em> Oil', image: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/citrus.jpg?v=1761157287' },
+    { id: '3', name: '<em>Shea</em> Butter', image: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/citrus.jpg?v=1761157287' },
+    { id: '4', name: '<em>Lavender</em> Oil', image: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/citrus.jpg?v=1761157287' },
+    { id: '5', name: '<em>Bergamot</em> Oil', image: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/citrus.jpg?v=1761157287' }
+  ]}
 />
 
 <Founder

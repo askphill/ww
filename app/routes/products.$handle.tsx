@@ -12,6 +12,38 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {IngredientsSection} from '~/components/sections';
+
+// Dummy data for ingredients section (to be replaced with real data later)
+const DUMMY_INGREDIENTS_LIST = `Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil.`;
+
+const DUMMY_INGREDIENT_ITEMS = [
+  {
+    id: '1',
+    name: 'Sweet <em>Almond</em> Oil',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&h=1000&fit=crop',
+  },
+  {
+    id: '2',
+    name: '<em>Coconut</em> Oil',
+    image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=800&h=1000&fit=crop',
+  },
+  {
+    id: '3',
+    name: '<em>Shea</em> Butter',
+    image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&h=1000&fit=crop',
+  },
+  {
+    id: '4',
+    name: '<em>Lavender</em> Oil',
+    image: 'https://images.unsplash.com/photo-1611073761218-1eef52c5e2c6?w=800&h=1000&fit=crop',
+  },
+  {
+    id: '5',
+    name: '<em>Bergamot</em> Oil',
+    image: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=800&h=1000&fit=crop',
+  },
+];
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
@@ -98,6 +130,7 @@ export default function Product() {
   const {title, descriptionHtml} = product;
 
   return (
+    <>
     <div className="product">
       <ProductImage image={selectedVariant?.image} />
       <div className="product-main">
@@ -135,7 +168,14 @@ export default function Product() {
           ],
         }}
       />
+
     </div>
+          <IngredientsSection
+          title="Ingredients"
+          ingredientsList={DUMMY_INGREDIENTS_LIST}
+          items={DUMMY_INGREDIENT_ITEMS}
+        />
+        </>
   );
 }
 

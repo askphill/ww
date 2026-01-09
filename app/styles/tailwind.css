@@ -166,3 +166,18 @@
 .italic {
   font-family: var(--font-itc);
 }
+
+/* Hide scrollbar utility */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Ingredient card text - handles em/italics within display font */
+.ingredient-text em {
+  font-family: var(--font-itc);
+  font-style: italic;
+}
