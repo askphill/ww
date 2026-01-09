@@ -11,11 +11,12 @@ type CartSummaryProps = {
 export function CartSummary({cart, layout}: CartSummaryProps) {
   return (
     <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex-1 flex flex-col justify-between">
-      {/* Message */}
-      <div className="text-small font-display pb-16 md:pb-24">
+      {/* Message at top */}
+      <div className="text-small font-display">
         Free shipping on orders over 50 euros
       </div>
 
+      {/* Pricing at bottom */}
       <div>
         {/* Price breakdown */}
         <dl className="grid grid-cols-2 text-small md:text-label font-display gap-y-1">
