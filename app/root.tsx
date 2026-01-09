@@ -38,7 +38,7 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
   // When using this feature, you risk your UI getting out of sync with your server.
   // Use with caution. If you are uncomfortable with this optimization, update the
   // line below to `return defaultShouldRevalidate` instead.
-  // For more details see: https://remix.run/docs/en/main/route/should-revalidate
+  // For more details see: https://reactrouter.com/explanation/special-files#shouldrevalidate
   return false;
 };
 
@@ -50,7 +50,7 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
  * that occurs after editing and navigating to another page.
  *
  * It's a temporary fix until the issue is resolved.
- * https://github.com/remix-run/remix/issues/9242
+ * https://github.com/remix-run/react-router/issues/12361
  */
 export function links() {
   return [

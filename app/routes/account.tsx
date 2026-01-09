@@ -1,5 +1,5 @@
 import {
-  data as remixData,
+  data,
   Form,
   NavLink,
   Outlet,
@@ -14,18 +14,21 @@ export function shouldRevalidate() {
 
 export async function loader({context}: Route.LoaderArgs) {
   const {customerAccount} = context;
-  const {data, errors} = await customerAccount.query(CUSTOMER_DETAILS_QUERY, {
-    variables: {
-      language: customerAccount.i18n.language,
+  const {data: customerData, errors} = await customerAccount.query(
+    CUSTOMER_DETAILS_QUERY,
+    {
+      variables: {
+        language: customerAccount.i18n.language,
+      },
     },
-  });
+  );
 
-  if (errors?.length || !data?.customer) {
+  if (errors?.length || !customerData?.customer) {
     throw new Error('Customer not found');
   }
 
-  return remixData(
-    {customer: data.customer},
+  return data(
+    {customer: customerData.customer},
     {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
