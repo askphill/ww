@@ -8,3 +8,4 @@ export {FAQ} from './FAQ';
 export {IngredientsSection} from './IngredientsSection';
 export {SocialSection} from './SocialSection';
 export {CloudSection} from './CloudSection';
+export {ImageBanner} from './ImageBanner';
