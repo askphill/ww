@@ -3,3 +3,4 @@ export {IntroSection} from './IntroSection';
 export {FeaturedProduct} from './FeaturedProduct';
 export {TextMedia} from './TextMedia';
 export {ProductReviews} from './ProductReviews';
+export {Founder} from './Founder';
