@@ -51,9 +51,6 @@
   --font-display: 'Founders', system-ui, sans-serif;
   --font-body: 'ITC', Georgia, serif;
 
-  /* Border Radius */
-  --radius-card: 1.25rem;
-
   /* Line Heights */
   --leading-tight: 0.9;
   --leading-snug: 1;
@@ -62,6 +59,8 @@
 
   /* Letter Spacing */
   --tracking-tight: -0.01em;
+
+  --min-height-section: 32rem;
 }
 
 
