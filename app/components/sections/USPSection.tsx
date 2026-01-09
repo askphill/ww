@@ -26,7 +26,7 @@ function USPIcon() {
 
 function USPCard({title, body}: USPItem) {
   return (
-    <div className="flex flex-col items-center justify-center bg-blue px-4 pt-32 pb-8 w-72 shrink-0 md:flex-row-reverse md:items-stretch md:w-144 md:px-6 md:pt-32 md:pb-6 pointer-events-none">
+    <div className="flex flex-col items-center justify-center bg-blue rounded-card px-4 pt-32 pb-8 w-72 shrink-0 md:flex-row-reverse md:items-stretch md:w-144 md:px-6 md:pt-32 md:pb-6 pointer-events-none">
       <div className="flex-shrink-0">
         <USPIcon />
       </div>
