@@ -295,6 +295,54 @@ export type StoreRobotsQueryVariables = StorefrontAPI.Exact<{
 
 export type StoreRobotsQuery = {shop: Pick<StorefrontAPI.Shop, 'id'>};
 
+export type ApiProductQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type ApiProductQuery = {
+  product?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Product, 'id' | 'title' | 'handle'> & {
+      featuredImage?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, 'url' | 'altText'>
+      >;
+      subtitle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      reviewRating?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Metafield, 'value'>
+      >;
+      reviews?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      variants: {
+        nodes: Array<
+          Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+            selectedOptions: Array<
+              Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+            >;
+            subtitle?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Metafield, 'value'>
+            >;
+          }
+        >;
+      };
+    }
+  >;
+};
+
+export type ProductReviewsQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type ProductReviewsQuery = {
+  product?: StorefrontAPI.Maybe<{
+    reviewRating?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+    reviews?: StorefrontAPI.Maybe<{
+      references?: StorefrontAPI.Maybe<{
+        nodes: Array<{
+          fields: Array<Pick<StorefrontAPI.MetaobjectField, 'key' | 'value'>>;
+        }>;
+      }>;
+    }>;
+  }>;
+};
+
 export type ArticleQueryVariables = StorefrontAPI.Exact<{
   articleHandle: StorefrontAPI.Scalars['String']['input'];
   blogHandle: StorefrontAPI.Scalars['String']['input'];
@@ -1130,6 +1178,14 @@ interface GeneratedQueryTypes {
   '#graphql\n  query StoreRobots($country: CountryCode, $language: LanguageCode)\n   @inContext(country: $country, language: $language) {\n    shop {\n      id\n    }\n  }\n': {
     return: StoreRobotsQuery;
     variables: StoreRobotsQueryVariables;
+  };
+  '#graphql\n  query ApiProduct($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      featuredImage {\n        url\n        altText\n      }\n      subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n        value\n      }\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        value\n      }\n      variants(first: 10) {\n        nodes {\n          id\n          title\n          selectedOptions {\n            name\n            value\n          }\n          subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n            value\n          }\n        }\n      }\n    }\n  }\n': {
+    return: ApiProductQuery;
+    variables: ApiProductQueryVariables;
+  };
+  '#graphql\n  query ProductReviews($handle: String!) {\n    product(handle: $handle) {\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        references(first: 25) {\n          nodes {\n            ... on Metaobject {\n              fields {\n                key\n                value\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+    return: ProductReviewsQuery;
+    variables: ProductReviewsQueryVariables;
   };
   '#graphql\n  query Article(\n    $articleHandle: String!\n    $blogHandle: String!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    blog(handle: $blogHandle) {\n      handle\n      articleByHandle(handle: $articleHandle) {\n        handle\n        title\n        contentHtml\n        publishedAt\n        author: authorV2 {\n          name\n        }\n        image {\n          id\n          altText\n          url\n          width\n          height\n        }\n        seo {\n          description\n          title\n        }\n      }\n    }\n  }\n': {
     return: ArticleQuery;
