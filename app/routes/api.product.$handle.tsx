@@ -1,7 +1,7 @@
 import type {Route} from './+types/api.product.$handle';
 
 const PRODUCT_QUERY = `#graphql
-  query Product($handle: String!) {
+  query ApiProduct($handle: String!) {
     product(handle: $handle) {
       id
       title
