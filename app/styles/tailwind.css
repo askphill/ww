@@ -46,6 +46,7 @@
   --color-ocher: #E3B012;
   --color-sand: #FFF5EB;
   --color-skyblue: #99BDFF;
+  --color-blue: #d4e8ff;
 
   /* Fonts */
   --font-display: 'Founders', system-ui, sans-serif;
@@ -230,6 +231,18 @@
   }
 }
 
+/* Marquee animation for USP slider */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@utility animate-marquee-paused {
+  animation-play-state: paused;
 /* Sticky ATC pop animation */
 @keyframes sticky-pop {
   0% { transform: scale(1); }
