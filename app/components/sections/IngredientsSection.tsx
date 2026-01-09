@@ -19,7 +19,7 @@ export function IngredientsSection({
   return (
     <section>
       {/* Text Container */}
-      <div className="bg-sand rounded-card p-8 px-4 md:p-6 md:pb-12 md:grid md:grid-cols-12 md:gap-0">
+      <div className="bg-sand rounded-card p-8 px-4 md:p-8 md:pb-12 md:grid md:grid-cols-12 md:gap-0">
         <h2 className="text-label md:text-h3 font-display md:col-span-5">
           {title}
         </h2>

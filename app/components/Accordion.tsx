@@ -25,12 +25,12 @@ export function Accordion({items, defaultOpenIndex = 0}: AccordionProps) {
         return (
           <li
             key={item.id}
-            className="group"
+            className="group last:border-b border-black/20"
             data-open={isOpen ? '' : undefined}
           >
             <button
               type="button"
-              className="flex w-full items-center justify-between border-t border-black/20 py-4 text-left md:text-paragraph text-s2 font-display cursor-pointer group-last:border-b"
+              className="flex w-full items-center justify-between border-t border-black/20 py-4 text-left md:text-paragraph text-s2 font-display cursor-pointer"
               id={`accordion-button-${item.id}`}
               aria-expanded={isOpen}
               aria-controls={`accordion-panel-${item.id}`}

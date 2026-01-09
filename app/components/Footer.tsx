@@ -32,15 +32,15 @@ export function Footer({
         {(footer) => (
           <footer
             role="contentinfo"
-            className={`${bgColor} rounded-card overflow-hidden p-4 md:p-6 md:relative`}
+            className={`${bgColor} rounded-card overflow-hidden p-4 md:p-8 md:relative`}
           >
             {/* Logo */}
-            <Link to="/" className="block pb-12 md:pb-0 md:pl-6">
+            <Link to="/" className="block pb-12 md:pb-0 ">
               <LogoBig className={`${logoColor} w-full`} />
             </Link>
 
             {/* Navigation - Grid on mobile, absolute on desktop */}
-            <div className="grid grid-cols-[13fr_10fr] md:absolute md:top-12 md:left-6">
+            <div className="grid  md:absolute md:top-12 md:left-8">
               {/* Main nav links */}
               <nav
                 aria-label="Footer navigation"
