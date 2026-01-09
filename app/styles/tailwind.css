@@ -243,6 +243,8 @@
 
 @utility animate-marquee-paused {
   animation-play-state: paused;
+}
+
 /* Sticky ATC pop animation */
 @keyframes sticky-pop {
   0% { transform: scale(1); }
