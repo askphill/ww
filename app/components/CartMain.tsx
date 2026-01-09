@@ -17,51 +17,45 @@ export type CartMainProps = {
  * It is used by both the /cart route and the cart aside dialog.
  */
 export function CartMain({layout, cart: originalCart}: CartMainProps) {
-  // The useOptimisticCart hook applies pending actions to the cart
-  // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
-
-  const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
-  const withDiscount =
-    cart &&
-    Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
-  const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
+  const hasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
 
   return (
-    <div className={className}>
-      <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
-        <div aria-labelledby="cart-lines">
+    <div className="flex flex-col flex-1">
+      {/* Line items - scrollable area */}
+      <div className="flex-shrink overflow-y-auto">
+        {hasItems ? (
           <ul>
             {(cart?.lines?.nodes ?? []).map((line) => (
               <CartLineItem key={line.id} line={line} layout={layout} />
             ))}
           </ul>
-        </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
+        ) : (
+          <CartEmpty layout={layout} />
+        )}
       </div>
+
+      {/* Summary - sticky at bottom */}
+      {hasItems && <CartSummary cart={cart} layout={layout} />}
     </div>
   );
 }
 
-function CartEmpty({
-  hidden = false,
-}: {
-  hidden: boolean;
-  layout?: CartMainProps['layout'];
-}) {
+function CartEmpty({layout}: {layout: CartLayout}) {
   const {close} = useAside();
+
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
-      </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+    <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px]">
+      <h3 className="text-h3 font-display pb-4 md:pb-6">
+        Wakey Wakey, there are no products in your cart yet.
+      </h3>
+      <Link
+        to="/"
+        onClick={() => layout === 'aside' && close()}
+        className="underline text-paragraph font-display"
+        prefetch="viewport"
+      >
+        Go shopping
       </Link>
     </div>
   );

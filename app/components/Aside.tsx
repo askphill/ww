@@ -14,27 +14,35 @@ type AsideContextValue = {
 };
 
 /**
- * A side bar component with Overlay
- * @example
- * ```jsx
- * <Aside type="search" heading="SEARCH">
- *  <input type="search" />
- *  ...
- * </Aside>
- * ```
+ * A drawer component with backdrop overlay
+ * Slides from left (mobile menu) or right (cart/search)
  */
 export function Aside({
   children,
-  heading,
   type,
 }: {
   children?: React.ReactNode;
   type: AsideType;
-  heading: React.ReactNode;
 }) {
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
 
+  // Determine slide direction based on type
+  const isLeftDrawer = type === 'mobile';
+
+  // Body scroll lock
+  useEffect(() => {
+    if (expanded) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [expanded]);
+
+  // Escape key handler
   useEffect(() => {
     const abortController = new AbortController();
 
@@ -53,22 +61,35 @@ export function Aside({
   }, [close, expanded]);
 
   return (
-    <div
-      aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
-      role="dialog"
-    >
-      <button className="close-outside" onClick={close} />
-      <aside>
-        <header>
-          <h3>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
-            &times;
-          </button>
-        </header>
-        <main>{children}</main>
+    <>
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-[15px] transition-opacity duration-[400ms] ease-[var(--ease-out-expo)] ${
+          expanded
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={close}
+        aria-hidden="true"
+      />
+
+      {/* Drawer */}
+      <aside
+        className={`fixed top-0 z-50 h-dvh w-full md:w-[var(--drawer-width)] flex flex-col transition-transform duration-[400ms] ease-[var(--ease-out-expo)] ${
+          isLeftDrawer ? 'left-0' : 'right-0'
+        } ${
+          expanded
+            ? 'translate-x-0'
+            : isLeftDrawer
+              ? '-translate-x-full'
+              : 'translate-x-full'
+        }`}
+        role="dialog"
+        aria-modal={expanded}
+      >
+        {children}
       </aside>
-    </div>
+    </>
   );
 }
 

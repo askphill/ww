@@ -7,3 +7,4 @@ export {Founder} from './Founder';
 export {FAQ} from './FAQ';
 export {IngredientsSection} from './IngredientsSection';
 export {SocialSection} from './SocialSection';
+export {CloudSection} from './CloudSection';

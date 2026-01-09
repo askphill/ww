@@ -1,19 +1,15 @@
-import {Await, Link} from 'react-router';
-import {Suspense, useId} from 'react';
+import {Await, NavLink, useLocation} from 'react-router';
+import {Suspense} from 'react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
   HeaderQuery,
 } from 'storefrontapi.generated';
-import {Aside} from '~/components/Aside';
+import {Aside, useAside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
-import {Header, HeaderMenu} from '~/components/Header';
+import {Header} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
-import {
-  SEARCH_ENDPOINT,
-  SearchFormPredictive,
-} from '~/components/SearchFormPredictive';
-import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {CrossIcon} from '~/components/icons';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -32,19 +28,15 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }: PageLayoutProps) {
+  const location = useLocation();
+  const isHomepage = location.pathname === '/';
+  const headerColor = isHomepage ? 'sand' : 'default';
+
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
-      <SearchAside />
       <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
-      {header && (
-        <Header
-          header={header}
-          cart={cart}
-          isLoggedIn={isLoggedIn}
-          publicStoreDomain={publicStoreDomain}
-        />
-      )}
+      {header && <Header cart={cart} color={headerColor} />}
       <main>{children}</main>
       <Footer
         footer={footer}
@@ -56,98 +48,39 @@ export function PageLayout({
 }
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
+  const {close} = useAside();
+
   return (
-    <Aside type="cart" heading="CART">
-      <Suspense fallback={<p>Loading cart ...</p>}>
+    <Aside type="cart">
+      {/* Title block */}
+      <div className="bg-sand rounded-card p-4 md:p-6 flex justify-between pb-16 md:pb-24">
+        <h2 className="text-h2 font-display" id="CartDrawerTitle">
+          Cart
+        </h2>
+        <button
+          onClick={close}
+          className="hover-scale h-fit"
+          aria-label="Close cart"
+        >
+          <CrossIcon className="w-10 h-10 md:w-[3.125rem] md:h-[3.125rem] text-text" />
+        </button>
+      </div>
+
+      {/* Cart content */}
+      <Suspense fallback={<CartLoading />}>
         <Await resolve={cart}>
-          {(cart) => {
-            return <CartMain cart={cart} layout="aside" />;
-          }}
+          {(cart) => <CartMain cart={cart} layout="aside" />}
         </Await>
       </Suspense>
     </Aside>
   );
 }
 
-function SearchAside() {
-  const queriesDatalistId = useId();
+function CartLoading() {
   return (
-    <Aside type="search" heading="SEARCH">
-      <div className="predictive-search">
-        <br />
-        <SearchFormPredictive>
-          {({fetchResults, goToSearch, inputRef}) => (
-            <>
-              <input
-                name="q"
-                onChange={fetchResults}
-                onFocus={fetchResults}
-                placeholder="Search"
-                ref={inputRef}
-                type="search"
-                list={queriesDatalistId}
-              />
-              &nbsp;
-              <button onClick={goToSearch}>Search</button>
-            </>
-          )}
-        </SearchFormPredictive>
-
-        <SearchResultsPredictive>
-          {({items, total, term, state, closeSearch}) => {
-            const {articles, collections, pages, products, queries} = items;
-
-            if (state === 'loading' && term.current) {
-              return <div>Loading...</div>;
-            }
-
-            if (!total) {
-              return <SearchResultsPredictive.Empty term={term} />;
-            }
-
-            return (
-              <>
-                <SearchResultsPredictive.Queries
-                  queries={queries}
-                  queriesDatalistId={queriesDatalistId}
-                />
-                <SearchResultsPredictive.Products
-                  products={products}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                <SearchResultsPredictive.Collections
-                  collections={collections}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                <SearchResultsPredictive.Pages
-                  pages={pages}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                <SearchResultsPredictive.Articles
-                  articles={articles}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                {term.current && total ? (
-                  <Link
-                    onClick={closeSearch}
-                    to={`${SEARCH_ENDPOINT}?q=${term.current}`}
-                  >
-                    <p>
-                      View all results for <q>{term.current}</q>
-                      &nbsp; →
-                    </p>
-                  </Link>
-                ) : null}
-              </>
-            );
-          }}
-        </SearchResultsPredictive>
-      </div>
-    </Aside>
+    <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex-1">
+      <p className="text-paragraph font-display">Loading cart...</p>
+    </div>
   );
 }
 
@@ -158,17 +91,119 @@ function MobileMenuAside({
   header: PageLayoutProps['header'];
   publicStoreDomain: PageLayoutProps['publicStoreDomain'];
 }) {
+  const {close} = useAside();
+  const primaryMenu = header.menu?.items || FALLBACK_MENU.items;
+  const primaryDomainUrl = header.shop.primaryDomain?.url || '';
+
+  // Secondary nav items (hardcoded for now, could be fetched from another menu)
+  const secondaryMenu = [
+    {title: 'About', url: '/pages/about'},
+    {title: 'FAQ', url: '/pages/faq'},
+  ];
+
+  // Social links
+  const socialLinks = [
+    {title: 'Instagram', url: 'https://instagram.com/wakeywakey'},
+    {title: 'TikTok', url: 'https://tiktok.com/@wakeywakey'},
+  ];
+
   return (
-    header.menu &&
-    header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
-        <HeaderMenu
-          menu={header.menu}
-          viewport="mobile"
-          primaryDomainUrl={header.shop.primaryDomain.url}
-          publicStoreDomain={publicStoreDomain}
-        />
-      </Aside>
-    )
+    <Aside type="mobile">
+      {/* Close button - fixed position inside drawer */}
+      <button
+        onClick={close}
+        className="fixed top-4 left-4 md:top-6 md:left-6 z-50 hover-scale"
+        aria-label="Close menu"
+      >
+        <CrossIcon className="w-10 h-10 md:w-[3.125rem] md:h-[3.125rem] text-text" />
+      </button>
+
+      {/* Main content block */}
+      <div className="flex-1 bg-sand rounded-card p-8 md:p-6 flex flex-col justify-end gap-2">
+        {/* Primary navigation */}
+        <nav aria-label="Primary">
+          <ul>
+            {primaryMenu.map((item) => {
+              if (!item.url) return null;
+              const url = getMenuUrl(
+                item.url,
+                publicStoreDomain,
+                primaryDomainUrl,
+              );
+              return (
+                <li
+                  key={item.id}
+                  className="text-h2 italic transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
+                >
+                  <NavLink to={url} onClick={close} prefetch="intent">
+                    {item.title}
+                  </NavLink>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Secondary navigation */}
+        <nav aria-label="Secondary" className="mt-[-1px]">
+          <ul>
+            {secondaryMenu.map((item) => (
+              <li
+                key={item.title}
+                className="text-h3 italic transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
+              >
+                <NavLink to={item.url} onClick={close} prefetch="intent">
+                  {item.title}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Footer */}
+        <div className="pt-4 md:pt-6 flex justify-between text-small opacity-40">
+          <div className="flex gap-2">
+            {socialLinks.map((link) => (
+              <a
+                key={link.title}
+                href={link.url}
+                className="underline transition-opacity md:hover:opacity-80"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {link.title}
+              </a>
+            ))}
+          </div>
+          <p>2025 Wakey. All rights reserved.</p>
+        </div>
+      </div>
+    </Aside>
   );
 }
+
+/**
+ * Normalize menu URLs - strip domain for internal links
+ */
+function getMenuUrl(
+  url: string,
+  publicStoreDomain: string,
+  primaryDomainUrl: string,
+): string {
+  if (
+    url.includes('myshopify.com') ||
+    url.includes(publicStoreDomain) ||
+    url.includes(primaryDomainUrl)
+  ) {
+    return new URL(url).pathname;
+  }
+  return url;
+}
+
+const FALLBACK_MENU = {
+  id: 'fallback-menu',
+  items: [
+    {id: 'shop', title: 'Shop', url: '/collections/all'},
+    {id: 'about', title: 'About', url: '/pages/about'},
+  ],
+};
