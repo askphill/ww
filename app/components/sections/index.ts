@@ -6,3 +6,4 @@ export {ProductReviews} from './ProductReviews';
 export {Founder} from './Founder';
 export {FAQ} from './FAQ';
 export {IngredientsSection} from './IngredientsSection';
+export {SocialSection} from './SocialSection';
