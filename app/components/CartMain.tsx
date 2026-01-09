@@ -21,22 +21,23 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const hasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
 
   return (
-    <div className="flex flex-col flex-1">
-      {/* Line items - scrollable area */}
-      <div className="flex-shrink overflow-y-auto">
-        {hasItems ? (
-          <ul>
-            {(cart?.lines?.nodes ?? []).map((line) => (
-              <CartLineItem key={line.id} line={line} layout={layout} />
-            ))}
-          </ul>
-        ) : (
-          <CartEmpty layout={layout} />
-        )}
-      </div>
-
-      {/* Summary - sticky at bottom */}
-      {hasItems && <CartSummary cart={cart} layout={layout} />}
+    <div className="flex flex-col flex-1 min-h-0">
+      {hasItems ? (
+        <>
+          {/* Line items - scrollable, doesn't expand */}
+          <div className="overflow-y-auto flex-shrink-0 max-h-[50%]">
+            <ul>
+              {(cart?.lines?.nodes ?? []).map((line) => (
+                <CartLineItem key={line.id} line={line} layout={layout} />
+              ))}
+            </ul>
+          </div>
+          {/* Summary - expands to fill remaining space */}
+          <CartSummary cart={cart} layout={layout} />
+        </>
+      ) : (
+        <CartEmpty layout={layout} />
+      )}
     </div>
   );
 }
@@ -45,7 +46,7 @@ function CartEmpty({layout}: {layout: CartLayout}) {
   const {close} = useAside();
 
   return (
-    <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px]">
+    <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex-1">
       <h3 className="text-h3 font-display pb-4 md:pb-6">
         Wakey Wakey, there are no products in your cart yet.
       </h3>

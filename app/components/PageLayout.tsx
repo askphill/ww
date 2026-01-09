@@ -97,29 +97,32 @@ function MobileMenuAside({
 
   // Secondary nav items (hardcoded for now, could be fetched from another menu)
   const secondaryMenu = [
-    {title: 'About', url: '/pages/about'},
-    {title: 'FAQ', url: '/pages/faq'},
+    {title: 'Home', url: '/'},
+    {title: 'Account', url: '/account'},
+    {title: 'Contact', url: '/pages/contact'},
+    {title: 'Blogs', url: '/blogs'},
   ];
 
   // Social links
   const socialLinks = [
+    {title: 'Facebook', url: 'https://facebook.com/wakeywakey'},
     {title: 'Instagram', url: 'https://instagram.com/wakeywakey'},
     {title: 'TikTok', url: 'https://tiktok.com/@wakeywakey'},
   ];
 
   return (
     <Aside type="mobile">
-      {/* Close button - fixed position inside drawer */}
-      <button
-        onClick={close}
-        className="fixed top-4 left-4 md:top-6 md:left-6 z-50 hover-scale"
-        aria-label="Close menu"
-      >
-        <CrossIcon className="w-10 h-10 md:w-[3.125rem] md:h-[3.125rem] text-text" />
-      </button>
+      {/* Block 1: Primary navigation - 50% height */}
+      <div className="h-1/2 bg-sand rounded-card p-4 md:p-6 flex flex-col justify-end relative">
+        {/* Close button */}
+        <button
+          onClick={close}
+          className="absolute top-4 left-4 md:top-6 md:left-6 hover-scale"
+          aria-label="Close menu"
+        >
+          <CrossIcon className="w-10 h-10 md:w-[3.125rem] md:h-[3.125rem] text-text" />
+        </button>
 
-      {/* Main content block */}
-      <div className="flex-1 bg-sand rounded-card p-8 md:p-6 flex flex-col justify-end gap-2">
         {/* Primary navigation */}
         <nav aria-label="Primary">
           <ul>
@@ -133,7 +136,7 @@ function MobileMenuAside({
               return (
                 <li
                   key={item.id}
-                  className="text-h2 italic transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
+                  className="text-h2 font-display transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
                 >
                   <NavLink to={url} onClick={close} prefetch="intent">
                     {item.title}
@@ -143,9 +146,12 @@ function MobileMenuAside({
             })}
           </ul>
         </nav>
+      </div>
 
+      {/* Block 2: Secondary navigation - 50% height */}
+      <div className="h-1/2 bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex flex-col justify-end">
         {/* Secondary navigation */}
-        <nav aria-label="Secondary" className="mt-[-1px]">
+        <nav aria-label="Secondary">
           <ul>
             {secondaryMenu.map((item) => (
               <li
@@ -175,7 +181,7 @@ function MobileMenuAside({
               </a>
             ))}
           </div>
-          <p>2025 Wakey. All rights reserved.</p>
+          <p>Wakey All rights reserved.</p>
         </div>
       </div>
     </Aside>
