@@ -24,7 +24,7 @@ export function Hero({
   tooltipPosition,
 }: HeroProps) {
   return (
-    <section className="relative w-full min-h-dvh flex items-end justify-start overflow-hidden rounded-card">
+    <section className="relative w-full min-h-dvh flex items-end justify-start overflow-hidden rounded-card md:min-h-section">
       <picture>
         {backgroundImageMobile && (
           <source media="(max-width: 48rem)" srcSet={backgroundImageMobile} />

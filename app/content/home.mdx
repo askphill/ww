@@ -1,4 +1,4 @@
-import {Hero, IntroSection, FeaturedProduct} from '~/components/sections'
+import {Hero, IntroSection, FeaturedProduct, TextMedia} from '~/components/sections'
 
 <Hero
   backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
@@ -21,4 +21,12 @@ import {Hero, IntroSection, FeaturedProduct} from '~/components/sections'
   heading={<h2>Don't sweat it.<br/><em>Our all new deodorant</em></h2>}
   productHandle="deodorant"
   tooltipPosition={{ right: '11%', top: '47%' }}
+/>
+
+<TextMedia
+  videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+  videoAlt="Morning routine video"
+  text="At Wakey, we believe mornings should feel like celebrations, not chores. We're on a mission to make your first 5 minutes brighter with essentials that bring energy, confidence, and small moments of self-care to your daily routine."
+  buttonText="Learn more"
+  buttonUrl="/about"
 />

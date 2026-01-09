@@ -26,7 +26,7 @@ export function FeaturedProduct({
   buttonTo,
 }: FeaturedProductProps) {
   return (
-    <section className="relative w-full min-h-dvh flex items-center overflow-hidden rounded-card">
+    <section className="relative w-full min-h-dvh flex items-center overflow-hidden rounded-card md:min-h-section ">
       <picture>
         {backgroundImageMobile && (
           <source media="(max-width: 48rem)" srcSet={backgroundImageMobile} />
@@ -42,7 +42,7 @@ export function FeaturedProduct({
         <div className="text-h2 text-sand">{heading}</div>
         {buttonText && buttonTo && (
           <div className="mt-4">
-            <Button to={buttonTo}>{buttonText}</Button>
+            <Button variant="outline" to={buttonTo}>{buttonText}</Button>
           </div>
         )}
       </div>

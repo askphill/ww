@@ -225,6 +225,17 @@ git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wake
 
 This project uses MDX for content-as-code (inspired by Lee Robinson's approach).
 
+### Before Creating New Sections (IMPORTANT)
+**Always review existing sections first** before creating a new one:
+1. Read `app/components/sections/` to see existing patterns
+2. Check `TextMedia.tsx`, `IntroSection.tsx`, `Hero.tsx`, `FeaturedProduct.tsx` for structure examples
+3. Look at how they handle:
+   - Wrapper divs for content grouping
+   - Button variants (outline on light backgrounds, primary on dark)
+   - Responsive classes and breakpoints
+   - Props interface patterns
+4. Follow the same patterns for consistency
+
 ### Structure
 ```
 app/
@@ -233,6 +244,9 @@ app/
 ├── components/
 │   └── sections/
 │       ├── Hero.tsx       # Hero with logo + tooltip
+│       ├── IntroSection.tsx
+│       ├── FeaturedProduct.tsx
+│       ├── TextMedia.tsx
 │       ├── index.ts       # Section exports
 │       └── ...
 └── routes/
@@ -381,14 +395,11 @@ Required:
 - Theme fonts: `font-display`, `font-body`
 - Tailwind spacing: `p-4`, `gap-2`, `mt-8`
 
-If a value doesn't exist, **add it to `@theme` in `tailwind.css` first**:
-```css
-@theme {
-  --spacing-18: 4.5rem;
-  --color-newcolor: #123456;
-}
-```
-Then use the utility: `p-18`, `bg-newcolor`
+### Theme Variable Rules (STRICT)
+- **NEVER add theme variables without asking first**
+- If a value doesn't exist in Tailwind, ask: "Can I add `--variable-name: value` to the theme?"
+- Use semantic names (e.g., `--min-height-section` not `--spacing-125`)
+- Prefer existing Tailwind values over custom variables when possible
 
 ### Converting from Reference Theme
 When converting CSS from the Liquid reference theme (`.sections/` files), **always use the closest standard Tailwind value** rather than exact pixel/rem conversions:
