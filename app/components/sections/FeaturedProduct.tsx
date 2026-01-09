@@ -42,7 +42,7 @@ export function FeaturedProduct({
         <div className="text-h2 text-sand">{heading}</div>
         {buttonText && buttonTo && (
           <div className="mt-4">
-            <Button variant="outline"to={buttonTo}>{buttonText}</Button>
+            <Button variant="outline" to={buttonTo}>{buttonText}</Button>
           </div>
         )}
       </div>
