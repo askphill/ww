@@ -1,18 +1,15 @@
-import {redirect, useLoaderData} from 'react-router';
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
   Analytics,
   useOptimisticVariant,
-  getProductOptions,
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {IngredientsSection} from '~/components/sections';
+import {IngredientsSection, ProductDescription} from '~/components/sections';
+import {ProductCarousel} from '~/components/ProductCarousel';
 
 // Dummy data for ingredients section (to be replaced with real data later)
 const DUMMY_INGREDIENTS_LIST = `Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil.`;
@@ -121,38 +118,30 @@ export default function Product() {
   // only when no search params are set in the url
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
-  // Get the product options array
-  const productOptions = getProductOptions({
-    ...product,
-    selectedOrFirstAvailableVariant: selectedVariant,
-  });
-
-  const {title, descriptionHtml} = product;
-
   return (
     <>
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
-      </div>
+      {/* Media Carousel - full bleed */}
+      <ProductCarousel media={product.media.nodes} />
+
+      {/* Description Section - sand background */}
+      <ProductDescription
+        title="Why you love it"
+        descriptionHtml={product.descriptionHtml}
+        usps={[
+          'Formulated without aluminum, baking soda, exfoliating acids or any other ingredients that are harmful.',
+          'Plastic free compostable packaging.',
+          'Vegan and cruelty-free, made without animal testing - only humans who willingly volunteer.',
+        ]}
+      />
+
+      {/* Ingredients Section */}
+      <IngredientsSection
+        title="Ingredients"
+        ingredientsList={DUMMY_INGREDIENTS_LIST}
+        items={DUMMY_INGREDIENT_ITEMS}
+      />
+
+      {/* Analytics */}
       <Analytics.ProductView
         data={{
           products: [
@@ -168,14 +157,7 @@ export default function Product() {
           ],
         }}
       />
-
-    </div>
-          <IngredientsSection
-          title="Ingredients"
-          ingredientsList={DUMMY_INGREDIENTS_LIST}
-          items={DUMMY_INGREDIENT_ITEMS}
-        />
-        </>
+    </>
   );
 }
 
@@ -226,6 +208,42 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     encodedVariantExistence
     encodedVariantAvailability
+    media(first: 10) {
+      nodes {
+        __typename
+        ... on MediaImage {
+          id
+          image {
+            url
+            altText
+            width
+            height
+          }
+        }
+        ... on Video {
+          id
+          sources {
+            url
+            mimeType
+          }
+          previewImage {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
+    subtitle: metafield(namespace: "ask_phill", key: "subtitle") {
+      value
+    }
+    reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {
+      value
+    }
+    reviews: metafield(namespace: "askphill", key: "reviews") {
+      value
+    }
     options {
       name
       optionValues {
