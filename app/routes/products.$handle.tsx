@@ -10,6 +10,7 @@ import {
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {IngredientsSection, ProductDescription} from '~/components/sections';
 import {ProductCarousel} from '~/components/ProductCarousel';
+import {StickyAddToCart} from '~/components/StickyAddToCart';
 
 // Dummy data for ingredients section (to be replaced with real data later)
 const DUMMY_INGREDIENTS_LIST = `Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil.`;
@@ -152,6 +153,40 @@ export default function Product() {
               vendor: product.vendor,
               variantId: selectedVariant?.id || '',
               variantTitle: selectedVariant?.title || '',
+              quantity: 1,
+            },
+          ],
+        }}
+      />
+
+      {/* Sticky Add to Cart */}
+      <StickyAddToCart
+        product={{
+          id: product.id,
+          title: product.title,
+          handle: product.handle,
+        }}
+        selectedVariant={selectedVariant}
+        subtitle={product.subtitle?.value}
+        reviewRating={
+          product.reviewRating?.value
+            ? parseFloat(product.reviewRating.value)
+            : null
+        }
+        reviewCount={
+          product.reviews?.value
+            ? (JSON.parse(product.reviews.value as string) as unknown[]).length
+            : 0
+        }
+        analytics={{
+          products: [
+            {
+              productGid: product.id,
+              variantGid: selectedVariant?.id,
+              name: product.title,
+              variantName: selectedVariant?.title,
+              brand: product.vendor,
+              price: selectedVariant?.price.amount,
               quantity: 1,
             },
           ],
