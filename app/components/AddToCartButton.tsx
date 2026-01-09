@@ -23,11 +23,7 @@ export function AddToCartButton({
             type="hidden"
             value={JSON.stringify(analytics)}
           />
-          <button
-            type="submit"
-            onClick={onClick}
-            disabled={disabled ?? fetcher.state !== 'idle'}
-          >
+          <button type="submit" onClick={onClick} disabled={disabled}>
             {children}
           </button>
         </>

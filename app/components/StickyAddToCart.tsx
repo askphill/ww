@@ -249,8 +249,6 @@ export function StickyAddToCart({
           action={CartForm.ACTIONS.LinesAdd}
         >
           {(fetcher: FetcherWithComponents<unknown>) => {
-            const isLoading = fetcher.state !== 'idle';
-
             // Open cart drawer on successful add
             useEffect(() => {
               if (fetcher.state === 'idle' && fetcher.data) {
@@ -267,7 +265,7 @@ export function StickyAddToCart({
                 />
                 <button
                   type="submit"
-                  disabled={!isAvailable || isLoading}
+                  disabled={!isAvailable}
                   className={`
                     w-full h-[3.125rem] md:h-[3.875rem]
                     border-t border-black/10
@@ -275,14 +273,9 @@ export function StickyAddToCart({
                     flex items-center justify-center
                     transition-opacity duration-200
                     ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
-                    ${isLoading ? 'opacity-70' : ''}
                   `}
                 >
-                  {!isAvailable
-                    ? 'Sold Out'
-                    : isLoading
-                      ? 'Adding...'
-                      : 'Add to Cart'}
+                  {isAvailable ? 'Add to Cart' : 'Sold Out'}
                 </button>
               </>
             );
