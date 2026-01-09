@@ -56,6 +56,8 @@ plugins: [tailwindcss(), ...]
 
 ## Shopify Hydrogen & Oxygen
 
+**Changelog**: https://github.com/Shopify/hydrogen/blob/main/packages/hydrogen/CHANGELOG.md
+
 ### Hydrogen (Framework)
 - React-based headless commerce framework
 - Built on **React Router 7** (not Remix anymore as of 2025.5.0)
@@ -402,41 +404,65 @@ Required:
 - Prefer existing Tailwind values over custom variables when possible
 
 ### Converting from Reference Theme
-When converting CSS from the Liquid reference theme (`.sections/` files), **always use the closest standard Tailwind value** rather than exact pixel/rem conversions:
+When converting CSS from the Liquid reference theme (`.sections/` files), **always use the closest standard Tailwind value** rather than exact pixel/rem conversions.
 
+### Spacing Conversion (--padding multipliers)
+
+The reference CSS uses `--padding` with multipliers:
+- **Mobile**: `--padding: 0.94rem` ≈ 1rem
+- **Desktop**: `--padding: 1.56rem` ≈ 1.5rem
+
+**Quick Formula**:
+- Mobile: `calc(var(--padding) * N)` → Tailwind spacing `N × 4`
+- Desktop: `calc(var(--padding) * N)` → Tailwind spacing `N × 6` (rounded to nearest)
+
+**Lookup Table** (use this for all spacing conversions):
+
+| Multiplier | CSS Reference | Mobile TW | Desktop TW |
+|------------|---------------|-----------|------------|
+| 1 | `var(--padding) * 1` | `p-4` | `md:p-6` |
+| 2 | `var(--padding) * 2` | `p-8` | `md:p-12` |
+| 3 | `var(--padding) * 3` | `p-12` | `md:p-20` |
+| 4 | `var(--padding) * 4` | `p-16` | `md:p-24` |
+| 5 | `var(--padding) * 5` | `p-20` | `md:p-32` |
+| 6 | `var(--padding) * 6` | `p-24` | `md:p-36` |
+| 8 | `var(--padding) * 8` | `p-32` | `md:p-48` |
+| 11 | `var(--padding) * 11` | `p-44` | `md:p-72` |
+
+**Example conversion**:
+```css
+/* Reference CSS */
+.founder--col:last-child {
+  padding: calc(var(--padding) * 2);  /* Mobile */
+}
+@media (width >= 47rem) {
+  .founder--col:last-child {
+    padding: calc(var(--padding) * 2) calc(var(--padding) * 5);  /* Desktop */
+  }
+}
+
+/* Tailwind conversion */
+className="p-8 md:py-12 md:px-32"
+/*         ↑     ↑       ↑
+           2×4   2×6     5×6 (rounded) */
+```
+
+**Important**: The formula gives a **starting point**. Visual adjustments are often needed after the initial conversion because:
+- Tailwind's spacing scale has fixed steps (not continuous)
+- The reference theme may have been visually tuned beyond the formula
+- Context matters (adjacent elements, overall rhythm)
+
+Workflow: Apply formula → preview in browser → adjust up/down one step if needed.
+
+### Grid Conversion
 | Reference Value | Tailwind Approach |
 |-----------------|-------------------|
-| `calc(var(--padding) * 5)` (5rem) | Use `p-20` or closest (`p-24` if visually better) |
 | `grid-template-columns: repeat(58, 1fr)` | Use `grid-cols-12` (standard 12-column grid) |
 | `grid-column: span 43` (43/58 ≈ 74%) | Use `col-span-9` (9/12 = 75%) |
 | `grid-column: span 15` (15/58 ≈ 26%) | Use `col-span-3` (3/12 = 25%) |
 | `max-width: 14rem` | Use `max-w-56` (14rem) or closest |
 
 **Rationale**: Standard Tailwind values are more maintainable and consistent than custom values that match exact reference measurements.
-
-### Component Conversion Examples
-
-**Button Component** (from `.button` in base.css):
-| Reference | Tailwind |
-|-----------|----------|
-| `border: 0.06rem` (~1px) | `border` (1px) |
-| `padding: 0.88rem 2rem 1rem` | `pt-3.5 px-8 pb-4` |
-| `height: 2.69rem` | `h-11` (2.75rem) |
-| Desktop `padding: 1.06rem 2rem 1.25rem` | `md:pt-4 md:px-8 md:pb-5` |
-| Desktop `height: auto` | `md:h-auto` or fixed `md:h-14` |
-
-**Section Padding** (from section CSS):
-| Reference | Tailwind |
-|-----------|----------|
-| Mobile: `calc(var(--padding) * 2) calc(var(--padding) * 3) calc(var(--padding) * 2) calc(var(--padding) * 2)` | `pt-8 pr-12 pb-8 pl-8` |
-| Desktop: `calc(var(--padding) * 1) calc(var(--padding) * 2) calc(var(--padding) * 5)` | `md:pt-8 md:px-8 md:pb-24` |
-| Body text mobile push: `calc(var(--padding) * 11)` | `pt-44` (11rem) |
-
-**Typography** (`.paragraph` in base.css):
-| Reference | Tailwind |
-|-----------|----------|
-| Mobile: `1rem` | `text-base` or `text-paragraph` |
-| Desktop: `1.25rem` | `md:text-xl` or `text-paragraph` (responsive) |
 
 ---
 

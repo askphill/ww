@@ -38,18 +38,18 @@ export function Founder({
       </div>
 
       {/* Text Column */}
-      <div className="bg-softorange rounded-card overflow-hidden min-h-dvh flex flex-col justify-center px-8 py-20 md:px-24 md:py-32">
-        <h2 className="text-h3 font-display max-w-140">{heading}</h2>
+      <div className="bg-softorange rounded-card overflow-hidden min-h-dvh flex flex-col justify-center px-8 py-8 md:px-16 md:pt-16 md:pb-36">
+        <h2 className="text-h3 font-display max-w-148 pr-16">{heading}</h2>
 
-        <div className="text-paragraph mt-20 max-w-132 space-y-6">{children}</div>
+        <div className="text-paragraph ml-16 mt-20 max-w-96 space-y-6 md:ml-32 md:mt-36">{children}</div>
 
         <img
           src={signature}
           alt="Signature"
-          className="mt-8 max-w-72"
+          className="mt-8 max-w-32  ml-16 md:ml-32"
         />
 
-        <p className="text-small mt-2">{name}</p>
+        <p className="text-small mt-2 ml-16  pt-2 md:ml-32" >{name}</p>
       </div>
     </section>
   );
