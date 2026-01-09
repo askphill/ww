@@ -156,7 +156,8 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body className="bg-black prose-wakey">
-          {children}
+        <DevGrid />
+        {children}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
