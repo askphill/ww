@@ -23,7 +23,7 @@ const REVIEWS_QUERY = `#graphql
 `;
 
 interface ReviewMetaobject {
-  fields: Array<{key: string; value: string}>;
+  fields: Array<{key: string; value?: string | null}>;
 }
 
 interface Review {
@@ -36,7 +36,7 @@ interface Review {
 function parseReviewMetaobject(metaobject: ReviewMetaobject): Review {
   const fields = metaobject.fields.reduce(
     (acc, field) => {
-      acc[field.key] = field.value;
+      acc[field.key] = field.value ?? '';
       return acc;
     },
     {} as Record<string, string>,
