@@ -165,10 +165,22 @@ export function Layout({children}: {children?: React.ReactNode}) {
 }
 
 export default function App() {
+  const data = useRouteLoaderData<RootLoader>('root');
+
+  if (!data?.header) {
+    return <Outlet />;
+  }
+
   return (
-    <main className="m-0">
+    <PageLayout
+      cart={data.cart}
+      footer={data.footer}
+      header={data.header}
+      isLoggedIn={data.isLoggedIn}
+      publicStoreDomain={data.publicStoreDomain}
+    >
       <Outlet />
-    </main>
+    </PageLayout>
   );
 }
 

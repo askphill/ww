@@ -1,6 +1,7 @@
 import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
+import {Await, NavLink, useLocation, Link} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {LogoBig, IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from './icons';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -8,23 +9,107 @@ interface FooterProps {
   publicStoreDomain: string;
 }
 
+const SOCIAL_LINKS = [
+  {title: 'Instagram', url: 'https://instagram.com/wakeywakey'},
+  {title: 'TikTok', url: 'https://tiktok.com/@wakeywakey'},
+];
+
 export function Footer({
   footer: footerPromise,
   header,
   publicStoreDomain,
 }: FooterProps) {
+  const location = useLocation();
+  const isAboutPage = location.pathname.includes('about');
+
+  // Dynamic colors based on page
+  const bgColor = isAboutPage ? 'bg-softorange' : 'bg-skyblue';
+  const logoColor = isAboutPage ? 'text-skyblue' : 'text-softorange';
+
   return (
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
+          <footer
+            role="contentinfo"
+            className={`${bgColor} rounded-card overflow-hidden p-4 md:p-6 md:relative`}
+          >
+            {/* Logo */}
+            <Link to="/" className="block pb-12 md:pb-0 md:pl-6">
+              <LogoBig className={`${logoColor} w-full`} />
+            </Link>
+
+            {/* Navigation - Grid on mobile, absolute on desktop */}
+            <div className="grid grid-cols-[13fr_10fr] md:absolute md:top-12 md:left-6">
+              {/* Main nav links */}
+              <nav
+                aria-label="Footer navigation"
+                className="text-s2 pb-16 md:pb-24 font-display"
+              >
+                {footer?.menu && header.shop.primaryDomain?.url ? (
+                  <FooterMenu
+                    menu={footer.menu}
+                    primaryDomainUrl={header.shop.primaryDomain.url}
+                    publicStoreDomain={publicStoreDomain}
+                  />
+                ) : (
+                  <FallbackMenu />
+                )}
+              </nav>
+
+              {/* Social links - mobile only */}
+              <nav
+                aria-label="Social media links"
+                className="text-label underline md:hidden font-display"
+              >
+                {SOCIAL_LINKS.map((link) => (
+                  <div key={link.title}>
+                    <a
+                      href={link.url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="inline-block transition-transform duration-300 hover:opacity-80 hover:translate-x-1"
+                    >
+                      {link.title}
+                    </a>
+                  </div>
+                ))}
+              </nav>
+            </div>
+
+            {/* Payment Icons */}
+            <div
+              role="img"
+              aria-label="Accepted payment methods: iDEAL, Klarna, Credit Card, Visa"
+              className="inline-flex gap-1 pb-4 md:absolute md:top-12 md:left-1/2 md:gap-3"
+            >
+              <IdealIcon className="h-3.5 md:h-4 w-auto text-black" />
+              <KlarnaIcon className="h-3.5 md:h-4 w-auto text-black" />
+              <IcsIcon className="h-3.5 md:h-4 w-auto text-black" />
+              <VisaIcon className="h-3.5 md:h-4 w-auto text-black" />
+            </div>
+
+            {/* Bottom section */}
+            <div className="pb-4 md:pb-0 md:flex md:justify-between text-small font-display">
+              {/* Social links - desktop only */}
+              <ul className="hidden md:inline-flex md:gap-3">
+                {SOCIAL_LINKS.map((link) => (
+                  <li key={link.title}>
+                    <a
+                      href={link.url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      {link.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Legal text */}
+              <div>2025 Wakey. All rights reserved.</div>
+            </div>
           </footer>
         )}
       </Await>
@@ -42,8 +127,8 @@ function FooterMenu({
   publicStoreDomain: string;
 }) {
   return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
+    <>
+      {menu?.items.map((item) => {
         if (!item.url) return null;
         // if the url is internal, we strip the domain
         const url =
@@ -53,77 +138,56 @@ function FooterMenu({
             ? new URL(item.url).pathname
             : item.url;
         const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
+        return (
+          <div key={item.id}>
+            {isExternal ? (
+              <a
+                href={url}
+                rel="noopener noreferrer"
+                target="_blank"
+                className="inline-block transition-transform duration-300 hover:opacity-80 hover:translate-x-1"
+              >
+                {item.title}
+              </a>
+            ) : (
+              <NavLink
+                end
+                prefetch="intent"
+                to={url}
+                className="inline-block transition-transform duration-300 hover:opacity-80 hover:translate-x-1"
+              >
+                {item.title}
+              </NavLink>
+            )}
+          </div>
         );
       })}
-    </nav>
+    </>
   );
 }
 
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
+function FallbackMenu() {
+  const items = [
+    {title: 'Privacy Policy', url: '/policies/privacy-policy'},
+    {title: 'Refund Policy', url: '/policies/refund-policy'},
+    {title: 'Shipping Policy', url: '/policies/shipping-policy'},
+    {title: 'Terms of Service', url: '/policies/terms-of-service'},
+  ];
 
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
+  return (
+    <>
+      {items.map((item) => (
+        <div key={item.title}>
+          <NavLink
+            end
+            prefetch="intent"
+            to={item.url}
+            className="inline-block transition-transform duration-300 hover:opacity-80 hover:translate-x-1"
+          >
+            {item.title}
+          </NavLink>
+        </div>
+      ))}
+    </>
+  );
 }
