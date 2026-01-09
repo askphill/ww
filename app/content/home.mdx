@@ -1,4 +1,4 @@
-import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder, FAQ, IngredientsSection, SocialSection, CloudSection, ImageBanner} from '~/components/sections'
+import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder, FAQ, IngredientsSection, SocialSection, CloudSection, ImageBanner, USPSection} from '~/components/sections'
 
 <Hero
   backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
@@ -13,6 +13,14 @@ import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder,
   description="We craft upbeat, zero-fuss essentials that turn chaotic mornings into small celebrations. Designed to spark joy from your first step out of bed."
   buttonText="Learn more"
   buttonTo="/about"
+/>
+
+<USPSection
+  items={[
+    { title: "One stick lasts up to 3 months", body: "keeping you effortlessly fresh and confident day after day." },
+    { title: "100% natural ingredients", body: "crafted with care, free from harsh chemicals." },
+    { title: "Zero waste packaging", body: "sustainable choices for a better tomorrow." }
+  ]}
 />
 
 <FeaturedProduct

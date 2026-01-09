@@ -10,3 +10,4 @@ export {SocialSection} from './SocialSection';
 export {CloudSection} from './CloudSection';
 export {ImageBanner} from './ImageBanner';
 export {ProductDescription} from './ProductDescription';
+export {USPSection} from './USPSection';
