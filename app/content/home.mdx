@@ -1,4 +1,4 @@
-import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder} from '~/components/sections'
+import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, Founder, FAQ} from '~/components/sections'
 
 <Hero
   backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
@@ -58,3 +58,30 @@ Because small rituals can shift your whole day. And mornings are the perfect pla
 Wakey. Wakey. Mornings, made better.
 
 </Founder>
+
+<FAQ
+  title="Wanna know more?"
+  description="When you have a deodorant that works effectively and is made with natural, safe ingredients, you can feel confident and refreshed all day long."
+  items={[
+    {
+      id: "1",
+      title: "What makes Wakey different?",
+      content: "We focus on natural ingredients that actually work. No compromises on effectiveness or safety."
+    },
+    {
+      id: "2",
+      title: "Is it suitable for sensitive skin?",
+      content: "Absolutely! Our formulas are dermatologist-tested and free from harsh chemicals, making them perfect for all skin types."
+    },
+    {
+      id: "3",
+      title: "How long does it last?",
+      content: "Our deodorant provides all-day protection for up to 24 hours, keeping you fresh from morning to night."
+    },
+    {
+      id: "4",
+      title: "Is the packaging recyclable?",
+      content: "Yes! We're committed to sustainability. All our packaging is made from recyclable materials."
+    }
+  ]}
+/>
