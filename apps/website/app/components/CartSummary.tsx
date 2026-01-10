@@ -1,7 +1,7 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {Money, type OptimisticCart} from '@shopify/hydrogen';
-import {IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '~/components/icons';
+import {IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '@wakey/ui';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;

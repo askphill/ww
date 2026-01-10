@@ -1,7 +1,7 @@
 import {useState, useRef, useEffect, useCallback} from 'react';
 import {Image} from '@shopify/hydrogen';
 import type {ProductFragment} from 'storefrontapi.generated';
-import {useContinuousCarousel} from '~/hooks/useContinuousCarousel';
+import {useContinuousCarousel} from '@wakey/hooks';
 
 type MediaNode = ProductFragment['media']['nodes'][number];
 

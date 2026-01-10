@@ -1,11 +1,76 @@
-# Project: Wakey - Shopify Hydrogen Storefront
+# Project: Wakey - Monorepo
 
 ## Stack Overview
+- **Monorepo**: Turborepo + pnpm workspaces
 - **Framework**: Shopify Hydrogen 2025.7.0 (React Router 7.9.2)
 - **Runtime**: Shopify Oxygen (Cloudflare workerd-based)
 - **Styling**: Tailwind CSS v4.1.6
 - **Build**: Vite 6
 - **Language**: TypeScript 5.9
+
+---
+
+## Monorepo Structure
+
+```
+wakey/
+├── apps/
+│   └── website/              # Shopify Hydrogen storefront → Oxygen
+│
+├── packages/
+│   ├── ui/                   # Shared React components (@wakey/ui)
+│   ├── tailwind-config/      # Shared Tailwind v4 theme (@wakey/tailwind-config)
+│   ├── hooks/                # Shared React hooks (@wakey/hooks)
+│   └── utils/                # General utilities (@wakey/utils)
+│
+├── turbo.json                # Turborepo pipeline config
+├── pnpm-workspace.yaml       # Workspace definitions
+├── package.json              # Root package.json
+└── .github/workflows/        # CI/CD
+```
+
+### Development Commands
+```bash
+# From root
+pnpm install              # Install all dependencies
+pnpm dev                  # Start all apps in dev mode
+pnpm dev:website          # Start only the website
+pnpm build                # Build all packages and apps
+pnpm typecheck            # Type check all packages
+
+# From apps/website/
+pnpm dev                  # Start website dev server
+pnpm build                # Build for production
+pnpm codegen              # Generate Storefront API types
+```
+
+### Shared Packages
+
+**`@wakey/ui`** - Design system components:
+- `Button` - Primary/outline/ghost variants
+- `Stars` - Rating display with half-star support
+- `Accordion` - Expandable sections
+- `Tooltip` - Positioned tooltips
+- `Icons` - All SVG icons (CrossIcon, HamburgerIcon, LogoBig, etc.)
+
+**`@wakey/hooks`** - React hooks:
+- `useContinuousCarousel` - Carousel with physics-based scrolling
+
+**`@wakey/tailwind-config`** - Shared theme:
+- Color tokens (sand, softorange, ocher, skyblue)
+- Font families (Founders, ITC)
+- Type scale utilities (text-h1, text-paragraph, etc.)
+- Custom utilities (rounded-card, animations)
+
+### Using Shared Packages
+```tsx
+// In apps/website/
+import {Button, Stars, Accordion} from '@wakey/ui';
+import {useContinuousCarousel} from '@wakey/hooks';
+
+// Tailwind theme is imported in tailwind.css:
+// @import '../../../../packages/tailwind-config/theme.css';
+```
 
 ---
 
@@ -15,17 +80,18 @@ This project uses **Tailwind v4** which has major differences from v3:
 
 ### CSS-First Configuration
 - **No `tailwind.config.js`** - Configuration is done in CSS
-- All config lives in `app/styles/tailwind.css`
+- Website config: `apps/website/app/styles/tailwind.css`
+- Shared theme: `packages/tailwind-config/theme.css`
 - Just `@import 'tailwindcss';` - no more `@tailwind base/components/utilities`
 
-### Configure via CSS
+### Website Tailwind Setup
 ```css
+/* apps/website/app/styles/tailwind.css */
 @import 'tailwindcss';
+@import '../../../../packages/tailwind-config/theme.css';
 
-@theme {
-  --color-brand: #ff6600;
-  --font-display: "Inter", sans-serif;
-}
+/* Tell Tailwind to scan packages for classes */
+@source "../../../../packages/ui/src";
 ```
 
 ### Key Differences from v3
@@ -46,7 +112,7 @@ This project uses **Tailwind v4** which has major differences from v3:
 - **@property support**: Animate gradients and custom properties
 
 ### Vite Plugin
-Tailwind is configured via `@tailwindcss/vite` plugin in `vite.config.ts`:
+Tailwind is configured via `@tailwindcss/vite` plugin in `apps/website/vite.config.ts`:
 ```ts
 import tailwindcss from '@tailwindcss/vite';
 plugins: [tailwindcss(), ...]
@@ -64,17 +130,21 @@ plugins: [tailwindcss(), ...]
 - Provides Shopify-optimized components and utilities
 - Storefront API integration with codegen
 
-### Key Files
+### Key Files (Website)
 ```
-app/
-├── routes/          # File-based routing (React Router 7)
-├── components/      # Reusable components
-├── lib/             # Utilities and helpers
-├── graphql/         # Storefront API queries
-├── styles/          # CSS including Tailwind
-├── root.tsx         # App shell
-└── routes.ts        # Route configuration
-server.ts            # Oxygen server entry point
+apps/website/
+├── app/
+│   ├── routes/          # File-based routing (React Router 7)
+│   ├── components/      # Website-specific components
+│   │   └── sections/    # MDX section components
+│   ├── content/         # MDX content files
+│   ├── lib/             # Utilities and helpers
+│   ├── graphql/         # Storefront API queries
+│   ├── styles/          # CSS including Tailwind
+│   ├── root.tsx         # App shell
+│   └── routes.ts        # Route configuration
+├── server.ts            # Oxygen server entry point
+└── package.json
 ```
 
 ### Imports Changed (v2025.5.0+)
@@ -91,19 +161,11 @@ import { useLoaderData } from 'react-router';
 ### Oxygen (Hosting)
 - Cloudflare `workerd`-based JavaScript runtime
 - Supports: Fetch, Cache, Streams, Web Crypto APIs
-- Deploy via GitHub Actions (`.github/workflows/oxygen.yml`)
+- Deploy via GitHub Actions (`.github/workflows/oxygen-deployment-*.yml`)
 - Free on paid Shopify plans (Basic, Shopify, Advanced, Plus)
 
-### Development Commands
-```bash
-npm run dev       # Start dev server (localhost:3000)
-npm run build     # Production build
-npm run preview   # Preview production build
-npm run codegen   # Generate Storefront API types
-```
-
 ### Environment Variables
-Configured in `.env`:
+Configured in `apps/website/.env`:
 - `SESSION_SECRET` - Session encryption
 - `PUBLIC_STOREFRONT_API_TOKEN` - Storefront API access
 - `PUBLIC_STORE_DOMAIN` - Your Shopify store domain
@@ -169,9 +231,9 @@ Configured in `.mcp.json`:
 ## Common Tasks
 
 ### Add a new route
-Create file in `app/routes/` following React Router 7 conventions:
+Create file in `apps/website/app/routes/` following React Router 7 conventions:
 ```ts
-// app/routes/my-page.tsx
+// apps/website/app/routes/my-page.tsx
 import type { Route } from './+types/my-page';
 
 export async function loader({ context }: Route.LoaderArgs) {
@@ -183,16 +245,26 @@ export default function MyPage({ loaderData }: Route.ComponentProps) {
 }
 ```
 
-### Add custom Tailwind theme values
-Edit `app/styles/tailwind.css`:
+### Add shared Tailwind theme values
+Edit `packages/tailwind-config/theme.css`:
 ```css
-@import 'tailwindcss';
-
 @theme {
-  --color-primary: oklch(0.7 0.15 250);
-  --spacing-18: 4.5rem;
+  --color-newcolor: oklch(0.7 0.15 250);
 }
 ```
+
+### Add app-specific Tailwind values
+Edit `apps/website/app/styles/tailwind.css` (after the theme import):
+```css
+@theme {
+  --color-app-specific: #123456;
+}
+```
+
+### Add a shared UI component
+1. Create component in `packages/ui/src/MyComponent.tsx`
+2. Export from `packages/ui/src/index.ts`
+3. Import in apps: `import {MyComponent} from '@wakey/ui';`
 
 ### Query Storefront API
 ```ts
@@ -229,7 +301,7 @@ This project uses MDX for content-as-code (inspired by Lee Robinson's approach).
 
 ### Before Creating New Sections (IMPORTANT)
 **Always review existing sections first** before creating a new one:
-1. Read `app/components/sections/` to see existing patterns
+1. Read `apps/website/app/components/sections/` to see existing patterns
 2. Check `TextMedia.tsx`, `IntroSection.tsx`, `Hero.tsx`, `FeaturedProduct.tsx` for structure examples
 3. Look at how they handle:
    - Wrapper divs for content grouping
@@ -240,7 +312,7 @@ This project uses MDX for content-as-code (inspired by Lee Robinson's approach).
 
 ### Structure
 ```
-app/
+apps/website/app/
 ├── content/
 │   └── home.mdx           # Homepage content
 ├── components/
@@ -314,7 +386,7 @@ product(handle: $handle) {
 - **`font-display`**: Founders - Used for headings, titles, UI elements
 - **`font-body`**: ITC - Used for body text, prose content
 
-Font files in `public/fonts/`:
+Font files in `apps/website/public/fonts/`:
 - `founders.woff2`
 - `itc-std.woff2`
 - `itc-italic.woff2`
@@ -347,7 +419,7 @@ Forbidden (arbitrary values):
 - `grid-cols-[repeat(5,1fr)]` → Use `grid-cols-5`
 
 ### Type Scale (ONLY use these for text sizing)
-Custom responsive utilities defined in `tailwind.css`. **Never use standard Tailwind text sizes.**
+Custom responsive utilities defined in `packages/tailwind-config/theme.css`. **Never use standard Tailwind text sizes.**
 
 | Utility | Mobile | Desktop (≥768px) | Use for |
 |---------|--------|------------------|---------|
@@ -472,7 +544,7 @@ For fetching Shopify data client-side (used by MDX components):
 
 ### Create API route
 ```ts
-// app/routes/api.product.$handle.tsx
+// apps/website/app/routes/api.product.$handle.tsx
 export async function loader({params, context}: Route.LoaderArgs) {
   const {product} = await context.storefront.query(QUERY, {
     variables: {handle: params.handle},
@@ -500,22 +572,28 @@ const product = fetcher.data?.product;
 
 After cloning this repo:
 
-1. **Link Shopify store**:
+1. **Install dependencies**:
    ```bash
+   pnpm install
+   ```
+
+2. **Link Shopify store** (from apps/website/):
+   ```bash
+   cd apps/website
    npx shopify hydrogen link
    ```
 
-2. **Pull environment variables**:
+3. **Pull environment variables**:
    ```bash
    npx shopify hydrogen env pull
    ```
 
-3. **Start dev server**:
+4. **Start dev server** (from root):
    ```bash
-   npx shopify hydrogen dev
+   pnpm dev:website
    ```
 
-4. **Clone source theme** (if needed for reference):
+5. **Clone source theme** (if needed for reference):
    ```bash
    git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wakey-source
    ```

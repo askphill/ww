@@ -1,4 +1,4 @@
-import {Button} from '~/components/Button';
+import {Button} from '@wakey/ui';
 
 interface IntroSectionProps {
   heading: React.ReactNode;

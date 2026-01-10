@@ -1,5 +1,5 @@
 import {ProductTooltip} from '~/components/ProductTooltip';
-import {Button} from '~/components/Button';
+import {Button} from '@wakey/ui';
 
 interface FeaturedProductProps {
   backgroundImage: string;

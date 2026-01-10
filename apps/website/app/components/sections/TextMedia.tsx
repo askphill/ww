@@ -1,4 +1,4 @@
-import {Button} from '~/components/Button';
+import {Button} from '@wakey/ui';
 
 interface TextMediaProps {
   videoUrl: string;
