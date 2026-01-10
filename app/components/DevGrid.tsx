@@ -28,7 +28,11 @@ export function DevGrid() {
     >
       <div className="mx-auto grid h-full w-full grid-cols-12 gap-0 md:grid-cols-24">
         {Array.from({length: 24}).map((_, i) => (
-          <div key={i} className={`h-full border-x border-red-500/30 bg-red-500/10 ${i >= 12 ? 'hidden md:block' : ''}`} />
+          <div key={i} className={`relative h-full border-x border-red-500/30 ${i >= 12 ? 'hidden md:block' : ''}`}>
+            <span className="absolute top-2 left-1/2 -translate-x-1/2 rounded bg-red-500/80 px-1 text-[10px] font-mono text-white">
+              {i + 1}
+            </span>
+          </div>
         ))}
       </div>
     </div>
