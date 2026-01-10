@@ -4,10 +4,27 @@ import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
+import {PageHeader} from '~/components/sections/PageHeader';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+  const collection = data?.collection;
+  const title = collection?.title || 'Collection';
+  const description =
+    collection?.description ||
+    `Shop our ${title} collection. Natural deodorants and morning essentials by Wakey.`;
+
+  return [
+    {title: `${title} Collection | Wakey`},
+    {name: 'description', content: description},
+    {property: 'og:title', content: `${title} Collection | Wakey`},
+    {property: 'og:description', content: description},
+    {property: 'og:type', content: 'website'},
+    {name: 'twitter:card', content: 'summary'},
+    {name: 'twitter:title', content: `${title} Collection | Wakey`},
+    {name: 'twitter:description', content: description},
+    {rel: 'canonical', href: `/collections/${collection?.handle}`},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -28,7 +45,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 12,
   });
 
   if (!handle) {
@@ -69,21 +86,25 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
-      <PaginatedResourceSection<ProductItemFragment>
-        connection={collection.products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        )}
-      </PaginatedResourceSection>
+    <div className="flex flex-col">
+      <PageHeader
+        title={collection.title}
+        subtitle={collection.description || undefined}
+      />
+      <section className="bg-sand rounded-card p-4 pb-8 md:p-8 md:pb-12">
+        <PaginatedResourceSection<ProductItemFragment>
+          connection={collection.products}
+          resourcesClassName="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4"
+        >
+          {({node: product, index}) => (
+            <ProductItem
+              key={product.id}
+              product={product}
+              loading={index < 8 ? 'eager' : undefined}
+            />
+          )}
+        </PaginatedResourceSection>
+      </section>
       <Analytics.CollectionView
         data={{
           collection: {

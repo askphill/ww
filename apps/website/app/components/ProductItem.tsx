@@ -15,26 +15,33 @@ export function ProductItem({
 }) {
   const variantUrl = useVariantUrl(product.handle);
   const image = product.featuredImage;
+
   return (
     <Link
-      className="product-item"
+      className="group block h-full rounded-card bg-blue overflow-hidden hover-scale"
       key={product.id}
       prefetch="intent"
       to={variantUrl}
     >
-      {image && (
-        <Image
-          alt={image.altText || product.title}
-          aspectRatio="1/1"
-          data={image}
-          loading={loading}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
+      <div className="aspect-[5/6] flex items-center justify-center p-4 md:p-6">
+        {image && (
+          <Image
+            alt={image.altText || product.title}
+            data={image}
+            loading={loading}
+            sizes="(min-width: 48rem) 400px, 50vw"
+            className="w-full h-full object-contain"
+          />
+        )}
+      </div>
+      <div className="p-4 md:p-6 pt-0 md:pt-0">
+        <h4 className="text-label font-display uppercase tracking-tight">
+          {product.title}
+        </h4>
+        <span className="text-small font-body opacity-80">
+          <Money data={product.priceRange.minVariantPrice} />
+        </span>
+      </div>
     </Link>
   );
 }
