@@ -8,38 +8,88 @@ import {
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {IngredientsSection, ProductDescription} from '~/components/sections';
+import {
+  FAQ,
+  ImageBanner,
+  IngredientsSection,
+  ProductDescription,
+  ProductReviews,
+  USPSection,
+} from '~/components/sections';
 import {ProductCarousel} from '~/components/ProductCarousel';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
 
-// Dummy data for ingredients section (to be replaced with real data later)
-const DUMMY_INGREDIENTS_LIST = `Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil.`;
+const INGREDIENTS_LIST = `Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil.`;
 
-const DUMMY_INGREDIENT_ITEMS = [
+const INGREDIENT_ITEMS = [
   {
     id: '1',
-    name: 'Sweet <em>Almond</em> Oil',
-    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&h=1000&fit=crop',
+    name: '<em>Almond</em> Oil',
+    image:
+      'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/oil_75b0c2ec-a398-48df-b5a6-188dac0c7829.jpg?v=1761158550',
   },
   {
     id: '2',
-    name: '<em>Coconut</em> Oil',
-    image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=800&h=1000&fit=crop',
+    name: 'Sweet <em>Orange</em>',
+    image:
+      'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/citrus.jpg?v=1761157287',
   },
   {
     id: '3',
-    name: '<em>Shea</em> Butter',
-    image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&h=1000&fit=crop',
+    name: '<em>Squalane</em>',
+    image:
+      'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/gekkie.jpg?v=1753632419',
+  },
+];
+
+const PRODUCT_FAQ_ITEMS = [
+  {
+    id: 'sensitive-skin',
+    title: 'Is it suitable for sensitive skin?',
+    content:
+      'Absolutely! Our baking soda-free formula is specifically designed to be gentle on all skin types, including sensitive skin. The natural ingredients soothe rather than irritate.',
   },
   {
-    id: '4',
-    name: '<em>Lavender</em> Oil',
-    image: 'https://images.unsplash.com/photo-1611073761218-1eef52c5e2c6?w=800&h=1000&fit=crop',
+    id: 'why-switch',
+    title: 'Why should I switch to natural deodorant?',
+    content:
+      'Natural deodorant allows your body to function as it should while keeping you fresh. Unlike conventional antiperspirants that block sweat with aluminum, our formula uses natural ingredients to neutralize odor-causing bacteria.',
   },
   {
-    id: '5',
-    name: '<em>Bergamot</em> Oil',
-    image: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=800&h=1000&fit=crop',
+    id: 'adjustment',
+    title: 'Is there an adjustment period?',
+    content:
+      'When transitioning from conventional antiperspirants, your body may need time to adjust. This typically takes under two weeks. During this time, your body is detoxing from aluminum-based products.',
+  },
+  {
+    id: 'how-to-apply',
+    title: 'How do I apply the deodorant?',
+    content:
+      'Apply 2-3 swipes to clean, dry underarms. A little goes a long way! Our formula glides on smoothly and absorbs quickly.',
+  },
+  {
+    id: 'where-made',
+    title: 'Where is it made?',
+    content:
+      'Our deodorant is handcrafted in small batches in the Netherlands, ensuring quality and freshness in every stick.',
+  },
+  {
+    id: 'scent',
+    title: 'What does Mighty Citrus smell like?',
+    content:
+      "Mighty Citrus captures the essence of morning sunshine with a refreshing blend of bergamot, sweet orange, and lavender. It's uplifting without being overpowering.",
+  },
+  {
+    id: 'how-long',
+    title: 'How long does one stick last?',
+    content:
+      'One stick typically lasts up to 3 months with daily use, keeping you effortlessly fresh and confident day after day.',
+  },
+  {
+    id: 'packaging',
+    title: 'Is the packaging eco-friendly?',
+    content:
+      "Yes! We're committed to sustainability. All our packaging is plastic-free and made from compostable materials.",
   },
 ];
 
@@ -135,11 +185,49 @@ export default function Product() {
         ]}
       />
 
+      {/* USP Section */}
+      <USPSection
+        items={[
+          {
+            title: 'One stick lasts up to 3 months',
+            body: 'keeping you effortlessly fresh and confident day after day.',
+          },
+          {
+            title: 'Mighty Citrus',
+            body: 'captures the essence of morning sunshine with a refreshing blend of bergamot, sweet orange, and lavender.',
+          },
+          {
+            title: 'Free shipping above €50',
+            body: 'same-day shipping available on orders placed before 2pm.',
+          },
+        ]}
+      />
+
+      {/* Wakey Fact Banner */}
+      <ImageBanner
+        backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/a_d092fd3c-b229-4fcc-8d2d-dae0250b6990.jpg"
+        label="Wakey Fact"
+        text="Most natural deodorants use <em>baking soda</em> which can cause <em>skin irritation</em>. We use safe, natural ingredients to <em>absorb wetness</em> and eliminate <em>odor-causing</em> bacteria."
+      />
+
       {/* Ingredients Section */}
       <IngredientsSection
         title="Ingredients"
-        ingredientsList={DUMMY_INGREDIENTS_LIST}
-        items={DUMMY_INGREDIENT_ITEMS}
+        ingredientsList={INGREDIENTS_LIST}
+        items={INGREDIENT_ITEMS}
+      />
+
+      {/* Product FAQ Section */}
+      <FAQ
+        title="Wanna know more?"
+        description="When you have a deodorant that works effectively and is made with natural, safe ingredients, you can feel confident and refreshed all day long."
+        items={PRODUCT_FAQ_ITEMS}
+      />
+
+      {/* Product Reviews */}
+      <ProductReviews
+        productHandle={product.handle}
+        videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
       />
 
       {/* Analytics */}

@@ -64,7 +64,7 @@ export function Aside({
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-[15px] transition-opacity duration-[400ms] ease-[var(--ease-out-expo)] ${
+        className={`fixed inset-0 z-60 bg-black/50 backdrop-blur-[15px] transition-opacity duration-[400ms] ease-[var(--ease-out-expo)] ${
           expanded
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
@@ -75,7 +75,7 @@ export function Aside({
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 z-50 h-dvh w-full md:w-[var(--drawer-width)] flex flex-col transition-transform duration-[400ms] ease-[var(--ease-out-expo)] ${
+        className={`fixed top-0 z-70 h-dvh w-full md:w-[var(--drawer-width)] flex flex-col transition-transform duration-[400ms] ease-[var(--ease-out-expo)] ${
           isLeftDrawer ? 'left-0' : 'right-0'
         } ${
           expanded
