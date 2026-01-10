@@ -41,14 +41,91 @@
   font-display: swap;
 }
 
-/* Typography for MDX content */
-.prose-wakey {
-  font-family: var(--font-display);
-}
-
-.prose-wakey em {
+em {
   font-family: var(--font-itc);
   font-style: italic;
+}
+
+/* Article prose styling */
+.prose-wakey h2 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h3);
+  line-height: 1.1;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.prose-wakey h3 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-s1);
+  line-height: 1.1;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-wakey h4 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-s2);
+  line-height: 1.2;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-wakey p {
+  margin-bottom: 1rem;
+}
+
+.prose-wakey ul,
+.prose-wakey ol {
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.prose-wakey ul {
+  list-style: disc;
+}
+
+.prose-wakey ol {
+  list-style: decimal;
+}
+
+.prose-wakey li {
+  margin-bottom: 0.25rem;
+}
+
+.prose-wakey a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.prose-wakey a:hover {
+  text-decoration-thickness: 0.125rem;
+}
+
+.prose-wakey blockquote {
+  border-left: 0.25rem solid var(--color-text);
+  padding-left: 1.25rem;
+  font-family: var(--font-itc);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+.prose-wakey img {
+  width: 100%;
+  border-radius: var(--radius-card);
+  margin: 1rem 0;
+}
+
+.prose-wakey strong {
+  font-weight: 600;
+}
+
+.prose-wakey hr {
+  border: none;
+  border-top: 1px solid var(--color-text);
+  opacity: 0.2;
+  margin: 2rem 0;
 }
 
 .italic {
