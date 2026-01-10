@@ -33,10 +33,11 @@ export function Hero({
           src={backgroundImage}
           alt=""
           className="absolute inset-0 w-full h-full object-cover z-0"
+          fetchPriority="high"
         />
       </picture>
       {productHandle && (
-        <ProductTooltip handle={productHandle} position={tooltipPosition} />
+        <ProductTooltip handle={productHandle} position={tooltipPosition} priority />
       )}
       {showLogo && (
         <div className="relative z-1 w-full p-4 md:p-8">

@@ -10,7 +10,7 @@ interface IntroSectionProps {
 export function IntroSection({
   heading,
   description,
-  buttonText = 'Learn more',
+  buttonText = 'About our story',
   buttonTo = '/about',
 }: IntroSectionProps) {
   return (

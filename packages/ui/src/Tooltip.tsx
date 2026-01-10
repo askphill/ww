@@ -16,12 +16,15 @@ interface TooltipProps {
     bottom?: string;
   };
   className?: string;
+  /** Set to true for above-the-fold tooltips to prioritize LCP */
+  priority?: boolean;
 }
 
 export function Tooltip({
   product,
   position,
   className = '',
+  priority = false,
 }: TooltipProps) {
   const positionStyle = position || {top: '33%', left: '19%'};
 
@@ -40,6 +43,7 @@ export function Tooltip({
             src={product.image}
             alt={product.title}
             className="w-8 md:w-12 h-auto"
+            fetchPriority={priority ? 'high' : undefined}
           />
         </div>
 

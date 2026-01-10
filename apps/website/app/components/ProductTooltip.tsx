@@ -10,9 +10,11 @@ interface ProductTooltipProps {
     right?: string;
     bottom?: string;
   };
+  /** Set to true for above-the-fold tooltips to prioritize LCP */
+  priority?: boolean;
 }
 
-export function ProductTooltip({handle, position}: ProductTooltipProps) {
+export function ProductTooltip({handle, position, priority}: ProductTooltipProps) {
   const fetcher = useFetcher();
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export function ProductTooltip({handle, position}: ProductTooltipProps) {
         reviewRating: product.reviewRating,
       }}
       position={position}
+      priority={priority}
     />
   );
 }
