@@ -13,3 +13,4 @@ export {ProductDescription} from './ProductDescription';
 export {USPSection} from './USPSection';
 export {BlogArticle} from './BlogArticle';
 export type {BlogArticleFrontmatter} from './BlogArticle';
+export {PageHeader} from './PageHeader';
