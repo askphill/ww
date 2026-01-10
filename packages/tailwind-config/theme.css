@@ -1,40 +1,7 @@
 /**
- * Tailwind v4 CSS-first configuration
+ * Wakey Design System - Tailwind v4 Theme
+ * Shared across all apps in the monorepo
  */
-
-@import 'tailwindcss';
-
-@layer base {
-  body {
-    @apply antialiased tracking-tight font-display;
-    text-rendering: optimizeLegibility;
-  }
-}
-
-/* Fonts */
-@font-face {
-  font-family: 'Founders';
-  src: url('/fonts/founders.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'ITC';
-  src: url('/fonts/itc-std.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'ITC';
-  src: url('/fonts/itc-italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
 
 /* Theme tokens */
 @theme {
@@ -48,7 +15,7 @@
   --color-skyblue: #99BDFF;
   --color-blue: #d4e8ff;
 
-  /* Fonts */
+  /* Fonts - apps must define @font-face for these */
   --font-display: 'Founders', system-ui, sans-serif;
   --font-body: 'ITC', Georgia, serif;
   --font-itc: 'ITC', Georgia, serif;
@@ -62,6 +29,7 @@
   /* Letter Spacing */
   --tracking-tight: -0.01em;
 
+  /* Layout */
   --min-height-section: 32rem;
 
   /* Animation eases */
@@ -72,7 +40,6 @@
   /* Drawer - 8 columns of 24-column grid + left padding (px-8 = 2rem) */
   --drawer-width: clamp(30rem, calc(2rem + (100vw - 4rem) / 3), 50rem);
 }
-
 
 /* Responsive utilities */
 @utility rounded-card {
@@ -163,20 +130,6 @@
   }
 }
 
-/* Typography for MDX content */
-.prose-wakey  {
-  font-family: var(--font-display);
-}
-
-.prose-wakey em {
-  font-family: var(--font-itc);
-  font-style: italic;
-}
-
-.italic {
-  font-family: var(--font-itc);
-}
-
 /* Hide scrollbar utility */
 @utility scrollbar-hide {
   -ms-overflow-style: none;
@@ -186,21 +139,31 @@
   }
 }
 
-/* Mouse trail rotation variants */
-@utility rotate-trail-1 { transform: rotate(3deg); }
-@utility rotate-trail-2 { transform: rotate(-2deg); }
-@utility rotate-trail-3 { transform: rotate(-4deg); }
-@utility rotate-trail-4 { transform: rotate(1deg); }
-@utility rotate-trail-5 { transform: rotate(-3deg); }
-@utility rotate-trail-6 { transform: rotate(4deg); }
-
-/* Ingredient card text - handles em/italics within display font */
-.ingredient-text em {
-  font-family: var(--font-itc);
-  font-style: italic;
+/* Hover scale effect - desktop only */
+@utility hover-scale {
+  @media (width >= 48rem) {
+    transition: transform 0.3s var(--ease-out-back);
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
 }
 
-/* Cloud section keyframes */
+/* Marquee animation */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@utility animate-marquee-paused {
+  animation-play-state: paused;
+}
+
+/* Cloud section animations */
 @keyframes cloud-text-appear {
   0% { transform: translate3d(0, 100%, 0); opacity: 0; }
   12.5% { transform: translate3d(0, 0, 0); opacity: 1; }
@@ -220,30 +183,6 @@
 
 @utility animate-cloud-scroll {
   animation: cloud-scroll 60s linear infinite;
-}
-
-/* Hover scale effect - desktop only */
-@utility hover-scale {
-  @media (width >= 48rem) {
-    transition: transform 0.3s var(--ease-out-back);
-    &:hover {
-      transform: scale(1.02);
-    }
-  }
-}
-
-/* Marquee animation for USP slider */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@utility animate-marquee {
-  animation: marquee 30s linear infinite;
-}
-
-@utility animate-marquee-paused {
-  animation-play-state: paused;
 }
 
 /* Sticky ATC pop animation */

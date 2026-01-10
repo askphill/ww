@@ -1,4 +1,4 @@
-import {Accordion} from '~/components/Accordion';
+import {Accordion} from '@wakey/ui';
 
 interface FAQItem {
   id: string;

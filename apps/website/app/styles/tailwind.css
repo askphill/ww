@@ -1,0 +1,70 @@
+/**
+ * Website Tailwind v4 configuration
+ * Imports shared theme from @wakey/tailwind-config
+ */
+
+@import 'tailwindcss';
+@import '../../../../packages/tailwind-config/theme.css';
+
+/* Tell Tailwind to scan packages for classes */
+@source "../../../../packages/ui/src";
+
+@layer base {
+  body {
+    @apply antialiased tracking-tight font-display;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Fonts - app-specific (served from /fonts/) */
+@font-face {
+  font-family: 'Founders';
+  src: url('/fonts/founders.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ITC';
+  src: url('/fonts/itc-std.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ITC';
+  src: url('/fonts/itc-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Typography for MDX content */
+.prose-wakey {
+  font-family: var(--font-display);
+}
+
+.prose-wakey em {
+  font-family: var(--font-itc);
+  font-style: italic;
+}
+
+.italic {
+  font-family: var(--font-itc);
+}
+
+/* Mouse trail rotation variants */
+@utility rotate-trail-1 { transform: rotate(3deg); }
+@utility rotate-trail-2 { transform: rotate(-2deg); }
+@utility rotate-trail-3 { transform: rotate(-4deg); }
+@utility rotate-trail-4 { transform: rotate(1deg); }
+@utility rotate-trail-5 { transform: rotate(-3deg); }
+@utility rotate-trail-6 { transform: rotate(4deg); }
+
+/* Ingredient card text - handles em/italics within display font */
+.ingredient-text em {
+  font-family: var(--font-itc);
+  font-style: italic;
+}

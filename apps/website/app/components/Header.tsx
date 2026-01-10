@@ -7,7 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {HamburgerIcon} from '~/components/icons';
+import {HamburgerIcon} from '@wakey/ui';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;

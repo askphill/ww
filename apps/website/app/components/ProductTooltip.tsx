@@ -1,6 +1,6 @@
 import {useFetcher} from 'react-router';
 import {useEffect} from 'react';
-import {Tooltip} from './Tooltip';
+import {Tooltip} from '@wakey/ui';
 
 interface ProductTooltipProps {
   handle: string;

@@ -1,8 +1,7 @@
 import {useFetcher} from 'react-router';
 import {useEffect, useState} from 'react';
-import {Stars} from '~/components/Stars';
+import {Stars, Button} from '@wakey/ui';
 import {ProductTooltip} from '~/components/ProductTooltip';
-import {Button} from '~/components/Button';
 
 interface ProductReviewsProps {
   productHandle: string;

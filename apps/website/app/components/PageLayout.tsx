@@ -9,7 +9,7 @@ import {Aside, useAside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
-import {CrossIcon} from '~/components/icons';
+import {CrossIcon} from '@wakey/ui';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;

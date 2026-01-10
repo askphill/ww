@@ -1,5 +1,5 @@
 import {useRef} from 'react';
-import {useContinuousCarousel} from '~/hooks/useContinuousCarousel';
+import {useContinuousCarousel} from '@wakey/hooks';
 
 interface USPItem {
   title: string;

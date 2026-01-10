@@ -3,8 +3,7 @@ import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
 import type {ProductVariantFragment} from 'storefrontapi.generated';
 import {type FetcherWithComponents} from 'react-router';
 import {useAside} from '~/components/Aside';
-import {Stars} from '~/components/Stars';
-import {SmileyIcon} from '~/components/icons';
+import {Stars, SmileyIcon} from '@wakey/ui';
 
 interface BundleOption {
   quantity: number;

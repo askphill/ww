@@ -1,7 +1,7 @@
 import {Suspense} from 'react';
 import {Await, NavLink, useLocation, Link} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
-import {LogoBig, IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from './icons';
+import {LogoBig, IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '@wakey/ui';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
