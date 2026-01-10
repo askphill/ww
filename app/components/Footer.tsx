@@ -117,6 +117,12 @@ export function Footer({
   );
 }
 
+// Map Shopify page URLs to custom routes
+const PAGE_ROUTE_MAP: Record<string, string> = {
+  '/pages/about': '/about',
+  '/pages/faq': '/faq',
+};
+
 function FooterMenu({
   menu,
   primaryDomainUrl,
@@ -131,12 +137,18 @@ function FooterMenu({
       {menu?.items.map((item) => {
         if (!item.url) return null;
         // if the url is internal, we strip the domain
-        const url =
+        let url =
           item.url.includes('myshopify.com') ||
           item.url.includes(publicStoreDomain) ||
           item.url.includes(primaryDomainUrl)
             ? new URL(item.url).pathname
             : item.url;
+
+        // Remap page URLs to custom routes
+        if (PAGE_ROUTE_MAP[url]) {
+          url = PAGE_ROUTE_MAP[url];
+        }
+
         const isExternal = !url.startsWith('/');
         return (
           <div key={item.id}>

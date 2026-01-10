@@ -4,6 +4,7 @@ import type {ProductVariantFragment} from 'storefrontapi.generated';
 import {type FetcherWithComponents} from 'react-router';
 import {useAside} from '~/components/Aside';
 import {Stars} from '~/components/Stars';
+import {SmileyIcon} from '~/components/icons';
 
 interface BundleOption {
   quantity: number;
@@ -135,7 +136,7 @@ export function StickyAddToCart({
   return (
     <div
       className={`
-        fixed bottom-4 left-4 right-4 z-[8]
+        fixed bottom-4 left-4 right-4 z-40
         md:bottom-8 md:left-auto md:right-8
         transition-transform duration-[400ms]
         [transition-timing-function:var(--ease-out-back)]
@@ -249,6 +250,8 @@ export function StickyAddToCart({
           action={CartForm.ACTIONS.LinesAdd}
         >
           {(fetcher: FetcherWithComponents<unknown>) => {
+            const isLoading = fetcher.state !== 'idle';
+
             // Open cart drawer on successful add
             useEffect(() => {
               if (fetcher.state === 'idle' && fetcher.data) {
@@ -265,17 +268,38 @@ export function StickyAddToCart({
                 />
                 <button
                   type="submit"
-                  disabled={!isAvailable}
+                  disabled={!isAvailable || isLoading}
                   className={`
                     w-full h-[3.125rem] md:h-[3.875rem]
                     border-t border-black/10
                     font-display text-label uppercase
-                    flex items-center justify-center
+                    relative overflow-hidden
                     transition-opacity duration-200
                     ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
                   `}
                 >
-                  {isAvailable ? 'Add to Cart' : 'Sold Out'}
+                  {/* Text - slides up when loading */}
+                  <span
+                    className={`
+                      flex items-center justify-center
+                      transition-all duration-300
+                      ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
+                    `}
+                  >
+                    {isAvailable ? 'Add to Cart' : 'Sold Out'}
+                  </span>
+                  {/* Smiley - slides in when loading */}
+                  <span
+                    className={`
+                      absolute inset-0 flex items-center justify-center
+                      transition-all duration-300
+                      ${isLoading ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+                    `}
+                  >
+                    <SmileyIcon
+                      className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
+                    />
+                  </span>
                 </button>
               </>
             );

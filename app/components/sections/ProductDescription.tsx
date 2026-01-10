@@ -10,23 +10,21 @@ export function ProductDescription({
   usps = [],
 }: ProductDescriptionProps) {
   return (
-    <section className="bg-sand rounded-card p-8 md:py-12 md:px-8">
-      {/* Title + Description Grid */}
-      <div className="grid md:grid-cols-12">
-        {/* Title - hidden on mobile, ~4 cols on desktop */}
-        <h3 className="hidden md:block md:col-span-4 text-h3 font-display">
-          {title}
-        </h3>
-        {/* Description - full width mobile, ~8 cols desktop */}
-        <div
-          className="md:col-span-8 text-h3 font-display max-w-4xl"
-          dangerouslySetInnerHTML={{__html: descriptionHtml}}
-        />
-      </div>
+    <section className="bg-sand rounded-card p-8 md:p-0 md:grid md:grid-cols-24 md:px-8 md:py-12">
+      {/* Title - hidden on mobile */}
+      <h3 className="hidden md:block md:col-span-10 text-h3 font-display">
+        {title}
+      </h3>
 
-      {/* USP List */}
+      {/* Description - starts at col 11 */}
+      <div
+        className="md:col-start-11 md:col-span-14 text-h3 font-display"
+        dangerouslySetInnerHTML={{__html: descriptionHtml}}
+      />
+
+      {/* USP List - stays at col 1 */}
       {usps.length > 0 && (
-        <ul className="font-itc text-paragraph max-w-md pt-16 md:pt-24 pl-16 md:pl-0 space-y-4">
+        <ul className="font-body text-paragraph pt-16 md:pt-24 pl-16 md:pl-0 space-y-4 md:col-start-1 md:col-span-6">
           {usps.map((usp, index) => (
             <li key={index}>{usp}</li>
           ))}
