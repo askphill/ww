@@ -2,7 +2,6 @@ import {Await, NavLink, useLocation} from 'react-router';
 import {Suspense} from 'react';
 import type {
   CartApiQueryFragment,
-  FooterQuery,
   HeaderQuery,
 } from 'storefrontapi.generated';
 import {Aside, useAside} from '~/components/Aside';
@@ -11,22 +10,35 @@ import {Header} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
 import {CrossIcon} from '@wakey/ui';
 
+const PRIMARY_MENU = [
+  {title: 'Shop', url: '/collections/all'},
+  {title: 'About us', url: '/about'},
+  {title: 'FAQ', url: '/faq'},
+];
+
+const SECONDARY_MENU = [
+  {title: 'Home', url: '/'},
+  {title: 'Blog', url: '/blog'},
+  {title: 'FAQ', url: '/faq'},
+];
+
+const SOCIAL_LINKS = [
+  {title: 'Instagram', url: 'https://instagram.com/wakeywakey'},
+  {title: 'TikTok', url: 'https://tiktok.com/@wakeywakey'},
+];
+
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
-  footer: Promise<FooterQuery | null>;
   header: HeaderQuery;
   isLoggedIn: Promise<boolean>;
-  publicStoreDomain: string;
   children?: React.ReactNode;
 }
 
 export function PageLayout({
   cart,
   children = null,
-  footer,
   header,
   isLoggedIn,
-  publicStoreDomain,
 }: PageLayoutProps) {
   const location = useLocation();
   const isHomepage = location.pathname === '/';
@@ -38,11 +50,7 @@ export function PageLayout({
       <MobileMenuAside />
       {header && <Header cart={cart} color={headerColor} />}
       <main>{children}</main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
+      <Footer />
     </Aside.Provider>
   );
 }
@@ -86,20 +94,6 @@ function CartLoading() {
 
 function MobileMenuAside() {
   const {close} = useAside();
-  const primaryMenu = FALLBACK_MENU.items;
-
-  // Secondary nav items
-  const secondaryMenu = [
-    {title: 'Home', url: '/'},
-    {title: 'FAQ', url: '/faq'},
-  ];
-
-  // Social links
-  const socialLinks = [
-    {title: 'Facebook', url: 'https://facebook.com/wakeywakey'},
-    {title: 'Instagram', url: 'https://instagram.com/wakeywakey'},
-    {title: 'TikTok', url: 'https://tiktok.com/@wakeywakey'},
-  ];
 
   return (
     <Aside type="mobile">
@@ -117,9 +111,9 @@ function MobileMenuAside() {
         {/* Primary navigation */}
         <nav aria-label="Primary">
           <ul>
-            {primaryMenu.map((item) => (
+            {PRIMARY_MENU.map((item) => (
               <li
-                key={item.id}
+                key={item.title}
                 className="text-h2 font-display transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
               >
                 <NavLink to={item.url} onClick={close} prefetch="intent">
@@ -136,7 +130,7 @@ function MobileMenuAside() {
         {/* Secondary navigation */}
         <nav aria-label="Secondary">
           <ul>
-            {secondaryMenu.map((item) => (
+            {SECONDARY_MENU.map((item) => (
               <li
                 key={item.title}
                 className="text-h3 italic transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
@@ -152,7 +146,7 @@ function MobileMenuAside() {
         {/* Footer */}
         <div className="pt-4 md:pt-6 flex justify-between text-small opacity-40">
           <div className="flex gap-2">
-            {socialLinks.map((link) => (
+            {SOCIAL_LINKS.map((link) => (
               <a
                 key={link.title}
                 href={link.url}
@@ -170,12 +164,3 @@ function MobileMenuAside() {
     </Aside>
   );
 }
-
-const FALLBACK_MENU = {
-  id: 'fallback-menu',
-  items: [
-    {id: 'shop', title: 'Shop', url: '/collections/all'},
-    {id: 'about', title: 'About us', url: '/about'},
-    {id: 'faq', title: 'FAQ', url: '/faq'},
-  ],
-};
