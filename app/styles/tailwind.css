@@ -6,9 +6,8 @@
 
 @layer base {
   body {
-    @apply antialiased tracking-tight;
+    @apply antialiased tracking-tight font-display;
     text-rendering: optimizeLegibility;
-    
   }
 }
 
@@ -42,6 +41,7 @@
   /* Colors */
   --color-black: #1A1A1A;
   --color-text: #383838;
+  --color-yellow: #ffff00;
   --color-softorange: #FAD103;
   --color-ocher: #E3B012;
   --color-sand: #FFF5EB;
@@ -50,6 +50,7 @@
 
   /* Fonts */
   --font-display: 'Founders', system-ui, sans-serif;
+  --font-body: 'ITC', Georgia, serif;
   --font-itc: 'ITC', Georgia, serif;
 
   /* Line Heights */
@@ -68,8 +69,8 @@
   --ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-out-sine: cubic-bezier(0.39, 0.575, 0.565, 1);
 
-  /* Drawer */
-  --drawer-width: 35.875rem;
+  /* Drawer - 8 columns of 24-column grid + left padding (px-8 = 2rem) */
+  --drawer-width: clamp(30rem, calc(2rem + (100vw - 4rem) / 3), 50rem);
 }
 
 
