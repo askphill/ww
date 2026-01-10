@@ -136,7 +136,7 @@ export function StickyAddToCart({
     <div
       className={`
         fixed bottom-4 left-4 right-4 z-[8]
-        md:bottom-6 md:left-auto md:right-6
+        md:bottom-8 md:left-auto md:right-8
         transition-transform duration-[400ms]
         [transition-timing-function:var(--ease-out-back)]
         ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}
@@ -144,7 +144,7 @@ export function StickyAddToCart({
     >
       <div
         ref={wrapperRef}
-        className="overflow-hidden bg-softorange border border-black/10 rounded-card md:min-w-[25rem]"
+        className="overflow-hidden bg-yellow border border-black/10 rounded-card md:min-w-[25rem]"
       >
         {/* Hideable: Product Info */}
         <div
@@ -155,13 +155,13 @@ export function StickyAddToCart({
             opacity: isFull ? 1 : 0,
           }}
         >
-          <div className="p-4 md:p-6 pb-0 md:pb-0">
-            <div className="text-paragraph md:text-s2 font-display leading-tight uppercase">
+          <div className="p-4 pb-6 md:p-6 md:pb-11">
+            <div className="text-paragraph font-display leading-tight uppercase">
               {product.title}
             </div>
             <div className="flex items-center gap-3 mt-2">
               {subtitle && (
-                <span className="text-label font-display opacity-60">
+                <span className="text-small font-display opacity-60">
                   {subtitle}
                 </span>
               )}
@@ -211,7 +211,7 @@ export function StickyAddToCart({
                 />
                 {/* Title and price */}
                 <div className="pl-0.5">
-                  <div className="text-label font-display leading-none">
+                  <div className="text-label md:text-paragraph font-display leading-none">
                     {option.title}
                   </div>
                   <div className="text-small font-display pt-2">

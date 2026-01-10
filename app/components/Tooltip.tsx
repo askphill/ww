@@ -29,7 +29,7 @@ export function Tooltip({
   const hasSubtitle = product.subtitle;
 
   return (
-    <div className={`absolute z-10 ${className}`} style={positionStyle}>
+    <div className={`absolute z-[7] ${className}`} style={positionStyle}>
       <a
         href={product.url}
         className="flex items-stretch border border-sand/50 rounded-xl bg-sand/[0.02] backdrop-blur-[15px] hover:scale-105 active:scale-95 transition-transform"
