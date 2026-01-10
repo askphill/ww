@@ -122,6 +122,8 @@ export function useContinuousCarousel(options: UseContinuousCarouselOptions = {}
     };
 
     const handlePointerUp = () => {
+      // Only process if we were actually dragging on the carousel
+      if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
       // Change autoplay direction based on drag direction
       autoplaySpeedRef.current =
