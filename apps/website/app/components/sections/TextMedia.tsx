@@ -16,7 +16,7 @@ export function TextMedia({
   buttonUrl,
 }: TextMediaProps) {
   return (
-    <section className="overflow-hidden relative rounded-card md:h-svh md:min-h-section md:grid md:grid-cols-24 md:gap-0">
+    <section className="flex flex-col-reverse overflow-hidden relative rounded-card md:h-svh md:min-h-section md:grid md:grid-cols-24 md:gap-0">
       {/* Video - spans columns 1-12 on desktop */}
       <div className="overflow-hidden relative rounded-card md:col-span-12">
         <video
