@@ -5,6 +5,53 @@ import {useContinuousCarousel} from '@wakey/hooks';
 
 type MediaNode = ProductFragment['media']['nodes'][number];
 
+// Dedicated component to handle video autoplay after hydration
+function AutoplayVideo({
+  src,
+  poster,
+  className,
+  draggable,
+}: {
+  src: string;
+  poster?: string;
+  className?: string;
+  draggable?: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Force play after hydration
+    const playVideo = () => {
+      video.play().catch(() => {});
+    };
+
+    playVideo();
+    video.addEventListener('canplay', playVideo);
+
+    return () => {
+      video.removeEventListener('canplay', playVideo);
+    };
+  }, [src]);
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      poster={poster}
+      src={src}
+      className={className}
+      draggable={draggable}
+    />
+  );
+}
+
 interface ProductCarouselProps {
   media: MediaNode[];
   skipFirst?: boolean;
@@ -110,22 +157,11 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
                   />
                 )}
                 {item.__typename === 'Video' && (
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                  <AutoplayVideo
+                    src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
                     poster={item.previewImage?.url}
                     className="w-full h-full object-cover"
-                  >
-                    {item.sources.map((source) => (
-                      <source
-                        key={source.url}
-                        src={source.url}
-                        type={source.mimeType}
-                      />
-                    ))}
-                  </video>
+                  />
                 )}
               </div>
             );
@@ -186,23 +222,12 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
                 />
               )}
               {item.__typename === 'Video' && (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
+                <AutoplayVideo
+                  src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
                   poster={item.previewImage?.url}
                   className="w-full h-full object-cover pointer-events-none"
                   draggable={false}
-                >
-                  {item.sources.map((source) => (
-                    <source
-                      key={source.url}
-                      src={source.url}
-                      type={source.mimeType}
-                    />
-                  ))}
-                </video>
+                />
               )}
             </div>
           );
