@@ -1,7 +1,6 @@
-import {useEffect, useRef, useState, useCallback} from 'react';
+import {useRef, useState, useCallback, useEffect} from 'react';
 import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
 import type {ProductVariantFragment} from 'storefrontapi.generated';
-import {type FetcherWithComponents} from 'react-router';
 import {useAside} from '~/components/Aside';
 import {Stars} from '~/components/Stars';
 
@@ -248,38 +247,30 @@ export function StickyAddToCart({
           inputs={{lines}}
           action={CartForm.ACTIONS.LinesAdd}
         >
-          {(fetcher: FetcherWithComponents<unknown>) => {
-            // Open cart drawer on successful add
-            useEffect(() => {
-              if (fetcher.state === 'idle' && fetcher.data) {
-                open('cart');
-              }
-            }, [fetcher.state, fetcher.data]);
-
-            return (
-              <>
-                <input
-                  name="analytics"
-                  type="hidden"
-                  value={JSON.stringify(analytics)}
-                />
-                <button
-                  type="submit"
-                  disabled={!isAvailable}
-                  className={`
-                    w-full h-[3.125rem] md:h-[3.875rem]
-                    border-t border-black/10
-                    font-display text-label uppercase
-                    flex items-center justify-center
-                    transition-opacity duration-200
-                    ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
-                >
-                  {isAvailable ? 'Add to Cart' : 'Sold Out'}
-                </button>
-              </>
-            );
-          }}
+          {() => (
+            <>
+              <input
+                name="analytics"
+                type="hidden"
+                value={JSON.stringify(analytics)}
+              />
+              <button
+                type="submit"
+                disabled={!isAvailable}
+                onClick={() => isAvailable && open('cart')}
+                className={`
+                  w-full h-[3.125rem] md:h-[3.875rem]
+                  border-t border-black/10
+                  font-display text-label uppercase
+                  flex items-center justify-center
+                  transition-opacity duration-200
+                  ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+              >
+                {isAvailable ? 'Add to Cart' : 'Sold Out'}
+              </button>
+            </>
+          )}
         </CartForm>
       </div>
     </div>
