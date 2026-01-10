@@ -16,6 +16,7 @@ import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
 import {DevGrid} from './components/DevGrid';
+import {CustomAnalytics} from './components/CustomAnalytics';
 
 export type RootLoader = typeof loader;
 
@@ -171,15 +172,22 @@ export default function App() {
   }
 
   return (
-    <PageLayout
+    <Analytics.Provider
       cart={data.cart}
-      footer={data.footer}
-      header={data.header}
-      isLoggedIn={data.isLoggedIn}
-      publicStoreDomain={data.publicStoreDomain}
+      shop={data.shop}
+      consent={data.consent}
     >
-      <Outlet />
-    </PageLayout>
+      <CustomAnalytics />
+      <PageLayout
+        cart={data.cart}
+        footer={data.footer}
+        header={data.header}
+        isLoggedIn={data.isLoggedIn}
+        publicStoreDomain={data.publicStoreDomain}
+      >
+        <Outlet />
+      </PageLayout>
+    </Analytics.Provider>
   );
 }
 
