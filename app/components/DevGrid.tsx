@@ -18,7 +18,8 @@ export function DevGrid() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  if (!visible) return null;
+  // Only show in development mode
+  if (!import.meta.env.DEV || !visible) return null;
 
   return (
     <div
