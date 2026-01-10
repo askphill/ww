@@ -35,7 +35,7 @@ export function PageLayout({
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
-      <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
+      <MobileMenuAside />
       {header && <Header cart={cart} color={headerColor} />}
       <main>{children}</main>
       <Footer
@@ -84,23 +84,14 @@ function CartLoading() {
   );
 }
 
-function MobileMenuAside({
-  header,
-  publicStoreDomain,
-}: {
-  header: PageLayoutProps['header'];
-  publicStoreDomain: PageLayoutProps['publicStoreDomain'];
-}) {
+function MobileMenuAside() {
   const {close} = useAside();
-  const primaryMenu = header.menu?.items || FALLBACK_MENU.items;
-  const primaryDomainUrl = header.shop.primaryDomain?.url || '';
+  const primaryMenu = FALLBACK_MENU.items;
 
-  // Secondary nav items (hardcoded for now, could be fetched from another menu)
+  // Secondary nav items
   const secondaryMenu = [
     {title: 'Home', url: '/'},
-    {title: 'Account', url: '/account'},
-    {title: 'Contact', url: '/pages/contact'},
-    {title: 'Blogs', url: '/blogs'},
+    {title: 'FAQ', url: '/faq'},
   ];
 
   // Social links
@@ -126,24 +117,16 @@ function MobileMenuAside({
         {/* Primary navigation */}
         <nav aria-label="Primary">
           <ul>
-            {primaryMenu.map((item) => {
-              if (!item.url) return null;
-              const url = getMenuUrl(
-                item.url,
-                publicStoreDomain,
-                primaryDomainUrl,
-              );
-              return (
-                <li
-                  key={item.id}
-                  className="text-h2 font-display transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
-                >
-                  <NavLink to={url} onClick={close} prefetch="intent">
-                    {item.title}
-                  </NavLink>
-                </li>
-              );
-            })}
+            {primaryMenu.map((item) => (
+              <li
+                key={item.id}
+                className="text-h2 font-display transition-transform duration-300 md:hover:translate-x-1 md:hover:opacity-80"
+              >
+                <NavLink to={item.url} onClick={close} prefetch="intent">
+                  {item.title}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
@@ -188,28 +171,11 @@ function MobileMenuAside({
   );
 }
 
-/**
- * Normalize menu URLs - strip domain for internal links
- */
-function getMenuUrl(
-  url: string,
-  publicStoreDomain: string,
-  primaryDomainUrl: string,
-): string {
-  if (
-    url.includes('myshopify.com') ||
-    url.includes(publicStoreDomain) ||
-    url.includes(primaryDomainUrl)
-  ) {
-    return new URL(url).pathname;
-  }
-  return url;
-}
-
 const FALLBACK_MENU = {
   id: 'fallback-menu',
   items: [
     {id: 'shop', title: 'Shop', url: '/collections/all'},
-    {id: 'about', title: 'About', url: '/pages/about'},
+    {id: 'about', title: 'About us', url: '/about'},
+    {id: 'faq', title: 'FAQ', url: '/faq'},
   ],
 };
