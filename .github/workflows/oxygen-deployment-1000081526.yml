@@ -26,7 +26,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Copy lockfile for Oxygen build
+        run: cp pnpm-lock.yaml apps/website/
+
       - name: Build and Publish to Oxygen
-        run: npx shopify hydrogen deploy --path apps/website
+        working-directory: apps/website
+        run: npx shopify hydrogen deploy
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000081526 }}
