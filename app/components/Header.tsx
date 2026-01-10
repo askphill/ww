@@ -20,7 +20,7 @@ interface HeaderProps {
 export function Header({cart, color = 'default'}: HeaderProps) {
   return (
     <header
-      className="fixed z-10 w-full flex justify-between p-4 md:p-6 pointer-events-none"
+      className="fixed z-10 w-full flex justify-between p-4 md:p-8 pointer-events-none"
       role="banner"
     >
       <MenuToggleButton color={color} />
@@ -80,6 +80,7 @@ function HeaderButton({
         pointer-events-auto
         hover-scale
         transition-transform
+        cursor-pointer
       `}
     >
       {children}

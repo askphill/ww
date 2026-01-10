@@ -53,7 +53,7 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
     <Aside type="cart">
       {/* Title block */}
-      <div className="bg-sand rounded-card p-4 md:p-6 flex justify-between pb-16 md:pb-24">
+      <div className="bg-sand rounded-card p-4 md:p-8 flex justify-between pb-16 md:pb-24">
         <h2 className="text-h2 font-display" id="CartDrawerTitle">
           Cart
         </h2>
@@ -78,7 +78,7 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 
 function CartLoading() {
   return (
-    <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex-1">
+    <div className="bg-sand rounded-card p-4 md:p-8 mt-[-1px] flex-1">
       <p className="text-paragraph font-display">Loading cart...</p>
     </div>
   );
@@ -113,11 +113,11 @@ function MobileMenuAside({
   return (
     <Aside type="mobile">
       {/* Block 1: Primary navigation - 50% height */}
-      <div className="h-1/2 bg-sand rounded-card p-4 md:p-6 flex flex-col justify-end relative">
+      <div className="h-1/2 bg-sand rounded-card p-4 md:p-8 flex flex-col justify-end relative">
         {/* Close button */}
         <button
           onClick={close}
-          className="absolute top-4 left-4 md:top-6 md:left-6 hover-scale"
+          className="absolute top-4 left-4 md:top-8 md:left-8"
           aria-label="Close menu"
         >
           <CrossIcon className="w-10 h-10 md:w-[3.125rem] md:h-[3.125rem] text-text" />
@@ -149,7 +149,7 @@ function MobileMenuAside({
       </div>
 
       {/* Block 2: Secondary navigation - 50% height */}
-      <div className="h-1/2 bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex flex-col justify-end">
+      <div className="h-1/2 bg-sand rounded-card p-4 md:p-8 mt-[-1px] flex flex-col justify-end">
         {/* Secondary navigation */}
         <nav aria-label="Secondary">
           <ul>

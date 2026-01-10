@@ -24,7 +24,7 @@ export function Hero({
   tooltipPosition,
 }: HeroProps) {
   return (
-    <section className="relative w-full min-h-dvh flex items-end justify-start overflow-hidden rounded-card md:min-h-section">
+    <section className="relative w-full min-h-[max(50rem,100dvh)] flex items-end justify-start overflow-hidden rounded-card">
       <picture>
         {backgroundImageMobile && (
           <source media="(max-width: 48rem)" srcSet={backgroundImageMobile} />
@@ -39,7 +39,7 @@ export function Hero({
         <ProductTooltip handle={productHandle} position={tooltipPosition} />
       )}
       {showLogo && (
-        <div className="relative z-10 w-full p-4 md:p-8">
+        <div className="relative z-1 w-full p-4 md:p-8">
           <WakeyLogo className="w-full h-auto" color={logoColor} />
         </div>
       )}
