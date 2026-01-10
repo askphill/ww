@@ -11,7 +11,7 @@ import {CartMain} from '~/components/CartMain';
 import {CrossIcon} from '@wakey/ui';
 
 const PRIMARY_MENU = [
-  {title: 'Shop', url: '/collections/all'},
+  {title: 'Shop', url: '/products/deodorant'},
   {title: 'About us', url: '/about'},
   {title: 'FAQ', url: '/faq'},
 ];

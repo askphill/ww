@@ -66,6 +66,21 @@ export function links() {
   ];
 }
 
+// Organization JSON-LD schema
+const ORGANIZATION_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Wakey',
+  url: 'https://wakeywakey.com',
+  logo: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-logo.svg',
+  description:
+    'Natural deodorant and morning essentials. Aluminum-free, baking soda-free, made with safe ingredients.',
+  sameAs: [
+    'https://instagram.com/wakeywakey',
+    'https://tiktok.com/@wakeywakey',
+  ],
+};
+
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
@@ -139,6 +154,12 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={tailwindCss}></link>
         <Meta />
         <Links />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(ORGANIZATION_SCHEMA),
+          }}
+        />
       </head>
       <body className="bg-black text-black">
         <DevGrid />

@@ -3,7 +3,20 @@ import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
+  const page = data?.page;
+  const title = page?.seo?.title || page?.title || 'Page';
+  const description = page?.seo?.description || 'Natural deodorant and morning rituals by Wakey.';
+
+  return [
+    {title: `${title} | Wakey`},
+    {name: 'description', content: description},
+    {property: 'og:title', content: `${title} | Wakey`},
+    {property: 'og:description', content: description},
+    {property: 'og:type', content: 'website'},
+    {name: 'twitter:card', content: 'summary'},
+    {name: 'twitter:title', content: `${title} | Wakey`},
+    {name: 'twitter:description', content: description},
+  ];
 };
 
 export async function loader(args: Route.LoaderArgs) {

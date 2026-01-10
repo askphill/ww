@@ -2,6 +2,7 @@ import {NavLink, useLocation, Link} from 'react-router';
 import {LogoBig, IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '@wakey/ui';
 
 const FOOTER_MENU = [
+  {title: 'Deodorant', url: '/products/deodorant'},
   {title: 'About', url: '/about'},
   {title: 'FAQ', url: '/faq'},
   {title: 'Blog', url: '/blog'},

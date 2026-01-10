@@ -94,12 +94,55 @@ const PRODUCT_FAQ_ITEMS = [
 ];
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
-    {
-      rel: 'canonical',
-      href: `/products/${data?.product.handle}`,
+  const product = data?.product;
+  const title = product?.seo?.title || product?.title || 'Product';
+  const description =
+    product?.seo?.description ||
+    product?.description ||
+    'Natural deodorant made with safe, effective ingredients. Free from aluminum and baking soda.';
+  const variant = product?.selectedOrFirstAvailableVariant;
+  const image = variant?.image?.url || product?.media?.nodes?.[0]?.image?.url;
+
+  // Product JSON-LD schema
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product?.title,
+    description: product?.description,
+    image: image,
+    brand: {
+      '@type': 'Brand',
+      name: 'Wakey',
     },
+    offers: {
+      '@type': 'Offer',
+      url: `https://wakeywakey.com/products/${product?.handle}`,
+      priceCurrency: variant?.price?.currencyCode || 'EUR',
+      price: variant?.price?.amount,
+      availability: variant?.availableForSale
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Wakey',
+      },
+    },
+  };
+
+  return [
+    {title: `${title} | Wakey`},
+    {name: 'description', content: description},
+    {property: 'og:title', content: `${title} | Wakey`},
+    {property: 'og:description', content: description},
+    {property: 'og:type', content: 'product'},
+    {property: 'og:url', content: `https://wakeywakey.com/products/${product?.handle}`},
+    {property: 'og:image', content: image},
+    {name: 'twitter:card', content: 'summary_large_image'},
+    {name: 'twitter:title', content: `${title} | Wakey`},
+    {name: 'twitter:description', content: description},
+    {name: 'twitter:image', content: image},
+    {rel: 'canonical', href: `/products/${product?.handle}`},
+    {'script:ld+json': productSchema},
   ];
 };
 
