@@ -84,7 +84,7 @@ export function Accordion({items, defaultOpenIndex = 0}: AccordionProps) {
               }}
             >
               <div className="overflow-hidden">
-                <div className="pb-4 text-paragraph font-body">{item.content}</div>
+                <div className="pb-4 text-paragraph">{item.content}</div>
               </div>
             </article>
           </li>

@@ -20,7 +20,7 @@ export function FAQ({title, description, items}: FAQProps) {
       <div className="md:grid md:grid-cols-24 pt-16 md:pt-20">
         {/* Text Column - spans cols 1-7 */}
         {description && (
-          <div className="text-s1 font-body pb-12 md:pb-0 md:col-span-7">
+          <div className="text-s1 pb-12 md:pb-0 md:col-span-7">
             {description}
           </div>
         )}

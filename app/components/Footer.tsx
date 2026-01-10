@@ -23,8 +23,8 @@ export function Footer({
   const isAboutPage = location.pathname.includes('about');
 
   // Dynamic colors based on page
-  const bgColor = isAboutPage ? 'bg-softorange' : 'bg-skyblue';
-  const logoColor = isAboutPage ? 'text-skyblue' : 'text-softorange';
+  const bgColor = isAboutPage ? 'bg-yellow' : 'bg-blue';
+  const logoColor = isAboutPage ? 'text-blue' : 'text-yellow';
 
   return (
     <Suspense>

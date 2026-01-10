@@ -212,7 +212,7 @@ function TrailImage({
       onClick={onClick}
     >
       <div
-        className={`w-full h-full rounded-card overflow-hidden ${rotationClass} transition-transform duration-300 active:scale-75 active:-rotate-12`}
+        className={`w-full h-full overflow-hidden ${rotationClass} transition-transform duration-300 active:scale-75 active:-rotate-12`}
       >
         <img
           src={image.src}
@@ -284,7 +284,7 @@ function MobileCarousel({
         <div className="flex gap-4 px-4">
           {images.map((image, index) => (
             <div key={index} className="flex-shrink-0 w-4/5 snap-center">
-              <div className="aspect-3/4 rounded-card overflow-hidden">
+              <div className="aspect-3/4 overflow-hidden">
                 <img
                   src={image.src}
                   alt={image.alt || ''}
