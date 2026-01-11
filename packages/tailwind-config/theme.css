@@ -43,9 +43,9 @@
 
 /* Responsive utilities */
 @utility rounded-card {
-  border-radius: 1.25rem;
+  /* border-radius: 1.25rem; */
   @media (width >= 48rem) {
-    border-radius: 1.875rem;
+    /* border-radius: 1.875rem; */
   }
 }
 
