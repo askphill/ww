@@ -156,7 +156,7 @@ export function StickyAddToCart({
           }}
         >
           <div className="p-4 pb-6 md:p-6 md:pb-11">
-            <div className="text-paragraph font-display leading-tight uppercase">
+            <div className="text-body-small md:text-paragraph font-display leading-tight uppercase">
               {product.title}
             </div>
             <div className="flex items-center gap-3 mt-2">
@@ -211,7 +211,7 @@ export function StickyAddToCart({
                 />
                 {/* Title and price */}
                 <div className="pl-0.5">
-                  <div className="text-label md:text-paragraph font-display leading-none">
+                  <div className="text-small md:text-paragraph font-display leading-none">
                     {option.title}
                   </div>
                   <div className="text-small font-display pt-2">
@@ -271,7 +271,7 @@ export function StickyAddToCart({
                   className={`
                     w-full h-[3.125rem] md:h-[3.875rem]
                     border-t border-black/10
-                    font-display text-label uppercase
+                    font-display text-small md:text-label uppercase
                     relative overflow-hidden
                     transition-opacity duration-200
                     ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
