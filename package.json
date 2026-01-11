@@ -7,13 +7,7 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "dev:website": "turbo dev --filter=@wakey/website",
-    "build:website": "turbo build --filter=@wakey/website",
-    "seo": "pnpm --filter=@wakey/seo-engine dev",
-    "seo:fetch": "pnpm --filter=@wakey/seo-engine fetch",
-    "seo:analyze": "pnpm --filter=@wakey/seo-engine analyze",
-    "seo:generate": "pnpm --filter=@wakey/seo-engine generate",
-    "seo:track": "pnpm --filter=@wakey/seo-engine track",
-    "seo:sync": "pnpm --filter=@wakey/seo-engine sync"
+    "build:website": "turbo build --filter=@wakey/website"
   },
   "devDependencies": {
     "turbo": "^2.3.0"

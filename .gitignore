@@ -10,8 +10,3 @@ dist
 tsconfig.tsbuildinfo
 .worktrees
 .turbo
-
-# SEO Engine SQLite database
-apps/seo-engine/data/*.db
-apps/seo-engine/data/*.db-wal
-apps/seo-engine/data/*.db-shm
