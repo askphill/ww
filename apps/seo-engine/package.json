@@ -1,0 +1,37 @@
+{
+  "name": "@wakey/seo-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "seo-engine": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "fetch": "tsx src/index.ts fetch",
+    "analyze": "tsx src/index.ts analyze",
+    "generate": "tsx src/index.ts generate",
+    "track": "tsx src/index.ts track",
+    "sync": "tsx src/index.ts sync",
+    "typecheck": "tsc --noEmit",
+    "auth:gsc": "tsx src/scripts/gsc-auth.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "better-sqlite3": "^11.6.0",
+    "chalk": "^5.3.0",
+    "commander": "^13.0.0",
+    "dotenv": "^16.4.7",
+    "googleapis": "^144.0.0",
+    "open": "^11.0.0",
+    "ora": "^8.1.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.0-dev.20250430"
+  }
+}
