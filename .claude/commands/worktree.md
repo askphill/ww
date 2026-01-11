@@ -24,17 +24,18 @@ When the user runs `/worktree <branch-name>`, perform these steps:
    git worktree add .worktrees/<branch-name> <branch-name>
    ```
 
-3. **Install dependencies** in the new worktree:
+3. **Run the setup script** to copy .env files and install dependencies:
    ```bash
-   cd .worktrees/<branch-name> && npm install
+   bash .claude/skills/worktree/scripts/setup-worktree.sh .worktrees/<branch-name> $(pwd)
    ```
 
-4. **Copy the .env file** from the main project to the worktree:
-   ```bash
-   cp .env .worktrees/<branch-name>/.env
-   ```
+   This script automatically:
+   - Copies `.env` from the root (if exists)
+   - Copies `apps/website/.env` (if exists)
+   - Copies any other `apps/*/.env` files
+   - Runs `pnpm install` in the worktree
 
-5. **Confirm completion** and provide the path to the new worktree.
+4. **Confirm completion** and provide the path to the new worktree.
 
 ## Example Usage
 
@@ -45,10 +46,12 @@ When the user runs `/worktree <branch-name>`, perform these steps:
 This creates:
 - `.worktrees/feature/new-homepage/` - The worktree directory
 - A new branch `feature/new-homepage` (or uses existing)
-- Copies `.env` for local development
+- Copies all `.env` files for local development
+- Installs dependencies with pnpm
 
 ## Notes
 
 - The `.worktrees/` directory should be in `.gitignore`
-- Each worktree has its own `node_modules` after `npm install`
+- Each worktree has its own `node_modules` after `pnpm install`
 - You can work on multiple branches simultaneously with worktrees
+- Environment files are copied from the main repo automatically
