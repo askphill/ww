@@ -170,7 +170,7 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
 
         {/* Ball indicators - mobile only */}
         {displayMedia.length > 1 && (
-          <div className="absolute bottom-20 left-0 right-0 flex justify-center items-center gap-1.5">
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5">
             {displayMedia.map((_, index) => (
               <button
                 key={index}

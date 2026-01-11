@@ -309,6 +309,7 @@ export default function Product() {
             ? (JSON.parse(product.reviews.value as string) as unknown[]).length
             : 0
         }
+        productImage={selectedVariant?.image?.url}
         analytics={{
           products: [
             {

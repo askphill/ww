@@ -1,4 +1,4 @@
-import {Await, NavLink, useLocation} from 'react-router';
+import {Await, NavLink} from 'react-router';
 import {Suspense} from 'react';
 import type {
   CartApiQueryFragment,
@@ -40,15 +40,11 @@ export function PageLayout({
   header,
   isLoggedIn,
 }: PageLayoutProps) {
-  const location = useLocation();
-  const isHomepage = location.pathname === '/';
-  const headerColor = isHomepage ? 'sand' : 'default';
-
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
       <MobileMenuAside />
-      {header && <Header cart={cart} color={headerColor} />}
+      {header && <Header cart={cart} />}
       <main>{children}</main>
       <Footer />
     </Aside.Provider>

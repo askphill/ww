@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import {Await, useAsyncValue} from 'react-router';
+import {Await, useAsyncValue, Link} from 'react-router';
 import {
   type CartViewPayload,
   useAnalytics,
@@ -7,47 +7,34 @@ import {
 } from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {HamburgerIcon} from '@wakey/ui';
+import {HamburgerIcon, LogoSmall} from '@wakey/ui';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
-  color?: 'default' | 'sand' | 'white';
 }
 
 /**
- * Floating glass button header with menu toggle (left) and cart count (right)
+ * Floating pill header with menu toggle (left), logo (center), and cart count (right)
  */
-export function Header({cart, color = 'default'}: HeaderProps) {
+export function Header({cart}: HeaderProps) {
   return (
     <header
-      className="fixed z-50 w-full flex justify-between p-4 md:p-8 pointer-events-none"
+      className="fixed z-50 w-full flex justify-center p-4 md:p-6 pointer-events-none"
       role="banner"
     >
-      <MenuToggleButton color={color} />
-      <Suspense
-        fallback={
-          <HeaderButton color={color} onClick={() => {}} ariaLabel="Cart">
-            0
-          </HeaderButton>
-        }
-      >
-        <Await resolve={cart}>
-          <CartBadge color={color} />
-        </Await>
-      </Suspense>
+      <div className="flex items-center justify-between w-full max-w-[600px] bg-white rounded-[5px] px-2 py-2 pointer-events-auto">
+        <MenuToggleButton />
+        <Link to="/" aria-label="Wakey home">
+          <LogoSmall className="h-6 md:h-7" />
+        </Link>
+        <Suspense fallback={<CartButton count={0} />}>
+          <Await resolve={cart}>
+            <CartBadge />
+          </Await>
+        </Suspense>
+      </div>
     </header>
   );
-}
-
-type HeaderButtonColor = 'default' | 'sand' | 'white';
-
-interface HeaderButtonProps {
-  onClick: () => void;
-  ariaLabel: string;
-  ariaControls?: string;
-  ariaExpanded?: boolean;
-  children: React.ReactNode;
-  color?: HeaderButtonColor;
 }
 
 function HeaderButton({
@@ -56,14 +43,13 @@ function HeaderButton({
   ariaControls,
   ariaExpanded,
   children,
-  color = 'default',
-}: HeaderButtonProps) {
-  const colorClasses: Record<HeaderButtonColor, string> = {
-    default: 'bg-white/20 text-text',
-    sand: 'bg-white/20 text-sand',
-    white: 'bg-white text-text',
-  };
-
+}: {
+  onClick: () => void;
+  ariaLabel: string;
+  ariaControls?: string;
+  ariaExpanded?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -71,24 +57,22 @@ function HeaderButton({
       aria-label={ariaLabel}
       aria-controls={ariaControls}
       aria-expanded={ariaExpanded}
-      className={`
-        rounded-full w-10 h-10 md:w-[3.125rem] md:h-[3.125rem]
-        ${colorClasses[color]}
-        backdrop-blur-[15px]
+      className="
+        rounded-full w-12 h-12
+        bg-sand
         flex items-center justify-center
         text-s2 font-display
-        pointer-events-auto
         hover-scale
         transition-transform
         cursor-pointer
-      `}
+      "
     >
       {children}
     </button>
   );
 }
 
-function MenuToggleButton({color}: {color: HeaderButtonColor}) {
+function MenuToggleButton() {
   const {open} = useAside();
 
   return (
@@ -97,20 +81,15 @@ function MenuToggleButton({color}: {color: HeaderButtonColor}) {
       ariaLabel="Open menu"
       ariaControls="SiteMenuDrawer"
       ariaExpanded={false}
-      color={color}
     >
-      <HamburgerIcon className="w-5 md:w-6" />
+      <HamburgerIcon className="w-5" />
     </HeaderButton>
   );
 }
 
-function CartBadge({color}: {color: HeaderButtonColor}) {
-  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
-  const cart = useOptimisticCart(originalCart);
+function CartButton({count}: {count: number}) {
   const {open} = useAside();
   const {publish, shop, cart: analyticsCart, prevCart} = useAnalytics();
-
-  const count = cart?.totalQuantity ?? 0;
 
   return (
     <HeaderButton
@@ -125,9 +104,16 @@ function CartBadge({color}: {color: HeaderButtonColor}) {
       }}
       ariaLabel={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
       ariaControls="CartDrawer"
-      color={color}
     >
       {count}
     </HeaderButton>
   );
+}
+
+function CartBadge() {
+  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
+  const cart = useOptimisticCart(originalCart);
+  const count = cart?.totalQuantity ?? 0;
+
+  return <CartButton count={count} />;
 }
