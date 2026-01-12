@@ -111,68 +111,69 @@ export function StickyAddToCart({
               />
             </div>
           )}
-          <CartForm
-            route="/cart"
-            inputs={{lines}}
-            action={CartForm.ACTIONS.LinesAdd}
-            className="flex-1"
-          >
-            {(fetcher: FetcherWithComponents<unknown>) => {
-              const isLoading = fetcher.state !== 'idle';
+          <div className="flex-1">
+            <CartForm
+              route="/cart"
+              inputs={{lines}}
+              action={CartForm.ACTIONS.LinesAdd}
+            >
+              {(fetcher: FetcherWithComponents<unknown>) => {
+                const isLoading = fetcher.state !== 'idle';
 
-              // Open cart drawer on successful add
-              useEffect(() => {
-                if (fetcher.state === 'idle' && fetcher.data) {
-                  open('cart');
-                }
-              }, [fetcher.state, fetcher.data]);
+                // Open cart drawer on successful add
+                useEffect(() => {
+                  if (fetcher.state === 'idle' && fetcher.data) {
+                    open('cart');
+                  }
+                }, [fetcher.state, fetcher.data]);
 
-              return (
-                <>
-                  <input
-                    name="analytics"
-                    type="hidden"
-                    value={JSON.stringify(analytics)}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!isAvailable || isLoading}
-                    className={`
-                      w-full h-14 px-6
-                      bg-black text-sand rounded-[5px]
-                      font-display text-label uppercase whitespace-nowrap
-                      relative overflow-hidden
-                      transition-opacity duration-200
-                      ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                  >
-                    {/* Text - slides up when loading */}
-                    <span
+                return (
+                  <>
+                    <input
+                      name="analytics"
+                      type="hidden"
+                      value={JSON.stringify(analytics)}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!isAvailable || isLoading}
                       className={`
-                        flex items-center justify-center
-                        transition-all duration-300
-                        ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
+                        w-full h-14 px-6
+                        bg-black text-sand rounded-[5px]
+                        font-display text-label uppercase whitespace-nowrap
+                        relative overflow-hidden
+                        transition-opacity duration-200
+                        ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
                       `}
                     >
-                      {isAvailable ? 'Add to Cart' : 'Sold Out'}
-                    </span>
-                    {/* Smiley - slides in when loading */}
-                    <span
-                      className={`
-                        absolute inset-0 flex items-center justify-center
-                        transition-all duration-300
-                        ${isLoading ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
-                      `}
-                    >
-                      <SmileyIcon
-                        className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
-                      />
-                    </span>
-                  </button>
-                </>
-              );
-            }}
-          </CartForm>
+                      {/* Text - slides up when loading */}
+                      <span
+                        className={`
+                          flex items-center justify-center
+                          transition-all duration-300
+                          ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
+                        `}
+                      >
+                        {isAvailable ? 'Add to Cart' : 'Sold Out'}
+                      </span>
+                      {/* Smiley - slides in when loading */}
+                      <span
+                        className={`
+                          absolute inset-0 flex items-center justify-center
+                          transition-all duration-300
+                          ${isLoading ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+                        `}
+                      >
+                        <SmileyIcon
+                          className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
+                        />
+                      </span>
+                    </button>
+                  </>
+                );
+              }}
+            </CartForm>
+          </div>
         </div>
       </div>
 
