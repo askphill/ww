@@ -139,7 +139,7 @@ export function StickyAddToCart({
                       disabled={!isAvailable || isLoading}
                       className={`
                         w-full h-14 px-6
-                        bg-black text-sand rounded-[5px]
+                        bg-yellow text-black rounded-[5px]
                         font-display text-label uppercase whitespace-nowrap
                         relative overflow-hidden
                         transition-opacity duration-200
