@@ -90,7 +90,7 @@ export function StickyAddToCart({
       }
     >
       {/* Mobile Layout */}
-      <div className="md:hidden flex flex-col w-full max-w-[600px] bg-sand rounded-[5px] border border-black/10 p-3">
+      <div className="md:hidden flex flex-col w-full max-w-[600px] bg-yellow rounded-[5px] p-3">
         {/* Top row: Title + Price */}
         <div className="flex items-center justify-between mb-2">
           <span className="text-s2 font-display uppercase leading-tight">
@@ -139,7 +139,7 @@ export function StickyAddToCart({
                       disabled={!isAvailable || isLoading}
                       className={`
                         w-full h-14 px-6
-                        bg-yellow text-black rounded-[5px]
+                        bg-sand text-black rounded-[5px]
                         font-display text-label uppercase whitespace-nowrap
                         relative overflow-hidden
                         transition-opacity duration-200
