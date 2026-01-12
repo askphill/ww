@@ -108,7 +108,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="p-8 md:p-12 bg-sand">
+    <section className="p-4 md:p-12 bg-sand">
       <h2 className="text-h2 font-display mb-8">{title}</h2>
       {children}
     </section>
@@ -167,7 +167,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
     <div className="min-h-screen pt-24 md:pt-28">
       <div>
         {/* Page Title */}
-        <section className="p-8 md:p-12 bg-sand">
+        <section className="p-4 md:p-12 bg-sand">
           <h1 className="text-h1 font-display mb-4">Design System</h1>
           <p className="text-paragraph font-body text-text max-w-prose">
             A comprehensive overview of Wakey's design tokens, typography,
