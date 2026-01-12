@@ -94,7 +94,7 @@ export function StickyAddToCart({
         {/* Top row: Title + Price */}
         <div className="flex items-center justify-between mb-2">
           <span className="text-s2 font-display uppercase leading-tight">
-            {subtitle || product.title.replace(/natural\s*/i, '')}
+            {product.title}
           </span>
           <span className="text-s2 font-display leading-tight">
             {formatPrice(price)}
@@ -103,7 +103,7 @@ export function StickyAddToCart({
         {/* Bottom row: Image + Button */}
         <div className="flex items-stretch gap-2">
           {productImage && (
-            <div className="w-14 h-14 bg-skyblue rounded-[5px] flex-shrink-0 flex items-center justify-center overflow-hidden">
+            <div className="w-14 h-14 bg-blue rounded-[5px] flex-shrink-0 flex items-center justify-center overflow-hidden">
               <img
                 src={productImage}
                 alt={product.title}
