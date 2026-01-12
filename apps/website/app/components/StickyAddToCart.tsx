@@ -89,7 +89,7 @@ export function StickyAddToCart({
           : `fixed bottom-0 left-0 right-0 z-40 p-4 transition-transform duration-[400ms] [transition-timing-function:var(--ease-out-back)] flex justify-center ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}`
       }
     >
-      <div className="flex items-center justify-between w-full max-w-[600px] h-[90px] bg-yellow rounded-[10px] px-4">
+      <div className="flex items-center justify-between w-full max-w-[600px] md:h-[90px] bg-yellow rounded-card p-2 md:px-4">
         {/* Left: Product Image + Info */}
         <div className="flex items-center gap-3">
           {productImage && (
@@ -102,7 +102,8 @@ export function StickyAddToCart({
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 whitespace-nowrap">
               <span className="text-s2 md:text-[1.0625rem] font-display uppercase leading-tight">
-                {product.title}
+                <span className="md:hidden">{product.title.replace(/natural\s*/i, '')}</span>
+                <span className="hidden md:inline">{product.title}</span>
               </span>
               <span className="text-s2 md:text-[1.0625rem] font-display leading-tight">
                 {formatPrice(price)}
@@ -155,7 +156,7 @@ export function StickyAddToCart({
                   type="submit"
                   disabled={!isAvailable || isLoading}
                   className={`
-                    flex-shrink-0 h-[58px] px-6
+                    shrink-0 h-[56px] md:h-[58px] px-6 py-3 md:py-0
                     bg-sand rounded-[5px]
                     font-display text-label uppercase whitespace-nowrap
                     relative overflow-hidden

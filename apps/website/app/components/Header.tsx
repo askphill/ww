@@ -28,7 +28,7 @@ export function Header({cart, inline = false}: HeaderProps) {
       }
       role="banner"
     >
-      <div className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-[10px] px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}>
+      <div className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}>
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />
@@ -64,7 +64,7 @@ function HeaderButton({
       aria-controls={ariaControls}
       aria-expanded={ariaExpanded}
       className="
-        rounded-full w-12 h-12
+        rounded-full w-8 h-8 md:w-12 md:h-12
         bg-sand
         flex items-center justify-center
         text-s2 font-display

@@ -418,7 +418,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               <div className="w-32 h-32 bg-softorange rounded-card" />
               <p className="text-small font-body mt-2">rounded-card</p>
               <p className="text-small font-body opacity-60">
-                1.25rem → 1.875rem
+                0.625rem (10px)
               </p>
             </div>
             <div className="text-center">
