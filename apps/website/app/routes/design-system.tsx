@@ -10,6 +10,12 @@ import {
   KlarnaIcon,
   IcsIcon,
   VisaIcon,
+  ShapeCircle,
+  ShapeStar,
+  ShapeFlower,
+  ShapeSparkle,
+  ShapeHexagon,
+  ShapeHalfCircle,
 } from '@wakey/ui';
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
@@ -135,6 +141,43 @@ function ColorSwatch({
         <p className="font-body text-small opacity-60">{variable}</p>
         <p className="font-body text-small opacity-60">{hex}</p>
       </div>
+    </div>
+  );
+}
+
+function EasingPreview({
+  name,
+  bezier,
+  description,
+}: {
+  name: string;
+  bezier: string;
+  description: string;
+}) {
+  return (
+    <div className="bg-black/5 p-6 rounded-card">
+      {/* Animated track */}
+      <div className="relative h-12 mb-4 flex items-center">
+        <div className="absolute inset-x-0 h-px bg-black/20" />
+        <div
+          className="absolute w-6 h-6 bg-softorange rounded-full"
+          style={{
+            animation: `easing-demo-${name} 2s ${bezier} infinite`,
+          }}
+        />
+      </div>
+
+      <p className="text-s2 font-display mb-2">{name}</p>
+      <p className="text-small font-body opacity-60">{bezier}</p>
+      <p className="text-body-small font-body mt-2">{description}</p>
+
+      <style>{`
+        @keyframes easing-demo-${name} {
+          0%, 10% { left: 0; }
+          50%, 60% { left: calc(100% - 1.5rem); }
+          100% { left: 0; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -298,6 +341,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
         <Section title="Colors">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <ColorSwatch name="Black" variable="--color-black" hex="#1A1A1A" />
+            <ColorSwatch name="White" variable="--color-white" hex="#FFFFFF" />
             <ColorSwatch name="Text" variable="--color-text" hex="#383838" />
             <ColorSwatch name="Sand" variable="--color-sand" hex="#FFF5EB" />
             <ColorSwatch
@@ -530,6 +574,49 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               </div>
             </div>
 
+            {/* Wakey Shapes */}
+            <div>
+              <h3 className="text-h3 font-display mb-4">Wakey Shapes</h3>
+              <div className="flex flex-wrap gap-8">
+                <div className="text-center">
+                  <div className="h-16 flex items-center justify-center">
+                    <ShapeCircle className="w-16 h-16 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">ShapeCircle</p>
+                </div>
+                <div className="text-center">
+                  <div className="h-16 flex items-center justify-center">
+                    <ShapeHalfCircle className="w-16 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">ShapeHalfCircle</p>
+                </div>
+                <div className="text-center">
+                  <div className="h-16 flex items-center justify-center">
+                    <ShapeStar className="w-16 h-16 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">ShapeStar</p>
+                </div>
+                <div className="text-center">
+                  <div className="h-16 flex items-center justify-center">
+                    <ShapeFlower className="w-16 h-16 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">ShapeFlower</p>
+                </div>
+                <div className="text-center">
+                  <div className="h-16 flex items-center justify-center">
+                    <ShapeSparkle className="w-16 h-16 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">ShapeSparkle</p>
+                </div>
+                <div className="text-center">
+                  <div className="h-16 flex items-center justify-center">
+                    <ShapeHexagon className="w-16 h-16 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">ShapeHexagon</p>
+                </div>
+              </div>
+            </div>
+
             {/* Payment Icons */}
             <div>
               <h3 className="text-h3 font-display mb-4">Payment Methods</h3>
@@ -569,33 +656,21 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             Custom easing functions for smooth animations.
           </p>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="bg-black/5 p-6 rounded-card">
-              <p className="text-s2 font-display mb-2">ease-out-expo</p>
-              <p className="text-small font-body opacity-60">
-                cubic-bezier(0.19, 1, 0.22, 1)
-              </p>
-              <p className="text-body-small font-body mt-2">
-                Dramatic slowdown at end
-              </p>
-            </div>
-            <div className="bg-black/5 p-6 rounded-card">
-              <p className="text-s2 font-display mb-2">ease-out-back</p>
-              <p className="text-small font-body opacity-60">
-                cubic-bezier(0.175, 0.885, 0.32, 1.275)
-              </p>
-              <p className="text-body-small font-body mt-2">
-                Slight overshoot at end
-              </p>
-            </div>
-            <div className="bg-black/5 p-6 rounded-card">
-              <p className="text-s2 font-display mb-2">ease-out-sine</p>
-              <p className="text-small font-body opacity-60">
-                cubic-bezier(0.39, 0.575, 0.565, 1)
-              </p>
-              <p className="text-body-small font-body mt-2">
-                Gentle, natural deceleration
-              </p>
-            </div>
+            <EasingPreview
+              name="ease-out-expo"
+              bezier="cubic-bezier(0.19, 1, 0.22, 1)"
+              description="Dramatic slowdown at end"
+            />
+            <EasingPreview
+              name="ease-out-back"
+              bezier="cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+              description="Slight overshoot at end"
+            />
+            <EasingPreview
+              name="ease-out-sine"
+              bezier="cubic-bezier(0.39, 0.575, 0.565, 1)"
+              description="Gentle, natural deceleration"
+            />
           </div>
         </Section>
 
