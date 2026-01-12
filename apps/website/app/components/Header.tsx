@@ -11,18 +11,24 @@ import {HamburgerIcon, LogoSmall} from '@wakey/ui';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
+  /** When true, renders inline instead of fixed position */
+  inline?: boolean;
 }
 
 /**
  * Floating pill header with menu toggle (left), logo (center), and cart count (right)
  */
-export function Header({cart}: HeaderProps) {
+export function Header({cart, inline = false}: HeaderProps) {
   return (
     <header
-      className="fixed z-50 w-full flex justify-center p-4 md:p-6 pointer-events-none"
+      className={
+        inline
+          ? 'w-full flex justify-center'
+          : 'fixed z-50 w-full flex justify-center p-4 md:p-6 pointer-events-none'
+      }
       role="banner"
     >
-      <div className="flex items-center justify-between w-full max-w-[600px] bg-white rounded-[10px] px-2 py-2 pointer-events-auto">
+      <div className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-[10px] px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}>
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />

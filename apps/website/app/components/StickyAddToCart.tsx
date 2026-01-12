@@ -17,6 +17,8 @@ interface StickyAddToCartProps {
   reviewCount?: number;
   analytics?: unknown;
   productImage?: string | null;
+  /** When true, renders inline instead of fixed position */
+  inline?: boolean;
 }
 
 export function StickyAddToCart({
@@ -27,6 +29,7 @@ export function StickyAddToCart({
   reviewCount = 0,
   analytics,
   productImage,
+  inline = false,
 }: StickyAddToCartProps) {
   const {open} = useAside();
 
@@ -46,18 +49,20 @@ export function StickyAddToCart({
     }).format(amount);
   };
 
-  // Animation states
-  const [isReady, setIsReady] = useState(false);
+  // Animation states (only used when not inline)
+  const [isReady, setIsReady] = useState(inline);
   const [isOutOfView, setIsOutOfView] = useState(false);
 
-  // Initialize on mount - slide up animation
+  // Initialize on mount - slide up animation (skip if inline)
   useEffect(() => {
+    if (inline) return;
     const timer = setTimeout(() => setIsReady(true), 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [inline]);
 
-  // Footer observer - hide form when footer is visible
+  // Footer observer - hide form when footer is visible (skip if inline)
   useEffect(() => {
+    if (inline) return;
     const footer = document.querySelector('footer[role="contentinfo"]');
     if (!footer) return;
 
@@ -67,7 +72,7 @@ export function StickyAddToCart({
     );
     observer.observe(footer);
     return () => observer.disconnect();
-  }, []);
+  }, [inline]);
 
   // Cart lines for submission
   const lines: OptimisticCartLineInput[] = selectedVariant?.id
@@ -78,13 +83,11 @@ export function StickyAddToCart({
 
   return (
     <div
-      className={`
-        fixed bottom-0 left-0 right-0 z-40 p-4
-        transition-transform duration-[400ms]
-        [transition-timing-function:var(--ease-out-back)]
-        flex justify-center
-        ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}
-      `}
+      className={
+        inline
+          ? 'w-full flex justify-center'
+          : `fixed bottom-0 left-0 right-0 z-40 p-4 transition-transform duration-[400ms] [transition-timing-function:var(--ease-out-back)] flex justify-center ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}`
+      }
     >
       <div className="flex items-center justify-between w-full max-w-[600px] h-[90px] bg-yellow rounded-[10px] px-4">
         {/* Left: Product Image + Info */}
