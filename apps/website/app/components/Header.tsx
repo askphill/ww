@@ -24,7 +24,7 @@ export function Header({cart, inline = false}: HeaderProps) {
       className={
         inline
           ? 'w-full flex justify-center'
-          : 'fixed z-50 w-full flex justify-center p-4 md:p-6 pointer-events-none'
+          : 'fixed z-50 w-full flex justify-center px-8 py-4 md:p-6 pointer-events-none'
       }
       role="banner"
     >
