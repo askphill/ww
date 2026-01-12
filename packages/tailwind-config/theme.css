@@ -7,6 +7,7 @@
 @theme {
   /* Colors */
   --color-black: #1A1A1A;
+  --color-white: #FFFFFF;
   --color-text: #383838;
   --color-yellow: #ffff00;
   --color-softorange: #FAD103;
@@ -43,10 +44,7 @@
 
 /* Responsive utilities */
 @utility rounded-card {
-  border-radius: 1.25rem;
-  @media (width >= 48rem) {
-    border-radius: 1.875rem;
-  }
+  border-radius: 0.625rem; /* 10px */
 }
 
 /* Type Scale - Responsive typography utilities */

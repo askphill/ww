@@ -39,7 +39,7 @@ export function BlogArticle({frontmatter, children}: BlogArticleProps) {
   const readTime = 4; // Default estimate for MDX articles
 
   return (
-    <article className="rounded-card bg-sand">
+    <article className="bg-sand">
       {/* Header */}
       <header className="px-4 pt-24 pb-4 max-w-4xl mx-auto md:pt-36 md:px-0 md:text-center">
         <div className="flex flex-wrap items-center gap-2 text-small text-text/60 md:justify-center">

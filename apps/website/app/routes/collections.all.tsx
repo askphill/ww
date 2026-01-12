@@ -67,7 +67,7 @@ export default function Collection() {
         title="All Products"
         subtitle="Explore our complete collection"
       />
-      <section className="bg-sand rounded-card p-4 pb-8 md:p-8 md:pb-12">
+      <section className="bg-sand p-4 pb-8 md:p-8 md:pb-12">
         <PaginatedResourceSection<CollectionItemFragment>
           connection={products}
           resourcesClassName="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4"

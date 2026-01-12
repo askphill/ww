@@ -14,7 +14,7 @@ interface FAQProps {
 
 export function FAQ({title, description, items}: FAQProps) {
   return (
-    <section className="bg-sand rounded-card p-8 md:p-0 md:grid md:grid-cols-24 md:px-8 md:pt-16 md:pb-24">
+    <section className="bg-sand p-8 md:p-0 md:grid md:grid-cols-24 md:px-8 md:pt-16 md:pb-24">
       <h2 className="text-h3 font-display md:col-span-24">{title}</h2>
 
       {/* Text Column - spans cols 1-7 */}

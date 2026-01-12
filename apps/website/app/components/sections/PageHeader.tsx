@@ -5,7 +5,7 @@ interface PageHeaderProps {
 
 export function PageHeader({title, subtitle}: PageHeaderProps) {
   return (
-    <header className="bg-sand rounded-card pt-40 px-8 pb-4 md:pt-36 md:px-8 md:pb-4">
+    <header className="bg-sand pt-40 px-8 pb-4 md:pt-36 md:px-8 md:pb-4">
       <h1 className="text-h1 font-display">{title}</h1>
       {subtitle && (
         <p className="mt-4 text-paragraph font-body opacity-80">{subtitle}</p>

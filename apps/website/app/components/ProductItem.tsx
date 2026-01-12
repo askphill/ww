@@ -18,7 +18,7 @@ export function ProductItem({
 
   return (
     <Link
-      className="group block h-full rounded-card bg-blue overflow-hidden hover-scale"
+      className="group block h-full bg-blue overflow-hidden hover-scale"
       key={product.id}
       prefetch="intent"
       to={variantUrl}

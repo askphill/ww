@@ -10,7 +10,7 @@ type CartSummaryProps = {
 
 export function CartSummary({cart, layout}: CartSummaryProps) {
   return (
-    <div className="bg-sand rounded-card p-4 md:p-8 mt-[-1px] flex-1 flex flex-col justify-between">
+    <div className="bg-sand p-4 md:p-8 mt-[-1px] flex-1 flex flex-col justify-between">
       {/* Message at top */}
       <div className="text-small font-display">
         Free shipping on orders over 50 euros

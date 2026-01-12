@@ -308,7 +308,7 @@ export function SocialSection({
   lerpFactor = 2,
 }: SocialSectionProps) {
   return (
-    <section className="bg-softorange text-black rounded-card min-h-dvh relative flex flex-col justify-between overflow-hidden">
+    <section className="bg-softorange text-black min-h-dvh relative flex flex-col justify-between overflow-hidden">
       {/* Heading */}
       <header className="relative z-10 pt-12 text-center md:pt-20">
         <h2 className="text-h2 font-display">

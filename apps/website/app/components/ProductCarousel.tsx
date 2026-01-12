@@ -146,7 +146,7 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
             return (
               <div
                 key={itemId}
-                className="flex-none w-full h-[calc(100dvh-9.78rem)] snap-center overflow-hidden rounded-card"
+                className="flex-none w-full h-[calc(100dvh-9.78rem)] snap-center overflow-hidden"
               >
                 {item.__typename === 'MediaImage' && item.image && (
                   <Image
@@ -170,7 +170,7 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
 
         {/* Ball indicators - mobile only */}
         {displayMedia.length > 1 && (
-          <div className="absolute bottom-20 left-0 right-0 flex justify-center items-center gap-1.5">
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5">
             {displayMedia.map((_, index) => (
               <button
                 key={index}
@@ -210,7 +210,7 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
           return (
             <div
               key={itemId}
-              className="flex-none w-[50vw] h-screen overflow-hidden rounded-card"
+              className="flex-none w-[50vw] h-screen overflow-hidden"
             >
               {item.__typename === 'MediaImage' && item.image && (
                 <Image
