@@ -21,7 +21,7 @@ export const meta: Route.MetaFunction = () => {
         'Shop all Wakey products. Natural deodorants and morning essentials made with safe, effective ingredients.',
     },
     {property: 'og:type', content: 'website'},
-    {property: 'og:url', content: 'https://wakeywakey.com/collections/all'},
+    {property: 'og:url', content: 'https://www.wakey.care/collections/all'},
     {name: 'twitter:card', content: 'summary'},
     {name: 'twitter:title', content: 'All Products | Wakey'},
     {
@@ -29,7 +29,7 @@ export const meta: Route.MetaFunction = () => {
       content:
         'Shop all Wakey products. Natural deodorants and morning essentials.',
     },
-    {rel: 'canonical', href: 'https://wakeywakey.com/collections/all'},
+    {tagName: 'link', rel: 'canonical', href: 'https://www.wakey.care/collections/all'},
   ];
 };
 

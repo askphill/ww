@@ -78,7 +78,7 @@ export const meta: Route.MetaFunction = () => {
         'Got questions about Wakey natural deodorant? Find answers about ingredients, shipping, returns, and more.',
     },
     {property: 'og:type', content: 'website'},
-    {property: 'og:url', content: 'https://wakeywakey.com/faq'},
+    {property: 'og:url', content: 'https://www.wakey.care/faq'},
     {name: 'twitter:card', content: 'summary'},
     {name: 'twitter:title', content: 'FAQ | Wakey'},
     {
@@ -86,7 +86,7 @@ export const meta: Route.MetaFunction = () => {
       content:
         'Got questions about Wakey natural deodorant? Find answers about ingredients, shipping, returns, and more.',
     },
-    {rel: 'canonical', href: 'https://wakeywakey.com/faq'},
+    {tagName: 'link', rel: 'canonical', href: 'https://www.wakey.care/faq'},
     {
       'script:ld+json': FAQ_SCHEMA,
     },

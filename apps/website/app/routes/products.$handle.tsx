@@ -116,7 +116,7 @@ export const meta: Route.MetaFunction = ({data}) => {
     },
     offers: {
       '@type': 'Offer',
-      url: `https://wakeywakey.com/products/${product?.handle}`,
+      url: `https://www.wakey.care/products/${product?.handle}`,
       priceCurrency: variant?.price?.currencyCode || 'EUR',
       price: variant?.price?.amount,
       availability: variant?.availableForSale
@@ -135,7 +135,7 @@ export const meta: Route.MetaFunction = ({data}) => {
     {property: 'og:title', content: `${title} | Wakey`},
     {property: 'og:description', content: description},
     {property: 'og:type', content: 'product'},
-    {property: 'og:url', content: `https://wakeywakey.com/products/${product?.handle}`},
+    {property: 'og:url', content: `https://www.wakey.care/products/${product?.handle}`},
     {property: 'og:image', content: image},
     {name: 'twitter:card', content: 'summary_large_image'},
     {name: 'twitter:title', content: `${title} | Wakey`},

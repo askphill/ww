@@ -1,5 +1,9 @@
 # Project: Wakey - Monorepo
 
+## Domain
+- **Production**: https://www.wakey.care (primary domain)
+- **Shopify Store**: wakeycare.myshopify.com
+
 ## Stack Overview
 - **Monorepo**: Turborepo + pnpm workspaces
 - **Framework**: Shopify Hydrogen 2025.7.0 (React Router 7.9.2)

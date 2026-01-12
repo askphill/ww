@@ -16,7 +16,7 @@ export const meta: Route.MetaFunction = () => {
         'Meet the founders behind Wakey. We believe in feel-good morning rituals with natural, effective products.',
     },
     {property: 'og:type', content: 'website'},
-    {property: 'og:url', content: 'https://wakeywakey.com/about'},
+    {property: 'og:url', content: 'https://www.wakey.care/about'},
     {name: 'twitter:card', content: 'summary'},
     {name: 'twitter:title', content: 'About Us | Wakey'},
     {
@@ -24,7 +24,7 @@ export const meta: Route.MetaFunction = () => {
       content:
         'Meet the founders behind Wakey. We believe in feel-good morning rituals with natural, effective products.',
     },
-    {rel: 'canonical', href: 'https://wakeywakey.com/about'},
+    {tagName: 'link', rel: 'canonical', href: 'https://www.wakey.care/about'},
   ];
 };
 

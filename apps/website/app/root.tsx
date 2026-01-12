@@ -71,13 +71,13 @@ const ORGANIZATION_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Wakey',
-  url: 'https://wakeywakey.com',
+  url: 'https://www.wakey.care',
   logo: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-logo.svg',
   description:
     'Natural deodorant and morning essentials. Aluminum-free, baking soda-free, made with safe ingredients.',
   sameAs: [
-    'https://instagram.com/wakeywakey',
-    'https://tiktok.com/@wakeywakey',
+    'https://instagram.com/wakeycare',
+    'https://tiktok.com/@wakeycare',
   ],
 };
 

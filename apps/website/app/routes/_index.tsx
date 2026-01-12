@@ -16,7 +16,7 @@ export const meta: Route.MetaFunction = () => {
         'Start your day right with Wakey natural deodorant. Aluminum-free, baking soda-free, and made with safe ingredients for all-day freshness.',
     },
     {property: 'og:type', content: 'website'},
-    {property: 'og:url', content: 'https://wakeywakey.com'},
+    {property: 'og:url', content: 'https://www.wakey.care'},
     {property: 'og:image', content: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-og-image.jpg'},
     {name: 'twitter:card', content: 'summary_large_image'},
     {name: 'twitter:title', content: 'Wakey | Feel-Good Morning Rituals'},
@@ -26,7 +26,7 @@ export const meta: Route.MetaFunction = () => {
         'Start your day right with Wakey natural deodorant. Aluminum-free, baking soda-free, and made with safe ingredients for all-day freshness.',
     },
     {name: 'twitter:image', content: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-og-image.jpg'},
-    {rel: 'canonical', href: 'https://wakeywakey.com'},
+    {tagName: 'link', rel: 'canonical', href: 'https://www.wakey.care'},
   ];
 };
 
