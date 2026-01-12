@@ -146,7 +146,7 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
             return (
               <div
                 key={itemId}
-                className="flex-none w-full h-[calc(100dvh-9.78rem)] snap-center overflow-hidden rounded-card"
+                className="flex-none w-full h-[calc(100dvh-9.78rem)] snap-center overflow-hidden"
               >
                 {item.__typename === 'MediaImage' && item.image && (
                   <Image
@@ -210,7 +210,7 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
           return (
             <div
               key={itemId}
-              className="flex-none w-[50vw] h-screen overflow-hidden rounded-card"
+              className="flex-none w-[50vw] h-screen overflow-hidden"
             >
               {item.__typename === 'MediaImage' && item.image && (
                 <Image

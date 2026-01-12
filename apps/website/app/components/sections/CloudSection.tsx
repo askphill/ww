@@ -44,7 +44,7 @@ export function CloudSection({ images }: CloudSectionProps) {
       : Array(23).fill(defaultImage);
 
   return (
-    <section className="relative min-h-dvh bg-sand overflow-hidden flex justify-center items-center flex-col h-dvh rounded-card">
+    <section className="relative min-h-dvh bg-sand overflow-hidden flex justify-center items-center flex-col h-dvh">
       {/* Animated text overlay */}
       <div className="absolute inset-0 flex justify-center items-center flex-col text-center z-10 h-dvh">
         {/* Headline 1: "Making the world a better place" */}

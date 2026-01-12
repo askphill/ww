@@ -25,7 +25,7 @@ export function Footer() {
   return (
     <footer
       role="contentinfo"
-      className={`${bgColor} rounded-card overflow-hidden p-4 md:p-8 md:relative`}
+      className={`${bgColor} overflow-hidden p-4 md:p-8 md:relative`}
     >
       {/* Logo */}
       <Link to="/" className="block pb-12 md:pb-0 ">

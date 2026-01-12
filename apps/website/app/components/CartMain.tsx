@@ -46,7 +46,7 @@ function CartEmpty({layout}: {layout: CartLayout}) {
   const {close} = useAside();
 
   return (
-    <div className="bg-sand rounded-card p-4 md:p-6 mt-[-1px] flex-1">
+    <div className="bg-sand p-4 md:p-6 mt-[-1px] flex-1">
       <h3 className="text-h3 font-display pb-4 md:pb-6">
         Wakey Wakey, there are no products in your cart yet.
       </h3>

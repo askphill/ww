@@ -48,7 +48,7 @@ export function ProductReviews({
   return (
     <section className="md:grid md:grid-cols-2">
       {/* Reviews Column */}
-      <div className="bg-sand rounded-card flex flex-col items-center overflow-hidden px-0 pt-8 pb-8 md:px-0 md:pt-8 md:pb-32">
+      <div className="bg-sand flex flex-col items-center overflow-hidden px-0 pt-8 pb-8 md:px-0 md:pt-8 md:pb-32">
         {/* Score Display */}
         {averageRating !== null && (
           <>
@@ -111,7 +111,7 @@ export function ProductReviews({
 
       {/* Video Column - Desktop Only */}
       <div className="hidden md:block sticky top-0 h-dvh">
-        <div className="relative h-full rounded-card overflow-hidden">
+        <div className="relative h-full overflow-hidden">
           <video
             className="w-full h-full object-cover"
             src={videoUrl}
@@ -130,7 +130,7 @@ export function ProductReviews({
       </div>
 
       {/* Video Column - Mobile */}
-      <div className="md:hidden relative rounded-card overflow-hidden aspect-3/4">
+      <div className="md:hidden relative overflow-hidden aspect-3/4">
         <video
           className="w-full h-full object-cover"
           src={videoUrl}

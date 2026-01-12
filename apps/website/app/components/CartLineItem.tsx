@@ -31,7 +31,7 @@ export function CartLineItem({
         <Link
           to={lineItemUrl}
           onClick={() => layout === 'aside' && close()}
-          className="bg-skyblue rounded-card overflow-hidden aspect-square flex items-center justify-center p-4 md:p-8"
+          className="bg-skyblue overflow-hidden aspect-square flex items-center justify-center p-4 md:p-8"
           tabIndex={-1}
           aria-hidden="true"
         >
@@ -47,7 +47,7 @@ export function CartLineItem({
       )}
 
       {/* Details */}
-      <div className="bg-sand rounded-card p-4 md:p-8 flex flex-col justify-between">
+      <div className="bg-sand p-4 md:p-8 flex flex-col justify-between">
         <div className="flex justify-between">
           <div>
             <Link

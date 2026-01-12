@@ -21,7 +21,7 @@ export default function BlogIndex({loaderData}: Route.ComponentProps) {
   const {articles} = loaderData;
 
   return (
-    <div className="rounded-card bg-sand">
+    <div className="bg-sand">
       <header className="pt-24 px-4 pb-4 md:pt-36 md:px-8 md:pb-6">
         <h1 className="text-h1 font-display">Blog</h1>
         <p className="mt-4 max-w-prose font-body text-paragraph text-text/70">
@@ -57,7 +57,7 @@ function ArticleCard({
           <img
             src={article.featuredImage.url}
             alt={article.featuredImage.alt || article.title}
-            className="w-full rounded-card object-cover"
+            className="w-full object-cover"
             width={article.featuredImage.width}
             height={article.featuredImage.height}
             loading="lazy"

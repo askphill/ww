@@ -26,7 +26,7 @@ export function FeaturedProduct({
   buttonTo,
 }: FeaturedProductProps) {
   return (
-    <section className="relative w-full min-h-[max(50rem,100dvh)] flex items-center overflow-hidden rounded-card">
+    <section className="relative w-full min-h-[max(50rem,100dvh)] flex items-center overflow-hidden">
       <picture>
         {backgroundImageMobile && (
           <source media="(max-width: 48rem)" srcSet={backgroundImageMobile} />

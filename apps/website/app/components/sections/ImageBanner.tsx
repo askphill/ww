@@ -34,7 +34,7 @@ export function ImageBanner({
   const hasVideo = backgroundVideo || backgroundVideoMobile;
 
   return (
-    <section className="relative min-h-svh overflow-clip rounded-card">
+    <section className="relative min-h-svh overflow-clip">
       {/* Background Media */}
       <div className="absolute inset-0">
         {hasVideo ? (
