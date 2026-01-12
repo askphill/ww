@@ -44,7 +44,10 @@
 
 /* Responsive utilities */
 @utility rounded-card {
-  border-radius: 0.625rem; /* 10px */
+  border-radius: 0.3125rem; /* 5px */
+  @media (width >= 48rem) {
+    border-radius: 0.625rem; /* 10px */
+  }
 }
 
 /* Type Scale - Responsive typography utilities */
