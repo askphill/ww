@@ -67,7 +67,7 @@ function HeaderButton({
         rounded-full w-8 h-8 md:w-12 md:h-12
         bg-sand
         flex items-center justify-center
-        text-s2 font-display
+        text-label md:text-s2 font-display
         hover-scale
         transition-transform
         cursor-pointer
@@ -88,7 +88,7 @@ function MenuToggleButton() {
       ariaControls="SiteMenuDrawer"
       ariaExpanded={false}
     >
-      <HamburgerIcon className="w-5" />
+      <HamburgerIcon className="w-4 md:w-5" />
     </HeaderButton>
   );
 }
