@@ -86,7 +86,7 @@ export function StickyAddToCart({
         ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}
       `}
     >
-      <div className="flex items-center justify-between w-full max-w-[600px] h-[90px] bg-yellow rounded-[5px] px-4">
+      <div className="flex items-center justify-between w-full max-w-[600px] h-[90px] bg-yellow rounded-[10px] px-4">
         {/* Left: Product Image + Info */}
         <div className="flex items-center gap-3">
           {productImage && (

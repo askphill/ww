@@ -22,7 +22,7 @@ export function Header({cart}: HeaderProps) {
       className="fixed z-50 w-full flex justify-center p-4 md:p-6 pointer-events-none"
       role="banner"
     >
-      <div className="flex items-center justify-between w-full max-w-[600px] bg-white rounded-[5px] px-2 py-2 pointer-events-auto">
+      <div className="flex items-center justify-between w-full max-w-[600px] bg-white rounded-[10px] px-2 py-2 pointer-events-auto">
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />
