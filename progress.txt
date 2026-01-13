@@ -636,3 +636,24 @@
 - Component accepts `error` and `errorStatus` props to customize display
 - Uses useEffect to log errors (side effect should be in effect, not render)
 - Button from @wakey/ui with `to` prop renders as a Link component
+### Iteration: 2026-01-13 UTC
+**Story:** US-021 - Update root ErrorBoundary to use graceful fallback
+**Status:** Complete
+
+**What was done:**
+- Imported ErrorFallback component in root.tsx
+- Replaced raw error display (`<pre>{errorMessage}</pre>`) with ErrorFallback component
+- Removed errorMessage extraction from ErrorBoundary (no longer needed for UI display)
+- Error is still passed to ErrorFallback for console logging
+- Verified in browser - /this-page-does-not-exist shows "Page not found" with Go Home button
+- No technical error details visible to users
+
+**Files changed:**
+- `apps/website/app/root.tsx` (modified - 2 insertions, 15 deletions)
+
+**Learnings for future iterations:**
+- ErrorBoundary in root.tsx wraps entire app, so it catches all unhandled errors
+- isRouteErrorResponse() from react-router determines if error is HTTP-like (has status code)
+- The old ErrorBoundary exposed error.message to users - security/UX concern
+- ErrorFallback handles status-based messaging internally, caller just passes status code
+
