@@ -24,7 +24,7 @@ export function Button({
   icon,
 }: ButtonProps) {
   const baseStyles =
-    'inline-flex items-center justify-center gap-2 px-6 h-12 md:h-14 font-display text-label rounded-full transition-colors cursor-pointer';
+    'inline-flex items-center justify-center gap-2 px-6 h-14 font-display text-label rounded-full transition-colors cursor-pointer';
 
   const variants = {
     primary: 'bg-black text-sand hover:bg-black/90',

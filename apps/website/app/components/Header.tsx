@@ -20,12 +20,12 @@ export function Header({cart, inline = false}: HeaderProps) {
       className={
         inline
           ? 'w-full flex justify-center'
-          : 'fixed z-50 w-full flex justify-center px-8 py-4 md:p-6 pointer-events-none'
+          : 'fixed z-50 w-full flex justify-center px-4 pt-4 md:px-6 md:pt-6 pointer-events-none'
       }
       role="banner"
     >
       <div
-        className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">
@@ -85,7 +85,7 @@ function MenuToggleButton() {
       ariaControls="SiteMenuDrawer"
       ariaExpanded={false}
     >
-      <HamburgerIcon className="w-5 md:w-6" />
+      <HamburgerIcon className="w-6" />
     </HeaderButton>
   );
 }
@@ -103,9 +103,9 @@ function CartButton({count}: {count: number}) {
         relative
       "
     >
-      <BagIcon className="w-5 md:w-6" />
+      <BagIcon className="w-6" />
       {count > 0 && (
-        <span className="absolute top-2 right-2 min-w-3.5 h-3.5 px-1 flex items-center justify-center bg-ocher text-black text-xs font-display rounded-full leading-none">
+        <span className="absolute top-[3px] right-0.5 md:top-2 md:right-2 min-w-3.5 h-3.5 px-1 flex items-center justify-center bg-ocher text-black text-xs font-display rounded-full leading-none">
           {count}
         </span>
       )}
