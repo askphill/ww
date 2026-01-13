@@ -1,6 +1,7 @@
 import {Link} from 'react-router';
 import {Image, Money, Pagination} from '@shopify/hydrogen';
 import {urlWithTrackingParams, type RegularSearchReturn} from '~/lib/search';
+import {SearchResultList} from './SearchResultList';
 
 type SearchItems = RegularSearchReturn['result']['items'];
 type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
@@ -39,27 +40,12 @@ function SearchResultsArticles({
   }
 
   return (
-    <div className="search-result">
-      <h2>Articles</h2>
-      <div>
-        {articles?.nodes?.map((article) => {
-          const articleUrl = urlWithTrackingParams({
-            baseUrl: `/blogs/${article.handle}`,
-            trackingParams: article.trackingParameters,
-            term,
-          });
-
-          return (
-            <div className="search-results-item" key={article.id}>
-              <Link prefetch="intent" to={articleUrl}>
-                {article.title}
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-      <br />
-    </div>
+    <SearchResultList
+      title="Articles"
+      items={articles.nodes}
+      term={term}
+      getPath={(article) => `/blogs/${article.handle}`}
+    />
   );
 }
 
@@ -69,27 +55,12 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
   }
 
   return (
-    <div className="search-result">
-      <h2>Pages</h2>
-      <div>
-        {pages?.nodes?.map((page) => {
-          const pageUrl = urlWithTrackingParams({
-            baseUrl: `/pages/${page.handle}`,
-            trackingParams: page.trackingParameters,
-            term,
-          });
-
-          return (
-            <div className="search-results-item" key={page.id}>
-              <Link prefetch="intent" to={pageUrl}>
-                {page.title}
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-      <br />
-    </div>
+    <SearchResultList
+      title="Pages"
+      items={pages.nodes}
+      term={term}
+      getPath={(page) => `/pages/${page.handle}`}
+    />
   );
 }
 
