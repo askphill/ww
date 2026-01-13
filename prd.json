@@ -248,8 +248,8 @@
         "Typecheck passes"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - page layout with centered empty state, text-h2 Your bag is empty, Continue shopping link"
     },
     {
       "id": "US-017",
