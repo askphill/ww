@@ -368,3 +368,20 @@
 - Same pattern as other sanitization stories: import utility, wrap prop in sanitizeHtml()
 - Build passes even with pre-existing typecheck errors in packages/ui and packages/hooks
 
+### Iteration: 2026-01-13 UTC
+**Story:** US-008 - Sanitize policies body HTML
+**Status:** Complete
+
+**What was done:**
+- Imported `sanitizeHtml` from `~/lib/sanitize` in policies.$handle.tsx
+- Applied sanitization to `policy.body` before passing to `dangerouslySetInnerHTML`
+- Verified in browser - /policies/privacy-policy and /policies/terms-of-service render correctly with all HTML content
+
+**Files changed:**
+- `apps/website/app/routes/policies.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- The policies.$handle.tsx route is used for Shopify shop policies (privacy, terms, etc.)
+- Same pattern as other sanitization stories: import utility, wrap prop in sanitizeHtml()
+- Policy types are: privacyPolicy, shippingPolicy, termsOfService, refundPolicy
+
