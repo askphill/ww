@@ -283,3 +283,28 @@
 - Always consider the context where component will be rendered when choosing colors
 - Chrome DevTools MCP may have connection issues - ensure browser isn't already connected
 
+### Iteration: 2026-01-13
+**Story:** US-014 - Add payment method icons
+**Status:** Complete
+
+**What was done:**
+- Added MastercardIcon: two overlapping circles with different opacity
+- Added AmexIcon: AME letters inside a bordered card shape
+- Added ApplePayIcon: Apple logo + "Pay" text
+- Added BancontactIcon: B letter with concentric circles
+- Added SofortIcon: "SOFORT" text in bordered card
+- Added PayPalIcon: overlapping P letters with different opacity
+- Updated icons/index.ts to export all new icons
+- Build passes successfully (icons bundled at 5.09 kB)
+
+**Files changed:**
+- packages/ui/src/icons/PaymentIcons.tsx (updated)
+- packages/ui/src/icons/index.ts (updated)
+
+**Learnings for future iterations:**
+- Icons use consistent IconProps interface with className?: string
+- All icons use fill="currentColor" for inheriting text color
+- Use fillOpacity for layered effects in monochrome icons
+- UI package doesn't have its own typecheck/build task - verify via website build
+- Export * from './icons' in main index.ts re-exports all icon exports automatically
+
