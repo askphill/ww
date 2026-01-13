@@ -1,3 +1,5 @@
+import {sanitizeHtml} from '~/lib/sanitize';
+
 interface ImageBannerProps {
   backgroundImage?: string;
   backgroundImageMobile?: string;
@@ -105,7 +107,7 @@ export function ImageBanner({
           <p
             className="text-h3 font-display prose-wakey"
             style={{color: textColor}}
-            dangerouslySetInnerHTML={{__html: text}}
+            dangerouslySetInnerHTML={{__html: sanitizeHtml(text)}}
           />
         </div>
       </div>

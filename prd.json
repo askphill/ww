@@ -1,168 +1,623 @@
 {
-  "branch": "ralph/navigation-redesign",
-  "description": "Redesign the navigation experience with an announcement bar below the header and a dropdown menu that slides down from under the header, replacing the side drawer.",
+  "branch": "ralph/production-readiness",
+  "description": "Production readiness improvements: security fixes, testing setup, type safety, performance optimization, code simplification, and CI/CD improvements.",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create AnnouncementBar component",
-      "description": "As a user, I want to see promotional messages below the header so that I'm aware of current offers.",
+      "title": "Remove credentials from repository",
+      "description": "As a developer, I want sensitive credentials removed from the codebase so that API tokens cannot be leaked.",
       "acceptance": [
-        "Component created at `apps/website/app/components/AnnouncementBar.tsx`",
-        "Same horizontal padding as header (`px-4` mobile, `md:px-6` desktop)",
-        "Same max-width as header (`max-w-[600px]`)",
-        "Uses `rounded-card` for border radius",
-        "Background is `bg-ocher` (#E3B012), text is `text-black font-display text-small`",
-        "Centered horizontally like header",
+        "`apps/website/.env` is added to `.gitignore`",
+        "No files containing `shpat_` or API tokens exist in git history tip",
+        "`.env.example` file created with placeholder values",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 1,
       "passes": true,
-      "notes": ""
+      "notes": "Pre-existing type errors in codebase unrelated to this change. .env already gitignored. Created .env.example with secure defaults."
     },
     {
       "id": "US-002",
-      "title": "Add marquee animation to AnnouncementBar",
-      "description": "As a user, I want the announcement text to scroll continuously so that longer messages fit and create visual interest.",
+      "title": "Generate secure SESSION_SECRET",
+      "description": "As a developer, I want a cryptographically secure session secret so that sessions cannot be forged.",
       "acceptance": [
-        "Text scrolls smoothly from right to left",
-        "Uses CSS animation for infinite horizontal scroll",
-        "Duplicate text content creates seamless loop",
-        "Uses existing `@keyframes marquee` from theme (30s linear infinite) or similar",
-        "Animation loops seamlessly without jumps",
-        "Works on both mobile and desktop",
+        "`.env.example` documents SESSION_SECRET requirement with example of 32+ character value",
+        "Validation added to `server.ts` that rejects SESSION_SECRET if it's 'foobar' or less than 32 chars",
+        "App fails to start with clear error message if validation fails",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 2,
       "passes": true,
-      "notes": ""
+      "notes": "Validation added to context.ts (called from server.ts). Rejects 'foobar' and <32 char secrets with helpful error messages."
     },
     {
       "id": "US-003",
-      "title": "Create NavigationDropdown component structure",
-      "description": "As a user, I want to see a clean navigation panel when I tap the menu button so that I can browse products and learn more about Wakey.",
+      "title": "Add DOMPurify dependency",
+      "description": "As a developer, I want an HTML sanitization library installed so that XSS attacks can be prevented.",
       "acceptance": [
-        "Component created at `apps/website/app/components/NavigationDropdown.tsx`",
-        "Two sections: 'Shop' and 'Learn' with items shown immediately (no accordion)",
-        "Shop items: 'Wakey Deodorant' → `/products/deodorant`, 'Natural Deodorant' → `/products/natural-deodorant`",
-        "Learn items: 'About us' → `/about`, 'FAQ' → `/faq`, 'Blog' → `/blog`",
-        "Section labels use `text-body-small font-display uppercase tracking-wide text-black/60`",
-        "Nav links use `text-h3 font-display`",
-        "Background is `bg-sand`",
-        "Same padding as header (`px-4` mobile, `md:px-6` desktop)",
-        "Uses `rounded-card` border radius",
+        "`isomorphic-dompurify` added to `apps/website/package.json` dependencies",
+        "`pnpm install` completes successfully",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 3,
       "passes": true,
-      "notes": ""
+      "notes": "Originally added isomorphic-dompurify but replaced with edge-compatible regex sanitizer in US-005 due to jsdom/workerd incompatibility."
     },
     {
       "id": "US-004",
-      "title": "Position NavigationDropdown below header",
-      "description": "As a user, I want the navigation to appear directly under the header so that it feels like part of the same element.",
+      "title": "Create sanitization utility",
+      "description": "As a developer, I want a reusable HTML sanitization function so that all user HTML is consistently sanitized.",
       "acceptance": [
-        "Dropdown positioned in same container/wrapper as header",
-        "Appears directly below header with small gap (`mt-2`)",
-        "Same max-width as header (`max-w-[600px]`)",
-        "Centered horizontally to align with header",
-        "When open, dropdown overlays the announcement bar (higher z-index)",
+        "`apps/website/app/lib/sanitize.ts` exports `sanitizeHtml(html: string): string`",
+        "Function uses isomorphic-dompurify to sanitize input",
+        "Function handles null/undefined input gracefully (returns empty string)",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 4,
       "passes": true,
-      "notes": ""
+      "notes": "Created sanitizeHtml utility. Replaced DOMPurify with edge-compatible regex-based sanitizer in US-005 due to workerd compatibility."
     },
     {
       "id": "US-005",
-      "title": "Add slide-down animation to NavigationDropdown",
-      "description": "As a user, I want the menu to slide down smoothly so that it feels natural and connected to the header.",
+      "title": "Sanitize TextMedia HTML",
+      "description": "As a user, I want product descriptions sanitized so that malicious scripts cannot execute.",
       "acceptance": [
-        "Menu slides down from under header with smooth animation",
-        "Initial state: `opacity-0 -translate-y-4` or similar hidden state",
-        "Open state: `opacity-100 translate-y-0`",
-        "Uses `ease-out-expo` easing from design system CSS variable",
-        "Animation duration 300-400ms",
-        "Page content moves down when menu opens (push effect, not overlay)",
-        "Typecheck passes (`pnpm typecheck`)"
+        "`TextMedia.tsx` imports and uses `sanitizeHtml` before `dangerouslySetInnerHTML`",
+        "Component renders product description correctly",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 5,
       "passes": true,
-      "notes": ""
+      "notes": "Replaced isomorphic-dompurify with edge-compatible regex sanitizer. Removes dangerous tags, event handlers, and dangerous URL protocols. Verified in browser - homepage renders correctly with TextMedia component."
     },
     {
       "id": "US-006",
-      "title": "Implement menu toggle behavior",
-      "description": "As a user, I want to open and close the menu with the hamburger button so that I can access navigation when needed.",
+      "title": "Sanitize ImageBanner HTML",
+      "description": "As a user, I want banner text sanitized so that malicious scripts cannot execute.",
       "acceptance": [
-        "Clicking hamburger opens closed menu",
-        "Clicking hamburger again closes open menu",
-        "State is properly managed in Header or parent component",
-        "NavigationDropdown receives `isOpen` prop",
-        "Typecheck passes (`pnpm typecheck`)"
+        "`ImageBanner.tsx` imports and uses `sanitizeHtml` before `dangerouslySetInnerHTML`",
+        "Component renders banner text correctly",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Implement click-outside-to-close behavior",
-      "description": "As a user, I want the menu to close when I click outside it so that I can easily dismiss it.",
+      "title": "Sanitize pages body HTML",
+      "description": "As a user, I want page content sanitized so that malicious scripts cannot execute.",
       "acceptance": [
-        "Clicking outside menu area closes it",
-        "Clicking inside menu does not close it",
-        "Clicking on nav links closes menu (after navigation)",
-        "Uses document click handler or backdrop overlay approach",
-        "Typecheck passes (`pnpm typecheck`)"
+        "`pages.$handle.tsx` imports and uses `sanitizeHtml` on `page.body`",
+        "Page renders content correctly",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 7,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-008",
-      "title": "Integrate AnnouncementBar into PageLayout",
-      "description": "As a user, I want to see the announcement bar on all pages so that I always see current promotions.",
+      "title": "Sanitize policies body HTML",
+      "description": "As a user, I want policy content sanitized so that malicious scripts cannot execute.",
       "acceptance": [
-        "AnnouncementBar added to `PageLayout.tsx`",
-        "Positioned after header, before main content",
-        "Example text: 'Free shipping on orders over €50'",
-        "Does not interfere with page content layout",
-        "Typecheck passes (`pnpm typecheck`)"
+        "`policies.$handle.tsx` imports and uses `sanitizeHtml` on `policy.body`",
+        "Policy page renders content correctly",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 8,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-009",
-      "title": "Handle body scroll when menu is open",
-      "description": "As a user, I want the page to not scroll when the menu is open so that I can focus on navigation.",
+      "title": "Sanitize USPSection HTML",
+      "description": "As a user, I want USP section content sanitized so that malicious scripts cannot execute.",
       "acceptance": [
-        "Body scroll is locked when menu is open (`overflow-hidden` on body)",
-        "Scroll is restored when menu closes",
-        "Works correctly on navigation (scroll restored)",
-        "Uses effect cleanup to ensure scroll is always restored",
-        "Typecheck passes (`pnpm typecheck`)"
+        "`USPSection.tsx` imports and uses `sanitizeHtml` on title/body props that use dangerouslySetInnerHTML",
+        "Component renders correctly",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 9,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-010",
-      "title": "Remove old Aside mobile menu component",
-      "description": "As a developer, I want to remove the old side-drawer menu so that the codebase is clean and there's only one navigation pattern.",
+      "title": "Install Vitest testing framework",
+      "description": "As a developer, I want a test framework configured so that I can write automated tests.",
       "acceptance": [
-        "`MobileMenuAside` removed from `PageLayout.tsx`",
-        "Mobile menu type removed from `Aside.tsx` if no longer needed",
-        "Cart drawer (if separate) still works",
-        "No TypeScript errors",
-        "Old side drawer menu no longer appears",
+        "`vitest`, `@testing-library/react`, `@testing-library/dom`, `jsdom` added to dev dependencies in `apps/website/package.json`",
+        "`apps/website/vitest.config.ts` created with React and jsdom configuration",
+        "`test` script added to `apps/website/package.json`",
+        "`pnpm test` runs without errors (even with no tests)",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 10,
-      "passes": true,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Add sample component test",
+      "description": "As a developer, I want an example test file so that the testing pattern is established.",
+      "acceptance": [
+        "`apps/website/app/components/__tests__/Button.test.tsx` created",
+        "Test imports Button from @wakey/ui and renders it with different variants",
+        "`pnpm test` passes",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Add Zod dependency for validation",
+      "description": "As a developer, I want a schema validation library so that runtime data can be type-checked.",
+      "acceptance": [
+        "`zod` added to `apps/website/package.json` dependencies",
+        "`pnpm install` completes successfully",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Add type-safe JSON parse utility",
+      "description": "As a developer, I want a safe JSON parsing function so that malformed data doesn't crash the app.",
+      "acceptance": [
+        "`apps/website/app/lib/parse.ts` exports `safeJsonParse<T>(json: string, schema: ZodSchema<T>): T | null`",
+        "Function returns null on JSON.parse errors instead of throwing",
+        "Function validates parsed data against Zod schema and returns null if invalid",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Fix unsafe JSON.parse in api.product route",
+      "description": "As a developer, I want product API JSON parsing to be safe so that malformed metafields don't crash requests.",
+      "acceptance": [
+        "`api.product.$handle.tsx` uses `safeJsonParse` with appropriate Zod schema for reviews metafield",
+        "Invalid JSON returns empty array instead of crashing",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Add CI workflow with validation",
+      "description": "As a developer, I want CI to validate code before deployment so that broken code cannot reach production.",
+      "acceptance": [
+        "`.github/workflows/ci.yml` created with typecheck job",
+        "Workflow runs on pull requests to main branch",
+        "Workflow file is valid YAML",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Add cache strategy to product page loader",
+      "description": "As a user, I want product pages cached so that they load faster on repeat visits.",
+      "acceptance": [
+        "`products.$handle.tsx` loader uses `cache: storefront.CacheShort()` in storefront.query call",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Add cache headers to product API route",
+      "description": "As a developer, I want product tooltip data cached so that redundant API calls are avoided.",
+      "acceptance": [
+        "`api.product.$handle.tsx` returns Response with `Cache-Control: public, max-age=3600` header",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Add cache headers to reviews API route",
+      "description": "As a developer, I want review data cached so that redundant API calls are avoided.",
+      "acceptance": [
+        "`api.reviews.$handle.tsx` returns Response with `Cache-Control: public, max-age=3600` header",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Add AggregateRating to product schema",
+      "description": "As a search engine, I want product pages to include rating schema so that rich snippets display stars.",
+      "acceptance": [
+        "Product page JSON-LD schema in meta function includes `aggregateRating` object with `@type: AggregateRating`",
+        "`ratingValue` populated from product reviewRating metafield",
+        "`reviewCount` populated from reviews metafield array length",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Create graceful ErrorBoundary component",
+      "description": "As a user, I want to see a friendly error page so that crashes don't show technical details.",
+      "acceptance": [
+        "`apps/website/app/components/ErrorFallback.tsx` created",
+        "Component shows user-friendly message (not raw error)",
+        "Component includes 'Go Home' link/button to navigate to /",
+        "Component logs error to console for debugging",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Update root ErrorBoundary to use graceful fallback",
+      "description": "As a user, I want app crashes to show a friendly page so that I can navigate away.",
+      "acceptance": [
+        "`root.tsx` ErrorBoundary component uses `ErrorFallback` component",
+        "Error details not exposed to user in the UI",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Type StickyAddToCart cart data",
+      "description": "As a developer, I want cart data properly typed so that type errors are caught at compile time.",
+      "acceptance": [
+        "`StickyAddToCart.tsx` replaces `cart: unknown` with proper Cart type import",
+        "FetcherWithComponents uses correct Cart generic type",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Add environment variable validation",
+      "description": "As a developer, I want all required env vars validated at startup so that missing config fails fast.",
+      "acceptance": [
+        "`apps/website/app/lib/env.ts` exports validated env object using Zod",
+        "Validates SESSION_SECRET (min 32 chars), PUBLIC_STOREFRONT_API_TOKEN, PUBLIC_STORE_DOMAIN",
+        "Throws descriptive error if validation fails",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Add fetchPriority to FeaturedProduct hero",
+      "description": "As a user, I want the hero image to load quickly so that LCP is optimized.",
+      "acceptance": [
+        "`FeaturedProduct.tsx` background image has `fetchPriority=\"high\"` attribute",
+        "Image also has `decoding=\"async\"` attribute",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Fix search loader error handling",
+      "description": "As a developer, I want search errors properly handled so that failed searches don't break the page.",
+      "acceptance": [
+        "`search.tsx` loader uses async/await instead of promise chain pattern",
+        "Errors return structured error response object, not undefined",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Add breadcrumb schema to product pages",
+      "description": "As a search engine, I want breadcrumb schema so that navigation hierarchy appears in search results.",
+      "acceptance": [
+        "Product page JSON-LD includes `BreadcrumbList` schema",
+        "Breadcrumbs show: Home > Products > [Product Name]",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Add og:image dimensions to homepage",
+      "description": "As a social platform, I want image dimensions in meta tags so that previews render correctly.",
+      "acceptance": [
+        "`_index.tsx` meta function includes `og:image:width` and `og:image:height` properties",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Add og:image dimensions to product pages",
+      "description": "As a social platform, I want image dimensions in meta tags so that previews render correctly.",
+      "acceptance": [
+        "`products.$handle.tsx` meta function includes `og:image:width` and `og:image:height` properties",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "Add noindex to account routes",
+      "description": "As a search engine, I want private pages excluded from indexing so that user data isn't crawled.",
+      "acceptance": [
+        "All `account.*.tsx` routes include `{name: 'robots', content: 'noindex, nofollow'}` in meta array",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Add aria-label support to Button component",
+      "description": "As a screen reader user, I want icon-only buttons to have labels so that I know what they do.",
+      "acceptance": [
+        "`packages/ui/src/Button.tsx` ButtonProps interface includes optional `aria-label` prop",
+        "Prop is passed to the rendered button/link/anchor element",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 30,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Add label to search input",
+      "description": "As a screen reader user, I want the search input to have a label so that I know what it's for.",
+      "acceptance": [
+        "Search input in `search.tsx` or related component has associated label element",
+        "Label can be visually hidden using sr-only class",
+        "Label has `htmlFor` matching input `id`",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 31,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Create useLazyFetch custom hook",
+      "description": "As a developer, I want a reusable lazy fetch hook so that the fetcher pattern isn't duplicated.",
+      "acceptance": [
+        "`packages/hooks/src/useLazyFetch.ts` created",
+        "Hook accepts path string and returns fetcher that auto-loads on mount when idle and no data",
+        "Exported from `packages/hooks/src/index.ts`",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 32,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Refactor ProductTooltip to use useLazyFetch",
+      "description": "As a developer, I want ProductTooltip to use the shared hook so that code is DRY.",
+      "acceptance": [
+        "`ProductTooltip.tsx` imports and uses `useLazyFetch` from `@wakey/hooks`",
+        "Inline useEffect with fetcher logic removed",
+        "Component behavior unchanged",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Refactor ProductReviews to use useLazyFetch",
+      "description": "As a developer, I want ProductReviews to use the shared hook so that code is DRY.",
+      "acceptance": [
+        "`ProductReviews.tsx` imports and uses `useLazyFetch` from `@wakey/hooks`",
+        "Inline useEffect with fetcher logic removed",
+        "Component behavior unchanged",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Extract MediaItem component from ProductCarousel",
+      "description": "As a developer, I want media rendering extracted so that ProductCarousel is simpler.",
+      "acceptance": [
+        "`apps/website/app/components/MediaItem.tsx` created",
+        "Component handles MediaImage and Video __typename cases",
+        "Component accepts media item and renders appropriate element",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Refactor ProductCarousel to use MediaItem",
+      "description": "As a developer, I want ProductCarousel simplified so that it's easier to maintain.",
+      "acceptance": [
+        "`ProductCarousel.tsx` imports and uses `MediaItem` for both mobile and desktop rendering",
+        "Duplicate media rendering logic removed",
+        "Component behavior unchanged",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-037",
+      "title": "Extract generic SearchResultList component",
+      "description": "As a developer, I want a reusable search result list so that SearchResults is simpler.",
+      "acceptance": [
+        "`apps/website/app/components/SearchResultList.tsx` created",
+        "Component accepts title, items array, term, and getPath function props",
+        "Component renders list of links with proper structure",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 37,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "Refactor SearchResults to use SearchResultList",
+      "description": "As a developer, I want SearchResults simplified so that it's easier to maintain.",
+      "acceptance": [
+        "`SearchResults.tsx` imports and uses `SearchResultList` for articles, pages, products sections",
+        "Multiple similar component definitions replaced with single reusable component",
+        "Component behavior unchanged",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 38,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "Combine Header useEffect hooks",
+      "description": "As a developer, I want Header effects combined so that related logic is together.",
+      "acceptance": [
+        "`Header.tsx` has single useEffect for menu-open side effects",
+        "Click-outside handler and body overflow logic in same effect",
+        "Effect properly cleans up on unmount",
+        "Component behavior unchanged",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 39,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-040",
+      "title": "Change video preload to metadata",
+      "description": "As a user, I want videos to load efficiently so that page load is faster.",
+      "acceptance": [
+        "`TextMedia.tsx` video elements use `preload=\"metadata\"` instead of `preload=\"auto\"`",
+        "`ProductCarousel.tsx` video elements use `preload=\"metadata\"`",
+        "Videos still play correctly when triggered",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 40,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-041",
+      "title": "Add font preload links",
+      "description": "As a user, I want fonts to load quickly so that text doesn't flash.",
+      "acceptance": [
+        "`root.tsx` head includes `<link rel=\"preload\">` for founders.woff2",
+        "`root.tsx` head includes `<link rel=\"preload\">` for itc-std.woff2",
+        "Links include `as=\"font\"` and `crossorigin` attributes",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 41,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-042",
+      "title": "Remove unused @wakey/utils package",
+      "description": "As a developer, I want unused code removed so that the codebase is cleaner.",
+      "acceptance": [
+        "`packages/utils/` directory deleted",
+        "Reference removed from `apps/website/package.json` if present",
+        "`pnpm install` completes successfully",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 42,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-043",
+      "title": "Verify and document Hero component status",
+      "description": "As a developer, I want unused components documented so that their status is clear.",
+      "acceptance": [
+        "`Hero.tsx` has TODO comment added explaining its status (planned use or to be removed)",
+        "If unused and not planned, component is deleted",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 43,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-044",
+      "title": "Add decoding=async to hero images",
+      "description": "As a user, I want hero images to decode efficiently so that the main thread isn't blocked.",
+      "acceptance": [
+        "`Hero.tsx` background image has `decoding=\"async\"` attribute",
+        "`ImageBanner.tsx` background images have `decoding=\"async\"` attribute",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 44,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-045",
+      "title": "Add prefetch to hero CTA buttons",
+      "description": "As a user, I want linked pages to prefetch so that navigation feels instant.",
+      "acceptance": [
+        "`FeaturedProduct.tsx` CTA Link component has `prefetch=\"intent\"` prop",
+        "`Hero.tsx` CTA Link has `prefetch=\"intent\"` prop if component is used",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 45,
+      "passes": false,
       "notes": ""
     }
   ]
