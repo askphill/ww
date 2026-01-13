@@ -792,3 +792,28 @@
 - Product page meta function already had og:image defined - just needed dimensions added
 - Pre-existing typecheck errors in packages/ui, packages/hooks, and @wakey/seo-engine don't block story completion
 - Website build passes independently even when turbo build fails on other apps
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-029 - Add noindex to account routes
+**Status:** Complete
+
+**What was done:**
+- Added `{name: 'robots', content: 'noindex, nofollow'}` to all account routes that render pages
+- account.tsx (layout) - added new meta function with noindex
+- account.addresses.tsx - added noindex to existing meta array
+- account.profile.tsx - added noindex to existing meta array
+- account.orders._index.tsx - added noindex to existing meta array
+- account.orders.$id.tsx - added noindex to existing meta array
+- Routes that only redirect (account._index, account.$, account_.login, account_.authorize, account_.logout) don't need meta since they never render viewable pages
+
+**Files changed:**
+- `apps/website/app/routes/account.tsx` (modified - added meta function)
+- `apps/website/app/routes/account.addresses.tsx` (modified)
+- `apps/website/app/routes/account.profile.tsx` (modified)
+- `apps/website/app/routes/account.orders._index.tsx` (modified)
+- `apps/website/app/routes/account.orders.$id.tsx` (modified)
+
+**Learnings for future iterations:**
+- Not all account routes need meta functions - routes that redirect immediately don't render any HTML
+- Layout routes (account.tsx) can have meta functions that apply to all child routes
+- The meta pattern is `export const meta: Route.MetaFunction = () => [...]` for React Router 7

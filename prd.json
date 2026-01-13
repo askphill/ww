@@ -389,8 +389,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 29,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added robots noindex,nofollow to account.tsx (layout), account.addresses.tsx, account.profile.tsx, account.orders._index.tsx, and account.orders.$id.tsx. Routes that only redirect (account._index, account.$, account_.login, account_.authorize, account_.logout) don't need meta since they never render pages."
     },
     {
       "id": "US-030",
