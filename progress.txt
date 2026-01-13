@@ -877,3 +877,22 @@
 - Shared hooks in packages/hooks need peer dependencies for external packages they use
 - The useLazyFetch hook abstracts the common pattern: `useEffect(() => { if (fetcher.state === 'idle' && !fetcher.data) fetcher.load(path) }, [path, fetcher])`
 - Pre-existing typecheck errors in packages/hooks (missing @types/react) don't block build or story completion
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-033 - Refactor ProductTooltip to use useLazyFetch
+**Status:** Complete
+
+**What was done:**
+- Replaced `useFetcher` + `useEffect` pattern with `useLazyFetch<T>` from `@wakey/hooks`
+- Removed inline useEffect that checked `fetcher.state === 'idle' && !fetcher.data`
+- Added `ProductApiResponse` interface for proper typing of fetcher data
+- Component behavior unchanged - still fetches product data on mount and renders Tooltip
+- Verified in browser - ProductTooltip renders with product title, subtitle, and review count
+
+**Files changed:**
+- `apps/website/app/components/ProductTooltip.tsx` (modified - 14 insertions, 9 deletions)
+
+**Learnings for future iterations:**
+- The useLazyFetch hook is a drop-in replacement for the useFetcher + useEffect pattern
+- Add response type interface when using useLazyFetch<T> for type safety
+- Components using the hook get typed `fetcher.data` which improves downstream usage
