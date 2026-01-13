@@ -31,7 +31,7 @@ export function FreeShippingBar({currentTotal}: FreeShippingBarProps) {
           'Congrats! You get free standard shipping.'
         ) : (
           <>
-            <span className="font-display">{amountRemaining.toFixed(0)} euros</span>{' '}
+            <span className="font-display">{Math.ceil(amountRemaining)} euros</span>{' '}
             away from free shipping
           </>
         )}
