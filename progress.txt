@@ -431,3 +431,30 @@
 - tsconfigPaths plugin needed for ~ alias resolution in tests
 - jsdom ^26.0.0 is compatible with Vitest 3.x
 - Pre-existing typecheck errors in packages/ui and packages/hooks don't block testing setup
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-011 - Add sample component test
+**Status:** Complete
+
+**What was done:**
+- Created `apps/website/app/components/__tests__/Button.test.tsx` with 8 comprehensive tests
+- Tests cover: primary/secondary/outline variants, click events, disabled state, icon rendering, anchor href, and Link to prop
+- Added `@testing-library/user-event` and `@testing-library/jest-dom` dev dependencies
+- Added `@vitejs/plugin-react` to handle automatic JSX runtime in tests
+- Created `apps/website/app/test/setup.ts` to import jest-dom matchers
+- Updated `vitest.config.ts` to include react plugin and setup file
+- All 8 tests pass with `pnpm test`
+
+**Files changed:**
+- `apps/website/app/components/__tests__/Button.test.tsx` (created)
+- `apps/website/app/test/setup.ts` (created)
+- `apps/website/vitest.config.ts` (modified - added react plugin and setup file)
+- `apps/website/package.json` (modified - added 3 dev dependencies)
+- `pnpm-lock.yaml` (updated)
+
+**Learnings for future iterations:**
+- @vitejs/plugin-react is required for Vitest to handle JSX/TSX with automatic runtime
+- MemoryRouter from react-router is needed to test components using Link
+- @testing-library/jest-dom/vitest provides toBeInTheDocument, toHaveClass matchers for Vitest
+- Test setup file path in vitest.config.ts should be relative (./app/test/setup.ts)
+- Components from @wakey/ui work in tests when the react plugin handles JSX transformation

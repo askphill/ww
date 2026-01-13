@@ -153,8 +153,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created Button.test.tsx with 8 tests covering: primary/secondary/outline variants, click events, disabled state, icon rendering, anchor href, and Link to prop. Added @testing-library/user-event, @testing-library/jest-dom, @vitejs/plugin-react. Created test setup file for jest-dom matchers."
     },
     {
       "id": "US-012",
