@@ -111,3 +111,26 @@
 - Combine height animation (grid) with opacity/translate animation for polished feel
 - Build passes independently with `cd apps/website && pnpm build`
 
+### Iteration: 2026-01-13 (continued)
+**Story:** US-006 - Implement menu toggle behavior
+**Status:** Complete
+
+**What was done:**
+- Added `useState` hook to Header for internal menu state management
+- Replaced `useAside().open('mobile')` with internal toggle logic
+- MenuToggleButton now receives `isOpen` and `onToggle` props
+- Dynamic `aria-label` switches between "Open menu" and "Close menu"
+- Added `aria-expanded` attribute that reflects actual menu state
+- Added `id="navigation-dropdown"` to NavigationDropdown for `aria-controls` reference
+- Removed unused `useAside` import from Header
+
+**Files changed:**
+- apps/website/app/components/Header.tsx (modified)
+- apps/website/app/components/NavigationDropdown.tsx (modified)
+
+**Learnings for future iterations:**
+- Header now manages menu state internally via useState (simplified from external prop pattern)
+- Old MobileMenuAside drawer still exists in PageLayout (to be removed in US-010)
+- Toggle pattern: `setIsMenuOpen((prev) => !prev)` for reliable state flip
+- aria-controls should reference element id for accessibility compliance
+
