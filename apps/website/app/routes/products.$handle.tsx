@@ -152,6 +152,32 @@ export const meta: Route.MetaFunction = ({data}) => {
     };
   }
 
+  // Breadcrumb JSON-LD schema: Home > Products > [Product Name]
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.wakey.care/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Products',
+        item: 'https://www.wakey.care/products',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product?.title || 'Product',
+        item: `https://www.wakey.care/products/${product?.handle}`,
+      },
+    ],
+  };
+
   return [
     {title: `${title} | Wakey`},
     {name: 'description', content: description},
@@ -166,6 +192,7 @@ export const meta: Route.MetaFunction = ({data}) => {
     {name: 'twitter:image', content: image},
     {rel: 'canonical', href: `/products/${product?.handle}`},
     {'script:ld+json': productSchema},
+    {'script:ld+json': breadcrumbSchema},
   ];
 };
 
