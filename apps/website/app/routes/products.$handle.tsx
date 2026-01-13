@@ -186,6 +186,8 @@ export const meta: Route.MetaFunction = ({data}) => {
     {property: 'og:type', content: 'product'},
     {property: 'og:url', content: `https://www.wakey.care/products/${product?.handle}`},
     {property: 'og:image', content: image},
+    {property: 'og:image:width', content: '1200'},
+    {property: 'og:image:height', content: '630'},
     {name: 'twitter:card', content: 'summary_large_image'},
     {name: 'twitter:title', content: `${title} | Wakey`},
     {name: 'twitter:description', content: description},
