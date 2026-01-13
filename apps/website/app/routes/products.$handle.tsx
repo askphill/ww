@@ -103,8 +103,22 @@ export const meta: Route.MetaFunction = ({data}) => {
   const variant = product?.selectedOrFirstAvailableVariant;
   const image = variant?.image?.url || product?.media?.nodes?.[0]?.image?.url;
 
+  // Parse review data for aggregateRating
+  const ratingValue = product?.reviewRating?.value
+    ? parseFloat(product.reviewRating.value)
+    : null;
+  let reviewCount = 0;
+  try {
+    if (product?.reviews?.value) {
+      const reviews = JSON.parse(product.reviews.value as string);
+      reviewCount = Array.isArray(reviews) ? reviews.length : 0;
+    }
+  } catch {
+    reviewCount = 0;
+  }
+
   // Product JSON-LD schema
-  const productSchema = {
+  const productSchema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product?.title,
@@ -128,6 +142,15 @@ export const meta: Route.MetaFunction = ({data}) => {
       },
     },
   };
+
+  // Add aggregateRating if we have rating data
+  if (ratingValue !== null && reviewCount > 0) {
+    productSchema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: ratingValue,
+      reviewCount: reviewCount,
+    };
+  }
 
   return [
     {title: `${title} | Wakey`},
