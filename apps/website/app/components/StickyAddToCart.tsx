@@ -81,14 +81,14 @@ export function StickyAddToCart({
       }
     >
       {/* Unified Layout (same for mobile and desktop) */}
-      <div className="flex items-center justify-between w-full max-w-[600px] h-[70px] md:h-[90px] bg-yellow rounded-card p-2 px-3 md:px-4">
+      <div className="flex items-center justify-between w-full max-w-[600px] md:h-[90px] bg-yellow rounded-card p-4 md:py-2 md:px-4">
         {/* Left: Product Image + Info */}
         <div className="flex items-center gap-2 md:gap-3">
           {productImage && (
             <img
               src={productImage}
               alt={product.title}
-              className="w-11 h-11 md:w-14 md:h-14 object-contain rounded-lg flex-shrink-0"
+              className="hidden md:block w-11 h-11 md:w-14 md:h-14 object-contain rounded-lg flex-shrink-0"
             />
           )}
           <div className="flex flex-col gap-1 md:gap-1.5">

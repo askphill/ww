@@ -56,7 +56,7 @@ export function AddedToBagPopup({
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center">
       <div
-        className={`w-full max-w-[600px] bg-sand text-black rounded-card p-6 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+        className={`w-full max-w-[600px] bg-blue text-black rounded-card p-4 md:p-6 border border-black/10 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
           isVisible
             ? 'opacity-100 translate-y-0'
             : 'opacity-0 translate-y-4'

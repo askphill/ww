@@ -25,7 +25,7 @@ export function Header({cart, inline = false}: HeaderProps) {
       role="banner"
     >
       <div
-        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">

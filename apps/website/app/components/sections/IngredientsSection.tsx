@@ -20,7 +20,7 @@ export function IngredientsSection({
     <section>
       {/* Text Container */}
       <div className="bg-sand p-8 px-4 md:p-8 md:pb-12 md:grid md:grid-cols-12 md:gap-0">
-        <h2 className="text-label md:text-h3 font-display md:col-span-5">
+        <h2 className="text-h3 font-display md:col-span-5">
           {title}
         </h2>
         <div
