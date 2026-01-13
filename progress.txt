@@ -134,3 +134,24 @@
 - Toggle pattern: `setIsMenuOpen((prev) => !prev)` for reliable state flip
 - aria-controls should reference element id for accessibility compliance
 
+### Iteration: 2026-01-13 (continued)
+**Story:** US-007 - Implement click-outside-to-close behavior
+**Status:** Complete
+
+**What was done:**
+- Added useEffect with document mousedown listener to detect clicks outside header
+- Created headerRef to track the header element for contains() check
+- Menu closes when clicking outside header area (including dropdown)
+- Menu stays open when clicking inside header or dropdown
+- Nav link clicks already handled by onClose callback (from US-003)
+- Effect cleanup removes listener when menu closes or component unmounts
+
+**Files changed:**
+- apps/website/app/components/Header.tsx (modified)
+
+**Learnings for future iterations:**
+- Use mousedown instead of click for immediate response (before click completes)
+- useEffect with dependency on isMenuOpen ensures listener only active when needed
+- headerRef.current.contains(event.target) checks if click is inside header DOM tree
+- MCP chrome-devtools click may not trigger mousedown - use evaluate_script for testing
+
