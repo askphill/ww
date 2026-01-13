@@ -55,7 +55,7 @@ export function CartLineItem({
               to={lineItemUrl}
               onClick={() => layout === 'aside' && close()}
               prefetch="intent"
-              className="text-base font-display uppercase block pr-8"
+              className="text-base font-display uppercase block pr-8 leading-normal"
             >
               {product.title}
             </Link>
