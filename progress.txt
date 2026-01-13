@@ -718,3 +718,24 @@
 - `decoding="async"` allows image decoding off the main thread to prevent layout blocking
 - FeaturedProduct uses `<picture>` element with mobile source - attributes go on `<img>`, not `<source>`
 - Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-025 - Fix search loader error handling
+**Status:** Complete
+
+**What was done:**
+- Replaced promise chain pattern (`.catch()` handler) with async/await try/catch
+- Old pattern: `searchPromise.catch()` returned value but was never used
+- New pattern: proper try/catch that returns structured error response
+- Error responses include correct type ('predictive' | 'regular'), term, error message, and empty result sets
+- Predictive search errors use `getEmptyPredictiveSearchResult()` helper
+- Regular search errors return properly typed items object with empty nodes arrays
+
+**Files changed:**
+- `apps/website/app/routes/search.tsx` (modified)
+
+**Learnings for future iterations:**
+- Promise `.catch()` handlers only work if the promise is reassigned: `searchPromise = searchPromise.catch(...)` 
+- The original code was a bug - the `.catch()` return value was discarded
+- Always use async/await with try/catch for clearer error handling
+- Empty result structure must match the expected type (items.articles.nodes, etc.)
