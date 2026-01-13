@@ -699,3 +699,22 @@
 - safeParse returns `{success: boolean, data?: T, error?: ZodError}` for non-throwing validation
 - Format errors with `result.error.errors.map()` for readable output
 - Zod schema can have optional fields via `.optional()` method
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-024 - Add fetchPriority to FeaturedProduct hero
+**Status:** Complete
+
+**What was done:**
+- Added `fetchPriority="high"` attribute to hero background image in FeaturedProduct.tsx
+- Added `decoding="async"` attribute for non-blocking image decode
+- Both attributes improve LCP (Largest Contentful Paint) performance
+- Verified in browser using chrome-devtools MCP - attributes present on hero image
+
+**Files changed:**
+- `apps/website/app/components/sections/FeaturedProduct.tsx` (modified)
+
+**Learnings for future iterations:**
+- `fetchPriority="high"` tells browser to prioritize loading the hero image above other resources
+- `decoding="async"` allows image decoding off the main thread to prevent layout blocking
+- FeaturedProduct uses `<picture>` element with mobile source - attributes go on `<img>`, not `<source>`
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion

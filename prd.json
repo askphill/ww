@@ -327,8 +327,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 24,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added fetchPriority=\"high\" and decoding=\"async\" to FeaturedProduct hero image. Verified in browser - attributes present on hero image."
     },
     {
       "id": "US-025",
