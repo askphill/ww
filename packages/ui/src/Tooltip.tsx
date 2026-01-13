@@ -35,7 +35,7 @@ export function Tooltip({
     <div className={`absolute z-[7] ${className}`} style={positionStyle}>
       <a
         href={product.url}
-        className="flex items-stretch border border-sand/50 rounded-card bg-sand/[0.02] backdrop-blur-[15px] hover:scale-105 active:scale-95 transition-transform"
+        className="flex items-stretch blur-bg rounded-card hover:scale-105 active:scale-95 transition-transform"
       >
         {/* Image container */}
         <div className="flex items-center justify-center p-1.5 md:p-2">

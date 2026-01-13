@@ -2,8 +2,9 @@ import {Suspense, useState, useEffect, useRef} from 'react';
 import {Await, useAsyncValue, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {HamburgerIcon, LogoSmall, BagIcon} from '@wakey/ui';
+import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon} from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
+import {AnnouncementBar} from '~/components/AnnouncementBar';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -75,7 +76,7 @@ export function Header({cart, inline = false}: HeaderProps) {
     >
       {/* Header pill */}
       <div
-        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white border-blue/10 rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
         <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
         <Link to="/" aria-label="Wakey home">
@@ -92,6 +93,13 @@ export function Header({cart, inline = false}: HeaderProps) {
       <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
         <NavigationDropdown isOpen={isMenuOpen} onClose={handleMenuClose} />
       </div>
+
+      {/* Announcement bar - hidden for now */}
+      {/* <div
+        className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      >
+        <AnnouncementBar message="Free shipping on orders over €50" />
+      </div> */}
     </header>
   );
 }
@@ -119,7 +127,7 @@ function HeaderButton({
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
         flex items-center justify-center
-        text-label md:text-s2 font-display
+        text-small font-display
         hover-scale
         transition-transform
         cursor-pointer
@@ -143,7 +151,11 @@ function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
       ariaControls="navigation-dropdown"
       ariaExpanded={isOpen}
     >
-      <HamburgerIcon className="w-6" />
+      {isOpen ? (
+        <MenuCloseIcon className="w-6" />
+      ) : (
+        <HamburgerIcon className="w-6" />
+      )}
     </HeaderButton>
   );
 }
