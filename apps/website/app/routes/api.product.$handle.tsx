@@ -1,4 +1,6 @@
+import {z} from 'zod';
 import type {Route} from './+types/api.product.$handle';
+import {safeJsonParse} from '~/lib/parse';
 
 const PRODUCT_QUERY = `#graphql
   query ApiProduct($handle: String!) {
@@ -48,17 +50,11 @@ export async function loader({params, context}: Route.LoaderArgs) {
     variables: {handle},
   });
 
-  // Parse reviews array to get count
-  let reviewCount = null;
-  if (product?.reviews?.value) {
-    try {
-      const reviewsData = JSON.parse(product.reviews.value);
-      // Reviews is an array of metaobject IDs
-      reviewCount = Array.isArray(reviewsData) ? reviewsData.length : null;
-    } catch (e) {
-      // ignore parse errors
-    }
-  }
+  // Parse reviews array to get count using safe JSON parsing
+  // Reviews metafield contains an array of metaobject IDs (strings like "gid://shopify/Metaobject/123")
+  const ReviewsSchema = z.array(z.string());
+  const reviewsData = safeJsonParse(product?.reviews?.value, ReviewsSchema);
+  const reviewCount = reviewsData?.length ?? null;
 
   // Get subtitle from product metafield, variant metafield, or variant selected option
   let subtitle = product?.subtitle?.value || null;
