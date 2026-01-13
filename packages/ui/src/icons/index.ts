@@ -1,4 +1,15 @@
-export {IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from './PaymentIcons';
+export {
+  IdealIcon,
+  KlarnaIcon,
+  IcsIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  ApplePayIcon,
+  BancontactIcon,
+  SofortIcon,
+  PayPalIcon,
+} from './PaymentIcons';
 export {LogoBig} from './LogoBig';
 export {LogoSmall} from './LogoSmall';
 export {HamburgerIcon} from './HamburgerIcon';

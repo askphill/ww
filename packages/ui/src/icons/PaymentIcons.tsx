@@ -65,3 +65,160 @@ export function VisaIcon({className}: IconProps) {
     </svg>
   );
 }
+
+export function MastercardIcon({className}: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="8.5" cy="8" r="7.5" fill="currentColor" fillOpacity="0.8" />
+      <circle cx="15.5" cy="8" r="7.5" fill="currentColor" fillOpacity="0.6" />
+    </svg>
+  );
+}
+
+export function AmexIcon({className}: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0.5" y="0.5" width="23" height="15" rx="2" stroke="currentColor" />
+      <path
+        d="M3.5 11L5.5 5H7.5L9.5 11H7.8L7.4 9.8H5.6L5.2 11H3.5ZM6 7.2L5.9 8.4H7.1L7 7.2L6.5 5.8L6 7.2Z"
+        fill="currentColor"
+      />
+      <path
+        d="M10 11V5H12.3L13 6.5L13.7 5H16V11H14.5V7L13.5 9H12.5L11.5 7V11H10Z"
+        fill="currentColor"
+      />
+      <path
+        d="M17 11V5H21V6.2H18.5V7.4H20.8V8.6H18.5V9.8H21V11H17Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function ApplePayIcon({className}: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M5.2 5.5C5.6 4.9 5.9 4.1 5.8 3.3C5 3.3 4.1 3.8 3.6 4.4C3.2 4.9 2.8 5.8 2.9 6.5C3.8 6.6 4.7 6.1 5.2 5.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M5.8 6.7C4.6 6.6 3.6 7.4 3 7.4C2.4 7.4 1.5 6.7 0.6 6.8C-0.6 6.8 1 8.8 1 10.5C1 12.2 2.3 14.5 3.9 14.5C4.7 14.5 5.3 14 6.2 14C7.1 14 7.6 14.5 8.5 14.5C10.1 14.4 11.3 12.3 11.3 10.5C11.3 8.5 9.4 7.2 8.1 7.2C7.2 7.1 6.6 7.8 5.8 6.7Z"
+        fill="currentColor"
+      />
+      <path
+        d="M13.5 5H15.2C16.2 5 16.8 5.6 16.8 6.5C16.8 7.4 16.2 8 15.2 8H14.3V9.5H13.5V5ZM14.3 5.7V7.3H15C15.6 7.3 16 7 16 6.5C16 6 15.6 5.7 15 5.7H14.3Z"
+        fill="currentColor"
+      />
+      <path
+        d="M17.3 8.5C17.3 7.6 17.9 7 18.8 7C19.7 7 20.3 7.6 20.3 8.5C20.3 9.4 19.7 10 18.8 10C17.9 10 17.3 9.4 17.3 8.5ZM19.5 8.5C19.5 7.9 19.2 7.5 18.8 7.5C18.4 7.5 18.1 7.9 18.1 8.5C18.1 9.1 18.4 9.5 18.8 9.5C19.2 9.5 19.5 9.1 19.5 8.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M21 10.5L21.8 7H22.6L23.4 10.5H22.7L22.5 9.5H21.9L21.7 10.5H21ZM22 8.9H22.4L22.3 8L22.2 7.5L22.1 8L22 8.9Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function BancontactIcon({className}: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0.5" y="0.5" width="23" height="15" rx="2" stroke="currentColor" />
+      <path
+        d="M4 11V5H7C8.1 5 8.8 5.6 8.8 6.5C8.8 7 8.5 7.4 8 7.6C8.6 7.8 9 8.3 9 8.9C9 9.9 8.2 10.5 7 10.5H4V11ZM5.3 7.2H6.5C7 7.2 7.3 7 7.3 6.6C7.3 6.2 7 6 6.5 6H5.3V7.2ZM5.3 9.5H6.6C7.2 9.5 7.5 9.3 7.5 8.8C7.5 8.4 7.2 8.1 6.6 8.1H5.3V9.5Z"
+        fill="currentColor"
+      />
+      <circle cx="16" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="16" cy="8" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function SofortIcon({className}: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0.5" y="0.5" width="23" height="15" rx="2" stroke="currentColor" />
+      <path
+        d="M3 9.5C3 8.5 3.8 7.8 5 7.8C6.2 7.8 7 8.5 7 9.2C7 9.6 6.8 9.8 6.3 10L5.6 10.3C5.3 10.4 5.2 10.5 5.2 10.7H6.9V11.5H3.3V11C3.3 10.2 3.7 9.7 4.6 9.4L5.3 9.1C5.6 9 5.7 8.9 5.7 8.7C5.7 8.4 5.4 8.2 5 8.2C4.5 8.2 4.2 8.5 4.2 8.9H3C3 8.6 3 9.2 3 9.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M8 9.5C8 8.3 8.8 7.5 10 7.5C11.2 7.5 12 8.3 12 9.5C12 10.7 11.2 11.5 10 11.5C8.8 11.5 8 10.7 8 9.5ZM10.7 9.5C10.7 8.9 10.4 8.5 10 8.5C9.6 8.5 9.3 8.9 9.3 9.5C9.3 10.1 9.6 10.5 10 10.5C10.4 10.5 10.7 10.1 10.7 9.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M13 11.5V7.5H15.5V8.5H14.2V9H15.3V10H14.2V11.5H13Z"
+        fill="currentColor"
+      />
+      <path
+        d="M16 9.5C16 8.3 16.8 7.5 18 7.5C19.2 7.5 20 8.3 20 9.5C20 10.7 19.2 11.5 18 11.5C16.8 11.5 16 10.7 16 9.5ZM18.7 9.5C18.7 8.9 18.4 8.5 18 8.5C17.6 8.5 17.3 8.9 17.3 9.5C17.3 10.1 17.6 10.5 18 10.5C18.4 10.5 18.7 10.1 18.7 9.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M20.5 11.5V7.5H21.7V8.6H21.9L22.6 7.5H24L22.8 9.2L24 11.5H22.6L21.9 10H21.7V11.5H20.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M4 4H8V6H4V4Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function PayPalIcon({className}: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8.5 3H11.5C13.5 3 14.5 4 14.5 5.5C14.5 7.5 13 8.5 11 8.5H9.5L9 12H6.5L8.5 3Z"
+        fill="currentColor"
+        fillOpacity="0.6"
+      />
+      <path
+        d="M10 4.5H11.2C12 4.5 12.5 4.8 12.5 5.5C12.5 6.4 11.8 7 11 7H10.2L10 4.5Z"
+        fill="currentColor"
+      />
+      <path
+        d="M6 5H9C11 5 12 6 12 7.5C12 9.5 10.5 10.5 8.5 10.5H7L6.5 14H4L6 5Z"
+        fill="currentColor"
+        fillOpacity="0.8"
+      />
+      <path
+        d="M7.5 6.5H8.7C9.5 6.5 10 6.8 10 7.5C10 8.4 9.3 9 8.5 9H7.7L7.5 6.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
