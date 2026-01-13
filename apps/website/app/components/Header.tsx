@@ -1,10 +1,6 @@
 import {Suspense} from 'react';
 import {Await, useAsyncValue, Link} from 'react-router';
-import {
-  type CartViewPayload,
-  useAnalytics,
-  useOptimisticCart,
-} from '@shopify/hydrogen';
+import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {HamburgerIcon, LogoSmall} from '@wakey/ui';
@@ -94,25 +90,21 @@ function MenuToggleButton() {
 }
 
 function CartButton({count}: {count: number}) {
-  const {open} = useAside();
-  const {publish, shop, cart: analyticsCart, prevCart} = useAnalytics();
-
   return (
-    <HeaderButton
-      onClick={() => {
-        open('cart');
-        publish('cart_viewed', {
-          cart: analyticsCart,
-          prevCart,
-          shop,
-          url: window.location.href || '',
-        } as CartViewPayload);
-      }}
-      ariaLabel={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
-      ariaControls="CartDrawer"
+    <Link
+      to="/cart"
+      aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
+      className="
+        rounded-full w-8 h-8 md:w-12 md:h-12
+        bg-sand
+        flex items-center justify-center
+        text-label md:text-s2 font-display
+        hover-scale
+        transition-transform
+      "
     >
       {count}
-    </HeaderButton>
+    </Link>
   );
 }
 
