@@ -257,8 +257,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 19,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added aggregateRating to product JSON-LD schema. Parses reviewRating for ratingValue and reviews array for reviewCount. Only adds aggregateRating when both values exist."
     },
     {
       "id": "US-020",
