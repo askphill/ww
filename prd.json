@@ -121,8 +121,8 @@
         "Typecheck passes"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - added section under Sticky Add to Cart with static preview and props documentation"
     },
     {
       "id": "US-009",

@@ -154,3 +154,24 @@
 - Wrapper component pattern useful when needing to use hooks with resolved async data
 - CartForm fetcher.data becomes truthy after successful cart mutation
 
+### Iteration: 2026-01-13
+**Story:** US-008 - Add AddedToBagPopup to design system page
+**Status:** Complete
+
+**What was done:**
+- Added new 'Added to Bag Popup' section under 'Sticky Add to Cart' section in design-system.tsx
+- Created static inline preview of popup (not using actual component) to avoid fixed positioning issues
+- Used real product data from the existing loader (productData) for realistic preview
+- Documented all component props with description and code formatting
+- Popup preview shows: title, close button, product image/title/variant/price, and action buttons
+
+**Files changed:**
+- apps/website/app/routes/design-system.tsx (updated)
+
+**Learnings for future iterations:**
+- The AddedToBagPopup component has fixed positioning and animation that doesn't work well in design system previews
+- For design system documentation, prefer static inline versions that show appearance without behavior
+- The design-system.tsx loader already fetches product data that can be reused for popup preview
+- Existing patterns in design-system.tsx use `<code className="bg-black/10 px-1 rounded">` for inline code styling
+- Build passes with `pnpm build --filter=@wakey/website` despite pre-existing typecheck errors in other packages
+
