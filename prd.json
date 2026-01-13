@@ -313,8 +313,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 23,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created env.ts with Zod schema. Validates SESSION_SECRET (min 32 chars, not 'foobar'), PUBLIC_STOREFRONT_API_TOKEN, PUBLIC_STORE_DOMAIN. Uses safeParse with descriptive error messages. Exports validateEnv function and ValidatedEnv type."
     },
     {
       "id": "US-024",

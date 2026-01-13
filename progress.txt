@@ -677,3 +677,25 @@
 - Once props are properly typed, type casts can be removed from useOptimisticCart and similar hooks
 - Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
 
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-023 - Add environment variable validation
+**Status:** Complete
+
+**What was done:**
+- Created `apps/website/app/lib/env.ts` with Zod schema for environment validation
+- Validates SESSION_SECRET (min 32 chars, cannot be 'foobar')
+- Validates PUBLIC_STOREFRONT_API_TOKEN (required)
+- Validates PUBLIC_STORE_DOMAIN (required)
+- Optional: STORE, ADMIN_API_TOKEN
+- Uses safeParse with descriptive error messages
+- Exports `validateEnv(env)` function and `ValidatedEnv` type
+
+**Files changed:**
+- `apps/website/app/lib/env.ts` (created)
+
+**Learnings for future iterations:**
+- Use `z.string().refine()` for custom validation rules beyond built-in validators
+- safeParse returns `{success: boolean, data?: T, error?: ZodError}` for non-throwing validation
+- Format errors with `result.error.errors.map()` for readable output
+- Zod schema can have optional fields via `.optional()` method
