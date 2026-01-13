@@ -657,3 +657,23 @@
 - The old ErrorBoundary exposed error.message to users - security/UX concern
 - ErrorFallback handles status-based messaging internally, caller just passes status code
 
+### Iteration: 2026-01-13 UTC
+**Story:** US-022 - Type StickyAddToCart cart data
+**Status:** Complete
+
+**What was done:**
+- Replaced `FetcherWithComponents<unknown>` with properly typed `CartActionResponse` type
+- Created `CartActionResponse` type matching the actual cart action return shape (cart, errors, warnings, analytics)
+- Replaced `cart: unknown` with `CartApiQueryFragment | null` in AddedToBagPopupWrapper props
+- Removed redundant type cast `as import('storefrontapi.generated').CartApiQueryFragment | null` since prop is now properly typed
+- Imported `CartApiQueryFragment` from `storefrontapi.generated`
+
+**Files changed:**
+- `apps/website/app/components/StickyAddToCart.tsx` (modified)
+
+**Learnings for future iterations:**
+- Cart action in cart.tsx returns `{cart, errors, warnings, analytics}` - use this shape for FetcherWithComponents generic
+- `CartApiQueryFragment` from storefrontapi.generated is the correct type for cart data in components
+- Once props are properly typed, type casts can be removed from useOptimisticCart and similar hooks
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
+
