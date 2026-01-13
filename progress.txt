@@ -458,3 +458,22 @@
 - @testing-library/jest-dom/vitest provides toBeInTheDocument, toHaveClass matchers for Vitest
 - Test setup file path in vitest.config.ts should be relative (./app/test/setup.ts)
 - Components from @wakey/ui work in tests when the react plugin handles JSX transformation
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-012 - Add Zod dependency for validation
+**Status:** Complete
+
+**What was done:**
+- Added `zod` ^3.24.0 to `apps/website/package.json` dependencies
+- Ran `pnpm install` successfully
+- Verified build passes successfully
+- Pre-existing typecheck errors in packages/ui are unrelated to this change
+
+**Files changed:**
+- `apps/website/package.json` (modified - added zod dependency)
+- `pnpm-lock.yaml` (updated)
+
+**Learnings for future iterations:**
+- Zod is installed as version 3.25.76 (pnpm resolves ^3.24.0 to latest compatible)
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
+- Zod works in edge runtime (pure ESM, no Node.js dependencies)
