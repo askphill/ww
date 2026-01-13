@@ -1,5 +1,6 @@
 import {useRef} from 'react';
 import {useContinuousCarousel} from '@wakey/hooks';
+import {USPIllustration} from '~/components/USPIllustration';
 
 interface USPItem {
   title: string;
@@ -11,14 +12,7 @@ interface USPSectionProps {
 }
 
 function USPIcon() {
-  return (
-    <img
-      src="/icons/usp-illustration.svg"
-      alt=""
-      className="w-36 md:w-40"
-      loading="lazy"
-    />
-  );
+  return <USPIllustration className="w-36 md:w-40" />;
 }
 
 function USPCard({title, body}: USPItem) {
