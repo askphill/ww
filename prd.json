@@ -186,8 +186,8 @@
         "Typecheck passes"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - FreeShippingBar component with progress bar, threshold at 80 euros, shows remaining amount or congrats message"
     },
     {
       "id": "US-013",

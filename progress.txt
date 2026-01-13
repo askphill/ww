@@ -243,3 +243,24 @@
 - CartForm.ACTIONS.LinesUpdate handles quantity updates via Shopify cart API
 - Sometimes stories are already complete as side effects of earlier stories - verify before implementing
 
+### Iteration: 2026-01-13
+**Story:** US-012 - Create free shipping progress bar component
+**Status:** Complete
+
+**What was done:**
+- Created FreeShippingBar component at apps/website/app/components/FreeShippingBar.tsx
+- Props interface with currentTotal (number) prop
+- Hardcoded FREE_SHIPPING_THRESHOLD constant at 80 euros
+- Progress bar uses percentage calculation: (currentTotal / threshold) * 100
+- Shows "X euros away from free shipping" when below threshold
+- Shows "Congrats! You get free standard shipping." when threshold met
+
+**Files changed:**
+- apps/website/app/components/FreeShippingBar.tsx (new)
+
+**Learnings for future iterations:**
+- Math.max(0, ...) ensures amount remaining is never negative
+- Math.min(100, ...) caps progress at 100% to prevent overflow
+- transition-all duration-300 ease-out provides smooth width animations
+- toFixed(0) formats number without decimal places for cleaner display
+
