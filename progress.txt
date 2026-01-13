@@ -352,3 +352,22 @@
 - Dev server runs on port 3005 (not 5173) for this project
 - pkill -f "chrome-devtools-mcp" can resolve browser profile conflicts
 
+### Iteration: 2026-01-13
+**Story:** US-017 - Update header cart button to link to /cart page
+**Status:** Complete
+
+**What was done:**
+- Converted CartButton from button element to Link component from react-router
+- Changed destination from opening cart drawer to navigating to /cart page
+- Preserved same styling (rounded-full, bg-sand, hover-scale, etc.)
+- Removed unused useAnalytics and CartViewPayload imports
+- Cart count badge still displays via CartBadge component
+
+**Files changed:**
+- apps/website/app/components/Header.tsx (updated)
+
+**Learnings for future iterations:**
+- Link component from react-router works well as styled buttons when given same classes
+- Removing useAnalytics is OK since cart_viewed event isn't critical for page navigation
+- The CartBadge component uses useOptimisticCart for reactive count updates
+
