@@ -497,3 +497,22 @@
 - Use `import type` for type-only imports from Zod for better tree-shaking
 - Zod's `safeParse()` returns `{success: true, data: T}` or `{success: false, error: ZodError}`
 - Generic function signature `<T>(json: string, schema: ZodSchema<T>): T | null` allows type inference
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-014 - Fix unsafe JSON.parse in api.product route
+**Status:** Complete
+
+**What was done:**
+- Imported `safeJsonParse` from `~/lib/parse` and `z` from `zod`
+- Created `ReviewsSchema` using `z.array(z.string())` to validate reviews metafield
+- Reviews metafield contains an array of metaobject IDs (strings like "gid://shopify/Metaobject/123")
+- Replaced manual try/catch JSON.parse block with `safeJsonParse(product?.reviews?.value, ReviewsSchema)`
+- Used `??` nullish coalescing for `reviewCount` to handle null from invalid JSON
+
+**Files changed:**
+- `apps/website/app/routes/api.product.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- Define Zod schema inline when used in only one place (no need to export)
+- Use `??` instead of `||` for nullish coalescing when `0` should be a valid value
+- The safeJsonParse utility returns null for both JSON parse errors and validation failures

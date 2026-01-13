@@ -193,8 +193,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used safeJsonParse with z.array(z.string()) schema for reviews metafield. Invalid JSON returns null which is handled with ?? null for reviewCount."
     },
     {
       "id": "US-015",
