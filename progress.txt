@@ -334,3 +334,37 @@
 - Always test with `pnpm build` AND `pnpm dev:website` to catch runtime issues
 - Updated .env files in both root and apps/website/ - dev server uses apps/website/.env
 
+### Iteration: 2026-01-13 23:45 UTC
+**Story:** US-006 - Sanitize ImageBanner HTML
+**Status:** Complete
+
+**What was done:**
+- Imported `sanitizeHtml` from `~/lib/sanitize` in ImageBanner.tsx
+- Applied sanitization to `text` prop before passing to `dangerouslySetInnerHTML`
+- Verified in browser - "Wakey Fact" banner on product page renders correctly with italicized text (baking soda, skin irritation, absorb wetness, odor-causing)
+
+**Files changed:**
+- `apps/website/app/components/sections/ImageBanner.tsx` (modified)
+
+**Learnings for future iterations:**
+- ImageBanner is used on product pages for fact/highlight banners
+- The sanitizeHtml utility already handles the edge runtime constraints (no new dependencies needed)
+- Pattern is simple: import utility, wrap the text prop in sanitizeHtml() call
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-007 - Sanitize pages body HTML
+**Status:** Complete
+
+**What was done:**
+- Imported `sanitizeHtml` from `~/lib/sanitize` in pages.$handle.tsx
+- Applied sanitization to `page.body` before passing to `dangerouslySetInnerHTML`
+- Verified in browser - /pages/about and /pages/contact render correctly with all HTML content
+
+**Files changed:**
+- `apps/website/app/routes/pages.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- The pages.$handle.tsx route is used for Shopify pages (about, contact, etc.)
+- Same pattern as other sanitization stories: import utility, wrap prop in sanitizeHtml()
+- Build passes even with pre-existing typecheck errors in packages/ui and packages/hooks
+

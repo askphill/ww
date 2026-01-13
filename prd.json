@@ -82,8 +82,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added sanitizeHtml import and applied to text prop in dangerouslySetInnerHTML. Verified in browser - Wakey Fact banner on product page renders correctly with italicized text."
     },
     {
       "id": "US-007",
@@ -96,8 +96,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added sanitizeHtml import and applied to page.body in dangerouslySetInnerHTML. Verified in browser - /pages/about and /pages/contact render correctly."
     },
     {
       "id": "US-008",
