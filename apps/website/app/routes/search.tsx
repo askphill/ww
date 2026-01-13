@@ -23,17 +23,40 @@ export const meta: Route.MetaFunction = () => {
 export async function loader({request, context}: Route.LoaderArgs) {
   const url = new URL(request.url);
   const isPredictive = url.searchParams.has('predictive');
-  const searchPromise: Promise<PredictiveSearchReturn | RegularSearchReturn> =
-    isPredictive
-      ? predictiveSearch({request, context})
-      : regularSearch({request, context});
+  const term = String(url.searchParams.get('q') || '');
 
-  searchPromise.catch((error: Error) => {
-    console.error(error);
-    return {term: '', result: null, error: error.message};
-  });
+  try {
+    if (isPredictive) {
+      return await predictiveSearch({request, context});
+    }
+    return await regularSearch({request, context});
+  } catch (error) {
+    console.error('Search error:', error);
 
-  return await searchPromise;
+    // Return structured error response instead of throwing
+    if (isPredictive) {
+      return {
+        type: 'predictive' as const,
+        term,
+        error: error instanceof Error ? error.message : 'Search failed',
+        result: getEmptyPredictiveSearchResult(),
+      };
+    }
+
+    return {
+      type: 'regular' as const,
+      term,
+      error: error instanceof Error ? error.message : 'Search failed',
+      result: {
+        total: 0,
+        items: {
+          articles: {nodes: []},
+          pages: {nodes: []},
+          products: {nodes: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}},
+        },
+      },
+    };
+  }
 }
 
 /**
