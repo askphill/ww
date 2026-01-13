@@ -308,3 +308,26 @@
 - UI package doesn't have its own typecheck/build task - verify via website build
 - Export * from './icons' in main index.ts re-exports all icon exports automatically
 
+### Iteration: 2026-01-13
+**Story:** US-015 - Redesign cart summary section
+**Status:** Complete
+
+**What was done:**
+- Integrated FreeShippingBar component at top of summary
+- Added Total items row displaying cart.totalQuantity
+- Added Total price row with text-h3 styling using Money component
+- Redesigned CHECKOUT button: bg-black text-sand uppercase text-s2 tracking-wide
+- Added 8 payment icons: Visa, Mastercard, Amex, ApplePay, PayPal, Klarna, iDEAL, Bancontact
+- Added free shipping message: "Free standard shipping on orders over 80 euros"
+- Used rounded-card, flex-col gap-6 for consistent vertical spacing
+
+**Files changed:**
+- apps/website/app/components/CartSummary.tsx (updated)
+
+**Learnings for future iterations:**
+- cart.cost.totalAmount.amount is a string, must parseFloat() for numeric comparison
+- cart.totalQuantity provides the total number of items across all lines
+- Import FreeShippingBar from relative path './FreeShippingBar'
+- Removed IcsIcon (not in acceptance criteria), kept 8 relevant payment icons
+- Chrome DevTools MCP continues to have browser profile issues
+
