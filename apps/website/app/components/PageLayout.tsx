@@ -6,6 +6,7 @@ import type {
 import {Aside, useAside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
+import {AnnouncementBar} from '~/components/AnnouncementBar';
 import {CrossIcon} from '@wakey/ui';
 
 const PRIMARY_MENU = [
@@ -42,6 +43,12 @@ export function PageLayout({
     <Aside.Provider>
       <MobileMenuAside />
       {header && <Header cart={cart} />}
+      {/* Announcement bar - fixed below header, lower z-index than nav dropdown */}
+      <div className="fixed z-40 w-full top-[76px] md:top-[84px] pointer-events-none">
+        <div className="pointer-events-auto">
+          <AnnouncementBar message="Free shipping on orders over €50" />
+        </div>
+      </div>
       <main>{children}</main>
       <Footer />
     </Aside.Provider>
