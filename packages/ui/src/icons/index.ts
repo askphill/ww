@@ -19,3 +19,6 @@ export {
   ShapeHexagon,
   ShapeHalfCircle,
 } from './WakeyShapes';
+export {BagIcon} from './BagIcon';
+export {AddBagIcon} from './AddBagIcon';
+export {CheckoutIcon} from './CheckoutIcon';

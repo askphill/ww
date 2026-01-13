@@ -48,17 +48,17 @@ export function Tooltip({
         </div>
 
         {/* Info - hidden on mobile */}
-        <div className="hidden md:flex flex-col justify-center pr-5 py-2 text-sand">
-          <div className="text-lg uppercase font-display tracking-tight leading-none">
+        <div className="hidden md:flex flex-col justify-center pr-5 py-2 text-sand gap-1">
+          <div className="text-base uppercase font-display tracking-tight leading-none">
             {product.title}
           </div>
           {(hasSubtitle || hasReviews) && (
-            <div className="flex items-center gap-1.5 mt-0.5 leading-none font-display">
+            <div className="flex items-center gap-1.5 leading-none">
               {hasSubtitle && (
-                <span className="text-sm">{product.subtitle}</span>
+                <span className="text-base font-body italic leading-none">{product.subtitle}</span>
               )}
               {hasReviews && (
-                <div className="flex items-center">
+                <div className="flex items-center font-display">
                   <Stars rating={product.reviewRating!} />
                   <span className="text-xs ml-1">({product.reviewCount})</span>
                 </div>

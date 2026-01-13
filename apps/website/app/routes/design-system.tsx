@@ -1,5 +1,5 @@
 import type {Route} from './+types/design-system';
-import {Button, Stars, Accordion, Tooltip} from '@wakey/ui';
+import {Button, Stars, Accordion, Tooltip, AddedToBagPopup} from '@wakey/ui';
 import {
   LogoBig,
   LogoSmall,
@@ -18,11 +18,12 @@ import {
   ShapeSparkle,
   ShapeHexagon,
   ShapeHalfCircle,
+  BagIcon,
+  AddBagIcon,
 } from '@wakey/ui';
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
-import {AddedToBagPopup} from '~/components/AddedToBagPopup';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -439,10 +440,31 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
 
         {/* Buttons */}
         <Section title="Buttons">
-          <div className="flex flex-wrap gap-4 items-center">
-            <Button variant="primary">Primary</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
+          <div className="space-y-6">
+            <div>
+              <p className="text-small font-body opacity-60 mb-3">Without icon</p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Button variant="primary">Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="outline">Outline</Button>
+              </div>
+            </div>
+            <div>
+              <p className="text-small font-body opacity-60 mb-3">With icon</p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Button variant="primary" icon={<AddBagIcon />}>Add to Bag</Button>
+                <Button variant="secondary" icon={<AddBagIcon />}>Add to Bag</Button>
+                <Button variant="outline" icon={<AddBagIcon />}>Add to Bag</Button>
+              </div>
+            </div>
+            <div>
+              <p className="text-small font-body opacity-60 mb-3">Disabled</p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Button variant="primary" disabled>Primary</Button>
+                <Button variant="secondary" disabled>Secondary</Button>
+                <Button variant="outline" disabled>Outline</Button>
+              </div>
+            </div>
           </div>
         </Section>
 
@@ -658,6 +680,18 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     <SmileyIcon className="w-10 text-black" />
                   </div>
                   <p className="text-small font-body mt-2">SmileyIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <BagIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">BagIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <AddBagIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">AddBagIcon</p>
                 </div>
               </div>
             </div>

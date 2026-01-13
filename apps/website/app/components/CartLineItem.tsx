@@ -55,18 +55,33 @@ export function CartLineItem({
               to={lineItemUrl}
               onClick={() => layout === 'aside' && close()}
               prefetch="intent"
-              className="text-paragraph md:text-s2 font-display pb-1 block pr-8"
+              className="text-base font-display uppercase block pr-8"
             >
               {product.title}
             </Link>
+            {/* Subtitle from metafield */}
+            {merchandise.product.subtitle?.value && (
+              <div className="text-base font-body italic opacity-70">
+                {merchandise.product.subtitle.value}
+              </div>
+            )}
             {/* Show variant options if not default */}
             {selectedOptions.length > 0 &&
               selectedOptions[0].value !== 'Default Title' && (
-                <div className="text-small font-display opacity-70">
+                <div className="text-base font-display opacity-70">
                   {selectedOptions.map((opt) => opt.value).join(' / ')}
                 </div>
               )}
-            <div className="text-paragraph font-display mt-2 flex gap-2">
+          </div>
+
+          {/* Bottom row: Quantity Controls (left) and Price (right) */}
+          <div className="mt-4 flex items-end justify-between">
+            <QuantitySelector
+              lineId={id}
+              quantity={quantity}
+              disabled={!!isOptimistic}
+            />
+            <div className="text-base font-display flex gap-2">
               {cost?.compareAtAmountPerQuantity && (
                 <span className="line-through opacity-50">
                   <Money data={cost.compareAtAmountPerQuantity} withoutTrailingZeros />
@@ -74,15 +89,6 @@ export function CartLineItem({
               )}
               {cost?.totalAmount && <Money data={cost.totalAmount} withoutTrailingZeros />}
             </div>
-          </div>
-
-          {/* Quantity Controls */}
-          <div className="mt-4">
-            <QuantitySelector
-              lineId={id}
-              quantity={quantity}
-              disabled={!!isOptimistic}
-            />
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
   "name": "wakey",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev --filter=@wakey/website",
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",

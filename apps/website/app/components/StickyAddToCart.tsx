@@ -7,8 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {ProductVariantFragment} from 'storefrontapi.generated';
 import {type FetcherWithComponents, Await} from 'react-router';
-import {SmileyIcon, Stars} from '@wakey/ui';
-import {AddedToBagPopup} from '~/components/AddedToBagPopup';
+import {SmileyIcon, Button, AddedToBagPopup, AddBagIcon} from '@wakey/ui';
 import {Suspense} from 'react';
 import {useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
@@ -21,8 +20,6 @@ interface StickyAddToCartProps {
   };
   selectedVariant: ProductVariantFragment;
   subtitle?: string | null;
-  reviewRating?: number | null;
-  reviewCount?: number;
   analytics?: unknown;
   productImage?: string | null;
   /** When true, renders inline instead of fixed position */
@@ -33,8 +30,6 @@ export function StickyAddToCart({
   product,
   selectedVariant,
   subtitle,
-  reviewRating,
-  reviewCount = 0,
   analytics,
   productImage,
   inline = false,
@@ -96,7 +91,7 @@ export function StickyAddToCart({
               className="w-11 h-11 md:w-14 md:h-14 object-contain rounded-lg flex-shrink-0"
             />
           )}
-          <div className="flex flex-col gap-0.5 md:gap-1">
+          <div className="flex flex-col gap-1 md:gap-1.5">
             <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">
               <span className="text-label md:text-[1.0625rem] font-display uppercase leading-tight">
                 {product.title}
@@ -112,23 +107,11 @@ export function StickyAddToCart({
                 )}
               </span>
             </div>
-            <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">
-              {subtitle && (
-                <span className="text-small font-display opacity-60">
-                  {subtitle}
-                </span>
-              )}
-              {reviewRating && (
-                <div className="flex items-center gap-1">
-                  <Stars rating={reviewRating} color="black" size="sm" />
-                  {reviewCount > 0 && (
-                    <span className="text-small font-display opacity-60">
-                      ({reviewCount})
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+            {subtitle && (
+              <span className="text-small font-body italic opacity-60">
+                {subtitle}
+              </span>
+            )}
           </div>
         </div>
 
@@ -155,27 +138,22 @@ export function StickyAddToCart({
                   type="hidden"
                   value={JSON.stringify(analytics)}
                 />
-                <button
+                <Button
                   type="submit"
+                  variant="primary"
                   disabled={!isAvailable || isLoading}
-                  className={`
-                    shrink-0 h-[50px] md:h-[58px] px-4 md:px-6
-                    bg-sand rounded-[5px]
-                    font-display text-label uppercase whitespace-nowrap
-                    relative overflow-hidden
-                    transition-opacity duration-200 cursor-pointer
-                    ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
+                  className="shrink-0 relative overflow-hidden whitespace-nowrap"
                 >
                   {/* Text - slides up when loading */}
                   <span
                     className={`
-                      flex items-center justify-center
+                      flex items-center justify-center gap-2
                       transition-all duration-300
                       ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
                     `}
                   >
-                    {isAvailable ? 'Add to Cart' : 'Sold Out'}
+                    {isAvailable && <AddBagIcon className="w-5 h-5" />}
+                    {isAvailable ? 'Add to Bag' : 'Sold Out'}
                   </span>
                   {/* Smiley - slides in when loading */}
                   <span
@@ -189,7 +167,7 @@ export function StickyAddToCart({
                       className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
                     />
                   </span>
-                </button>
+                </Button>
               </>
             );
           }}
@@ -250,7 +228,7 @@ function AddedToBagPopupWrapper({
         image: productImage ?? null,
         title: productTitle,
         variantTitle: subtitle ?? null,
-        price,
+        price: <Money data={price} withoutTrailingZeros />,
       }}
       cartCount={optimisticCart?.totalQuantity ?? 0}
       checkoutUrl={optimisticCart?.checkoutUrl ?? '/cart'}

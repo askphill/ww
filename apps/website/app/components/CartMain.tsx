@@ -20,22 +20,22 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const cart = useOptimisticCart(originalCart);
   const hasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
 
-  // Page layout: 2-column grid on desktop
+  // Page layout: 24-column grid on desktop
   if (layout === 'page') {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-6 md:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-24 gap-6 md:gap-8">
         {hasItems ? (
           <>
-            {/* Line items - left column on desktop */}
-            <div>
+            {/* Line items - left column on desktop (16/24) */}
+            <div className="md:col-span-16">
               <ul className="space-y-4">
                 {(cart?.lines?.nodes ?? []).map((line) => (
                   <CartLineItem key={line.id} line={line} layout={layout} />
                 ))}
               </ul>
             </div>
-            {/* Summary - right column on desktop */}
-            <div className="md:sticky md:top-8 md:self-start">
+            {/* Summary - right column on desktop (8/24) */}
+            <div className="md:col-span-8 md:sticky md:top-8 md:self-start">
               <CartSummary cart={cart} layout={layout} />
             </div>
           </>
@@ -72,14 +72,14 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 function CartEmpty({layout}: {layout: CartLayout}) {
   const {close} = useAside();
 
-  // Page layout: centered on black background with sand text
+  // Page layout: centered on sand background with black text
   if (layout === 'page') {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-16 md:py-24">
-        <h3 className="text-h2 font-display text-sand mb-6">Your bag is empty</h3>
+        <h3 className="text-h2 font-display text-black mb-6">Your bag is empty</h3>
         <Link
           to="/"
-          className="text-paragraph font-display text-sand underline hover:opacity-70 transition-opacity"
+          className="text-paragraph font-display text-black underline hover:opacity-70 transition-opacity"
           prefetch="viewport"
         >
           Continue shopping

@@ -3,7 +3,7 @@ import {Await, useAsyncValue, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {HamburgerIcon, LogoSmall} from '@wakey/ui';
+import {HamburgerIcon, LogoSmall, BagIcon} from '@wakey/ui';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -24,7 +24,9 @@ export function Header({cart, inline = false}: HeaderProps) {
       }
       role="banner"
     >
-      <div className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}>
+      <div
+        className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+      >
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />
@@ -61,7 +63,6 @@ function HeaderButton({
       aria-expanded={ariaExpanded}
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
-        bg-sand
         flex items-center justify-center
         text-label md:text-s2 font-display
         hover-scale
@@ -84,7 +85,7 @@ function MenuToggleButton() {
       ariaControls="SiteMenuDrawer"
       ariaExpanded={false}
     >
-      <HamburgerIcon className="w-4 md:w-5" />
+      <HamburgerIcon className="w-5 md:w-6" />
     </HeaderButton>
   );
 }
@@ -96,14 +97,18 @@ function CartButton({count}: {count: number}) {
       aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
-        bg-sand
         flex items-center justify-center
-        text-label md:text-s2 font-display
         hover-scale
         transition-transform
+        relative
       "
     >
-      {count}
+      <BagIcon className="w-5 md:w-6" />
+      {count > 0 && (
+        <span className="absolute top-2 right-2 min-w-3.5 h-3.5 px-1 flex items-center justify-center bg-ocher text-black text-xs font-display rounded-full leading-none">
+          {count}
+        </span>
+      )}
     </Link>
   );
 }

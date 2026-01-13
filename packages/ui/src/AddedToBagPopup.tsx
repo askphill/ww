@@ -1,14 +1,12 @@
-import {CrossIcon} from '@wakey/ui';
-import {Link} from 'react-router';
 import {useEffect, useState} from 'react';
-import {Money} from '@shopify/hydrogen';
-import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
+import {CrossIcon, CheckoutIcon} from './icons';
+import {Button} from './Button';
 
 interface AddedToBagPopupProduct {
   image: string | null;
   title: string;
   variantTitle: string | null;
-  price: MoneyV2;
+  price: React.ReactNode;
 }
 
 interface AddedToBagPopupProps {
@@ -68,9 +66,10 @@ export function AddedToBagPopup({
         <div className="flex items-center justify-between mb-4">
           <span className="text-s2 font-display">Added to your bag</span>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-black hover:opacity-70 transition-opacity"
+            className="text-black hover:opacity-70 transition-opacity cursor-pointer"
           >
             <CrossIcon className="w-8 h-8" />
           </button>
@@ -90,32 +89,27 @@ export function AddedToBagPopup({
           )}
 
           {/* Product details */}
-          <div className="flex flex-col justify-center">
-            <span className="text-paragraph font-display">{product.title}</span>
+          <div className="flex flex-col justify-center flex-1 gap-1 md:gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-base font-display uppercase leading-none">{product.title}</span>
+              <span className="text-base font-display leading-none">
+                {product.price}
+              </span>
+            </div>
             {product.variantTitle && (
-              <span className="text-small opacity-70">{product.variantTitle}</span>
+              <span className="text-small font-body italic opacity-70">{product.variantTitle}</span>
             )}
-            <span className="text-paragraph mt-1">
-              <Money data={product.price} withoutTrailingZeros />
-            </span>
           </div>
         </div>
 
         {/* Action buttons */}
         <div className="flex gap-3 mt-6">
-          <Link
-            to="/cart"
-            onClick={onClose}
-            className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-black text-black bg-transparent hover:bg-black/10 transition-colors"
-          >
+          <Button to="/cart" variant="outline" onClick={onClose} className="flex-1">
             Your bag ({cartCount})
-          </Link>
-          <a
-            href={checkoutUrl}
-            className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-black text-sand hover:bg-black/90 transition-colors"
-          >
+          </Button>
+          <Button href={checkoutUrl} variant="primary" className="flex-1" icon={<CheckoutIcon className="w-5 h-5" />}>
             Checkout
-          </a>
+          </Button>
         </div>
       </div>
     </div>

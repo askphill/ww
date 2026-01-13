@@ -9,6 +9,7 @@ import {
   IdealIcon,
   KlarnaIcon,
   Button,
+  CheckoutIcon,
 } from '@wakey/ui';
 import {FreeShippingBar} from './FreeShippingBar';
 
@@ -33,13 +34,13 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
       {/* Totals section */}
       <div className="space-y-2">
         {/* Total items row */}
-        <div className="flex justify-between text-paragraph font-display">
+        <div className="flex justify-between text-base font-display">
           <span>Total items:</span>
           <span>{totalQuantity}</span>
         </div>
 
         {/* Total price row */}
-        <div className="flex justify-between text-h3 md:text-s2 font-display">
+        <div className="flex justify-between text-lg md:text-xl font-display">
           <span>Total:</span>
           <span>
             {cart?.cost?.totalAmount ? (
@@ -53,7 +54,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
 
       {/* Checkout button - large, full width */}
       {cart?.checkoutUrl && (
-        <Button href={cart.checkoutUrl} className="w-full uppercase">
+        <Button href={cart.checkoutUrl} className="w-full" icon={<CheckoutIcon className="w-5 h-5" />}>
           Checkout
         </Button>
       )}

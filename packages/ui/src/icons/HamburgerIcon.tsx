@@ -5,26 +5,17 @@ interface HamburgerIconProps {
 export function HamburgerIcon({className}: HamburgerIconProps) {
   return (
     <svg
-      className={className}
-      viewBox="0 0 20 9"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
     >
-      <line
-        x1="0.649216"
-        y1="1.09095"
-        x2="19.6529"
-        y2="1.09095"
+      <path
+        d="M3 7H21M3 17H21"
         stroke="currentColor"
-        strokeWidth="1.86009"
-      />
-      <line
-        x1="0.649216"
-        y1="7.91126"
-        x2="19.6529"
-        y2="7.91126"
-        stroke="currentColor"
-        strokeWidth="1.86009"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
