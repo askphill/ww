@@ -574,3 +574,20 @@
 - For cache headers, must use Response object with explicit headers
 - Pattern: `new Response(JSON.stringify(data), { status: 200, headers: {...} })`
 - Other routes like robots.txt and sitemap use same pattern for cache headers
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-018 - Add cache headers to reviews API route
+**Status:** Complete
+
+**What was done:**
+- Added `Cache-Control: public, max-age=3600` header for 1-hour cache
+- Added `Content-Type: application/json` header for proper response type
+- Updated all return paths (no handle, no product, success) to use Response objects
+- Extracted cacheHeaders constant for DRY code
+
+**Files changed:**
+- `apps/website/app/routes/api.reviews.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- Same pattern as api.product route - extract headers constant for reuse across return paths
+- Reviews API has 3 return paths (no handle, no product, success) all need consistent headers
