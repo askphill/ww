@@ -9,6 +9,7 @@ export {
 export {LogoBig} from './LogoBig';
 export {LogoSmall} from './LogoSmall';
 export {HamburgerIcon} from './HamburgerIcon';
+export {MenuCloseIcon} from './MenuCloseIcon';
 export {CrossIcon} from './CrossIcon';
 export {SmileyIcon} from './SmileyIcon';
 export {

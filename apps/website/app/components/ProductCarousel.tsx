@@ -1,56 +1,9 @@
-import {useState, useRef, useEffect, useCallback} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {Image} from '@shopify/hydrogen';
 import type {ProductFragment} from 'storefrontapi.generated';
 import {useContinuousCarousel} from '@wakey/hooks';
 
 type MediaNode = ProductFragment['media']['nodes'][number];
-
-// Dedicated component to handle video autoplay after hydration
-function AutoplayVideo({
-  src,
-  poster,
-  className,
-  draggable,
-}: {
-  src: string;
-  poster?: string;
-  className?: string;
-  draggable?: boolean;
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Force play after hydration
-    const playVideo = () => {
-      video.play().catch(() => {});
-    };
-
-    playVideo();
-    video.addEventListener('canplay', playVideo);
-
-    return () => {
-      video.removeEventListener('canplay', playVideo);
-    };
-  }, [src]);
-
-  return (
-    <video
-      ref={videoRef}
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="auto"
-      poster={poster}
-      src={src}
-      className={className}
-      draggable={draggable}
-    />
-  );
-}
 
 interface ProductCarouselProps {
   media: MediaNode[];
@@ -64,19 +17,8 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
   // Skip first media item if specified
   const displayMedia = skipFirst ? media.slice(1) : media;
 
-  // Play all videos in a container
-  const playVideos = useCallback((container: HTMLElement) => {
-    container.querySelectorAll('video').forEach((video) => {
-      video.play().catch(() => {
-        // Ignore autoplay errors (browser policy)
-      });
-    });
-  }, []);
-
   // Use shared continuous carousel hook for desktop
-  const {wrapperRef, isDesktop} = useContinuousCarousel({
-    onEnterView: playVideos,
-  });
+  const {wrapperRef, isDesktop} = useContinuousCarousel();
 
   // Mobile scroll tracking for ball indicators
   useEffect(() => {
@@ -94,38 +36,6 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
     scrollContainer.addEventListener('scroll', handleScroll, {passive: true});
     return () => scrollContainer.removeEventListener('scroll', handleScroll);
   }, [isDesktop]);
-
-  // Force autoplay videos on mobile
-  useEffect(() => {
-    if (isDesktop) return;
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    const playVideos = () => {
-      scrollContainer.querySelectorAll('video').forEach((video) => {
-        video.play().catch(() => {
-          // Ignore autoplay errors (browser policy)
-        });
-      });
-    };
-
-    // Play on mount and when coming into view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            playVideos();
-          }
-        });
-      },
-      {threshold: 0.1}
-    );
-    observer.observe(scrollContainer);
-    playVideos();
-
-    return () => observer.disconnect();
-  }, [isDesktop]);
-
 
   if (displayMedia.length === 0) {
     return null;
@@ -158,9 +68,14 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
                   />
                 )}
                 {item.__typename === 'Video' && (
-                  <AutoplayVideo
-                    src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
                     poster={item.previewImage?.url}
+                    src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
                     className="w-full h-full object-cover"
                   />
                 )}
@@ -261,9 +176,14 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
                 />
               )}
               {item.__typename === 'Video' && (
-                <AutoplayVideo
-                  src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
                   poster={item.previewImage?.url}
+                  src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
                   className="w-full h-full object-cover pointer-events-none"
                   draggable={false}
                 />

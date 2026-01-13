@@ -141,6 +141,16 @@
   }
 }
 
+/* Frosted glass effects */
+@utility blur-bg{
+  border: 1px solid oklch(from var(--color-blue) l c h / 0.5);
+  background:rgba(255, 245, 235, 0.03);
+  backdrop-filter: blur(20px);
+  backdrop-filter: blur(15px);
+}
+
+
+
 /* Hover scale effect - desktop only */
 @utility hover-scale {
   @media (width >= 48rem) {

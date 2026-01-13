@@ -1,9 +1,10 @@
-import {Suspense} from 'react';
+import {Suspense, useState, useEffect, useRef} from 'react';
 import {Await, useAsyncValue, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {useAside} from '~/components/Aside';
-import {HamburgerIcon, LogoSmall, BagIcon} from '@wakey/ui';
+import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon} from '@wakey/ui';
+import {NavigationDropdown} from '~/components/NavigationDropdown';
+import {AnnouncementBar} from '~/components/AnnouncementBar';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -13,21 +14,71 @@ interface HeaderProps {
 
 /**
  * Floating pill header with menu toggle (left), logo (center), and cart count (right)
+ * Includes NavigationDropdown positioned directly below when open
+ * Manages its own menu open/close state internally
  */
 export function Header({cart, inline = false}: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen((prev) => !prev);
+  };
+
+  const handleMenuClose = () => {
+    setIsMenuOpen(false);
+  };
+
+  // Close menu when clicking outside header area
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        headerRef.current &&
+        !headerRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Use mousedown for immediate response (before click completes)
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    // Cleanup: always restore scroll on unmount
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isMenuOpen]);
+
   return (
     <header
+      ref={headerRef}
       className={
         inline
-          ? 'w-full flex justify-center'
-          : 'fixed z-50 w-full flex justify-center px-4 pt-4 md:px-6 md:pt-6 pointer-events-none'
+          ? 'w-full flex flex-col items-center'
+          : 'fixed z-50 w-full flex flex-col items-center px-4 pt-4 md:px-6 md:pt-6 pointer-events-none'
       }
       role="banner"
     >
+      {/* Header pill */}
       <div
-        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white border-blue/10 rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
-        <MenuToggleButton />
+        <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />
         </Link>
@@ -37,6 +88,18 @@ export function Header({cart, inline = false}: HeaderProps) {
           </Await>
         </Suspense>
       </div>
+
+      {/* Navigation dropdown - positioned directly below header */}
+      <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
+        <NavigationDropdown isOpen={isMenuOpen} onClose={handleMenuClose} />
+      </div>
+
+      {/* Announcement bar - hidden for now */}
+      {/* <div
+        className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      >
+        <AnnouncementBar message="Free shipping on orders over €50" />
+      </div> */}
     </header>
   );
 }
@@ -64,7 +127,7 @@ function HeaderButton({
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
         flex items-center justify-center
-        text-label md:text-s2 font-display
+        text-small font-display
         hover-scale
         transition-transform
         cursor-pointer
@@ -75,17 +138,24 @@ function HeaderButton({
   );
 }
 
-function MenuToggleButton() {
-  const {open} = useAside();
+interface MenuToggleButtonProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
 
+function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
   return (
     <HeaderButton
-      onClick={() => open('mobile')}
-      ariaLabel="Open menu"
-      ariaControls="SiteMenuDrawer"
-      ariaExpanded={false}
+      onClick={onToggle}
+      ariaLabel={isOpen ? 'Close menu' : 'Open menu'}
+      ariaControls="navigation-dropdown"
+      ariaExpanded={isOpen}
     >
-      <HamburgerIcon className="w-6" />
+      {isOpen ? (
+        <MenuCloseIcon className="w-6" />
+      ) : (
+        <HamburgerIcon className="w-6" />
+      )}
     </HeaderButton>
   );
 }

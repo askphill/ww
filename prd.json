@@ -1,31 +1,36 @@
 {
-  "branch": "ralph/checkout-experience",
-  "description": "Improve the checkout experience by adding an 'Added to Bag' popup notification when items are added to cart, redesigning the cart page to match Polaroid's clean layout, and streamlining navigation by linking the header cart button directly to the cart page.",
+  "branch": "ralph/navigation-redesign",
+  "description": "Redesign the navigation experience with an announcement bar below the header and a dropdown menu that slides down from under the header, replacing the side drawer.",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create AddedToBagPopup component structure",
-      "description": "As a developer, I want to create the base popup component so that it can display added item information.",
+      "title": "Create AnnouncementBar component",
+      "description": "As a user, I want to see promotional messages below the header so that I'm aware of current offers.",
       "acceptance": [
-        "Component created at `apps/website/app/components/AddedToBagPopup.tsx`",
-        "Props interface includes: `isOpen`, `onClose`, `product` (image, title, variant info, price), `cartCount`, `checkoutUrl`",
-        "Component renders nothing when `isOpen` is false",
+        "Component created at `apps/website/app/components/AnnouncementBar.tsx`",
+        "Same horizontal padding as header (`px-4` mobile, `md:px-6` desktop)",
+        "Same max-width as header (`max-w-[600px]`)",
+        "Uses `rounded-card` for border radius",
+        "Background is `bg-ocher` (#E3B012), text is `text-black font-display text-small`",
+        "Centered horizontally like header",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Completed - component created with props interface"
+      "notes": ""
     },
     {
       "id": "US-002",
-      "title": "Style AddedToBagPopup to match design system",
-      "description": "As a user, I want the popup to have consistent styling so that it feels part of the Wakey brand.",
+      "title": "Add marquee animation to AnnouncementBar",
+      "description": "As a user, I want the announcement text to scroll continuously so that longer messages fit and create visual interest.",
       "acceptance": [
-        "Popup uses `bg-black text-sand` color scheme (matching On Running dark theme)",
-        "Uses `rounded-card` for border radius",
-        "Uses type scale utilities: `text-s2` for 'Added to your bag' title, `text-paragraph` for product name, `text-small` for variant details",
-        "Close button (X) positioned top-right using `CrossIcon` from @wakey/ui",
-        "Typecheck passes"
+        "Text scrolls smoothly from right to left",
+        "Uses CSS animation for infinite horizontal scroll",
+        "Duplicate text content creates seamless loop",
+        "Uses existing `@keyframes marquee` from theme (30s linear infinite) or similar",
+        "Animation loops seamlessly without jumps",
+        "Works on both mobile and desktop",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 2,
       "passes": true,
@@ -33,254 +38,132 @@
     },
     {
       "id": "US-003",
-      "title": "Add product info layout to popup",
-      "description": "As a user, I want to see the product I just added so that I can confirm my selection.",
+      "title": "Create NavigationDropdown component structure",
+      "description": "As a user, I want to see a clean navigation panel when I tap the menu button so that I can browse products and learn more about Wakey.",
       "acceptance": [
-        "Left side shows product thumbnail image (square, ~80px)",
-        "Right side shows: product title, variant info (e.g., 'Mighty Citrus'), price",
-        "Layout uses flexbox with gap-4",
-        "Typecheck passes"
+        "Component created at `apps/website/app/components/NavigationDropdown.tsx`",
+        "Two sections: 'Shop' and 'Learn' with items shown immediately (no accordion)",
+        "Shop items: 'Wakey Deodorant' → `/products/deodorant`, 'Natural Deodorant' → `/products/natural-deodorant`",
+        "Learn items: 'About us' → `/about`, 'FAQ' → `/faq`, 'Blog' → `/blog`",
+        "Section labels use `text-body-small font-display uppercase tracking-wide text-black/60`",
+        "Nav links use `text-h3 font-display`",
+        "Background is `bg-sand`",
+        "Same padding as header (`px-4` mobile, `md:px-6` desktop)",
+        "Uses `rounded-card` border radius",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Completed - flexbox layout with 80px image and product details"
+      "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Add action buttons to popup",
-      "description": "As a user, I want buttons to navigate to my bag or checkout so that I can complete my purchase.",
+      "title": "Position NavigationDropdown below header",
+      "description": "As a user, I want the navigation to appear directly under the header so that it feels like part of the same element.",
       "acceptance": [
-        "Two buttons side by side: 'Your bag (X)' and 'Checkout'",
-        "'Your bag' button uses outline variant (border with transparent bg, text-sand border-sand)",
-        "'Checkout' button uses primary variant (solid bg-sand text-black)",
-        "'Your bag' links to `/cart` page",
-        "'Checkout' links to Shopify checkout URL",
-        "Cart count (X) updates to show total items",
-        "Typecheck passes"
+        "Dropdown positioned in same container/wrapper as header",
+        "Appears directly below header with small gap (`mt-2`)",
+        "Same max-width as header (`max-w-[600px]`)",
+        "Centered horizontally to align with header",
+        "When open, dropdown overlays the announcement bar (higher z-index)",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 4,
       "passes": true,
-      "notes": "Completed - outline/primary buttons with Link to /cart and href to checkoutUrl"
+      "notes": ""
     },
     {
       "id": "US-005",
-      "title": "Position popup above sticky ATC",
-      "description": "As a user, I want the popup to appear floating above the sticky ATC bar so that it's clearly visible.",
+      "title": "Add slide-down animation to NavigationDropdown",
+      "description": "As a user, I want the menu to slide down smoothly so that it feels natural and connected to the header.",
       "acceptance": [
-        "Popup is fixed position, same width as sticky ATC",
-        "Positioned directly above sticky ATC with small gap (8px)",
-        "Horizontally centered like sticky ATC",
-        "Z-index higher than sticky ATC",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
+        "Menu slides down from under header with smooth animation",
+        "Initial state: `opacity-0 -translate-y-4` or similar hidden state",
+        "Open state: `opacity-100 translate-y-0`",
+        "Uses `ease-out-expo` easing from design system CSS variable",
+        "Animation duration 300-400ms",
+        "Page content moves down when menu opens (push effect, not overlay)",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 5,
       "passes": true,
-      "notes": "Completed - fixed position with calc() for positioning above sticky ATC, z-50 higher than z-40, max-w-[600px] same as sticky ATC"
+      "notes": ""
     },
     {
       "id": "US-006",
-      "title": "Add slide-up animation to popup",
-      "description": "As a user, I want smooth animation so that the popup feels polished.",
+      "title": "Implement menu toggle behavior",
+      "description": "As a user, I want to open and close the menu with the hamburger button so that I can access navigation when needed.",
       "acceptance": [
-        "Popup slides up from below when opening (translateY animation)",
-        "Uses `ease-out-expo` easing from design system",
-        "Animation duration ~300ms",
-        "Fades out when closing",
-        "Typecheck passes"
+        "Clicking hamburger opens closed menu",
+        "Clicking hamburger again closes open menu",
+        "State is properly managed in Header or parent component",
+        "NavigationDropdown receives `isOpen` prop",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 6,
       "passes": true,
-      "notes": "Completed - slide-up animation with translateY, ease-out-expo easing, 300ms duration, fade out on close"
+      "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Integrate popup with StickyAddToCart",
-      "description": "As a user, I want the popup to appear when I add items from sticky ATC so that I get feedback.",
+      "title": "Implement click-outside-to-close behavior",
+      "description": "As a user, I want the menu to close when I click outside it so that I can easily dismiss it.",
       "acceptance": [
-        "Popup opens automatically after successful cart add",
-        "Popup receives product data from the item just added",
-        "Popup stays open until user clicks close (X), 'Your bag', or 'Checkout'",
-        "Clicking outside popup does NOT close it (no backdrop)",
-        "Popup floats without dimming the page background",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
+        "Clicking outside menu area closes it",
+        "Clicking inside menu does not close it",
+        "Clicking on nav links closes menu (after navigation)",
+        "Uses document click handler or backdrop overlay approach",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Completed - useEffect triggers popup on successful add, passes product data via wrapper, no backdrop"
+      "notes": ""
     },
     {
       "id": "US-008",
-      "title": "Add AddedToBagPopup to design system page",
-      "description": "As a developer, I want to see the popup documented so that I understand how to use it.",
+      "title": "Integrate AnnouncementBar into PageLayout",
+      "description": "As a user, I want to see the announcement bar on all pages so that I always see current promotions.",
       "acceptance": [
-        "New section 'Added to Bag Popup' added under 'Sticky Add to Cart' section",
-        "Shows popup in static open state with mock product data",
-        "Brief description of component purpose and props",
-        "Typecheck passes"
+        "AnnouncementBar added to `PageLayout.tsx`",
+        "Positioned after header, before main content",
+        "Example text: 'Free shipping on orders over €50'",
+        "Does not interfere with page content layout",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 8,
       "passes": true,
-      "notes": "Completed - added section under Sticky Add to Cart with static preview and props documentation"
+      "notes": ""
     },
     {
       "id": "US-009",
-      "title": "Update cart page layout to 2-column on desktop",
-      "description": "As a user, I want to see items and summary side-by-side on desktop so that I can review my order efficiently.",
+      "title": "Handle body scroll when menu is open",
+      "description": "As a user, I want the page to not scroll when the menu is open so that I can focus on navigation.",
       "acceptance": [
-        "Desktop (md+): 2-column grid - items (left ~65%), summary (right ~35%)",
-        "Mobile: single column, items stacked above summary",
-        "Page title 'Bag' at top using `text-h1 font-display`",
-        "Consistent padding using design system spacing",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
+        "Body scroll is locked when menu is open (`overflow-hidden` on body)",
+        "Scroll is restored when menu closes",
+        "Works correctly on navigation (scroll restored)",
+        "Uses effect cleanup to ensure scroll is always restored",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 9,
       "passes": true,
-      "notes": "Completed - 2-column grid layout using grid-cols-[1fr_400px] on desktop, sticky summary, black background with sand text"
+      "notes": ""
     },
     {
       "id": "US-010",
-      "title": "Redesign cart line item component",
-      "description": "As a user, I want clean line item cards so that I can easily see what's in my cart.",
+      "title": "Remove old Aside mobile menu component",
+      "description": "As a developer, I want to remove the old side-drawer menu so that the codebase is clean and there's only one navigation pattern.",
       "acceptance": [
-        "Card has subtle border (like Polaroid)",
-        "Layout: image left, product info + controls right",
-        "Product image on light background (bg-sand or bg-skyblue)",
-        "Shows: product title, variant name, price",
-        "Remove button (X) positioned top-right of card",
-        "Typecheck passes"
+        "`MobileMenuAside` removed from `PageLayout.tsx`",
+        "Mobile menu type removed from `Aside.tsx` if no longer needed",
+        "Cart drawer (if separate) still works",
+        "No TypeScript errors",
+        "Old side drawer menu no longer appears",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 10,
       "passes": true,
-      "notes": "Completed - card with border-sand/20, rounded-card, CrossIcon for remove button, layout cleanup"
-    },
-    {
-      "id": "US-011",
-      "title": "Add quantity controls to line item",
-      "description": "As a user, I want to adjust quantities so that I can buy more or fewer items.",
-      "acceptance": [
-        "Quantity selector with minus (-) and plus (+) buttons",
-        "Current quantity displayed between buttons",
-        "Minus button disabled when quantity is 1",
-        "Buttons trigger cart line update",
-        "Optimistic UI updates immediately",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
-      ],
-      "priority": 11,
-      "passes": true,
-      "notes": "Completed - QuantitySelector component with +/- buttons, CartLineUpdateButton with CartForm, useOptimisticCart for instant UI updates"
-    },
-    {
-      "id": "US-012",
-      "title": "Create free shipping progress bar component",
-      "description": "As a user, I want to see how close I am to free shipping so that I might add more items.",
-      "acceptance": [
-        "Component created at `apps/website/app/components/FreeShippingBar.tsx`",
-        "Props: `currentTotal` (number) - threshold hardcoded at 80 euros",
-        "Shows progress bar filling left to right",
-        "Text shows amount remaining: 'X euros away from free shipping'",
-        "When threshold met, shows 'Congrats! You get free standard shipping.'",
-        "Typecheck passes"
-      ],
-      "priority": 12,
-      "passes": true,
-      "notes": "Completed - FreeShippingBar component with progress bar, threshold at 80 euros, shows remaining amount or congrats message"
-    },
-    {
-      "id": "US-013",
-      "title": "Style free shipping progress bar",
-      "description": "As a user, I want the progress bar to look polished and match the design system.",
-      "acceptance": [
-        "Bar uses `bg-sand` for track, `bg-softorange` for fill",
-        "Bar has subtle rounded corners",
-        "Text uses `text-small` or `text-body-small`",
-        "Smooth width transition when total changes",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
-      ],
-      "priority": 13,
-      "passes": true,
-      "notes": "Completed - bg-black/10 track (for contrast on sand background), bg-softorange fill, rounded-full, text-small, transition-all duration-300"
-    },
-    {
-      "id": "US-014",
-      "title": "Add payment method icons",
-      "description": "As a developer, I want payment icons available so that they can be displayed in cart summary.",
-      "acceptance": [
-        "Icons added to `packages/ui/src/icons/`: Mastercard, Visa, Amex, Klarna, ApplePay, Bancontact, iDEAL, Sofort, PayPal",
-        "Each icon exported from `packages/ui/src/index.ts`",
-        "Icons are SVG components with consistent sizing props",
-        "Typecheck passes"
-      ],
-      "priority": 14,
-      "passes": true,
-      "notes": "Completed - added MastercardIcon, AmexIcon, ApplePayIcon, BancontactIcon, SofortIcon, PayPalIcon to PaymentIcons.tsx. All exported via icons/index.ts barrel export."
-    },
-    {
-      "id": "US-015",
-      "title": "Redesign cart summary section",
-      "description": "As a user, I want a clear summary showing totals and checkout options.",
-      "acceptance": [
-        "Free shipping bar at top of summary",
-        "Shows 'Total items: X' row",
-        "Shows 'Total: XX.XX euros' row with `text-h3` styling",
-        "Large 'CHECKOUT' button (full width, `bg-black text-sand`)",
-        "Payment icons displayed in row below checkout button",
-        "'Free standard shipping on orders over 80 euros' text below icons",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
-      ],
-      "priority": 15,
-      "passes": true,
-      "notes": "Completed - FreeShippingBar at top, Total items and Total rows with text-h3, CHECKOUT button (bg-black text-sand uppercase), 8 payment icons, free shipping message below"
-    },
-    {
-      "id": "US-016",
-      "title": "Handle empty cart state",
-      "description": "As a user, I want clear feedback when my cart is empty so that I know to add items.",
-      "acceptance": [
-        "Shows message 'Your bag is empty'",
-        "Shows 'Continue shopping' link to homepage or products",
-        "Centered layout with appropriate spacing",
-        "Typecheck passes"
-      ],
-      "priority": 16,
-      "passes": true,
-      "notes": "Completed - page layout with centered empty state, text-h2 Your bag is empty, Continue shopping link"
-    },
-    {
-      "id": "US-017",
-      "title": "Update header cart button to link to /cart page",
-      "description": "As a user, I want to click the cart button to go to the cart page so that navigation is direct.",
-      "acceptance": [
-        "Cart button in header is now a link to `/cart`",
-        "No longer opens cart drawer",
-        "Cart count badge still displays",
-        "Hover state preserved",
-        "Typecheck passes",
-        "Verify in browser using chrome-devtools MCP"
-      ],
-      "priority": 17,
-      "passes": true,
-      "notes": "Completed - CartButton now a Link to /cart, removed drawer opening, preserved count badge and hover state"
-    },
-    {
-      "id": "US-018",
-      "title": "Remove cart drawer from PageLayout",
-      "description": "As a developer, I want to clean up unused cart drawer code so that the codebase stays maintainable.",
-      "acceptance": [
-        "Cart Aside component removed from PageLayout",
-        "Cart drawer context/state removed if no longer needed",
-        "Mobile menu drawer still functional",
-        "No console errors or warnings",
-        "Typecheck passes"
-      ],
-      "priority": 18,
-      "passes": true,
-      "notes": "Completed - removed CartAside and CartLoading from PageLayout, mobile menu preserved"
+      "notes": ""
     }
   ]
 }

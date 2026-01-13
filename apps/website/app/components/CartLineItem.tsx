@@ -33,7 +33,7 @@ export function CartLineItem({
           <Link
             to={lineItemUrl}
             onClick={() => layout === 'aside' && close()}
-            className="bg-skyblue overflow-hidden aspect-square flex items-center justify-center p-4 md:p-8"
+            className="bg-blue overflow-hidden aspect-square flex items-center justify-center p-4 md:p-8"
             tabIndex={-1}
             aria-hidden="true"
           >
