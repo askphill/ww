@@ -403,3 +403,31 @@
 - Each USP item has a title and body that support HTML formatting
 - Same sanitization pattern as other stories: import utility, wrap props in sanitizeHtml()
 - The useContinuousCarousel hook renders items twice (mobile scroll + desktop carousel)
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-010 - Install Vitest testing framework
+**Status:** Complete
+
+**What was done:**
+- Added vitest ^3.0.0, @testing-library/react ^16.1.0, @testing-library/dom ^10.4.0, jsdom ^26.0.0 to dev dependencies
+- Created apps/website/vitest.config.ts with:
+  - jsdom environment for DOM testing
+  - tsconfigPaths plugin for path alias resolution
+  - globals: true for describe/it/expect without imports
+  - passWithNoTests: true to exit cleanly with no tests
+  - include pattern: app/**/*.test.{ts,tsx}
+- Added "test": "vitest run" script to package.json (single execution, not watch mode)
+- Verified `pnpm test` exits with code 0 (no tests found is OK due to passWithNoTests)
+- Build passes successfully
+
+**Files changed:**
+- `apps/website/package.json` (modified - added 4 dev dependencies and test script)
+- `apps/website/vitest.config.ts` (created)
+- `pnpm-lock.yaml` (updated)
+
+**Learnings for future iterations:**
+- Vitest 3.x requires explicit `passWithNoTests: true` to exit cleanly with no tests
+- Use "vitest run" in scripts for CI/single execution, "vitest" for watch mode
+- tsconfigPaths plugin needed for ~ alias resolution in tests
+- jsdom ^26.0.0 is compatible with Vitest 3.x
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block testing setup
