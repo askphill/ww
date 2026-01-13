@@ -264,8 +264,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 17,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - CartButton now a Link to /cart, removed drawer opening, preserved count badge and hover state"
     },
     {
       "id": "US-018",
