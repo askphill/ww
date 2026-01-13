@@ -67,3 +67,43 @@
 - object-cover ensures images fill container without distortion
 - Build passes successfully with `pnpm build --filter=@wakey/website`
 
+### Iteration: 2026-01-13
+**Story:** US-004 - Add action buttons to popup
+**Status:** Complete
+
+**What was done:**
+- Added 'Your bag (X)' outline button with Link to /cart page, showing dynamic cartCount
+- Added 'Checkout' primary button with href to checkoutUrl (Shopify checkout)
+- Styled buttons for dark background: outline uses border-sand text-sand bg-transparent, primary uses bg-sand text-black
+- Buttons use flex-1 for equal width, rounded-full, font-display text-label
+- Added Link import from react-router for internal navigation
+
+**Files changed:**
+- apps/website/app/components/AddedToBagPopup.tsx (updated)
+
+**Learnings for future iterations:**
+- The existing Button component from @wakey/ui has variants for light backgrounds only
+- For dark backgrounds (like popup), need custom button styles matching the inverted color scheme
+- Link from react-router works with onClick for closing the popup when navigating
+- Use <a> tag with href for external URLs (checkoutUrl is Shopify external checkout)
+
+### Iteration: 2026-01-13
+**Story:** US-005 - Position popup above sticky ATC
+**Status:** Complete
+
+**What was done:**
+- Added fixed positioning to popup container with `fixed bottom-[calc(70px+8px+1rem)] md:bottom-[calc(90px+8px+1rem)]`
+- Used calc() to position popup above sticky ATC (70px mobile, 90px desktop) + 8px gap + 1rem padding
+- Added `left-0 right-0 z-50 px-4 flex justify-center` for full-width centering
+- Inner content div uses `w-full max-w-[600px]` to match sticky ATC width
+- Z-index z-50 is higher than sticky ATC's z-40
+
+**Files changed:**
+- apps/website/app/components/AddedToBagPopup.tsx (updated)
+
+**Learnings for future iterations:**
+- StickyAddToCart uses `fixed bottom-0 left-0 right-0 z-40 p-4` with `max-w-[600px]` inner content
+- StickyAddToCart height is h-[70px] on mobile, h-[90px] on desktop
+- Using calc() in Tailwind arbitrary values allows combining multiple measurements
+- The popup positioning accounts for sticky ATC height + padding (1rem on each side)
+

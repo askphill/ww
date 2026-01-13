@@ -59,8 +59,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - outline/primary buttons with Link to /cart and href to checkoutUrl"
     },
     {
       "id": "US-005",
@@ -75,8 +75,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - fixed position with calc() for positioning above sticky ATC, z-50 higher than z-40, max-w-[600px] same as sticky ATC"
     },
     {
       "id": "US-006",
