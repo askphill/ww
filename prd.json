@@ -535,8 +535,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 39,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Combined two useEffect hooks (click-outside and body scroll lock) into single useEffect. Logic grouped by isMenuOpen state. Cleanup removes event listener and restores body scroll. Verified in browser - menu toggle, click-outside-close all work correctly."
     },
     {
       "id": "US-040",

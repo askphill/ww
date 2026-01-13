@@ -998,3 +998,23 @@
 - SearchResultList component created in US-037 is a drop-in replacement for simple list rendering
 - Keep complex components (SearchResultsProducts) as-is when they have unique requirements
 - The Link import is still needed in SearchResults.tsx for the Products section
+### Iteration: 2026-01-13 UTC
+**Story:** US-039 - Combine Header useEffect hooks
+**Status:** Complete
+
+**What was done:**
+- Combined two separate useEffect hooks into a single one
+- Click-outside handler and body scroll lock now in same effect
+- Logic grouped by isMenuOpen state (if/else branches)
+- Cleanup function removes event listener AND restores body scroll in one return
+- Effect properly cleans up on unmount and state change
+
+**Files changed:**
+- `apps/website/app/components/Header.tsx` (modified - 21 insertions, 27 deletions)
+
+**Learnings for future iterations:**
+- Related side effects can be combined when they depend on the same state variable
+- When isMenuOpen changes, both scroll lock and click listener need to change together
+- Combined effect is cleaner: single dependency, single cleanup, related logic co-located
+- The `else` branch ensures scroll is restored when menu closes via state change (not just cleanup)
+
