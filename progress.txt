@@ -264,3 +264,22 @@
 - transition-all duration-300 ease-out provides smooth width animations
 - toFixed(0) formats number without decimal places for cleaner display
 
+### Iteration: 2026-01-13
+**Story:** US-013 - Style free shipping progress bar
+**Status:** Complete
+
+**What was done:**
+- Updated track color from bg-sand/30 to bg-black/10 for better contrast on sand background
+- Fill uses bg-softorange as specified in acceptance criteria
+- Text uses text-small and text-text for proper dark-on-light styling
+- Smooth width transition maintained with duration-300 ease-out
+- Browser verification attempted but MCP had connection issues
+
+**Files changed:**
+- apps/website/app/components/FreeShippingBar.tsx (updated)
+
+**Learnings for future iterations:**
+- When component will be used on a sand (light) background, use bg-black/10 instead of bg-sand for track
+- Always consider the context where component will be rendered when choosing colors
+- Chrome DevTools MCP may have connection issues - ensure browser isn't already connected
+
