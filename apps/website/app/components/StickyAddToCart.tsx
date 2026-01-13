@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {
   CartForm,
+  Money,
   type OptimisticCartLineInput,
   useOptimisticCart,
 } from '@shopify/hydrogen';
@@ -44,21 +45,7 @@ export function StickyAddToCart({
   // Get cart data from root loader
   const rootData = useRouteLoaderData<RootLoader>('root');
 
-  // Get price from variant
-  const price = selectedVariant?.price
-    ? parseFloat(selectedVariant.price.amount)
-    : 0;
   const currencyCode = selectedVariant?.price?.currencyCode || 'EUR';
-
-  // Format price helper
-  const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('nl-NL', {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // Animation states (only used when not inline)
   const [isReady, setIsReady] = useState(inline);
@@ -116,8 +103,15 @@ export function StickyAddToCart({
               <span className="text-label md:text-[1.0625rem] font-display uppercase leading-tight">
                 {product.title}
               </span>
-              <span className="text-label md:text-[1.0625rem] font-display leading-tight">
-                {formatPrice(price)}
+              <span className="text-label md:text-[1.0625rem] font-display leading-tight flex items-center gap-1.5">
+                {selectedVariant?.compareAtPrice && (
+                  <s className="opacity-50">
+                    <Money data={selectedVariant.compareAtPrice} withoutTrailingZeros />
+                  </s>
+                )}
+                {selectedVariant?.price && (
+                  <Money data={selectedVariant.price} withoutTrailingZeros />
+                )}
               </span>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">

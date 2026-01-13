@@ -26,7 +26,7 @@ export function CartLineItem({
   const {close} = useAside();
 
   return (
-    <li className="relative border border-sand/20 rounded-card overflow-hidden">
+    <li className="relative rounded-card overflow-hidden">
       <div className="grid grid-cols-2 md:grid-cols-[175px_1fr]">
         {/* Image */}
         {image && (
@@ -49,7 +49,7 @@ export function CartLineItem({
         )}
 
         {/* Details */}
-        <div className="bg-sand p-4 md:p-6 flex flex-col justify-between">
+        <div className="bg-white p-4 md:p-6 flex flex-col justify-between">
           <div>
             <Link
               to={lineItemUrl}
@@ -69,10 +69,10 @@ export function CartLineItem({
             <div className="text-paragraph font-display mt-2 flex gap-2">
               {cost?.compareAtAmountPerQuantity && (
                 <span className="line-through opacity-50">
-                  <Money data={cost.compareAtAmountPerQuantity} />
+                  <Money data={cost.compareAtAmountPerQuantity} withoutTrailingZeros />
                 </span>
               )}
-              {cost?.totalAmount && <Money data={cost.totalAmount} />}
+              {cost?.totalAmount && <Money data={cost.totalAmount} withoutTrailingZeros />}
             </div>
           </div>
 

@@ -27,7 +27,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const totalQuantity = cart?.totalQuantity ?? 0;
 
   return (
-    <div className="bg-sand p-4 md:p-8 rounded-card flex flex-col gap-6">
+    <div className="bg-white p-4 md:p-8 rounded-card flex flex-col gap-6">
       {/* Free shipping progress bar at top */}
       <FreeShippingBar currentTotal={totalAmount} />
 
@@ -44,7 +44,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
           <span>Total:</span>
           <span>
             {cart?.cost?.totalAmount ? (
-              <Money data={cart.cost.totalAmount} />
+              <Money data={cart.cost.totalAmount} withoutTrailingZeros />
             ) : (
               '-'
             )}
