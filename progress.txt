@@ -385,3 +385,21 @@
 - Same pattern as other sanitization stories: import utility, wrap prop in sanitizeHtml()
 - Policy types are: privacyPolicy, shippingPolicy, termsOfService, refundPolicy
 
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-009 - Sanitize USPSection HTML
+**Status:** Complete
+
+**What was done:**
+- Imported `sanitizeHtml` from `~/lib/sanitize` in USPSection.tsx
+- Applied sanitization to both `title` and `body` props in USPCard component's dangerouslySetInnerHTML
+- Verified in browser - product page /products/deodorant renders USP carousel correctly with all items visible
+
+**Files changed:**
+- `apps/website/app/components/sections/USPSection.tsx` (modified)
+
+**Learnings for future iterations:**
+- USPSection is used on product pages as a horizontal carousel of USP items
+- Each USP item has a title and body that support HTML formatting
+- Same sanitization pattern as other stories: import utility, wrap props in sanitizeHtml()
+- The useContinuousCarousel hook renders items twice (mobile scroll + desktop carousel)

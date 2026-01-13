@@ -124,8 +124,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added sanitizeHtml import and applied to title and body props in USPCard dangerouslySetInnerHTML. Verified in browser - product page renders USP carousel correctly."
     },
     {
       "id": "US-010",
