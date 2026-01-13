@@ -72,6 +72,23 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 function CartEmpty({layout}: {layout: CartLayout}) {
   const {close} = useAside();
 
+  // Page layout: centered on black background with sand text
+  if (layout === 'page') {
+    return (
+      <div className="col-span-full flex flex-col items-center justify-center py-16 md:py-24">
+        <h3 className="text-h2 font-display text-sand mb-6">Your bag is empty</h3>
+        <Link
+          to="/"
+          className="text-paragraph font-display text-sand underline hover:opacity-70 transition-opacity"
+          prefetch="viewport"
+        >
+          Continue shopping
+        </Link>
+      </div>
+    );
+  }
+
+  // Aside layout: original styling for cart drawer
   return (
     <div className="bg-sand p-4 md:p-6 mt-[-1px] flex-1">
       <h3 className="text-h3 font-display pb-4 md:pb-6">
@@ -79,7 +96,7 @@ function CartEmpty({layout}: {layout: CartLayout}) {
       </h3>
       <Link
         to="/"
-        onClick={() => layout === 'aside' && close()}
+        onClick={close}
         className="underline text-paragraph font-display"
         prefetch="viewport"
       >
