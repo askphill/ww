@@ -353,8 +353,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 26,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added BreadcrumbList JSON-LD schema with Home > Products > [Product Name] hierarchy. Uses schema.org format."
     },
     {
       "id": "US-027",

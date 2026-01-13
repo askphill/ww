@@ -739,3 +739,22 @@
 - The original code was a bug - the `.catch()` return value was discarded
 - Always use async/await with try/catch for clearer error handling
 - Empty result structure must match the expected type (items.articles.nodes, etc.)
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-026 - Add breadcrumb schema to product pages
+**Status:** Complete
+
+**What was done:**
+- Added BreadcrumbList JSON-LD schema to product page meta function
+- Breadcrumb hierarchy: Home > Products > [Product Name]
+- Each ListItem includes position, name, and URL per schema.org spec
+- Schema added as second `script:ld+json` entry in meta array
+
+**Files changed:**
+- `apps/website/app/routes/products.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- React Router 7 meta functions can return multiple `script:ld+json` entries
+- BreadcrumbList requires itemListElement array with ListItem objects
+- Each ListItem needs @type, position (1-indexed), name, and item (URL)
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
