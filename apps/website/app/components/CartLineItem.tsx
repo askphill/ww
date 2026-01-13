@@ -5,6 +5,7 @@ import {useVariantUrl} from '~/lib/variants';
 import {Link} from 'react-router';
 import {useAside} from './Aside';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
+import {CrossIcon} from '@wakey/ui';
 
 type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
@@ -25,66 +26,70 @@ export function CartLineItem({
   const {close} = useAside();
 
   return (
-    <li className="grid grid-cols-2 md:grid-cols-[175px_1fr] mt-[-1px]">
-      {/* Image */}
-      {image && (
-        <Link
-          to={lineItemUrl}
-          onClick={() => layout === 'aside' && close()}
-          className="bg-skyblue overflow-hidden aspect-square flex items-center justify-center p-4 md:p-8"
-          tabIndex={-1}
-          aria-hidden="true"
-        >
-          <Image
-            alt={title}
-            data={image}
-            width={150}
-            height={150}
-            loading="lazy"
-            className="w-full h-auto"
-          />
-        </Link>
-      )}
+    <li className="relative border border-sand/20 rounded-card overflow-hidden">
+      <div className="grid grid-cols-2 md:grid-cols-[175px_1fr]">
+        {/* Image */}
+        {image && (
+          <Link
+            to={lineItemUrl}
+            onClick={() => layout === 'aside' && close()}
+            className="bg-skyblue overflow-hidden aspect-square flex items-center justify-center p-4 md:p-8"
+            tabIndex={-1}
+            aria-hidden="true"
+          >
+            <Image
+              alt={title}
+              data={image}
+              width={150}
+              height={150}
+              loading="lazy"
+              className="w-full h-auto"
+            />
+          </Link>
+        )}
 
-      {/* Details */}
-      <div className="bg-sand p-4 md:p-8 flex flex-col justify-between">
-        <div className="flex justify-between">
+        {/* Details */}
+        <div className="bg-sand p-4 md:p-6 flex flex-col justify-between">
           <div>
             <Link
               to={lineItemUrl}
               onClick={() => layout === 'aside' && close()}
               prefetch="intent"
-              className="text-paragraph md:text-s2 font-display pb-1 block"
+              className="text-paragraph md:text-s2 font-display pb-1 block pr-8"
             >
               {product.title}
             </Link>
             {/* Show variant options if not default */}
             {selectedOptions.length > 0 &&
               selectedOptions[0].value !== 'Default Title' && (
-                <div className="text-small font-display">
+                <div className="text-small font-display opacity-70">
                   {selectedOptions.map((opt) => opt.value).join(' / ')}
                 </div>
               )}
+            <div className="text-paragraph font-display mt-2 flex gap-2">
+              {cost?.compareAtAmountPerQuantity && (
+                <span className="line-through opacity-50">
+                  <Money data={cost.compareAtAmountPerQuantity} />
+                </span>
+              )}
+              {cost?.totalAmount && <Money data={cost.totalAmount} />}
+            </div>
           </div>
-          <div className="text-small font-display flex gap-2">
-            {cost?.compareAtAmountPerQuantity && (
-              <span className="line-through opacity-50">
-                <Money data={cost.compareAtAmountPerQuantity} />
-              </span>
-            )}
-            {cost?.totalAmount && <Money data={cost.totalAmount} />}
-          </div>
-        </div>
 
-        {/* Controls */}
-        <div className="flex justify-between items-end mt-4">
-          <QuantitySelector
-            lineId={id}
-            quantity={quantity}
-            disabled={!!isOptimistic}
-          />
-          <CartLineRemoveButton lineIds={[id]} disabled={!!isOptimistic} />
+          {/* Quantity Controls */}
+          <div className="mt-4">
+            <QuantitySelector
+              lineId={id}
+              quantity={quantity}
+              disabled={!!isOptimistic}
+            />
+          </div>
         </div>
+      </div>
+
+      {/* Remove button (X) - positioned top-right of card */}
+      <div className="absolute top-3 right-3">
+        <CartLineRemoveButton lineIds={[id]} disabled={!!isOptimistic} />
       </div>
     </li>
   );
@@ -148,9 +153,10 @@ function CartLineRemoveButton({
       <button
         disabled={disabled}
         type="submit"
-        className="underline text-small font-display disabled:opacity-50"
+        className="w-6 h-6 text-black/70 hover:text-black transition-colors disabled:opacity-50"
+        aria-label="Remove item"
       >
-        Remove
+        <CrossIcon className="w-full h-full" />
       </button>
     </CartForm>
   );

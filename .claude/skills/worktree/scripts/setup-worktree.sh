@@ -22,14 +22,7 @@ fi
 echo "Setting up worktree: $WORKTREE_PATH"
 echo ""
 
-# Copy root .env if it exists
-if [ -f "$MAIN_REPO_PATH/.env" ]; then
-  echo "Copying root .env..."
-  cp "$MAIN_REPO_PATH/.env" "$WORKTREE_PATH/.env"
-  echo "  ✓ Copied .env to $WORKTREE_PATH/.env"
-fi
-
-# Copy apps/website/.env if it exists
+# Copy apps/website/.env if it exists (main env file for Hydrogen)
 if [ -f "$MAIN_REPO_PATH/apps/website/.env" ]; then
   echo "Copying apps/website/.env..."
   mkdir -p "$WORKTREE_PATH/apps/website"
