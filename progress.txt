@@ -199,3 +199,25 @@
 - The cart page styling needs to override the default sand background from PageLayout
 - space-y-4 provides consistent vertical spacing between cart line items
 
+### Iteration: 2026-01-13
+**Story:** US-010 - Redesign cart line item component
+**Status:** Complete
+
+**What was done:**
+- Added subtle border with border-sand/20 and rounded-card for Polaroid-like card appearance
+- Wrapped content in relative container to enable absolute positioning of remove button
+- Replaced text "Remove" button with CrossIcon from @wakey/ui positioned top-right of card
+- Added pr-8 padding-right to product title to prevent overlap with close button
+- Applied opacity-70 to variant text for better visual hierarchy
+- Moved price display below product info (instead of inline to the right) for cleaner flow
+- Maintained image left, product info + controls right layout
+
+**Files changed:**
+- apps/website/app/components/CartLineItem.tsx (updated)
+
+**Learnings for future iterations:**
+- CrossIcon can be sized with className="w-6 h-6" and uses currentColor for stroke
+- For card borders on dark backgrounds, use border-sand/20 for subtle effect
+- relative + absolute positioning pattern works well for floating close buttons
+- The pr-8 class provides 2rem right padding to avoid content overlapping close button
+
