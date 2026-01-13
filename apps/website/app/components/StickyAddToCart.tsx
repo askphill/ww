@@ -5,8 +5,19 @@ import {
   type OptimisticCartLineInput,
   useOptimisticCart,
 } from '@shopify/hydrogen';
-import type {ProductVariantFragment} from 'storefrontapi.generated';
+import type {
+  ProductVariantFragment,
+  CartApiQueryFragment,
+} from 'storefrontapi.generated';
 import {type FetcherWithComponents, Await} from 'react-router';
+
+/** Response type from cart action */
+type CartActionResponse = {
+  cart: CartApiQueryFragment | null;
+  errors?: unknown;
+  warnings?: unknown;
+  analytics?: {cartId?: string};
+};
 import {SmileyIcon, Button, AddedToBagPopup, AddBagIcon} from '@wakey/ui';
 import {Suspense} from 'react';
 import {useRouteLoaderData} from 'react-router';
@@ -124,7 +135,7 @@ export function StickyAddToCart({
           inputs={{lines}}
           action={CartForm.ACTIONS.LinesAdd}
         >
-          {(fetcher: FetcherWithComponents<unknown>) => {
+          {(fetcher: FetcherWithComponents<CartActionResponse>) => {
             const isLoading = fetcher.state !== 'idle';
 
             // Open popup on successful add
@@ -223,7 +234,7 @@ function AddedToBagPopupWrapper({
   subtitle,
   price,
 }: {
-  cart: unknown;
+  cart: CartApiQueryFragment | null;
   isPopupOpen: boolean;
   onClose: () => void;
   productImage?: string | null;
@@ -231,9 +242,7 @@ function AddedToBagPopupWrapper({
   subtitle?: string | null;
   price?: import('@shopify/hydrogen/storefront-api-types').MoneyV2;
 }) {
-  const optimisticCart = useOptimisticCart(
-    cart as import('storefrontapi.generated').CartApiQueryFragment | null,
-  );
+  const optimisticCart = useOptimisticCart(cart);
 
   if (!price) return null;
 
