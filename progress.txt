@@ -331,3 +331,24 @@
 - Removed IcsIcon (not in acceptance criteria), kept 8 relevant payment icons
 - Chrome DevTools MCP continues to have browser profile issues
 
+### Iteration: 2026-01-13
+**Story:** US-016 - Handle empty cart state
+**Status:** Complete
+
+**What was done:**
+- Added separate page layout branch in CartEmpty component
+- Page layout shows "Your bag is empty" with text-h2 font-display text-sand styling
+- Added "Continue shopping" link to homepage with hover:opacity-70 transition
+- Used col-span-full to span both grid columns when cart is empty
+- Centered layout with flex-col items-center justify-center and py-16 md:py-24
+- Preserved original aside layout for cart drawer (unchanged)
+
+**Files changed:**
+- apps/website/app/components/CartMain.tsx (updated)
+
+**Learnings for future iterations:**
+- col-span-full works within CSS Grid to span all columns regardless of column count
+- CartMain renders both page and aside layouts - use layout prop to differentiate styling
+- Dev server runs on port 3005 (not 5173) for this project
+- pkill -f "chrome-devtools-mcp" can resolve browser profile conflicts
+
