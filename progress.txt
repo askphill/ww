@@ -896,3 +896,22 @@
 - The useLazyFetch hook is a drop-in replacement for the useFetcher + useEffect pattern
 - Add response type interface when using useLazyFetch<T> for type safety
 - Components using the hook get typed `fetcher.data` which improves downstream usage
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-034 - Refactor ProductReviews to use useLazyFetch
+**Status:** Complete
+
+**What was done:**
+- Replaced `useFetcher` + `useEffect` pattern with `useLazyFetch<ReviewsApiResponse>` from `@wakey/hooks`
+- Removed inline useEffect that checked `fetcher.state === 'idle' && !fetcher.data`
+- Added `ReviewsApiResponse` interface for proper typing of reviews, averageRating, and totalCount
+- Component behavior unchanged - reviews display correctly with rating 4.8 (25 reviews)
+- Verified in browser - product page renders reviews section with all reviews visible
+
+**Files changed:**
+- `apps/website/app/components/sections/ProductReviews.tsx` (modified - 12 insertions, 8 deletions)
+
+**Learnings for future iterations:**
+- Same pattern as ProductTooltip refactor: import useLazyFetch, add response interface, remove useEffect
+- ProductReviews also uses useState for visibleCount - useLazyFetch doesn't affect other local state
+- The fetcher.state property is still accessible on the useLazyFetch return value for loading states
