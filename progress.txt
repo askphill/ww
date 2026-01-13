@@ -957,3 +957,24 @@
 - Mobile carousel uses `sizes="100vw"` and default `draggable={true}`
 - Desktop carousel uses `sizes="50vw"`, `draggable={false}`, and `pointer-events-none` class
 - Component behavior unchanged after refactor - images/videos render correctly in both views
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-037 - Extract generic SearchResultList component
+**Status:** Complete
+
+**What was done:**
+- Created `apps/website/app/components/SearchResultList.tsx` with generic type support
+- Component accepts title, items array, term, and getPath function props
+- Uses generic type constraint `T extends SearchResultItem` for type-safe item handling
+- Integrates with `urlWithTrackingParams` for analytics tracking on links
+- Returns null for empty items (consistent with existing SearchResults pattern)
+- Uses same structure as SearchResultsArticles/SearchResultsPages (search-result class, h2, links)
+
+**Files changed:**
+- `apps/website/app/components/SearchResultList.tsx` (created - 55 lines)
+
+**Learnings for future iterations:**
+- SearchResultsArticles and SearchResultsPages have near-identical structure - good candidates for abstraction
+- SearchResultsProducts is more complex (pagination, images, prices) - keeps its own implementation
+- Generic components with type constraints allow type-safe reuse across different item types
+- urlWithTrackingParams helper builds URLs with analytics tracking parameters
