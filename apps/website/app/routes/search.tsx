@@ -72,7 +72,11 @@ export default function SearchPage() {
       <SearchForm>
         {({inputRef}) => (
           <>
+            <label htmlFor="search-input" className="sr-only">
+              Search
+            </label>
             <input
+              id="search-input"
               defaultValue={term}
               name="q"
               placeholder="Search…"
