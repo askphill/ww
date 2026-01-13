@@ -1,5 +1,6 @@
 import {CrossIcon} from '@wakey/ui';
 import {Link} from 'react-router';
+import {useEffect, useState} from 'react';
 
 interface AddedToBagPopupProduct {
   image: string | null;
@@ -24,13 +25,44 @@ export function AddedToBagPopup({
   cartCount,
   checkoutUrl,
 }: AddedToBagPopupProps) {
-  if (!isOpen || !product) {
+  // Track visibility state for animation
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && product) {
+      // Show immediately when opening
+      setShouldRender(true);
+      // Small delay to ensure DOM is rendered before animation starts
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+    } else {
+      // Start fade out animation
+      setIsVisible(false);
+      // Wait for animation to complete before unmounting
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, product]);
+
+  if (!shouldRender || !product) {
     return null;
   }
 
   return (
     <div className="fixed bottom-[calc(70px+8px+1rem)] md:bottom-[calc(90px+8px+1rem)] left-0 right-0 z-50 px-4 flex justify-center">
-      <div className="w-full max-w-[600px] bg-black text-sand rounded-card p-6">
+      <div
+        className={`w-full max-w-[600px] bg-black text-sand rounded-card p-6 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+          isVisible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-4'
+        }`}
+      >
         {/* Header with title and close button */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-s2 font-display">Added to your bag</span>
