@@ -47,3 +47,23 @@
 - Type scale utilities (text-s2, text-paragraph, etc.) are defined in theme.css as @utility rules
 - The rounded-card utility provides responsive border radius (0.3125rem mobile, 0.625rem desktop)
 
+### Iteration: 2026-01-13
+**Story:** US-003 - Add product info layout to popup
+**Status:** Complete
+
+**What was done:**
+- Added flexbox layout with gap-4 for product info section
+- Left side: 80px square product thumbnail image (w-20 h-20) with object-cover and rounded corners
+- Right side: product title (text-paragraph font-display), variant info (text-small opacity-70), price with currency
+- Image conditionally rendered only when product.image exists using shrink-0 to prevent compression
+- Used flex-col justify-center for vertical alignment of text content
+
+**Files changed:**
+- apps/website/app/components/AddedToBagPopup.tsx (updated)
+
+**Learnings for future iterations:**
+- Tailwind w-20 = 5rem = 80px, good for standard thumbnails
+- Use shrink-0 on fixed-size elements in flexbox to prevent compression
+- object-cover ensures images fill container without distortion
+- Build passes successfully with `pnpm build --filter=@wakey/website`
+

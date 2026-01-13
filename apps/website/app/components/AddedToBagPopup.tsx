@@ -1,4 +1,5 @@
 import {CrossIcon} from '@wakey/ui';
+import {Link} from 'react-router';
 
 interface AddedToBagPopupProduct {
   image: string | null;
@@ -64,6 +65,23 @@ export function AddedToBagPopup({
             {product.price} {product.currencyCode}
           </span>
         </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-3 mt-6">
+        <Link
+          to="/cart"
+          onClick={onClose}
+          className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-sand text-sand bg-transparent hover:bg-sand/10 transition-colors"
+        >
+          Your bag ({cartCount})
+        </Link>
+        <a
+          href={checkoutUrl}
+          className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-sand text-black hover:bg-sand/90 transition-colors"
+        >
+          Checkout
+        </a>
       </div>
     </div>
   );
