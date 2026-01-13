@@ -17,7 +17,7 @@ export function FreeShippingBar({currentTotal}: FreeShippingBarProps) {
   return (
     <div className="w-full">
       {/* Progress bar track */}
-      <div className="h-2 bg-sand/30 rounded-full overflow-hidden">
+      <div className="h-2 bg-black/10 rounded-full overflow-hidden">
         {/* Progress bar fill */}
         <div
           className="h-full bg-softorange rounded-full transition-all duration-300 ease-out"
@@ -26,7 +26,7 @@ export function FreeShippingBar({currentTotal}: FreeShippingBarProps) {
       </div>
 
       {/* Message text */}
-      <p className="mt-2 text-small text-sand">
+      <p className="mt-2 text-small text-text">
         {isFreeShipping ? (
           'Congrats! You get free standard shipping.'
         ) : (
