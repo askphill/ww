@@ -10,6 +10,7 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   icon?: React.ReactNode;
+  'aria-label'?: string;
 }
 
 export function Button({
@@ -22,6 +23,7 @@ export function Button({
   type = 'button',
   disabled = false,
   icon,
+  'aria-label': ariaLabel,
 }: ButtonProps) {
   const baseStyles =
     'inline-flex items-center justify-center gap-2 px-6 h-14 font-display text-label rounded-full transition-colors cursor-pointer';
@@ -45,7 +47,7 @@ export function Button({
 
   if (to) {
     return (
-      <Link to={to} className={combinedClassName} onClick={onClick}>
+      <Link to={to} className={combinedClassName} onClick={onClick} aria-label={ariaLabel}>
         {content}
       </Link>
     );
@@ -53,7 +55,7 @@ export function Button({
 
   if (href) {
     return (
-      <a href={href} className={combinedClassName} onClick={onClick}>
+      <a href={href} className={combinedClassName} onClick={onClick} aria-label={ariaLabel}>
         {content}
       </a>
     );
@@ -65,6 +67,7 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
       className={combinedClassName}
+      aria-label={ariaLabel}
     >
       {content}
     </button>
