@@ -194,3 +194,25 @@
 - Effect cleanup is critical to prevent scroll staying locked after unmount
 - Both the open→close state change AND the cleanup handle scroll restoration
 
+### Iteration: 2026-01-13 (continued)
+**Story:** US-010 - Remove old Aside mobile menu component
+**Status:** Complete
+
+**What was done:**
+- Removed MobileMenuAside function from PageLayout.tsx
+- Removed unused imports (NavLink, useAside, CrossIcon) and menu constants (PRIMARY_MENU, SECONDARY_MENU, SOCIAL_LINKS)
+- Removed 'mobile' type from AsideType union in Aside.tsx
+- Simplified Aside drawer logic - now only supports right-side sliding (cart/search)
+- Updated component comment to reflect simplified functionality
+- Aside.Provider is retained as it's still used for cart functionality (ProductForm.tsx opens cart)
+
+**Files changed:**
+- apps/website/app/components/PageLayout.tsx (modified - removed ~90 lines)
+- apps/website/app/components/Aside.tsx (modified - simplified)
+
+**Learnings for future iterations:**
+- Aside.Provider and useAside are still used by cart/search components even without visible drawer
+- ProductForm.tsx calls `open('cart')` but no cart drawer exists yet (future feature)
+- Build passes independently even with pre-existing typecheck errors in packages/ui and packages/hooks
+- 107 lines removed total - significant cleanup
+
