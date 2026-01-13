@@ -130,3 +130,27 @@
 - Use shouldRender for mounting/unmounting and isVisible for CSS transition states
 - setTimeout cleanup function is important to prevent state updates on unmounted components
 
+### Iteration: 2026-01-13
+**Story:** US-007 - Integrate popup with StickyAddToCart
+**Status:** Complete
+
+**What was done:**
+- Replaced cart drawer opening with popup state management in StickyAddToCart
+- Added useState for isPopupOpen to track popup visibility
+- useEffect triggers setIsPopupOpen(true) when fetcher.state === 'idle' && fetcher.data (successful add)
+- Added Suspense/Await pattern to load cart data from root loader (useRouteLoaderData)
+- Created AddedToBagPopupWrapper component to use useOptimisticCart for real-time cart count/checkoutUrl
+- Popup passes product data (image, title, variant, price) from StickyAddToCart props
+- No backdrop added - popup floats without dimming page
+
+**Files changed:**
+- apps/website/app/components/StickyAddToCart.tsx (updated)
+
+**Learnings for future iterations:**
+- Root loader data is accessed via useRouteLoaderData<RootLoader>('root')
+- Cart is a Promise in root loader, use Await component to resolve it
+- useOptimisticCart provides optimistic updates for totalQuantity and checkoutUrl
+- The cart type is CartApiQueryFragment from storefrontapi.generated
+- Wrapper component pattern useful when needing to use hooks with resolved async data
+- CartForm fetcher.data becomes truthy after successful cart mutation
+

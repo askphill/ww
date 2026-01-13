@@ -107,8 +107,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - useEffect triggers popup on successful add, passes product data via wrapper, no backdrop"
     },
     {
       "id": "US-008",
