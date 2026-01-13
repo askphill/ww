@@ -978,3 +978,23 @@
 - SearchResultsProducts is more complex (pagination, images, prices) - keeps its own implementation
 - Generic components with type constraints allow type-safe reuse across different item types
 - urlWithTrackingParams helper builds URLs with analytics tracking parameters
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-038 - Refactor SearchResults to use SearchResultList
+**Status:** Complete
+
+**What was done:**
+- Imported SearchResultList component from `./SearchResultList`
+- Refactored SearchResultsArticles to use SearchResultList with `getPath={(article) => \`/blogs/${article.handle}\``
+- Refactored SearchResultsPages to use SearchResultList with `getPath={(page) => \`/pages/${page.handle}\``
+- SearchResultsProducts retained its own implementation (has pagination, images, prices - more complex)
+- Reduced code by 29 lines (42 deletions, 13 insertions)
+- Verified in browser - search results for "deodorant" shows all three sections correctly
+
+**Files changed:**
+- `apps/website/app/components/SearchResults.tsx` (modified - 13 insertions, 42 deletions)
+
+**Learnings for future iterations:**
+- SearchResultList component created in US-037 is a drop-in replacement for simple list rendering
+- Keep complex components (SearchResultsProducts) as-is when they have unique requirements
+- The Link import is still needed in SearchResults.tsx for the Products section
