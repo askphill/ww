@@ -4,26 +4,38 @@ import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {HamburgerIcon, LogoSmall, BagIcon} from '@wakey/ui';
+import {NavigationDropdown} from '~/components/NavigationDropdown';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
   /** When true, renders inline instead of fixed position */
   inline?: boolean;
+  /** Whether the navigation dropdown is open */
+  isMenuOpen?: boolean;
+  /** Callback when the menu should close */
+  onMenuClose?: () => void;
 }
 
 /**
  * Floating pill header with menu toggle (left), logo (center), and cart count (right)
+ * Includes NavigationDropdown positioned directly below when open
  */
-export function Header({cart, inline = false}: HeaderProps) {
+export function Header({
+  cart,
+  inline = false,
+  isMenuOpen = false,
+  onMenuClose,
+}: HeaderProps) {
   return (
     <header
       className={
         inline
-          ? 'w-full flex justify-center'
-          : 'fixed z-50 w-full flex justify-center px-4 pt-4 md:px-6 md:pt-6 pointer-events-none'
+          ? 'w-full flex flex-col items-center'
+          : 'fixed z-50 w-full flex flex-col items-center px-4 pt-4 md:px-6 md:pt-6 pointer-events-none'
       }
       role="banner"
     >
+      {/* Header pill */}
       <div
         className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
@@ -36,6 +48,11 @@ export function Header({cart, inline = false}: HeaderProps) {
             <CartBadge />
           </Await>
         </Suspense>
+      </div>
+
+      {/* Navigation dropdown - positioned directly below header */}
+      <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
+        <NavigationDropdown isOpen={isMenuOpen} onClose={onMenuClose} />
       </div>
     </header>
   );
