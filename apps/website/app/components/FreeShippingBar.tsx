@@ -35,18 +35,19 @@ export function FreeShippingBar({currentTotal, currencyCode = 'EUR'}: FreeShippi
         {isFreeShipping ? (
           'Congrats! You get free standard shipping.'
         ) : (
-          <>
-            <span className="font-display">
+          <span className="whitespace-nowrap">
+            <span className="font-display inline">
               <Money
                 data={{
                   amount: String(Math.ceil(amountRemaining)),
                   currencyCode,
                 }}
                 withoutTrailingZeros
+                as="span"
               />
             </span>{' '}
             away from free shipping
-          </>
+          </span>
         )}
       </p>
     </div>
