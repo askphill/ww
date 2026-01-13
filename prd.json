@@ -377,8 +377,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 28,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added og:image:width (1200) and og:image:height (630) meta properties for optimal social sharing. Same pattern as homepage."
     },
     {
       "id": "US-029",
