@@ -371,3 +371,23 @@
 - Removing useAnalytics is OK since cart_viewed event isn't critical for page navigation
 - The CartBadge component uses useOptimisticCart for reactive count updates
 
+### Iteration: 2026-01-13
+**Story:** US-018 - Remove cart drawer from PageLayout
+**Status:** Complete
+
+**What was done:**
+- Removed CartAside function component from PageLayout.tsx
+- Removed CartLoading helper function
+- Removed CartMain import (only used by cart drawer)
+- Removed Suspense and Await imports (no longer needed)
+- Preserved MobileMenuAside functionality unchanged
+- Aside.Provider still wraps the layout for mobile menu support
+
+**Files changed:**
+- apps/website/app/components/PageLayout.tsx (updated, -41 lines)
+
+**Learnings for future iterations:**
+- Aside component supports multiple types (cart, mobile, search) but each can be removed independently
+- Aside.Provider must remain for any Aside components to work
+- Removing unused imports keeps bundle size smaller
+
