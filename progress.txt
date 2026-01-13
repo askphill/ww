@@ -817,3 +817,24 @@
 - Not all account routes need meta functions - routes that redirect immediately don't render any HTML
 - Layout routes (account.tsx) can have meta functions that apply to all child routes
 - The meta pattern is `export const meta: Route.MetaFunction = () => [...]` for React Router 7
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-030 - Add aria-label support to Button component
+**Status:** Complete
+
+**What was done:**
+- Added optional `aria-label` prop to ButtonProps interface in packages/ui/src/Button.tsx
+- Used property name `'aria-label'` with quotes for valid TypeScript syntax
+- Destructured as `ariaLabel` to avoid reserved word issues: `'aria-label': ariaLabel`
+- Passed aria-label to all three render paths: Link (react-router), anchor (href), and button
+- All 8 existing Button tests pass
+- Build passes successfully
+
+**Files changed:**
+- `packages/ui/src/Button.tsx` (modified - 5 insertions, 2 deletions)
+
+**Learnings for future iterations:**
+- TypeScript allows quoted property names for attributes with hyphens: `'aria-label'?: string`
+- Destructure hyphenated props with alias: `'aria-label': ariaLabel`
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
+- The @wakey/ui package is shared across apps, changes here affect all consumers

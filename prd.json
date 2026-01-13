@@ -402,8 +402,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 30,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added aria-label prop to ButtonProps interface. Destructured as ariaLabel to avoid reserved word issues. Passed to all three render paths (Link, a, button). Build and tests pass."
     },
     {
       "id": "US-031",
