@@ -915,3 +915,24 @@
 - Same pattern as ProductTooltip refactor: import useLazyFetch, add response interface, remove useEffect
 - ProductReviews also uses useState for visibleCount - useLazyFetch doesn't affect other local state
 - The fetcher.state property is still accessible on the useLazyFetch return value for loading states
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-035 - Extract MediaItem component from ProductCarousel
+**Status:** Complete
+
+**What was done:**
+- Created `apps/website/app/components/MediaItem.tsx` component
+- Handles `MediaImage` __typename case with Shopify Hydrogen `Image` component
+- Handles `Video` __typename case with native `<video>` element
+- Accepts configurable props: sizes, className, draggable, videoPreload
+- Returns null for unsupported media types (graceful fallback)
+- Properly typed using `ProductFragment['media']['nodes'][number]` from storefrontapi.generated
+
+**Files changed:**
+- `apps/website/app/components/MediaItem.tsx` (created - 55 lines)
+
+**Learnings for future iterations:**
+- ProductCarousel has duplicate media rendering logic for mobile and desktop views
+- MediaItem component can be reused in both contexts with different props (sizes, draggable)
+- `videoPreload` prop allows controlling video preload behavior (important for US-040)
+- Build passes even with pre-existing typecheck errors in packages/ui and packages/hooks
