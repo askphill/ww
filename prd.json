@@ -279,8 +279,8 @@
         "Typecheck passes"
       ],
       "priority": 18,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - removed CartAside and CartLoading from PageLayout, mobile menu preserved"
     }
   ]
 }
