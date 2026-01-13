@@ -37,6 +37,14 @@ if [ -f "$MAIN_REPO_PATH/apps/website/.env" ]; then
   echo "  ✓ Copied apps/website/.env"
 fi
 
+# Copy apps/website/.shopify directory if it exists (contains linked storefront info)
+if [ -d "$MAIN_REPO_PATH/apps/website/.shopify" ]; then
+  echo "Copying apps/website/.shopify/..."
+  mkdir -p "$WORKTREE_PATH/apps/website/.shopify"
+  cp -r "$MAIN_REPO_PATH/apps/website/.shopify/"* "$WORKTREE_PATH/apps/website/.shopify/"
+  echo "  ✓ Copied apps/website/.shopify/"
+fi
+
 # Copy any other app .env files that exist
 for env_file in "$MAIN_REPO_PATH"/apps/*/.env; do
   if [ -f "$env_file" ]; then
