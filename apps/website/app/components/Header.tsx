@@ -1,4 +1,4 @@
-import {Suspense, useState} from 'react';
+import {Suspense, useState, useEffect, useRef} from 'react';
 import {Await, useAsyncValue, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
@@ -18,6 +18,7 @@ interface HeaderProps {
  */
 export function Header({cart, inline = false}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   const handleMenuToggle = () => {
     setIsMenuOpen((prev) => !prev);
@@ -27,8 +28,30 @@ export function Header({cart, inline = false}: HeaderProps) {
     setIsMenuOpen(false);
   };
 
+  // Close menu when clicking outside header area
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        headerRef.current &&
+        !headerRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Use mousedown for immediate response (before click completes)
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
     <header
+      ref={headerRef}
       className={
         inline
           ? 'w-full flex flex-col items-center'
