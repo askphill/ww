@@ -221,3 +221,25 @@
 - relative + absolute positioning pattern works well for floating close buttons
 - The pr-8 class provides 2rem right padding to avoid content overlapping close button
 
+### Iteration: 2026-01-13
+**Story:** US-011 - Add quantity controls to line item
+**Status:** Complete
+
+**What was done:**
+- Verified quantity controls already implemented in CartLineItem.tsx as part of US-010
+- QuantitySelector component at lines 98-137 with minus/plus buttons
+- Minus button disabled when quantity <= 1 via `disabled={quantity <= 1 || disabled}`
+- Buttons wrapped in CartLineUpdateButton which uses CartForm.ACTIONS.LinesUpdate
+- CartMain uses useOptimisticCart for optimistic UI updates (line 20)
+- isOptimistic flag from OptimisticCartLine disables buttons during pending mutations
+- Build passes successfully with `pnpm build --filter=@wakey/website`
+
+**Files changed:**
+- None (implementation already complete from US-010)
+
+**Learnings for future iterations:**
+- Hydrogen's useOptimisticCart provides optimistic updates automatically
+- OptimisticCartLine type includes isOptimistic flag for disabling UI during mutations
+- CartForm.ACTIONS.LinesUpdate handles quantity updates via Shopify cart API
+- Sometimes stories are already complete as side effects of earlier stories - verify before implementing
+
