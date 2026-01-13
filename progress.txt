@@ -155,3 +155,23 @@
 - headerRef.current.contains(event.target) checks if click is inside header DOM tree
 - MCP chrome-devtools click may not trigger mousedown - use evaluate_script for testing
 
+### Iteration: 2026-01-13 (continued)
+**Story:** US-008 - Integrate AnnouncementBar into PageLayout
+**Status:** Complete
+
+**What was done:**
+- Imported AnnouncementBar component into PageLayout.tsx
+- Added fixed positioned wrapper below header (top-[76px] mobile, top-[84px] desktop)
+- Set z-40 z-index so navigation dropdown (z-50) overlays it when open
+- Applied pointer-events-none/auto pattern for proper click handling
+- Used "Free shipping on orders over €50" as example text
+
+**Files changed:**
+- apps/website/app/components/PageLayout.tsx (modified)
+
+**Learnings for future iterations:**
+- Header is ~56px height + 16px padding = 72px, add small gap → top-[76px] for mobile
+- Desktop header has md:pt-6 (24px) padding + similar height → top-[84px]
+- Use z-40 for elements that should appear below header dropdown (z-50)
+- Fixed elements need pointer-events-none/auto pattern to not block clicks
+
