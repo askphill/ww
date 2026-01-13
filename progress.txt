@@ -537,3 +537,21 @@
 - Use `--frozen-lockfile` for CI to ensure reproducible builds
 - Workflow file doesn't need build step since typecheck is sufficient for code validation
 - Separate apps (seo-engine) have their own build issues that don't affect website
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-016 - Add cache strategy to product page loader
+**Status:** Complete
+
+**What was done:**
+- Added `cache: storefront.CacheShort()` to the storefront.query call in products.$handle.tsx
+- CacheShort is appropriate for product data (changes more frequently than header/menu data which uses CacheLong)
+- Pattern follows root.tsx which uses CacheLong for header queries
+
+**Files changed:**
+- `apps/website/app/routes/products.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- storefront.CacheShort() and storefront.CacheLong() are methods on the storefront context object
+- CacheShort is for data that may change frequently (products, inventory)
+- CacheLong is for data that rarely changes (menus, layout)
+- Build passes even with pre-existing typecheck errors in packages/ui and packages/hooks

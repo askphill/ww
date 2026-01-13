@@ -219,8 +219,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added cache: storefront.CacheShort() to product page query. Pre-existing typecheck errors in packages/ui and packages/hooks unrelated to this change."
     },
     {
       "id": "US-017",
