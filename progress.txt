@@ -175,3 +175,22 @@
 - Use z-40 for elements that should appear below header dropdown (z-50)
 - Fixed elements need pointer-events-none/auto pattern to not block clicks
 
+### Iteration: 2026-01-13 (continued)
+**Story:** US-009 - Handle body scroll when menu is open
+**Status:** Complete
+
+**What was done:**
+- Added useEffect to Header that manages body scroll lock
+- When menu opens, adds `overflow-hidden` class to document.body
+- When menu closes, removes `overflow-hidden` class from document.body
+- Cleanup function ensures scroll is always restored on unmount
+- Works correctly with toggle, click-outside, and navigation closes
+
+**Files changed:**
+- apps/website/app/components/Header.tsx (modified)
+
+**Learnings for future iterations:**
+- Simple classList.add/remove is sufficient for body scroll lock
+- Effect cleanup is critical to prevent scroll staying locked after unmount
+- Both the open→close state change AND the cleanup handle scroll restoration
+
