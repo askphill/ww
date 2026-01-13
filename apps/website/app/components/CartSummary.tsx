@@ -1,7 +1,17 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {Money, type OptimisticCart} from '@shopify/hydrogen';
-import {IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '@wakey/ui';
+import {
+  IdealIcon,
+  KlarnaIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  ApplePayIcon,
+  BancontactIcon,
+  PayPalIcon,
+} from '@wakey/ui';
+import {FreeShippingBar} from './FreeShippingBar';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -9,57 +19,65 @@ type CartSummaryProps = {
 };
 
 export function CartSummary({cart, layout}: CartSummaryProps) {
+  // Get total amount as number for free shipping bar
+  const totalAmount = cart?.cost?.totalAmount?.amount
+    ? parseFloat(cart.cost.totalAmount.amount)
+    : 0;
+
+  const totalQuantity = cart?.totalQuantity ?? 0;
+
   return (
-    <div className="bg-sand p-4 md:p-8 mt-[-1px] flex-1 flex flex-col justify-between">
-      {/* Message at top */}
-      <div className="text-small font-display">
-        Free shipping on orders over 50 euros
-      </div>
+    <div className="bg-sand p-4 md:p-8 rounded-card flex flex-col gap-6">
+      {/* Free shipping progress bar at top */}
+      <FreeShippingBar currentTotal={totalAmount} />
 
-      {/* Pricing at bottom */}
-      <div>
-        {/* Price breakdown */}
-        <dl className="grid grid-cols-2 text-small md:text-label font-display gap-y-1">
-          <dt>Subtotal</dt>
-          <dd className="text-right">
-            {cart?.cost?.subtotalAmount ? (
-              <Money data={cart.cost.subtotalAmount} />
-            ) : (
-              '-'
-            )}
-          </dd>
+      {/* Totals section */}
+      <div className="space-y-2">
+        {/* Total items row */}
+        <div className="flex justify-between text-paragraph font-display">
+          <span>Total items:</span>
+          <span>{totalQuantity}</span>
+        </div>
 
-          <dt>Shipping</dt>
-          <dd className="text-right">Calculated at checkout</dd>
-
-          <dt className="text-paragraph md:text-s2 font-bold pt-2">Total</dt>
-          <dd className="text-paragraph md:text-s2 font-bold text-right pt-2">
+        {/* Total price row */}
+        <div className="flex justify-between text-h3 font-display">
+          <span>Total:</span>
+          <span>
             {cart?.cost?.totalAmount ? (
               <Money data={cart.cost.totalAmount} />
             ) : (
               '-'
             )}
-          </dd>
-        </dl>
-
-        {/* Checkout button */}
-        {cart?.checkoutUrl && (
-          <a
-            href={cart.checkoutUrl}
-            className="mt-4 md:mt-6 w-full flex justify-center items-center bg-softorange text-text border border-black/10 rounded-full py-3 md:py-4 text-paragraph font-display hover-scale"
-          >
-            Checkout
-          </a>
-        )}
-
-        {/* Payment icons */}
-        <div className="flex justify-center gap-2 pt-4 md:pt-6">
-          <IdealIcon className="h-4 w-auto text-text" />
-          <KlarnaIcon className="h-4 w-auto text-text" />
-          <IcsIcon className="h-4 w-auto text-text" />
-          <VisaIcon className="h-4 w-auto text-text" />
+          </span>
         </div>
       </div>
+
+      {/* Checkout button - large, full width */}
+      {cart?.checkoutUrl && (
+        <a
+          href={cart.checkoutUrl}
+          className="w-full flex justify-center items-center bg-black text-sand rounded-full py-4 text-s2 font-display uppercase tracking-wide hover:opacity-90 transition-opacity"
+        >
+          Checkout
+        </a>
+      )}
+
+      {/* Payment icons */}
+      <div className="flex flex-wrap justify-center gap-3">
+        <VisaIcon className="h-5 w-auto text-text" />
+        <MastercardIcon className="h-5 w-auto text-text" />
+        <AmexIcon className="h-5 w-auto text-text" />
+        <ApplePayIcon className="h-5 w-auto text-text" />
+        <PayPalIcon className="h-5 w-auto text-text" />
+        <KlarnaIcon className="h-5 w-auto text-text" />
+        <IdealIcon className="h-5 w-auto text-text" />
+        <BancontactIcon className="h-5 w-auto text-text" />
+      </div>
+
+      {/* Free shipping message */}
+      <p className="text-small text-text text-center">
+        Free standard shipping on orders over 80 euros
+      </p>
     </div>
   );
 }
