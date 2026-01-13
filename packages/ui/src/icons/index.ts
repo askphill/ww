@@ -1,4 +1,11 @@
-export {IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from './PaymentIcons';
+export {
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  PayPalIcon,
+  IdealIcon,
+  KlarnaIcon,
+} from './PaymentIcons';
 export {LogoBig} from './LogoBig';
 export {LogoSmall} from './LogoSmall';
 export {HamburgerIcon} from './HamburgerIcon';
@@ -12,3 +19,6 @@ export {
   ShapeHexagon,
   ShapeHalfCircle,
 } from './WakeyShapes';
+export {BagIcon} from './BagIcon';
+export {AddBagIcon} from './AddBagIcon';
+export {CheckoutIcon} from './CheckoutIcon';

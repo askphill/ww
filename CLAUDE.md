@@ -51,11 +51,12 @@ pnpm codegen              # Generate Storefront API types
 ### Shared Packages
 
 **`@wakey/ui`** - Design system components:
-- `Button` - Primary/outline/ghost variants
+- `Button` - Primary/secondary/outline variants, supports `icon` prop
 - `Stars` - Rating display with half-star support
 - `Accordion` - Expandable sections
 - `Tooltip` - Positioned tooltips
-- `Icons` - All SVG icons (CrossIcon, HamburgerIcon, LogoBig, etc.)
+- `AddedToBagPopup` - Cart notification popup
+- `Icons` - SVG icons from [Centralicons](https://centralicons.com/) (BagIcon, AddBagIcon, CheckoutIcon, HamburgerIcon, CrossIcon, etc.)
 
 **`@wakey/hooks`** - React hooks:
 - `useContinuousCarousel` - Carousel with physics-based scrolling
@@ -409,6 +410,28 @@ Font files in `apps/website/public/fonts/`:
 // Tailwind classes
 <div className="bg-black text-sand font-display">
 <p className="font-body text-softorange">
+```
+
+### Grid System
+| Breakpoint | Columns | Padding (left/right) |
+|------------|---------|----------------------|
+| Mobile | 1 | `px-4` (16px) |
+| Desktop (≥768px) | 24 | `md:px-8` (32px) |
+
+**Usage:**
+```tsx
+// Desktop 24-column grid
+<div className="grid grid-cols-1 md:grid-cols-24 gap-6 md:gap-8">
+  <div className="md:col-span-16">Main content (16/24 = 66%)</div>
+  <div className="md:col-span-8">Sidebar (8/24 = 33%)</div>
+</div>
+
+// Common column spans on desktop (24-col grid)
+// col-span-24 = 100%
+// col-span-16 = 66%
+// col-span-12 = 50%
+// col-span-8  = 33%
+// col-span-6  = 25%
 ```
 
 ### Design System First (STRICT RULE)

@@ -1,21 +1,25 @@
 import type {Route} from './+types/design-system';
-import {Button, Stars, Accordion, Tooltip} from '@wakey/ui';
+import {Button, Stars, Accordion, Tooltip, AddedToBagPopup} from '@wakey/ui';
 import {
   LogoBig,
   LogoSmall,
   HamburgerIcon,
   CrossIcon,
   SmileyIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  PayPalIcon,
   IdealIcon,
   KlarnaIcon,
-  IcsIcon,
-  VisaIcon,
   ShapeCircle,
   ShapeStar,
   ShapeFlower,
   ShapeSparkle,
   ShapeHexagon,
   ShapeHalfCircle,
+  BagIcon,
+  AddBagIcon,
 } from '@wakey/ui';
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
@@ -436,10 +440,31 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
 
         {/* Buttons */}
         <Section title="Buttons">
-          <div className="flex flex-wrap gap-4 items-center">
-            <Button variant="primary">Primary</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
+          <div className="space-y-6">
+            <div>
+              <p className="text-small font-body opacity-60 mb-3">Without icon</p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Button variant="primary">Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="outline">Outline</Button>
+              </div>
+            </div>
+            <div>
+              <p className="text-small font-body opacity-60 mb-3">With icon</p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Button variant="primary" icon={<AddBagIcon />}>Add to Bag</Button>
+                <Button variant="secondary" icon={<AddBagIcon />}>Add to Bag</Button>
+                <Button variant="outline" icon={<AddBagIcon />}>Add to Bag</Button>
+              </div>
+            </div>
+            <div>
+              <p className="text-small font-body opacity-60 mb-3">Disabled</p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Button variant="primary" disabled>Primary</Button>
+                <Button variant="secondary" disabled>Secondary</Button>
+                <Button variant="outline" disabled>Outline</Button>
+              </div>
+            </div>
           </div>
         </Section>
 
@@ -531,6 +556,91 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
           )}
         </Section>
 
+        {/* Added to Bag Popup */}
+        <Section title="Added to Bag Popup">
+          <p className="text-paragraph font-body mb-6">
+            Confirmation popup shown after adding items to cart. Appears above
+            the sticky Add to Cart bar with a slide-up animation.
+          </p>
+          <div className="space-y-4 mb-8">
+            <p className="text-s2 font-display">Props:</p>
+            <ul className="text-body-small font-body space-y-1 opacity-80">
+              <li>
+                • <code className="bg-black/10 px-1 rounded">isOpen</code> -
+                Controls visibility
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">onClose</code> -
+                Callback when closed
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">product</code> -
+                Product info (image, title, variantTitle, price, currencyCode)
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">cartCount</code> -
+                Total items in cart
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">checkoutUrl</code>{' '}
+                - Shopify checkout URL
+              </li>
+            </ul>
+          </div>
+          {/* Static preview - showing the popup content without fixed positioning */}
+          <div className="max-w-[600px]">
+            <div className="bg-black text-sand rounded-card p-6">
+              {/* Header with title and close button */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-s2 font-display">Added to your bag</span>
+                <button
+                  aria-label="Close"
+                  className="text-sand hover:opacity-70 transition-opacity"
+                >
+                  <CrossIcon className="w-8 h-8" />
+                </button>
+              </div>
+
+              {/* Product info with image and details */}
+              <div className="flex gap-4">
+                {productData?.featuredImage && (
+                  <div className="shrink-0">
+                    <img
+                      src={productData.featuredImage}
+                      alt={productData.title}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col justify-center">
+                  <span className="text-paragraph font-display">
+                    {productData?.title || 'Product Title'}
+                  </span>
+                  {productData?.subtitle && (
+                    <span className="text-small opacity-70">
+                      {productData.subtitle}
+                    </span>
+                  )}
+                  <span className="text-paragraph mt-1">
+                    {productData?.selectedVariant?.price?.amount || '19.00'}{' '}
+                    {productData?.selectedVariant?.price?.currencyCode || 'EUR'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3 mt-6">
+                <span className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-sand text-sand bg-transparent">
+                  Your bag (2)
+                </span>
+                <span className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-sand text-black">
+                  Checkout
+                </span>
+              </div>
+            </div>
+          </div>
+        </Section>
+
         {/* Icons */}
         <Section title="Icons">
           <div className="space-y-8">
@@ -570,6 +680,18 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     <SmileyIcon className="w-10 text-black" />
                   </div>
                   <p className="text-small font-body mt-2">SmileyIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <BagIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">BagIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <AddBagIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">AddBagIcon</p>
                 </div>
               </div>
             </div>
@@ -620,30 +742,33 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             {/* Payment Icons */}
             <div>
               <h3 className="text-h3 font-display mb-4">Payment Methods</h3>
-              <div className="flex flex-wrap gap-12 items-end">
-                <div>
-                  <div className="h-8 flex items-end">
-                    <IdealIcon className="w-6 text-black" />
-                  </div>
+              <p className="text-body-small font-body opacity-60 mb-6">
+                Official payment brand icons from Suitsupply style guide.
+              </p>
+              <div className="flex flex-wrap gap-4 items-end">
+                <div className="text-center">
+                  <VisaIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">VisaIcon</p>
+                </div>
+                <div className="text-center">
+                  <MastercardIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">MastercardIcon</p>
+                </div>
+                <div className="text-center">
+                  <AmexIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">AmexIcon</p>
+                </div>
+                <div className="text-center">
+                  <PayPalIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">PayPalIcon</p>
+                </div>
+                <div className="text-center">
+                  <IdealIcon className="h-10 w-auto" />
                   <p className="text-small font-body mt-2">IdealIcon</p>
                 </div>
-                <div>
-                  <div className="h-8 flex items-end">
-                    <KlarnaIcon className="w-6 text-black" />
-                  </div>
+                <div className="text-center">
+                  <KlarnaIcon className="h-10 w-auto" />
                   <p className="text-small font-body mt-2">KlarnaIcon</p>
-                </div>
-                <div>
-                  <div className="h-8 flex items-end">
-                    <IcsIcon className="w-6 text-black" />
-                  </div>
-                  <p className="text-small font-body mt-2">IcsIcon</p>
-                </div>
-                <div>
-                  <div className="h-8 flex items-end">
-                    <VisaIcon className="w-8 text-black" />
-                  </div>
-                  <p className="text-small font-body mt-2">VisaIcon</p>
                 </div>
               </div>
             </div>

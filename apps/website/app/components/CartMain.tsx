@@ -20,6 +20,33 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const cart = useOptimisticCart(originalCart);
   const hasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
 
+  // Page layout: 24-column grid on desktop
+  if (layout === 'page') {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-24 gap-6 md:gap-8">
+        {hasItems ? (
+          <>
+            {/* Line items - left column on desktop (16/24) */}
+            <div className="md:col-span-16">
+              <ul className="space-y-4">
+                {(cart?.lines?.nodes ?? []).map((line) => (
+                  <CartLineItem key={line.id} line={line} layout={layout} />
+                ))}
+              </ul>
+            </div>
+            {/* Summary - right column on desktop (8/24) */}
+            <div className="md:col-span-8 md:sticky md:top-8 md:self-start">
+              <CartSummary cart={cart} layout={layout} />
+            </div>
+          </>
+        ) : (
+          <CartEmpty layout={layout} />
+        )}
+      </div>
+    );
+  }
+
+  // Aside layout: flex column (original behavior for cart drawer)
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {hasItems ? (
@@ -45,6 +72,23 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 function CartEmpty({layout}: {layout: CartLayout}) {
   const {close} = useAside();
 
+  // Page layout: centered on sand background with black text
+  if (layout === 'page') {
+    return (
+      <div className="col-span-full flex flex-col items-center justify-center py-16 md:py-24">
+        <h3 className="text-h2 font-display text-black mb-6">Your bag is empty</h3>
+        <Link
+          to="/"
+          className="text-paragraph font-display text-black underline hover:opacity-70 transition-opacity"
+          prefetch="viewport"
+        >
+          Continue shopping
+        </Link>
+      </div>
+    );
+  }
+
+  // Aside layout: original styling for cart drawer
   return (
     <div className="bg-sand p-4 md:p-6 mt-[-1px] flex-1">
       <h3 className="text-h3 font-display pb-4 md:pb-6">
@@ -52,7 +96,7 @@ function CartEmpty({layout}: {layout: CartLayout}) {
       </h3>
       <Link
         to="/"
-        onClick={() => layout === 'aside' && close()}
+        onClick={close}
         className="underline text-paragraph font-display"
         prefetch="viewport"
       >

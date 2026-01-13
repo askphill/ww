@@ -1,5 +1,13 @@
 import {NavLink, useLocation, Link} from 'react-router';
-import {LogoBig, IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '@wakey/ui';
+import {
+  LogoBig,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  PayPalIcon,
+  IdealIcon,
+  KlarnaIcon,
+} from '@wakey/ui';
 
 const FOOTER_MENU = [
   {title: 'Deodorant', url: '/products/deodorant'},
@@ -27,8 +35,8 @@ export function Footer() {
       role="contentinfo"
       className={`${bgColor} overflow-hidden p-4 md:p-8 md:relative`}
     >
-      {/* Logo */}
-      <Link to="/" className="block pb-12 md:pb-0 ">
+      {/* Logo - desktop only at top */}
+      <Link to="/" className="hidden md:block pb-12 md:pb-0">
         <LogoBig className={`${logoColor} w-full`} />
       </Link>
 
@@ -37,7 +45,7 @@ export function Footer() {
         {/* Main nav links */}
         <nav
           aria-label="Footer navigation"
-          className="text-s2 pb-16 md:pb-24 font-display"
+          className="text-s2 pb-4 md:pb-24 font-display"
         >
           {FOOTER_MENU.map((item) => (
             <div key={item.title}>
@@ -76,13 +84,15 @@ export function Footer() {
       {/* Payment Icons */}
       <div
         role="img"
-        aria-label="Accepted payment methods: iDEAL, Klarna, Credit Card, Visa"
-        className="inline-flex gap-1 pb-4 md:absolute md:top-12 md:left-1/2 md:gap-3"
+        aria-label="Accepted payment methods: Visa, Mastercard, American Express, PayPal, iDEAL, Klarna"
+        className="hidden md:inline-flex gap-1 md:absolute md:top-12 md:left-1/2 md:gap-3"
       >
-        <IdealIcon className="h-3.5 md:h-4 w-auto text-black" />
-        <KlarnaIcon className="h-3.5 md:h-4 w-auto text-black" />
-        <IcsIcon className="h-3.5 md:h-4 w-auto text-black" />
-        <VisaIcon className="h-3.5 md:h-4 w-auto text-black" />
+        <VisaIcon className="h-6 md:h-8 w-auto" />
+        <MastercardIcon className="h-6 md:h-8 w-auto" />
+        <AmexIcon className="h-6 md:h-8 w-auto" />
+        <PayPalIcon className="h-6 md:h-8 w-auto" />
+        <IdealIcon className="h-6 md:h-8 w-auto" />
+        <KlarnaIcon className="h-6 md:h-8 w-auto" />
       </div>
 
       {/* Bottom section */}
@@ -103,8 +113,32 @@ export function Footer() {
           ))}
         </ul>
 
-        {/* Legal text */}
-        <div>2025 Wakey. All rights reserved.</div>
+        {/* Legal text - desktop only */}
+        <div className="hidden md:block">2025 Wakey. All rights reserved.</div>
+      </div>
+
+      {/* Logo - mobile only at bottom */}
+      <Link to="/" className="block md:hidden -mt-4">
+        <LogoBig className={`${logoColor} w-full`} />
+      </Link>
+
+      {/* Payment Icons - mobile only */}
+      <div
+        role="img"
+        aria-label="Accepted payment methods: Visa, Mastercard, American Express, PayPal, iDEAL, Klarna"
+        className="inline-flex gap-1 pt-8 md:hidden"
+      >
+        <VisaIcon className="h-6 w-auto" />
+        <MastercardIcon className="h-6 w-auto" />
+        <AmexIcon className="h-6 w-auto" />
+        <PayPalIcon className="h-6 w-auto" />
+        <IdealIcon className="h-6 w-auto" />
+        <KlarnaIcon className="h-6 w-auto" />
+      </div>
+
+      {/* Legal text - mobile only */}
+      <div className="block md:hidden pt-4 text-small font-display">
+        2025 Wakey. All rights reserved.
       </div>
     </footer>
   );

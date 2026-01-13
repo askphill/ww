@@ -1,5 +1,4 @@
-import {Await, NavLink} from 'react-router';
-import {Suspense} from 'react';
+import {NavLink} from 'react-router';
 import type {
   CartApiQueryFragment,
   HeaderQuery,
@@ -7,7 +6,6 @@ import type {
 import {Aside, useAside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
-import {CartMain} from '~/components/CartMain';
 import {CrossIcon} from '@wakey/ui';
 
 const PRIMARY_MENU = [
@@ -42,49 +40,11 @@ export function PageLayout({
 }: PageLayoutProps) {
   return (
     <Aside.Provider>
-      <CartAside cart={cart} />
       <MobileMenuAside />
       {header && <Header cart={cart} />}
       <main>{children}</main>
       <Footer />
     </Aside.Provider>
-  );
-}
-
-function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
-  const {close} = useAside();
-
-  return (
-    <Aside type="cart">
-      {/* Title block */}
-      <div className="bg-sand p-4 md:p-8 flex justify-between pb-16 md:pb-24">
-        <h2 className="text-h2 font-display" id="CartDrawerTitle">
-          Cart
-        </h2>
-        <button
-          onClick={close}
-          className="hover-scale h-fit"
-          aria-label="Close cart"
-        >
-          <CrossIcon className="w-10 h-10 md:w-[3.125rem] md:h-[3.125rem] text-text" />
-        </button>
-      </div>
-
-      {/* Cart content */}
-      <Suspense fallback={<CartLoading />}>
-        <Await resolve={cart}>
-          {(cart) => <CartMain cart={cart} layout="aside" />}
-        </Await>
-      </Suspense>
-    </Aside>
-  );
-}
-
-function CartLoading() {
-  return (
-    <div className="bg-sand p-4 md:p-8 mt-[-1px] flex-1">
-      <p className="text-paragraph font-display">Loading cart...</p>
-    </div>
   );
 }
 

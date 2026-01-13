@@ -22,6 +22,17 @@ export const CART_QUERY_FRAGMENT = `#graphql
         ...Money
       }
     }
+    discountAllocations {
+      discountedAmount {
+        ...Money
+      }
+      ... on CartAutomaticDiscountAllocation {
+        title
+      }
+      ... on CartCodeDiscountAllocation {
+        code
+      }
+    }
     merchandise {
       ... on ProductVariant {
         id
@@ -47,6 +58,9 @@ export const CART_QUERY_FRAGMENT = `#graphql
           title
           id
           vendor
+          subtitle: metafield(namespace: "ask_phill", key: "subtitle") {
+            value
+          }
         }
         selectedOptions {
           name
@@ -73,6 +87,17 @@ export const CART_QUERY_FRAGMENT = `#graphql
         ...Money
       }
     }
+    discountAllocations {
+      discountedAmount {
+        ...Money
+      }
+      ... on CartAutomaticDiscountAllocation {
+        title
+      }
+      ... on CartCodeDiscountAllocation {
+        code
+      }
+    }
     merchandise {
       ... on ProductVariant {
         id
@@ -97,6 +122,9 @@ export const CART_QUERY_FRAGMENT = `#graphql
           title
           id
           vendor
+          subtitle: metafield(namespace: "ask_phill", key: "subtitle") {
+            value
+          }
         }
         selectedOptions {
           name

@@ -1,13 +1,9 @@
 import {Suspense} from 'react';
 import {Await, useAsyncValue, Link} from 'react-router';
-import {
-  type CartViewPayload,
-  useAnalytics,
-  useOptimisticCart,
-} from '@shopify/hydrogen';
+import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {HamburgerIcon, LogoSmall} from '@wakey/ui';
+import {HamburgerIcon, LogoSmall, BagIcon} from '@wakey/ui';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -24,11 +20,13 @@ export function Header({cart, inline = false}: HeaderProps) {
       className={
         inline
           ? 'w-full flex justify-center'
-          : 'fixed z-50 w-full flex justify-center px-8 py-4 md:p-6 pointer-events-none'
+          : 'fixed z-50 w-full flex justify-center px-4 pt-4 md:px-6 md:pt-6 pointer-events-none'
       }
       role="banner"
     >
-      <div className={`flex items-center justify-between w-full max-w-[600px] bg-white rounded-card px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}>
+      <div
+        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+      >
         <MenuToggleButton />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />
@@ -65,7 +63,6 @@ function HeaderButton({
       aria-expanded={ariaExpanded}
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
-        bg-sand
         flex items-center justify-center
         text-label md:text-s2 font-display
         hover-scale
@@ -88,31 +85,31 @@ function MenuToggleButton() {
       ariaControls="SiteMenuDrawer"
       ariaExpanded={false}
     >
-      <HamburgerIcon className="w-4 md:w-5" />
+      <HamburgerIcon className="w-6" />
     </HeaderButton>
   );
 }
 
 function CartButton({count}: {count: number}) {
-  const {open} = useAside();
-  const {publish, shop, cart: analyticsCart, prevCart} = useAnalytics();
-
   return (
-    <HeaderButton
-      onClick={() => {
-        open('cart');
-        publish('cart_viewed', {
-          cart: analyticsCart,
-          prevCart,
-          shop,
-          url: window.location.href || '',
-        } as CartViewPayload);
-      }}
-      ariaLabel={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
-      ariaControls="CartDrawer"
+    <Link
+      to="/cart"
+      aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
+      className="
+        rounded-full w-8 h-8 md:w-12 md:h-12
+        flex items-center justify-center
+        hover-scale
+        transition-transform
+        relative
+      "
     >
-      {count}
-    </HeaderButton>
+      <BagIcon className="w-6" />
+      {count > 0 && (
+        <span className="absolute top-[3px] right-0.5 md:top-2 md:right-2 min-w-3.5 h-3.5 px-1 flex items-center justify-center bg-ocher text-black text-xs font-display rounded-full leading-none">
+          {count}
+        </span>
+      )}
+    </Link>
   );
 }
 

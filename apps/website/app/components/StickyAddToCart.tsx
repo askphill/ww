@@ -1,9 +1,16 @@
 import {useEffect, useState} from 'react';
-import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
+import {
+  CartForm,
+  Money,
+  type OptimisticCartLineInput,
+  useOptimisticCart,
+} from '@shopify/hydrogen';
 import type {ProductVariantFragment} from 'storefrontapi.generated';
-import {type FetcherWithComponents} from 'react-router';
-import {useAside} from '~/components/Aside';
-import {SmileyIcon, Stars} from '@wakey/ui';
+import {type FetcherWithComponents, Await} from 'react-router';
+import {SmileyIcon, Button, AddedToBagPopup, AddBagIcon} from '@wakey/ui';
+import {Suspense} from 'react';
+import {useRouteLoaderData} from 'react-router';
+import type {RootLoader} from '~/root';
 
 interface StickyAddToCartProps {
   product: {
@@ -13,8 +20,6 @@ interface StickyAddToCartProps {
   };
   selectedVariant: ProductVariantFragment;
   subtitle?: string | null;
-  reviewRating?: number | null;
-  reviewCount?: number;
   analytics?: unknown;
   productImage?: string | null;
   /** When true, renders inline instead of fixed position */
@@ -25,29 +30,15 @@ export function StickyAddToCart({
   product,
   selectedVariant,
   subtitle,
-  reviewRating,
-  reviewCount = 0,
   analytics,
   productImage,
   inline = false,
 }: StickyAddToCartProps) {
-  const {open} = useAside();
+  // Popup state
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // Get price from variant
-  const price = selectedVariant?.price
-    ? parseFloat(selectedVariant.price.amount)
-    : 0;
-  const currencyCode = selectedVariant?.price?.currencyCode || 'EUR';
-
-  // Format price helper
-  const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('nl-NL', {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  // Get cart data from root loader
+  const rootData = useRouteLoaderData<RootLoader>('root');
 
   // Animation states (only used when not inline)
   const [isReady, setIsReady] = useState(inline);
@@ -90,7 +81,7 @@ export function StickyAddToCart({
       }
     >
       {/* Unified Layout (same for mobile and desktop) */}
-      <div className="flex items-center justify-between w-full max-w-[600px] h-[70px] md:h-[90px] bg-yellow rounded-card p-2 px-3 md:px-4">
+      <div className="flex items-center justify-between w-full max-w-[600px] md:h-[90px] bg-yellow rounded-card p-4 md:py-2 md:px-4">
         {/* Left: Product Image + Info */}
         <div className="flex items-center gap-2 md:gap-3">
           {productImage && (
@@ -100,32 +91,30 @@ export function StickyAddToCart({
               className="w-11 h-11 md:w-14 md:h-14 object-contain rounded-lg flex-shrink-0"
             />
           )}
-          <div className="flex flex-col gap-0.5 md:gap-1">
+          <div className="flex flex-col gap-1 md:gap-1.5">
             <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">
               <span className="text-label md:text-[1.0625rem] font-display uppercase leading-tight">
-                {product.title}
+                {/* Full title on screens >= 395px */}
+                <span className="hidden min-[395px]:inline">{product.title}</span>
+                {/* Title without "Natural" on screens < 395px */}
+                <span className="min-[395px]:hidden">{product.title.replace(/natural\s*/i, '')}</span>
               </span>
-              <span className="text-label md:text-[1.0625rem] font-display leading-tight">
-                {formatPrice(price)}
+              <span className="hidden md:flex text-label md:text-[1.0625rem] font-display leading-tight items-center gap-1.5">
+                {selectedVariant?.compareAtPrice && (
+                  <s className="opacity-50">
+                    <Money data={selectedVariant.compareAtPrice} withoutTrailingZeros />
+                  </s>
+                )}
+                {selectedVariant?.price && (
+                  <Money data={selectedVariant.price} withoutTrailingZeros />
+                )}
               </span>
             </div>
-            <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">
-              {subtitle && (
-                <span className="text-small font-display opacity-60">
-                  {subtitle}
-                </span>
-              )}
-              {reviewRating && (
-                <div className="flex items-center gap-1">
-                  <Stars rating={reviewRating} color="black" size="sm" />
-                  {reviewCount > 0 && (
-                    <span className="text-small font-display opacity-60">
-                      ({reviewCount})
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+            {subtitle && (
+              <span className="text-small font-body italic opacity-60">
+                {subtitle}
+              </span>
+            )}
           </div>
         </div>
 
@@ -138,10 +127,10 @@ export function StickyAddToCart({
           {(fetcher: FetcherWithComponents<unknown>) => {
             const isLoading = fetcher.state !== 'idle';
 
-            // Open cart drawer on successful add
+            // Open popup on successful add
             useEffect(() => {
               if (fetcher.state === 'idle' && fetcher.data) {
-                open('cart');
+                setIsPopupOpen(true);
               }
             }, [fetcher.state, fetcher.data]);
 
@@ -152,27 +141,36 @@ export function StickyAddToCart({
                   type="hidden"
                   value={JSON.stringify(analytics)}
                 />
-                <button
+                <Button
                   type="submit"
+                  variant="primary"
                   disabled={!isAvailable || isLoading}
-                  className={`
-                    shrink-0 h-[50px] md:h-[58px] px-4 md:px-6
-                    bg-sand rounded-[5px]
-                    font-display text-label uppercase whitespace-nowrap
-                    relative overflow-hidden
-                    transition-opacity duration-200
-                    ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
+                  className="shrink-0 relative overflow-hidden whitespace-nowrap"
                 >
                   {/* Text - slides up when loading */}
                   <span
                     className={`
-                      flex items-center justify-center
+                      flex items-center justify-center gap-2
                       transition-all duration-300
                       ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
                     `}
                   >
-                    {isAvailable ? 'Add to Cart' : 'Sold Out'}
+                    {isAvailable && <AddBagIcon className="w-5 h-5" />}
+                    {isAvailable ? (
+                      <>
+                        {/* Mobile: Add + price */}
+                        <span className="md:hidden inline-flex items-center gap-1">
+                          Add
+                          {selectedVariant?.price && (
+                            <Money data={selectedVariant.price} withoutTrailingZeros />
+                          )}
+                        </span>
+                        {/* Desktop: Add to Bag */}
+                        <span className="hidden md:inline">Add to Bag</span>
+                      </>
+                    ) : (
+                      'Sold Out'
+                    )}
                   </span>
                   {/* Smiley - slides in when loading */}
                   <span
@@ -186,12 +184,71 @@ export function StickyAddToCart({
                       className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
                     />
                   </span>
-                </button>
+                </Button>
               </>
             );
           }}
         </CartForm>
       </div>
+
+      {/* Added to Bag Popup */}
+      {rootData?.cart && (
+        <Suspense fallback={null}>
+          <Await resolve={rootData.cart}>
+            {(cart) => (
+              <AddedToBagPopupWrapper
+                cart={cart}
+                isPopupOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                productImage={productImage}
+                productTitle={product.title}
+                subtitle={subtitle}
+                price={selectedVariant?.price}
+              />
+            )}
+          </Await>
+        </Suspense>
+      )}
     </div>
+  );
+}
+
+// Wrapper component to use optimistic cart data
+function AddedToBagPopupWrapper({
+  cart,
+  isPopupOpen,
+  onClose,
+  productImage,
+  productTitle,
+  subtitle,
+  price,
+}: {
+  cart: unknown;
+  isPopupOpen: boolean;
+  onClose: () => void;
+  productImage?: string | null;
+  productTitle: string;
+  subtitle?: string | null;
+  price?: import('@shopify/hydrogen/storefront-api-types').MoneyV2;
+}) {
+  const optimisticCart = useOptimisticCart(
+    cart as import('storefrontapi.generated').CartApiQueryFragment | null,
+  );
+
+  if (!price) return null;
+
+  return (
+    <AddedToBagPopup
+      isOpen={isPopupOpen}
+      onClose={onClose}
+      product={{
+        image: productImage ?? null,
+        title: productTitle,
+        variantTitle: subtitle ?? null,
+        price: <Money data={price} withoutTrailingZeros />,
+      }}
+      cartCount={optimisticCart?.totalQuantity ?? 0}
+      checkoutUrl={optimisticCart?.checkoutUrl ?? '/cart'}
+    />
   );
 }
