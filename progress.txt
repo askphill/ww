@@ -45,3 +45,69 @@
 - `whitespace-nowrap` is essential to prevent text wrapping in marquee
 - Build passes but typecheck has pre-existing errors (unrelated to this work)
 
+### Iteration: 2026-01-13 (continued)
+**Story:** US-003 - Create NavigationDropdown component structure
+**Status:** Complete
+
+**What was done:**
+- Created NavigationDropdown.tsx component with Shop and Learn sections
+- Shop section links: Wakey Deodorant → /products/deodorant, Natural Deodorant → /products/natural-deodorant
+- Learn section links: About us → /about, FAQ → /faq, Blog → /blog
+- Section labels use text-body-small font-display uppercase tracking-wide text-black/60
+- Nav links use text-h3 font-display with hover state (text-black/70)
+- Background is bg-sand with rounded-card border radius
+- Same padding as header (px-4 mobile, md:px-6 desktop)
+- Component accepts isOpen (visibility) and onClose (callback for nav link clicks) props
+
+**Files changed:**
+- apps/website/app/components/NavigationDropdown.tsx (created)
+
+**Learnings for future iterations:**
+- Navigation data stored as NAV_SECTIONS constant for easy maintenance
+- Component returns null when !isOpen for simple visibility control
+- onClose callback allows parent component to control state on navigation
+- Website build passes independently even when turbo build fails on other apps
+
+### Iteration: 2026-01-13 (continued)
+**Story:** US-004 - Position NavigationDropdown below header
+**Status:** Complete
+
+**What was done:**
+- Integrated NavigationDropdown into Header component (same container/wrapper)
+- Changed header layout from `flex justify-center` to `flex flex-col items-center` for vertical stacking
+- Added `mt-2` gap between header pill and dropdown via wrapper div
+- Added `isMenuOpen` and `onMenuClose` props to Header for external state control
+- NavigationDropdown inherits z-50 from header, will overlay announcement bar when open
+
+**Files changed:**
+- apps/website/app/components/Header.tsx (modified)
+
+**Learnings for future iterations:**
+- Header uses flex-col to stack header pill and dropdown vertically
+- Both components get `pointer-events-auto` for click handling on fixed header
+- NavigationDropdown already has correct max-width (600px) and centering internally
+- State props (isMenuOpen, onMenuClose) prepared for US-006 toggle implementation
+
+### Iteration: 2026-01-13 (continued)
+**Story:** US-005 - Add slide-down animation to NavigationDropdown
+**Status:** Complete
+
+**What was done:**
+- Replaced conditional rendering with CSS grid height animation for smooth push effect
+- Grid wrapper uses `grid-template-rows` transitioning between `0fr` (closed) and `1fr` (open)
+- Added `overflow-hidden` wrapper to clip content during height animation
+- Inner nav has `opacity-0 -translate-y-4` → `opacity-100 translate-y-0` for visual slide effect
+- Uses `--ease-out-expo` timing function from theme (300ms duration)
+- Added `aria-hidden` and `tabIndex` management for accessibility
+- Component always renders (no `return null`) to enable smooth CSS transitions
+
+**Files changed:**
+- apps/website/app/components/NavigationDropdown.tsx (modified)
+
+**Learnings for future iterations:**
+- CSS grid `grid-template-rows: 0fr/1fr` transition is best for smooth height animations (push effect)
+- Must keep element in DOM (no conditional render) for CSS transitions to work
+- `overflow-hidden` wrapper essential to clip content when collapsed
+- Combine height animation (grid) with opacity/translate animation for polished feel
+- Build passes independently with `cd apps/website && pnpm build`
+

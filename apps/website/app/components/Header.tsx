@@ -1,8 +1,7 @@
-import {Suspense} from 'react';
+import {Suspense, useState} from 'react';
 import {Await, useAsyncValue, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {useAside} from '~/components/Aside';
 import {HamburgerIcon, LogoSmall, BagIcon} from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
 
@@ -10,22 +9,24 @@ interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
   /** When true, renders inline instead of fixed position */
   inline?: boolean;
-  /** Whether the navigation dropdown is open */
-  isMenuOpen?: boolean;
-  /** Callback when the menu should close */
-  onMenuClose?: () => void;
 }
 
 /**
  * Floating pill header with menu toggle (left), logo (center), and cart count (right)
  * Includes NavigationDropdown positioned directly below when open
+ * Manages its own menu open/close state internally
  */
-export function Header({
-  cart,
-  inline = false,
-  isMenuOpen = false,
-  onMenuClose,
-}: HeaderProps) {
+export function Header({cart, inline = false}: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen((prev) => !prev);
+  };
+
+  const handleMenuClose = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <header
       className={
@@ -39,7 +40,7 @@ export function Header({
       <div
         className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
-        <MenuToggleButton />
+        <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
         <Link to="/" aria-label="Wakey home">
           <LogoSmall className="h-6 md:h-7" />
         </Link>
@@ -52,7 +53,7 @@ export function Header({
 
       {/* Navigation dropdown - positioned directly below header */}
       <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
-        <NavigationDropdown isOpen={isMenuOpen} onClose={onMenuClose} />
+        <NavigationDropdown isOpen={isMenuOpen} onClose={handleMenuClose} />
       </div>
     </header>
   );
@@ -92,15 +93,18 @@ function HeaderButton({
   );
 }
 
-function MenuToggleButton() {
-  const {open} = useAside();
+interface MenuToggleButtonProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
 
+function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
   return (
     <HeaderButton
-      onClick={() => open('mobile')}
-      ariaLabel="Open menu"
-      ariaControls="SiteMenuDrawer"
-      ariaExpanded={false}
+      onClick={onToggle}
+      ariaLabel={isOpen ? 'Close menu' : 'Open menu'}
+      ariaControls="navigation-dropdown"
+      ariaExpanded={isOpen}
     >
       <HamburgerIcon className="w-6" />
     </HeaderButton>
