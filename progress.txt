@@ -8,386 +8,40 @@
 ## Iterations
 
 ### Iteration: 2026-01-13
-**Story:** US-001 - Create AddedToBagPopup component structure
+**Story:** US-001 - Create AnnouncementBar component
 **Status:** Complete
 
 **What was done:**
-- Created AddedToBagPopup component at apps/website/app/components/AddedToBagPopup.tsx
-- Defined AddedToBagPopupProduct interface with image, title, variantTitle, price, currencyCode
-- Defined AddedToBagPopupProps interface with isOpen, onClose, product, cartCount, checkoutUrl
-- Component returns null when isOpen is false or product is null
-- Basic placeholder UI structure added
+- Created AnnouncementBar.tsx component matching header styling patterns
+- Used same padding (px-4 mobile, md:px-6 desktop), max-width (600px), and rounded-card
+- Applied bg-ocher background with text-black font-display text-small styling
+- Component accepts a `message` prop for customizable announcement text
+- Verified build passes (typecheck has pre-existing errors unrelated to this component)
 
 **Files changed:**
-- apps/website/app/components/AddedToBagPopup.tsx (new)
+- apps/website/app/components/AnnouncementBar.tsx (created)
 
 **Learnings for future iterations:**
-- Pre-existing typecheck errors exist in @wakey/seo-engine and other packages (not related to website)
-- Use `pnpm build --filter=@wakey/website` to verify just the website package builds successfully
-- The Aside.tsx component is a good pattern reference for slide-in/out drawer components
-- StickyAddToCart.tsx shows how to integrate with CartForm and useAside
+- Header uses `pointer-events-none` on wrapper and `pointer-events-auto` on inner content for floating behavior
+- Theme has `@keyframes marquee` and `animate-marquee` utility already defined for US-002
+- Pre-existing typecheck errors exist in packages/ui and packages/hooks (React types) - build still works
 
-### Iteration: 2026-01-13
-**Story:** US-002 - Style AddedToBagPopup to match design system
+### Iteration: 2026-01-13 (continued)
+**Story:** US-002 - Add marquee animation to AnnouncementBar
 **Status:** Complete
 
 **What was done:**
-- Applied bg-black text-sand color scheme for dark theme matching On Running style
-- Used rounded-card utility for consistent border radius
-- Applied type scale utilities: text-s2 for title, text-paragraph for product name, text-small for variant
-- Added close button with CrossIcon from @wakey/ui positioned top-right using flexbox justify-between
-- Added hover:opacity-70 transition for close button interactivity
+- Added continuous scrolling animation using existing `animate-marquee` utility
+- Duplicated message text to create seamless looping effect
+- Applied `overflow-hidden` to container to clip the scrolling content
+- Changed from `text-center` to `flex whitespace-nowrap` for proper marquee layout
+- Each message has `px-8` spacing for visual separation in the loop
 
 **Files changed:**
-- apps/website/app/components/AddedToBagPopup.tsx (updated)
+- apps/website/app/components/AnnouncementBar.tsx (modified)
 
 **Learnings for future iterations:**
-- CrossIcon is exported from @wakey/ui via packages/ui/src/icons/index.ts
-- Design system colors are in packages/tailwind-config/theme.css (--color-sand, --color-black, etc.)
-- Type scale utilities (text-s2, text-paragraph, etc.) are defined in theme.css as @utility rules
-- The rounded-card utility provides responsive border radius (0.3125rem mobile, 0.625rem desktop)
-
-### Iteration: 2026-01-13
-**Story:** US-003 - Add product info layout to popup
-**Status:** Complete
-
-**What was done:**
-- Added flexbox layout with gap-4 for product info section
-- Left side: 80px square product thumbnail image (w-20 h-20) with object-cover and rounded corners
-- Right side: product title (text-paragraph font-display), variant info (text-small opacity-70), price with currency
-- Image conditionally rendered only when product.image exists using shrink-0 to prevent compression
-- Used flex-col justify-center for vertical alignment of text content
-
-**Files changed:**
-- apps/website/app/components/AddedToBagPopup.tsx (updated)
-
-**Learnings for future iterations:**
-- Tailwind w-20 = 5rem = 80px, good for standard thumbnails
-- Use shrink-0 on fixed-size elements in flexbox to prevent compression
-- object-cover ensures images fill container without distortion
-- Build passes successfully with `pnpm build --filter=@wakey/website`
-
-### Iteration: 2026-01-13
-**Story:** US-004 - Add action buttons to popup
-**Status:** Complete
-
-**What was done:**
-- Added 'Your bag (X)' outline button with Link to /cart page, showing dynamic cartCount
-- Added 'Checkout' primary button with href to checkoutUrl (Shopify checkout)
-- Styled buttons for dark background: outline uses border-sand text-sand bg-transparent, primary uses bg-sand text-black
-- Buttons use flex-1 for equal width, rounded-full, font-display text-label
-- Added Link import from react-router for internal navigation
-
-**Files changed:**
-- apps/website/app/components/AddedToBagPopup.tsx (updated)
-
-**Learnings for future iterations:**
-- The existing Button component from @wakey/ui has variants for light backgrounds only
-- For dark backgrounds (like popup), need custom button styles matching the inverted color scheme
-- Link from react-router works with onClick for closing the popup when navigating
-- Use <a> tag with href for external URLs (checkoutUrl is Shopify external checkout)
-
-### Iteration: 2026-01-13
-**Story:** US-005 - Position popup above sticky ATC
-**Status:** Complete
-
-**What was done:**
-- Added fixed positioning to popup container with `fixed bottom-[calc(70px+8px+1rem)] md:bottom-[calc(90px+8px+1rem)]`
-- Used calc() to position popup above sticky ATC (70px mobile, 90px desktop) + 8px gap + 1rem padding
-- Added `left-0 right-0 z-50 px-4 flex justify-center` for full-width centering
-- Inner content div uses `w-full max-w-[600px]` to match sticky ATC width
-- Z-index z-50 is higher than sticky ATC's z-40
-
-**Files changed:**
-- apps/website/app/components/AddedToBagPopup.tsx (updated)
-
-**Learnings for future iterations:**
-- StickyAddToCart uses `fixed bottom-0 left-0 right-0 z-40 p-4` with `max-w-[600px]` inner content
-- StickyAddToCart height is h-[70px] on mobile, h-[90px] on desktop
-- Using calc() in Tailwind arbitrary values allows combining multiple measurements
-- The popup positioning accounts for sticky ATC height + padding (1rem on each side)
-
-### Iteration: 2026-01-13
-**Story:** US-006 - Add slide-up animation to popup
-**Status:** Complete
-
-**What was done:**
-- Added isVisible and shouldRender state variables to control animation timing
-- Implemented useEffect to manage animation lifecycle: mount → animate in → animate out → unmount
-- Used double requestAnimationFrame pattern to ensure DOM is rendered before animation starts
-- Added CSS transition classes: transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]
-- Open state: opacity-100 translate-y-0 (slides up from below)
-- Closed state: opacity-0 translate-y-4 (fades out and slides down)
-- 300ms timeout to allow close animation to complete before unmounting
-
-**Files changed:**
-- apps/website/app/components/AddedToBagPopup.tsx (updated)
-
-**Learnings for future iterations:**
-- The design system defines --ease-out-expo as cubic-bezier(0.19,1,0.22,1) in theme.css
-- For CSS transitions to work, component must render in initial state first, then update to final state
-- Double requestAnimationFrame ensures browser has painted initial state before triggering transition
-- Use shouldRender for mounting/unmounting and isVisible for CSS transition states
-- setTimeout cleanup function is important to prevent state updates on unmounted components
-
-### Iteration: 2026-01-13
-**Story:** US-007 - Integrate popup with StickyAddToCart
-**Status:** Complete
-
-**What was done:**
-- Replaced cart drawer opening with popup state management in StickyAddToCart
-- Added useState for isPopupOpen to track popup visibility
-- useEffect triggers setIsPopupOpen(true) when fetcher.state === 'idle' && fetcher.data (successful add)
-- Added Suspense/Await pattern to load cart data from root loader (useRouteLoaderData)
-- Created AddedToBagPopupWrapper component to use useOptimisticCart for real-time cart count/checkoutUrl
-- Popup passes product data (image, title, variant, price) from StickyAddToCart props
-- No backdrop added - popup floats without dimming page
-
-**Files changed:**
-- apps/website/app/components/StickyAddToCart.tsx (updated)
-
-**Learnings for future iterations:**
-- Root loader data is accessed via useRouteLoaderData<RootLoader>('root')
-- Cart is a Promise in root loader, use Await component to resolve it
-- useOptimisticCart provides optimistic updates for totalQuantity and checkoutUrl
-- The cart type is CartApiQueryFragment from storefrontapi.generated
-- Wrapper component pattern useful when needing to use hooks with resolved async data
-- CartForm fetcher.data becomes truthy after successful cart mutation
-
-### Iteration: 2026-01-13
-**Story:** US-008 - Add AddedToBagPopup to design system page
-**Status:** Complete
-
-**What was done:**
-- Added new 'Added to Bag Popup' section under 'Sticky Add to Cart' section in design-system.tsx
-- Created static inline preview of popup (not using actual component) to avoid fixed positioning issues
-- Used real product data from the existing loader (productData) for realistic preview
-- Documented all component props with description and code formatting
-- Popup preview shows: title, close button, product image/title/variant/price, and action buttons
-
-**Files changed:**
-- apps/website/app/routes/design-system.tsx (updated)
-
-**Learnings for future iterations:**
-- The AddedToBagPopup component has fixed positioning and animation that doesn't work well in design system previews
-- For design system documentation, prefer static inline versions that show appearance without behavior
-- The design-system.tsx loader already fetches product data that can be reused for popup preview
-- Existing patterns in design-system.tsx use `<code className="bg-black/10 px-1 rounded">` for inline code styling
-- Build passes with `pnpm build --filter=@wakey/website` despite pre-existing typecheck errors in other packages
-
-### Iteration: 2026-01-13
-**Story:** US-009 - Update cart page layout to 2-column on desktop
-**Status:** Complete
-
-**What was done:**
-- Updated cart.tsx to use bg-black background with proper design system spacing (px-4 md:px-8 py-8 md:py-12)
-- Added page title 'Bag' using text-h1 font-display text-sand
-- Modified CartMain.tsx to render 2-column grid layout when layout='page'
-- Desktop uses grid-cols-[1fr_400px] for ~65%/~35% split
-- Mobile uses grid-cols-1 for stacked single column
-- Added sticky positioning to cart summary on desktop (md:sticky md:top-8 md:self-start)
-- Preserved original flex column layout for aside (cart drawer) layout
-
-**Files changed:**
-- apps/website/app/routes/cart.tsx (updated)
-- apps/website/app/components/CartMain.tsx (updated)
-
-**Learnings for future iterations:**
-- CartMain component serves both /cart page and cart drawer - use layout prop to differentiate
-- For responsive 2-column layouts, grid-cols-[1fr_Xpx] gives flexible left column with fixed right column
-- sticky + top-8 + self-start keeps summary visible while scrolling cart items
-- The cart page styling needs to override the default sand background from PageLayout
-- space-y-4 provides consistent vertical spacing between cart line items
-
-### Iteration: 2026-01-13
-**Story:** US-010 - Redesign cart line item component
-**Status:** Complete
-
-**What was done:**
-- Added subtle border with border-sand/20 and rounded-card for Polaroid-like card appearance
-- Wrapped content in relative container to enable absolute positioning of remove button
-- Replaced text "Remove" button with CrossIcon from @wakey/ui positioned top-right of card
-- Added pr-8 padding-right to product title to prevent overlap with close button
-- Applied opacity-70 to variant text for better visual hierarchy
-- Moved price display below product info (instead of inline to the right) for cleaner flow
-- Maintained image left, product info + controls right layout
-
-**Files changed:**
-- apps/website/app/components/CartLineItem.tsx (updated)
-
-**Learnings for future iterations:**
-- CrossIcon can be sized with className="w-6 h-6" and uses currentColor for stroke
-- For card borders on dark backgrounds, use border-sand/20 for subtle effect
-- relative + absolute positioning pattern works well for floating close buttons
-- The pr-8 class provides 2rem right padding to avoid content overlapping close button
-
-### Iteration: 2026-01-13
-**Story:** US-011 - Add quantity controls to line item
-**Status:** Complete
-
-**What was done:**
-- Verified quantity controls already implemented in CartLineItem.tsx as part of US-010
-- QuantitySelector component at lines 98-137 with minus/plus buttons
-- Minus button disabled when quantity <= 1 via `disabled={quantity <= 1 || disabled}`
-- Buttons wrapped in CartLineUpdateButton which uses CartForm.ACTIONS.LinesUpdate
-- CartMain uses useOptimisticCart for optimistic UI updates (line 20)
-- isOptimistic flag from OptimisticCartLine disables buttons during pending mutations
-- Build passes successfully with `pnpm build --filter=@wakey/website`
-
-**Files changed:**
-- None (implementation already complete from US-010)
-
-**Learnings for future iterations:**
-- Hydrogen's useOptimisticCart provides optimistic updates automatically
-- OptimisticCartLine type includes isOptimistic flag for disabling UI during mutations
-- CartForm.ACTIONS.LinesUpdate handles quantity updates via Shopify cart API
-- Sometimes stories are already complete as side effects of earlier stories - verify before implementing
-
-### Iteration: 2026-01-13
-**Story:** US-012 - Create free shipping progress bar component
-**Status:** Complete
-
-**What was done:**
-- Created FreeShippingBar component at apps/website/app/components/FreeShippingBar.tsx
-- Props interface with currentTotal (number) prop
-- Hardcoded FREE_SHIPPING_THRESHOLD constant at 80 euros
-- Progress bar uses percentage calculation: (currentTotal / threshold) * 100
-- Shows "X euros away from free shipping" when below threshold
-- Shows "Congrats! You get free standard shipping." when threshold met
-
-**Files changed:**
-- apps/website/app/components/FreeShippingBar.tsx (new)
-
-**Learnings for future iterations:**
-- Math.max(0, ...) ensures amount remaining is never negative
-- Math.min(100, ...) caps progress at 100% to prevent overflow
-- transition-all duration-300 ease-out provides smooth width animations
-- toFixed(0) formats number without decimal places for cleaner display
-
-### Iteration: 2026-01-13
-**Story:** US-013 - Style free shipping progress bar
-**Status:** Complete
-
-**What was done:**
-- Updated track color from bg-sand/30 to bg-black/10 for better contrast on sand background
-- Fill uses bg-softorange as specified in acceptance criteria
-- Text uses text-small and text-text for proper dark-on-light styling
-- Smooth width transition maintained with duration-300 ease-out
-- Browser verification attempted but MCP had connection issues
-
-**Files changed:**
-- apps/website/app/components/FreeShippingBar.tsx (updated)
-
-**Learnings for future iterations:**
-- When component will be used on a sand (light) background, use bg-black/10 instead of bg-sand for track
-- Always consider the context where component will be rendered when choosing colors
-- Chrome DevTools MCP may have connection issues - ensure browser isn't already connected
-
-### Iteration: 2026-01-13
-**Story:** US-014 - Add payment method icons
-**Status:** Complete
-
-**What was done:**
-- Added MastercardIcon: two overlapping circles with different opacity
-- Added AmexIcon: AME letters inside a bordered card shape
-- Added ApplePayIcon: Apple logo + "Pay" text
-- Added BancontactIcon: B letter with concentric circles
-- Added SofortIcon: "SOFORT" text in bordered card
-- Added PayPalIcon: overlapping P letters with different opacity
-- Updated icons/index.ts to export all new icons
-- Build passes successfully (icons bundled at 5.09 kB)
-
-**Files changed:**
-- packages/ui/src/icons/PaymentIcons.tsx (updated)
-- packages/ui/src/icons/index.ts (updated)
-
-**Learnings for future iterations:**
-- Icons use consistent IconProps interface with className?: string
-- All icons use fill="currentColor" for inheriting text color
-- Use fillOpacity for layered effects in monochrome icons
-- UI package doesn't have its own typecheck/build task - verify via website build
-- Export * from './icons' in main index.ts re-exports all icon exports automatically
-
-### Iteration: 2026-01-13
-**Story:** US-015 - Redesign cart summary section
-**Status:** Complete
-
-**What was done:**
-- Integrated FreeShippingBar component at top of summary
-- Added Total items row displaying cart.totalQuantity
-- Added Total price row with text-h3 styling using Money component
-- Redesigned CHECKOUT button: bg-black text-sand uppercase text-s2 tracking-wide
-- Added 8 payment icons: Visa, Mastercard, Amex, ApplePay, PayPal, Klarna, iDEAL, Bancontact
-- Added free shipping message: "Free standard shipping on orders over 80 euros"
-- Used rounded-card, flex-col gap-6 for consistent vertical spacing
-
-**Files changed:**
-- apps/website/app/components/CartSummary.tsx (updated)
-
-**Learnings for future iterations:**
-- cart.cost.totalAmount.amount is a string, must parseFloat() for numeric comparison
-- cart.totalQuantity provides the total number of items across all lines
-- Import FreeShippingBar from relative path './FreeShippingBar'
-- Removed IcsIcon (not in acceptance criteria), kept 8 relevant payment icons
-- Chrome DevTools MCP continues to have browser profile issues
-
-### Iteration: 2026-01-13
-**Story:** US-016 - Handle empty cart state
-**Status:** Complete
-
-**What was done:**
-- Added separate page layout branch in CartEmpty component
-- Page layout shows "Your bag is empty" with text-h2 font-display text-sand styling
-- Added "Continue shopping" link to homepage with hover:opacity-70 transition
-- Used col-span-full to span both grid columns when cart is empty
-- Centered layout with flex-col items-center justify-center and py-16 md:py-24
-- Preserved original aside layout for cart drawer (unchanged)
-
-**Files changed:**
-- apps/website/app/components/CartMain.tsx (updated)
-
-**Learnings for future iterations:**
-- col-span-full works within CSS Grid to span all columns regardless of column count
-- CartMain renders both page and aside layouts - use layout prop to differentiate styling
-- Dev server runs on port 3005 (not 5173) for this project
-- pkill -f "chrome-devtools-mcp" can resolve browser profile conflicts
-
-### Iteration: 2026-01-13
-**Story:** US-017 - Update header cart button to link to /cart page
-**Status:** Complete
-
-**What was done:**
-- Converted CartButton from button element to Link component from react-router
-- Changed destination from opening cart drawer to navigating to /cart page
-- Preserved same styling (rounded-full, bg-sand, hover-scale, etc.)
-- Removed unused useAnalytics and CartViewPayload imports
-- Cart count badge still displays via CartBadge component
-
-**Files changed:**
-- apps/website/app/components/Header.tsx (updated)
-
-**Learnings for future iterations:**
-- Link component from react-router works well as styled buttons when given same classes
-- Removing useAnalytics is OK since cart_viewed event isn't critical for page navigation
-- The CartBadge component uses useOptimisticCart for reactive count updates
-
-### Iteration: 2026-01-13
-**Story:** US-018 - Remove cart drawer from PageLayout
-**Status:** Complete
-
-**What was done:**
-- Removed CartAside function component from PageLayout.tsx
-- Removed CartLoading helper function
-- Removed CartMain import (only used by cart drawer)
-- Removed Suspense and Await imports (no longer needed)
-- Preserved MobileMenuAside functionality unchanged
-- Aside.Provider still wraps the layout for mobile menu support
-
-**Files changed:**
-- apps/website/app/components/PageLayout.tsx (updated, -41 lines)
-
-**Learnings for future iterations:**
-- Aside component supports multiple types (cart, mobile, search) but each can be removed independently
-- Aside.Provider must remain for any Aside components to work
-- Removing unused imports keeps bundle size smaller
+- Marquee animation works by translating -50% so duplicating content creates seamless loop
+- `whitespace-nowrap` is essential to prevent text wrapping in marquee
+- Build passes but typecheck has pre-existing errors (unrelated to this work)
 
