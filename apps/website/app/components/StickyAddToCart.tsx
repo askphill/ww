@@ -88,15 +88,18 @@ export function StickyAddToCart({
             <img
               src={productImage}
               alt={product.title}
-              className="hidden md:block w-11 h-11 md:w-14 md:h-14 object-contain rounded-lg flex-shrink-0"
+              className="w-11 h-11 md:w-14 md:h-14 object-contain rounded-lg flex-shrink-0"
             />
           )}
           <div className="flex flex-col gap-1 md:gap-1.5">
             <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">
               <span className="text-label md:text-[1.0625rem] font-display uppercase leading-tight">
-                {product.title}
+                {/* Full title on screens >= 395px */}
+                <span className="hidden min-[395px]:inline">{product.title}</span>
+                {/* Title without "Natural" on screens < 395px */}
+                <span className="min-[395px]:hidden">{product.title.replace(/natural\s*/i, '')}</span>
               </span>
-              <span className="text-label md:text-[1.0625rem] font-display leading-tight flex items-center gap-1.5">
+              <span className="hidden md:flex text-label md:text-[1.0625rem] font-display leading-tight items-center gap-1.5">
                 {selectedVariant?.compareAtPrice && (
                   <s className="opacity-50">
                     <Money data={selectedVariant.compareAtPrice} withoutTrailingZeros />
@@ -153,7 +156,21 @@ export function StickyAddToCart({
                     `}
                   >
                     {isAvailable && <AddBagIcon className="w-5 h-5" />}
-                    {isAvailable ? 'Add to Bag' : 'Sold Out'}
+                    {isAvailable ? (
+                      <>
+                        {/* Mobile: Add + price */}
+                        <span className="md:hidden inline-flex items-center gap-1">
+                          Add
+                          {selectedVariant?.price && (
+                            <Money data={selectedVariant.price} withoutTrailingZeros />
+                          )}
+                        </span>
+                        {/* Desktop: Add to Bag */}
+                        <span className="hidden md:inline">Add to Bag</span>
+                      </>
+                    ) : (
+                      'Sold Out'
+                    )}
                   </span>
                   {/* Smiley - slides in when loading */}
                   <span
