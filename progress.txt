@@ -758,3 +758,20 @@
 - BreadcrumbList requires itemListElement array with ListItem objects
 - Each ListItem needs @type, position (1-indexed), name, and item (URL)
 - Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-027 - Add og:image dimensions to homepage
+**Status:** Complete
+
+**What was done:**
+- Added `og:image:width` (1200) and `og:image:height` (630) meta properties to homepage
+- Standard Open Graph dimensions (1200x630) for optimal social sharing previews
+- Properties placed directly after `og:image` in meta array for logical grouping
+
+**Files changed:**
+- `apps/website/app/routes/_index.tsx` (modified)
+
+**Learnings for future iterations:**
+- Standard og:image dimensions are 1200x630 (2:1 aspect ratio for social sharing)
+- og:image:width and og:image:height should be strings containing pixel values
+- Meta properties use `property` key (not `name`) for Open Graph tags
