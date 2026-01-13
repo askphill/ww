@@ -936,3 +936,24 @@
 - MediaItem component can be reused in both contexts with different props (sizes, draggable)
 - `videoPreload` prop allows controlling video preload behavior (important for US-040)
 - Build passes even with pre-existing typecheck errors in packages/ui and packages/hooks
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-036 - Refactor ProductCarousel to use MediaItem
+**Status:** Complete
+
+**What was done:**
+- Imported MediaItem component from `./MediaItem`
+- Removed unused `Image` import from `@shopify/hydrogen` (MediaItem handles it internally)
+- Replaced inline media rendering logic in mobile carousel (lines 62-81) with single `<MediaItem>` call
+- Replaced inline media rendering logic in desktop carousel (lines 169-190) with single `<MediaItem>` call
+- Reduced code by 31 lines (43 deletions, 12 insertions) by removing duplicate MediaImage/Video rendering
+- Both mobile and desktop carousels pass appropriate props: sizes, className, draggable
+
+**Files changed:**
+- `apps/website/app/components/ProductCarousel.tsx` (modified - 12 insertions, 43 deletions)
+
+**Learnings for future iterations:**
+- MediaItem component created in US-035 handles both MediaImage and Video __typename cases
+- Mobile carousel uses `sizes="100vw"` and default `draggable={true}`
+- Desktop carousel uses `sizes="50vw"`, `draggable={false}`, and `pointer-events-none` class
+- Component behavior unchanged after refactor - images/videos render correctly in both views

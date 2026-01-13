@@ -490,8 +490,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 36,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Imported MediaItem component from ./MediaItem. Replaced inline MediaImage/Video rendering in both mobile and desktop carousel views. Removed 43 lines of duplicate code. Build passes. Verified in browser - product carousel renders images correctly."
     },
     {
       "id": "US-037",
