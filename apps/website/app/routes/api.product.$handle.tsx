@@ -43,7 +43,13 @@ export async function loader({params, context}: Route.LoaderArgs) {
   const {handle} = params;
 
   if (!handle) {
-    return {product: null};
+    return new Response(JSON.stringify({product: null}), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
   }
 
   const {product} = await storefront.query(PRODUCT_QUERY, {
@@ -72,7 +78,7 @@ export async function loader({params, context}: Route.LoaderArgs) {
     }
   }
 
-  return {
+  const responseData = {
     product: product ? {
       id: product.id,
       title: product.title,
@@ -83,4 +89,12 @@ export async function loader({params, context}: Route.LoaderArgs) {
       reviewCount,
     } : null,
   };
+
+  return new Response(JSON.stringify(responseData), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
 }
