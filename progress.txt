@@ -838,3 +838,20 @@
 - Destructure hyphenated props with alias: `'aria-label': ariaLabel`
 - Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
 - The @wakey/ui package is shared across apps, changes here affect all consumers
+### Iteration: 2026-01-13 UTC
+**Story:** US-031 - Add label to search input
+**Status:** Complete
+
+**What was done:**
+- Added visually hidden label element to search input in search.tsx
+- Label uses `sr-only` class for screen reader accessibility (visually hidden)
+- Label has `htmlFor="search-input"` matching input's `id="search-input"`
+- Verified in browser using chrome-devtools MCP - accessibility tree shows searchbox with "Search" label
+
+**Files changed:**
+- `apps/website/app/routes/search.tsx` (modified - 4 insertions)
+
+**Learnings for future iterations:**
+- `sr-only` is a Tailwind utility class that visually hides elements while keeping them accessible to screen readers
+- The htmlFor/id association creates a proper label-input relationship for assistive technology
+- Chrome DevTools accessibility tree shows the label text as the accessible name for the input

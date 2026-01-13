@@ -417,8 +417,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 31,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added sr-only label with htmlFor=\"search-input\" matching input id. Verified in browser - accessibility tree shows searchbox with \"Search\" label."
     },
     {
       "id": "US-032",
