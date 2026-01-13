@@ -1,3 +1,5 @@
+import {CrossIcon} from '@wakey/ui';
+
 interface AddedToBagPopupProduct {
   image: string | null;
   title: string;
@@ -26,9 +28,24 @@ export function AddedToBagPopup({
   }
 
   return (
-    <div>
-      {/* Placeholder - styling will be added in US-002 */}
-      <span>Added to your bag</span>
+    <div className="bg-black text-sand rounded-card p-6">
+      {/* Header with title and close button */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-s2 font-display">Added to your bag</span>
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="text-sand hover:opacity-70 transition-opacity"
+        >
+          <CrossIcon className="w-8 h-8" />
+        </button>
+      </div>
+
+      {/* Product info placeholder - will be styled in US-003 */}
+      <div className="text-paragraph">{product.title}</div>
+      {product.variantTitle && (
+        <div className="text-small opacity-70">{product.variantTitle}</div>
+      )}
     </div>
   );
 }
