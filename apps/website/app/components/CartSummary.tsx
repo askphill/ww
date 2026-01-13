@@ -29,7 +29,10 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   return (
     <div className="bg-white p-4 md:p-8 rounded-card flex flex-col gap-6">
       {/* Free shipping progress bar at top */}
-      <FreeShippingBar currentTotal={totalAmount} />
+      <FreeShippingBar
+        currentTotal={totalAmount}
+        currencyCode={cart?.cost?.totalAmount?.currencyCode}
+      />
 
       {/* Totals section */}
       <div className="space-y-2">
