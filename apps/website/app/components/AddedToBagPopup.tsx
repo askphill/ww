@@ -41,11 +41,30 @@ export function AddedToBagPopup({
         </button>
       </div>
 
-      {/* Product info placeholder - will be styled in US-003 */}
-      <div className="text-paragraph">{product.title}</div>
-      {product.variantTitle && (
-        <div className="text-small opacity-70">{product.variantTitle}</div>
-      )}
+      {/* Product info with image and details */}
+      <div className="flex gap-4">
+        {/* Product thumbnail - square, ~80px */}
+        {product.image && (
+          <div className="shrink-0">
+            <img
+              src={product.image}
+              alt={product.title}
+              className="w-20 h-20 object-cover rounded"
+            />
+          </div>
+        )}
+
+        {/* Product details */}
+        <div className="flex flex-col justify-center">
+          <span className="text-paragraph font-display">{product.title}</span>
+          {product.variantTitle && (
+            <span className="text-small opacity-70">{product.variantTitle}</span>
+          )}
+          <span className="text-paragraph mt-1">
+            {product.price} {product.currencyCode}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

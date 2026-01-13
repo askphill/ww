@@ -1,0 +1,49 @@
+# Ralph Progress Log
+
+## Codebase Patterns
+<!-- Ralph will add discovered patterns here -->
+
+---
+
+## Iterations
+
+### Iteration: 2026-01-13
+**Story:** US-001 - Create AddedToBagPopup component structure
+**Status:** Complete
+
+**What was done:**
+- Created AddedToBagPopup component at apps/website/app/components/AddedToBagPopup.tsx
+- Defined AddedToBagPopupProduct interface with image, title, variantTitle, price, currencyCode
+- Defined AddedToBagPopupProps interface with isOpen, onClose, product, cartCount, checkoutUrl
+- Component returns null when isOpen is false or product is null
+- Basic placeholder UI structure added
+
+**Files changed:**
+- apps/website/app/components/AddedToBagPopup.tsx (new)
+
+**Learnings for future iterations:**
+- Pre-existing typecheck errors exist in @wakey/seo-engine and other packages (not related to website)
+- Use `pnpm build --filter=@wakey/website` to verify just the website package builds successfully
+- The Aside.tsx component is a good pattern reference for slide-in/out drawer components
+- StickyAddToCart.tsx shows how to integrate with CartForm and useAside
+
+### Iteration: 2026-01-13
+**Story:** US-002 - Style AddedToBagPopup to match design system
+**Status:** Complete
+
+**What was done:**
+- Applied bg-black text-sand color scheme for dark theme matching On Running style
+- Used rounded-card utility for consistent border radius
+- Applied type scale utilities: text-s2 for title, text-paragraph for product name, text-small for variant
+- Added close button with CrossIcon from @wakey/ui positioned top-right using flexbox justify-between
+- Added hover:opacity-70 transition for close button interactivity
+
+**Files changed:**
+- apps/website/app/components/AddedToBagPopup.tsx (updated)
+
+**Learnings for future iterations:**
+- CrossIcon is exported from @wakey/ui via packages/ui/src/icons/index.ts
+- Design system colors are in packages/tailwind-config/theme.css (--color-sand, --color-black, etc.)
+- Type scale utilities (text-s2, text-paragraph, etc.) are defined in theme.css as @utility rules
+- The rounded-card utility provides responsive border radius (0.3125rem mobile, 0.625rem desktop)
+
