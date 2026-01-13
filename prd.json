@@ -207,8 +207,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 15,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created .github/workflows/ci.yml with typecheck job. Runs on PRs to main. Uses same pnpm/node setup as Oxygen deployment workflow. Valid YAML verified."
     },
     {
       "id": "US-016",

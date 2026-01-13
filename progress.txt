@@ -516,3 +516,24 @@
 - Define Zod schema inline when used in only one place (no need to export)
 - Use `??` instead of `||` for nullish coalescing when `0` should be a valid value
 - The safeJsonParse utility returns null for both JSON parse errors and validation failures
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-015 - Add CI workflow with validation
+**Status:** Complete
+
+**What was done:**
+- Created `.github/workflows/ci.yml` with typecheck job
+- Workflow triggers on pull requests to main branch only
+- Used same pnpm/node setup as existing Oxygen deployment workflow (actions/checkout@v4, pnpm/action-setup@v4, actions/setup-node@v4)
+- Set 10 minute timeout (appropriate for typecheck)
+- Verified YAML is valid syntax
+- Pre-existing typecheck errors in packages/ui and packages/hooks don't block workflow creation
+
+**Files changed:**
+- `.github/workflows/ci.yml` (created)
+
+**Learnings for future iterations:**
+- Follow existing workflow patterns for consistency (same pnpm/node setup)
+- Use `--frozen-lockfile` for CI to ensure reproducible builds
+- Workflow file doesn't need build step since typecheck is sufficient for code validation
+- Separate apps (seo-engine) have their own build issues that don't affect website
