@@ -555,3 +555,22 @@
 - CacheShort is for data that may change frequently (products, inventory)
 - CacheLong is for data that rarely changes (menus, layout)
 - Build passes even with pre-existing typecheck errors in packages/ui and packages/hooks
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-017 - Add cache headers to product API route
+**Status:** Complete
+
+**What was done:**
+- Modified loader to return Response object instead of plain object
+- Added `Cache-Control: public, max-age=3600` header (1 hour cache)
+- Added `Content-Type: application/json` header for proper response type
+- Updated both main response and early return (when handle is missing) for consistency
+
+**Files changed:**
+- `apps/website/app/routes/api.product.$handle.tsx` (modified)
+
+**Learnings for future iterations:**
+- API routes in React Router 7 can return plain objects OR Response objects
+- For cache headers, must use Response object with explicit headers
+- Pattern: `new Response(JSON.stringify(data), { status: 200, headers: {...} })`
+- Other routes like robots.txt and sitemap use same pattern for cache headers
