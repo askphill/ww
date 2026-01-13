@@ -20,6 +20,7 @@ import {
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
+import {AddedToBagPopup} from '~/components/AddedToBagPopup';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -529,6 +530,91 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               inline
             />
           )}
+        </Section>
+
+        {/* Added to Bag Popup */}
+        <Section title="Added to Bag Popup">
+          <p className="text-paragraph font-body mb-6">
+            Confirmation popup shown after adding items to cart. Appears above
+            the sticky Add to Cart bar with a slide-up animation.
+          </p>
+          <div className="space-y-4 mb-8">
+            <p className="text-s2 font-display">Props:</p>
+            <ul className="text-body-small font-body space-y-1 opacity-80">
+              <li>
+                • <code className="bg-black/10 px-1 rounded">isOpen</code> -
+                Controls visibility
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">onClose</code> -
+                Callback when closed
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">product</code> -
+                Product info (image, title, variantTitle, price, currencyCode)
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">cartCount</code> -
+                Total items in cart
+              </li>
+              <li>
+                • <code className="bg-black/10 px-1 rounded">checkoutUrl</code>{' '}
+                - Shopify checkout URL
+              </li>
+            </ul>
+          </div>
+          {/* Static preview - showing the popup content without fixed positioning */}
+          <div className="max-w-[600px]">
+            <div className="bg-black text-sand rounded-card p-6">
+              {/* Header with title and close button */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-s2 font-display">Added to your bag</span>
+                <button
+                  aria-label="Close"
+                  className="text-sand hover:opacity-70 transition-opacity"
+                >
+                  <CrossIcon className="w-8 h-8" />
+                </button>
+              </div>
+
+              {/* Product info with image and details */}
+              <div className="flex gap-4">
+                {productData?.featuredImage && (
+                  <div className="shrink-0">
+                    <img
+                      src={productData.featuredImage}
+                      alt={productData.title}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col justify-center">
+                  <span className="text-paragraph font-display">
+                    {productData?.title || 'Product Title'}
+                  </span>
+                  {productData?.subtitle && (
+                    <span className="text-small opacity-70">
+                      {productData.subtitle}
+                    </span>
+                  )}
+                  <span className="text-paragraph mt-1">
+                    {productData?.selectedVariant?.price?.amount || '19.00'}{' '}
+                    {productData?.selectedVariant?.price?.currencyCode || 'EUR'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3 mt-6">
+                <span className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-sand text-sand bg-transparent">
+                  Your bag (2)
+                </span>
+                <span className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-sand text-black">
+                  Checkout
+                </span>
+              </div>
+            </div>
+          </div>
         </Section>
 
         {/* Icons */}
