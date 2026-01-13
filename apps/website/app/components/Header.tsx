@@ -1,5 +1,5 @@
 import {Suspense, useState, useEffect, useRef} from 'react';
-import {Await, useAsyncValue, Link} from 'react-router';
+import {Await, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon} from '@wakey/ui';
@@ -79,12 +79,14 @@ export function Header({cart, inline = false}: HeaderProps) {
         className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white border-blue/10 rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
         <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
-        <Link to="/" aria-label="Wakey home">
+        <Link to="/" aria-label="Wakey home" onClick={handleMenuClose}>
           <LogoSmall className="h-6 md:h-7" />
         </Link>
-        <Suspense fallback={<CartButton count={0} />}>
+        <Suspense fallback={<CartButton count={0} onNavigate={handleMenuClose} />}>
           <Await resolve={cart}>
-            <CartBadge />
+            {(cartData) => (
+              <CartBadge cart={cartData} onNavigate={handleMenuClose} />
+            )}
           </Await>
         </Suspense>
       </div>
@@ -160,10 +162,11 @@ function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
   );
 }
 
-function CartButton({count}: {count: number}) {
+function CartButton({count, onNavigate}: {count: number; onNavigate?: () => void}) {
   return (
     <Link
       to="/cart"
+      onClick={onNavigate}
       aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
@@ -183,10 +186,9 @@ function CartButton({count}: {count: number}) {
   );
 }
 
-function CartBadge() {
-  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
+function CartBadge({cart: originalCart, onNavigate}: {cart: CartApiQueryFragment | null; onNavigate?: () => void}) {
   const cart = useOptimisticCart(originalCart);
   const count = cart?.totalQuantity ?? 0;
 
-  return <CartButton count={count} />;
+  return <CartButton count={count} onNavigate={onNavigate} />;
 }
