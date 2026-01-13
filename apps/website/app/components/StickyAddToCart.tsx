@@ -1,9 +1,16 @@
 import {useEffect, useState} from 'react';
-import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
+import {
+  CartForm,
+  type OptimisticCartLineInput,
+  useOptimisticCart,
+} from '@shopify/hydrogen';
 import type {ProductVariantFragment} from 'storefrontapi.generated';
-import {type FetcherWithComponents} from 'react-router';
-import {useAside} from '~/components/Aside';
+import {type FetcherWithComponents, Await} from 'react-router';
 import {SmileyIcon, Stars} from '@wakey/ui';
+import {AddedToBagPopup} from '~/components/AddedToBagPopup';
+import {Suspense} from 'react';
+import {useRouteLoaderData} from 'react-router';
+import type {RootLoader} from '~/root';
 
 interface StickyAddToCartProps {
   product: {
@@ -31,7 +38,11 @@ export function StickyAddToCart({
   productImage,
   inline = false,
 }: StickyAddToCartProps) {
-  const {open} = useAside();
+  // Popup state
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // Get cart data from root loader
+  const rootData = useRouteLoaderData<RootLoader>('root');
 
   // Get price from variant
   const price = selectedVariant?.price
@@ -138,10 +149,10 @@ export function StickyAddToCart({
           {(fetcher: FetcherWithComponents<unknown>) => {
             const isLoading = fetcher.state !== 'idle';
 
-            // Open cart drawer on successful add
+            // Open popup on successful add
             useEffect(() => {
               if (fetcher.state === 'idle' && fetcher.data) {
-                open('cart');
+                setIsPopupOpen(true);
               }
             }, [fetcher.state, fetcher.data]);
 
@@ -192,6 +203,67 @@ export function StickyAddToCart({
           }}
         </CartForm>
       </div>
+
+      {/* Added to Bag Popup */}
+      {rootData?.cart && (
+        <Suspense fallback={null}>
+          <Await resolve={rootData.cart}>
+            {(cart) => (
+              <AddedToBagPopupWrapper
+                cart={cart}
+                isPopupOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                productImage={productImage}
+                productTitle={product.title}
+                subtitle={subtitle}
+                price={selectedVariant?.price?.amount}
+                currencyCode={currencyCode}
+              />
+            )}
+          </Await>
+        </Suspense>
+      )}
     </div>
+  );
+}
+
+// Wrapper component to use optimistic cart data
+function AddedToBagPopupWrapper({
+  cart,
+  isPopupOpen,
+  onClose,
+  productImage,
+  productTitle,
+  subtitle,
+  price,
+  currencyCode,
+}: {
+  cart: unknown;
+  isPopupOpen: boolean;
+  onClose: () => void;
+  productImage?: string | null;
+  productTitle: string;
+  subtitle?: string | null;
+  price?: string;
+  currencyCode: string;
+}) {
+  const optimisticCart = useOptimisticCart(
+    cart as import('storefrontapi.generated').CartApiQueryFragment | null,
+  );
+
+  return (
+    <AddedToBagPopup
+      isOpen={isPopupOpen}
+      onClose={onClose}
+      product={{
+        image: productImage ?? null,
+        title: productTitle,
+        variantTitle: subtitle ?? null,
+        price: price ?? '0',
+        currencyCode,
+      }}
+      cartCount={optimisticCart?.totalQuantity ?? 0}
+      checkoutUrl={optimisticCart?.checkoutUrl ?? '/cart'}
+    />
   );
 }
