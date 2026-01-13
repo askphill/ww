@@ -612,3 +612,27 @@
 - Use `Record<string, unknown>` type when need to dynamically add properties to object
 - AggregateRating requires both ratingValue and reviewCount to be valid schema
 - Pre-existing type errors (line 104, 326) in file are unrelated to this change
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-020 - Create graceful ErrorBoundary component
+**Status:** Complete
+
+**What was done:**
+- Created `apps/website/app/components/ErrorFallback.tsx`
+- Component shows user-friendly messages based on HTTP status codes:
+  - 404: "Page not found"
+  - 500: "Something went wrong"
+  - Other: "Oops! Something unexpected happened"
+- Includes "Go Home" button using `@wakey/ui` Button component with `to="/"` prop
+- Logs error to console via useEffect for debugging purposes
+- Uses design system typography: text-h1 for title, text-paragraph for description
+- Centered layout with min-h-[50vh] for proper vertical spacing
+
+**Files changed:**
+- `apps/website/app/components/ErrorFallback.tsx` (created)
+
+**Learnings for future iterations:**
+- ErrorFallback is a standalone component to be used by root.tsx ErrorBoundary (US-021)
+- Component accepts `error` and `errorStatus` props to customize display
+- Uses useEffect to log errors (side effect should be in effect, not render)
+- Button from @wakey/ui with `to` prop renders as a Link component

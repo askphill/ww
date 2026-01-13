@@ -272,8 +272,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 20,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created ErrorFallback.tsx with user-friendly messages based on status codes (404, 500). Uses @wakey/ui Button for Go Home link. Logs error to console via useEffect."
     },
     {
       "id": "US-021",
