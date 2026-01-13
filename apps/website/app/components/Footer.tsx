@@ -1,5 +1,13 @@
 import {NavLink, useLocation, Link} from 'react-router';
-import {LogoBig, IdealIcon, KlarnaIcon, IcsIcon, VisaIcon} from '@wakey/ui';
+import {
+  LogoBig,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  PayPalIcon,
+  IdealIcon,
+  KlarnaIcon,
+} from '@wakey/ui';
 
 const FOOTER_MENU = [
   {title: 'Deodorant', url: '/products/deodorant'},
@@ -76,13 +84,15 @@ export function Footer() {
       {/* Payment Icons */}
       <div
         role="img"
-        aria-label="Accepted payment methods: iDEAL, Klarna, Credit Card, Visa"
+        aria-label="Accepted payment methods: Visa, Mastercard, American Express, PayPal, iDEAL, Klarna"
         className="inline-flex gap-1 pb-4 md:absolute md:top-12 md:left-1/2 md:gap-3"
       >
-        <IdealIcon className="h-3.5 md:h-4 w-auto text-black" />
-        <KlarnaIcon className="h-3.5 md:h-4 w-auto text-black" />
-        <IcsIcon className="h-3.5 md:h-4 w-auto text-black" />
-        <VisaIcon className="h-3.5 md:h-4 w-auto text-black" />
+        <VisaIcon className="h-6 md:h-8 w-auto" />
+        <MastercardIcon className="h-6 md:h-8 w-auto" />
+        <AmexIcon className="h-6 md:h-8 w-auto" />
+        <PayPalIcon className="h-6 md:h-8 w-auto" />
+        <IdealIcon className="h-6 md:h-8 w-auto" />
+        <KlarnaIcon className="h-6 md:h-8 w-auto" />
       </div>
 
       {/* Bottom section */}

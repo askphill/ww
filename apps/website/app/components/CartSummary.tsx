@@ -2,14 +2,13 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {Money, type OptimisticCart} from '@shopify/hydrogen';
 import {
-  IdealIcon,
-  KlarnaIcon,
   VisaIcon,
   MastercardIcon,
   AmexIcon,
-  ApplePayIcon,
-  BancontactIcon,
   PayPalIcon,
+  IdealIcon,
+  KlarnaIcon,
+  Button,
 } from '@wakey/ui';
 import {FreeShippingBar} from './FreeShippingBar';
 
@@ -40,7 +39,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
         </div>
 
         {/* Total price row */}
-        <div className="flex justify-between text-h3 font-display">
+        <div className="flex justify-between text-h3 md:text-s2 font-display">
           <span>Total:</span>
           <span>
             {cart?.cost?.totalAmount ? (
@@ -54,24 +53,19 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
 
       {/* Checkout button - large, full width */}
       {cart?.checkoutUrl && (
-        <a
-          href={cart.checkoutUrl}
-          className="w-full flex justify-center items-center bg-black text-sand rounded-full py-4 text-s2 font-display uppercase tracking-wide hover:opacity-90 transition-opacity"
-        >
+        <Button href={cart.checkoutUrl} className="w-full uppercase">
           Checkout
-        </a>
+        </Button>
       )}
 
       {/* Payment icons */}
-      <div className="flex flex-wrap justify-center gap-3">
-        <VisaIcon className="h-5 w-auto text-text" />
-        <MastercardIcon className="h-5 w-auto text-text" />
-        <AmexIcon className="h-5 w-auto text-text" />
-        <ApplePayIcon className="h-5 w-auto text-text" />
-        <PayPalIcon className="h-5 w-auto text-text" />
-        <KlarnaIcon className="h-5 w-auto text-text" />
-        <IdealIcon className="h-5 w-auto text-text" />
-        <BancontactIcon className="h-5 w-auto text-text" />
+      <div className="flex flex-wrap justify-center gap-2">
+        <VisaIcon className="h-6 md:h-5 w-auto" />
+        <MastercardIcon className="h-6 md:h-5 w-auto" />
+        <AmexIcon className="h-6 md:h-5 w-auto" />
+        <PayPalIcon className="h-6 md:h-5 w-auto" />
+        <IdealIcon className="h-6 md:h-5 w-auto" />
+        <KlarnaIcon className="h-6 md:h-5 w-auto" />
       </div>
 
       {/* Free shipping message */}

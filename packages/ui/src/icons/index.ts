@@ -1,14 +1,10 @@
 export {
-  IdealIcon,
-  KlarnaIcon,
-  IcsIcon,
   VisaIcon,
   MastercardIcon,
   AmexIcon,
-  ApplePayIcon,
-  BancontactIcon,
-  SofortIcon,
   PayPalIcon,
+  IdealIcon,
+  KlarnaIcon,
 } from './PaymentIcons';
 export {LogoBig} from './LogoBig';
 export {LogoSmall} from './LogoSmall';

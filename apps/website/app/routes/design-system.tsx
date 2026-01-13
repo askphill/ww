@@ -6,10 +6,12 @@ import {
   HamburgerIcon,
   CrossIcon,
   SmileyIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  PayPalIcon,
   IdealIcon,
   KlarnaIcon,
-  IcsIcon,
-  VisaIcon,
   ShapeCircle,
   ShapeStar,
   ShapeFlower,
@@ -706,30 +708,33 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             {/* Payment Icons */}
             <div>
               <h3 className="text-h3 font-display mb-4">Payment Methods</h3>
-              <div className="flex flex-wrap gap-12 items-end">
-                <div>
-                  <div className="h-8 flex items-end">
-                    <IdealIcon className="w-6 text-black" />
-                  </div>
+              <p className="text-body-small font-body opacity-60 mb-6">
+                Official payment brand icons from Suitsupply style guide.
+              </p>
+              <div className="flex flex-wrap gap-4 items-end">
+                <div className="text-center">
+                  <VisaIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">VisaIcon</p>
+                </div>
+                <div className="text-center">
+                  <MastercardIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">MastercardIcon</p>
+                </div>
+                <div className="text-center">
+                  <AmexIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">AmexIcon</p>
+                </div>
+                <div className="text-center">
+                  <PayPalIcon className="h-10 w-auto" />
+                  <p className="text-small font-body mt-2">PayPalIcon</p>
+                </div>
+                <div className="text-center">
+                  <IdealIcon className="h-10 w-auto" />
                   <p className="text-small font-body mt-2">IdealIcon</p>
                 </div>
-                <div>
-                  <div className="h-8 flex items-end">
-                    <KlarnaIcon className="w-6 text-black" />
-                  </div>
+                <div className="text-center">
+                  <KlarnaIcon className="h-10 w-auto" />
                   <p className="text-small font-body mt-2">KlarnaIcon</p>
-                </div>
-                <div>
-                  <div className="h-8 flex items-end">
-                    <IcsIcon className="w-6 text-black" />
-                  </div>
-                  <p className="text-small font-body mt-2">IcsIcon</p>
-                </div>
-                <div>
-                  <div className="h-8 flex items-end">
-                    <VisaIcon className="w-8 text-black" />
-                  </div>
-                  <p className="text-small font-body mt-2">VisaIcon</p>
                 </div>
               </div>
             </div>
