@@ -54,8 +54,16 @@ export async function loader({params, context}: Route.LoaderArgs) {
   const {storefront} = context;
   const {handle} = params;
 
+  const cacheHeaders = {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=3600',
+  };
+
   if (!handle) {
-    return {reviews: [], averageRating: null, totalCount: 0};
+    return new Response(
+      JSON.stringify({reviews: [], averageRating: null, totalCount: 0}),
+      {status: 200, headers: cacheHeaders},
+    );
   }
 
   const {product} = await storefront.query(REVIEWS_QUERY, {
@@ -63,7 +71,10 @@ export async function loader({params, context}: Route.LoaderArgs) {
   });
 
   if (!product) {
-    return {reviews: [], averageRating: null, totalCount: 0};
+    return new Response(
+      JSON.stringify({reviews: [], averageRating: null, totalCount: 0}),
+      {status: 200, headers: cacheHeaders},
+    );
   }
 
   const averageRating = product.reviewRating?.value
@@ -73,9 +84,12 @@ export async function loader({params, context}: Route.LoaderArgs) {
   const reviewNodes = product.reviews?.references?.nodes || [];
   const reviews = reviewNodes.map(parseReviewMetaobject);
 
-  return {
-    reviews,
-    averageRating,
-    totalCount: reviews.length,
-  };
+  return new Response(
+    JSON.stringify({
+      reviews,
+      averageRating,
+      totalCount: reviews.length,
+    }),
+    {status: 200, headers: cacheHeaders},
+  );
 }
