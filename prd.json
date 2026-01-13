@@ -431,8 +431,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 32,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created useLazyFetch<T>(path) hook with generic type support. Auto-loads on mount when idle and no data. Added react-router peer dependency. Build and tests pass."
     },
     {
       "id": "US-033",

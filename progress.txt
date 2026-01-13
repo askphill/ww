@@ -855,3 +855,25 @@
 - `sr-only` is a Tailwind utility class that visually hides elements while keeping them accessible to screen readers
 - The htmlFor/id association creates a proper label-input relationship for assistive technology
 - Chrome DevTools accessibility tree shows the label text as the accessible name for the input
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-032 - Create useLazyFetch custom hook
+**Status:** Complete
+
+**What was done:**
+- Created `packages/hooks/src/useLazyFetch.ts` with generic type support
+- Hook accepts path string and returns fetcher that auto-loads on mount when idle and no data
+- Pattern: `const fetcher = useLazyFetch<T>(path)` - returns same fetcher object as useFetcher
+- Added `react-router` ^7.0.0 as peer dependency in packages/hooks/package.json
+- Exported from `packages/hooks/src/index.ts`
+
+**Files changed:**
+- `packages/hooks/src/useLazyFetch.ts` (created)
+- `packages/hooks/src/index.ts` (modified - added export)
+- `packages/hooks/package.json` (modified - added react-router peer dep)
+- `pnpm-lock.yaml` (updated)
+
+**Learnings for future iterations:**
+- Shared hooks in packages/hooks need peer dependencies for external packages they use
+- The useLazyFetch hook abstracts the common pattern: `useEffect(() => { if (fetcher.state === 'idle' && !fetcher.data) fetcher.load(path) }, [path, fetcher])`
+- Pre-existing typecheck errors in packages/hooks (missing @types/react) don't block build or story completion
