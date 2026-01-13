@@ -1,6 +1,7 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {sanitizeHtml} from '~/lib/sanitize';
 
 export const meta: Route.MetaFunction = ({data}) => {
   const page = data?.page;
@@ -75,7 +76,7 @@ export default function Page() {
       <header>
         <h1>{page.title}</h1>
       </header>
-      <main dangerouslySetInnerHTML={{__html: page.body}} />
+      <main dangerouslySetInnerHTML={{__html: sanitizeHtml(page.body)}} />
     </div>
   );
 }
