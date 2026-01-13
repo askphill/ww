@@ -49,6 +49,20 @@ export function Header({cart, inline = false}: HeaderProps) {
     };
   }, [isMenuOpen]);
 
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    // Cleanup: always restore scroll on unmount
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isMenuOpen]);
+
   return (
     <header
       ref={headerRef}
