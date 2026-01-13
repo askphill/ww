@@ -237,7 +237,7 @@ export default function Product() {
           },
           {
             title: 'Mighty Citrus',
-            body: 'captures the essence of morning sunshine with a refreshing blend of bergamot, sweet orange, and lavender.',
+            body: 'a refreshing blend of bergamot, sweet orange, and lavender.',
           },
           {
             title: 'Free shipping above €50',
