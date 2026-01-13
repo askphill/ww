@@ -1,13 +1,14 @@
 import {CrossIcon} from '@wakey/ui';
 import {Link} from 'react-router';
 import {useEffect, useState} from 'react';
+import {Money} from '@shopify/hydrogen';
+import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
 
 interface AddedToBagPopupProduct {
   image: string | null;
   title: string;
   variantTitle: string | null;
-  price: string;
-  currencyCode: string;
+  price: MoneyV2;
 }
 
 interface AddedToBagPopupProps {
@@ -55,9 +56,9 @@ export function AddedToBagPopup({
   }
 
   return (
-    <div className="fixed bottom-[calc(70px+8px+1rem)] md:bottom-[calc(90px+8px+1rem)] left-0 right-0 z-50 px-4 flex justify-center">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center">
       <div
-        className={`w-full max-w-[600px] bg-black text-sand rounded-card p-6 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+        className={`w-full max-w-[600px] bg-sand text-black rounded-card p-6 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
           isVisible
             ? 'opacity-100 translate-y-0'
             : 'opacity-0 translate-y-4'
@@ -69,7 +70,7 @@ export function AddedToBagPopup({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="text-sand hover:opacity-70 transition-opacity"
+            className="text-black hover:opacity-70 transition-opacity"
           >
             <CrossIcon className="w-8 h-8" />
           </button>
@@ -95,7 +96,7 @@ export function AddedToBagPopup({
               <span className="text-small opacity-70">{product.variantTitle}</span>
             )}
             <span className="text-paragraph mt-1">
-              {product.price} {product.currencyCode}
+              <Money data={product.price} withoutTrailingZeros />
             </span>
           </div>
         </div>
@@ -105,13 +106,13 @@ export function AddedToBagPopup({
           <Link
             to="/cart"
             onClick={onClose}
-            className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-sand text-sand bg-transparent hover:bg-sand/10 transition-colors"
+            className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-black text-black bg-transparent hover:bg-black/10 transition-colors"
           >
             Your bag ({cartCount})
           </Link>
           <a
             href={checkoutUrl}
-            className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-sand text-black hover:bg-sand/90 transition-colors"
+            className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-black text-sand hover:bg-black/90 transition-colors"
           >
             Checkout
           </a>

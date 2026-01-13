@@ -45,8 +45,6 @@ export function StickyAddToCart({
   // Get cart data from root loader
   const rootData = useRouteLoaderData<RootLoader>('root');
 
-  const currencyCode = selectedVariant?.price?.currencyCode || 'EUR';
-
   // Animation states (only used when not inline)
   const [isReady, setIsReady] = useState(inline);
   const [isOutOfView, setIsOutOfView] = useState(false);
@@ -165,7 +163,7 @@ export function StickyAddToCart({
                     bg-sand rounded-[5px]
                     font-display text-label uppercase whitespace-nowrap
                     relative overflow-hidden
-                    transition-opacity duration-200
+                    transition-opacity duration-200 cursor-pointer
                     ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
                   `}
                 >
@@ -210,8 +208,7 @@ export function StickyAddToCart({
                 productImage={productImage}
                 productTitle={product.title}
                 subtitle={subtitle}
-                price={selectedVariant?.price?.amount}
-                currencyCode={currencyCode}
+                price={selectedVariant?.price}
               />
             )}
           </Await>
@@ -230,7 +227,6 @@ function AddedToBagPopupWrapper({
   productTitle,
   subtitle,
   price,
-  currencyCode,
 }: {
   cart: unknown;
   isPopupOpen: boolean;
@@ -238,12 +234,13 @@ function AddedToBagPopupWrapper({
   productImage?: string | null;
   productTitle: string;
   subtitle?: string | null;
-  price?: string;
-  currencyCode: string;
+  price?: import('@shopify/hydrogen/storefront-api-types').MoneyV2;
 }) {
   const optimisticCart = useOptimisticCart(
     cart as import('storefrontapi.generated').CartApiQueryFragment | null,
   );
+
+  if (!price) return null;
 
   return (
     <AddedToBagPopup
@@ -253,8 +250,7 @@ function AddedToBagPopupWrapper({
         image: productImage ?? null,
         title: productTitle,
         variantTitle: subtitle ?? null,
-        price: price ?? '0',
-        currencyCode,
+        price,
       }}
       cartCount={optimisticCart?.totalQuantity ?? 0}
       checkoutUrl={optimisticCart?.checkoutUrl ?? '/cart'}
