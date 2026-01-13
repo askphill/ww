@@ -20,7 +20,7 @@ export function CartLineItem({
   layout: CartLayout;
   line: CartLine;
 }) {
-  const {id, merchandise, quantity, cost, isOptimistic} = line;
+  const {id, merchandise, quantity, cost, isOptimistic, discountAllocations} = line;
   const {product, title, image, selectedOptions} = merchandise;
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
   const {close} = useAside();
@@ -72,6 +72,40 @@ export function CartLineItem({
                   {selectedOptions.map((opt) => opt.value).join(' / ')}
                 </div>
               )}
+            {/* Show discounts */}
+            {discountAllocations && discountAllocations.length > 0 && (
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                {discountAllocations.map((discount, index) => {
+                  const discountTitle =
+                    'title' in discount
+                      ? discount.title
+                      : 'code' in discount
+                        ? discount.code
+                        : 'Discount';
+                  return (
+                    <span key={index} className="text-small font-body italic opacity-70">
+                      {discountTitle}
+                    </span>
+                  );
+                })}
+                {/* Saved label */}
+                <span className="bg-ocher text-black font-display text-small uppercase px-2 py-0.5 rounded whitespace-nowrap inline-flex items-center gap-1">
+                  <span>Saved</span>
+                  <Money
+                    data={{
+                      amount: String(
+                        discountAllocations.reduce(
+                          (sum, d) => sum + parseFloat(d.discountedAmount.amount),
+                          0
+                        )
+                      ),
+                      currencyCode: cost?.totalAmount?.currencyCode || 'EUR',
+                    }}
+                    withoutTrailingZeros
+                  />
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Bottom row: Quantity Controls (left) and Price (right) */}
@@ -81,10 +115,23 @@ export function CartLineItem({
               quantity={quantity}
               disabled={!!isOptimistic}
             />
-            <div className="text-base font-display flex gap-2">
-              {cost?.compareAtAmountPerQuantity && (
+            <div className="text-base font-display flex items-center gap-2">
+              {/* Show original price strikethrough if discounts */}
+              {discountAllocations && discountAllocations.length > 0 && cost?.totalAmount && (
                 <span className="line-through opacity-50">
-                  <Money data={cost.compareAtAmountPerQuantity} withoutTrailingZeros />
+                  <Money
+                    data={{
+                      amount: String(
+                        parseFloat(cost.totalAmount.amount) +
+                          discountAllocations.reduce(
+                            (sum, d) => sum + parseFloat(d.discountedAmount.amount),
+                            0
+                          )
+                      ),
+                      currencyCode: cost.totalAmount.currencyCode,
+                    }}
+                    withoutTrailingZeros
+                  />
                 </span>
               )}
               {cost?.totalAmount && <Money data={cost.totalAmount} withoutTrailingZeros />}
