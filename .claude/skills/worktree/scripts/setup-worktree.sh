@@ -22,19 +22,20 @@ fi
 echo "Setting up worktree: $WORKTREE_PATH"
 echo ""
 
-# Copy root .env if it exists
-if [ -f "$MAIN_REPO_PATH/.env" ]; then
-  echo "Copying root .env..."
-  cp "$MAIN_REPO_PATH/.env" "$WORKTREE_PATH/.env"
-  echo "  ✓ Copied .env to $WORKTREE_PATH/.env"
-fi
-
-# Copy apps/website/.env if it exists
+# Copy apps/website/.env if it exists (main env file for Hydrogen)
 if [ -f "$MAIN_REPO_PATH/apps/website/.env" ]; then
   echo "Copying apps/website/.env..."
   mkdir -p "$WORKTREE_PATH/apps/website"
   cp "$MAIN_REPO_PATH/apps/website/.env" "$WORKTREE_PATH/apps/website/.env"
   echo "  ✓ Copied apps/website/.env"
+fi
+
+# Copy apps/website/.shopify directory if it exists (contains linked storefront info)
+if [ -d "$MAIN_REPO_PATH/apps/website/.shopify" ]; then
+  echo "Copying apps/website/.shopify/..."
+  mkdir -p "$WORKTREE_PATH/apps/website/.shopify"
+  cp -r "$MAIN_REPO_PATH/apps/website/.shopify/"* "$WORKTREE_PATH/apps/website/.shopify/"
+  echo "  ✓ Copied apps/website/.shopify/"
 fi
 
 # Copy any other app .env files that exist
