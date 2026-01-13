@@ -477,3 +477,23 @@
 - Zod is installed as version 3.25.76 (pnpm resolves ^3.24.0 to latest compatible)
 - Pre-existing typecheck errors in packages/ui and packages/hooks don't block story completion
 - Zod works in edge runtime (pure ESM, no Node.js dependencies)
+
+### Iteration: 2026-01-13 UTC
+**Story:** US-013 - Add type-safe JSON parse utility
+**Status:** Complete
+
+**What was done:**
+- Created `apps/website/app/lib/parse.ts` with `safeJsonParse<T>(json, schema)` function
+- Function accepts a JSON string and Zod schema, returns typed data T or null
+- Returns null on JSON.parse errors (try/catch, no throw)
+- Returns null on Zod validation failures (uses safeParse().success check)
+- Handles null/undefined input gracefully by returning null
+- Uses `import type {ZodSchema}` for proper type-only import
+
+**Files changed:**
+- `apps/website/app/lib/parse.ts` (created)
+
+**Learnings for future iterations:**
+- Use `import type` for type-only imports from Zod for better tree-shaking
+- Zod's `safeParse()` returns `{success: true, data: T}` or `{success: false, error: ZodError}`
+- Generic function signature `<T>(json: string, schema: ZodSchema<T>): T | null` allows type inference

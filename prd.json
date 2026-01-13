@@ -180,8 +180,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created safeJsonParse<T>(json, schema) generic function. Returns null on JSON.parse errors or Zod validation failures. Handles null/undefined input gracefully."
     },
     {
       "id": "US-014",
