@@ -1,5 +1,6 @@
 import {useRef} from 'react';
 import {useContinuousCarousel} from '@wakey/hooks';
+import {sanitizeHtml} from '~/lib/sanitize';
 
 interface USPItem {
   title: string;
@@ -30,11 +31,11 @@ function USPCard({title, body}: USPItem) {
       <div className="flex flex-col justify-end md:pr-6 md:flex-1">
         <div
           className="text-s2 font-display pb-2"
-          dangerouslySetInnerHTML={{__html: title}}
+          dangerouslySetInnerHTML={{__html: sanitizeHtml(title)}}
         />
         <div
           className="font-itc text-paragraph"
-          dangerouslySetInnerHTML={{__html: body}}
+          dangerouslySetInnerHTML={{__html: sanitizeHtml(body)}}
         />
       </div>
     </div>
