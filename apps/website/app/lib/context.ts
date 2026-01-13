@@ -34,6 +34,19 @@ export async function createHydrogenRouterContext(
     throw new Error('SESSION_SECRET environment variable is not set');
   }
 
+  // Validate SESSION_SECRET is secure
+  if (env.SESSION_SECRET === 'foobar') {
+    throw new Error(
+      'SESSION_SECRET cannot be "foobar". Please set a secure, unique session secret of at least 32 characters. Generate one with: openssl rand -base64 32',
+    );
+  }
+
+  if (env.SESSION_SECRET.length < 32) {
+    throw new Error(
+      `SESSION_SECRET must be at least 32 characters long (currently ${env.SESSION_SECRET.length}). Generate a secure secret with: openssl rand -base64 32`,
+    );
+  }
+
   const waitUntil = executionContext.waitUntil.bind(executionContext);
   const [cache, session] = await Promise.all([
     caches.open('hydrogen'),
