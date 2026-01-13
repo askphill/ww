@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 
-type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
+type AsideType = 'search' | 'cart' | 'closed';
 type AsideContextValue = {
   type: AsideType;
   open: (mode: AsideType) => void;
@@ -15,7 +15,7 @@ type AsideContextValue = {
 
 /**
  * A drawer component with backdrop overlay
- * Slides from left (mobile menu) or right (cart/search)
+ * Slides from the right side of the screen (cart/search)
  */
 export function Aside({
   children,
@@ -26,9 +26,6 @@ export function Aside({
 }) {
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
-
-  // Determine slide direction based on type
-  const isLeftDrawer = type === 'mobile';
 
   // Body scroll lock
   useEffect(() => {
@@ -75,14 +72,8 @@ export function Aside({
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 z-70 h-dvh w-full md:w-[var(--drawer-width)] flex flex-col transition-transform duration-[400ms] ease-[var(--ease-out-expo)] ${
-          isLeftDrawer ? 'left-0' : 'right-0'
-        } ${
-          expanded
-            ? 'translate-x-0'
-            : isLeftDrawer
-              ? '-translate-x-full'
-              : 'translate-x-full'
+        className={`fixed top-0 right-0 z-70 h-dvh w-full md:w-[var(--drawer-width)] flex flex-col transition-transform duration-[400ms] ease-[var(--ease-out-expo)] ${
+          expanded ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-modal={expanded}
