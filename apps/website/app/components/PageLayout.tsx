@@ -6,7 +6,13 @@ import type {
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
-import {AssistantOverlay, AssistantMessage} from '~/components/assistant';
+import {
+  AssistantOverlay,
+  AssistantMessage,
+  AssistantChoiceCard,
+} from '~/components/assistant';
+import {ASSISTANT_STEPS} from '~/lib/assistantSteps';
+import type {ChoiceStep} from '~/lib/assistantSteps';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -22,6 +28,12 @@ export function PageLayout({
   isLoggedIn,
 }: PageLayoutProps) {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
+
+  // Get the interest-area step for testing choice cards
+  const interestStep = ASSISTANT_STEPS.find(
+    (step) => step.id === 'interest-area',
+  ) as ChoiceStep | undefined;
 
   return (
     <Aside.Provider>
@@ -37,7 +49,20 @@ export function PageLayout({
         isOpen={isAssistantOpen}
         onClose={() => setIsAssistantOpen(false)}
       >
-        <AssistantMessage message="Hey there, welcome to Wakey! I'm here to help you discover your perfect morning routine. Ready to find products that match your lifestyle?" />
+        <div className="flex flex-col gap-4 max-w-md">
+          <AssistantMessage message={interestStep?.message ?? ''} />
+          <div className="flex flex-col gap-3 mt-2">
+            {interestStep?.options.map((option, index) => (
+              <AssistantChoiceCard
+                key={option.value}
+                option={option}
+                isSelected={selectedChoice === option.value}
+                onClick={() => setSelectedChoice(option.value)}
+                animationIndex={index}
+              />
+            ))}
+          </div>
+        </div>
       </AssistantOverlay>
     </Aside.Provider>
   );
