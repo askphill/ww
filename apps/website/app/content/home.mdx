@@ -1,11 +1,11 @@
-import {IntroSection, FeaturedProduct, TextMedia, ProductReviews, SocialSection} from '~/components/sections'
+import {Hero, IntroSection, FeaturedProduct, TextMedia, ProductReviews, SocialSection} from '~/components/sections'
 
-<FeaturedProduct
-  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-3.jpg?v=1684260897"
-  backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-2_0d31cfa9-859e-4507-a5da-e6e252fbd0e6.jpg?v=1684260822"
-  heading={<h2>Don't sweat it.<br/><em>Our all new deodorant</em></h2>}
+<Hero
+  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
+  backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
+  logoColor="#fad103"
   productHandle="deodorant"
-  tooltipPosition={{ right: '11%', top: '47%' }}
+  tooltipPosition={{ top: '33%', left: '19%' }}
 />
 
 <IntroSection
@@ -13,6 +13,14 @@ import {IntroSection, FeaturedProduct, TextMedia, ProductReviews, SocialSection}
   description="We craft upbeat, zero-fuss essentials that turn chaotic mornings into small celebrations. Designed to spark joy from your first step out of bed."
   buttonText="About our story"
   buttonTo="/about"
+/>
+
+<FeaturedProduct
+  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-3.jpg?v=1684260897"
+  backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-2_0d31cfa9-859e-4507-a5da-e6e252fbd0e6.jpg?v=1684260822"
+  heading={<h2>Don't sweat it.<br/><em>Our all new deodorant</em></h2>}
+  productHandle="deodorant"
+  tooltipPosition={{ right: '11%', top: '47%' }}
 />
 
 <TextMedia
