@@ -564,8 +564,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 41,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added preload links for founders.woff2 and itc-std.woff2 in root.tsx links() function. Includes as=\"font\", type=\"font/woff2\", and crossOrigin=\"anonymous\" attributes. Verified in browser - both preload links present with correct attributes. Build passes."
     },
     {
       "id": "US-042",

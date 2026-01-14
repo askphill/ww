@@ -30,3 +30,23 @@
 - Some video components (ProductReviews, ImageBanner) use `preload="none"` which is even more aggressive
 - Always check if stories might already be implemented before making changes
 
+### Iteration: 2026-01-14
+**Story:** US-041 - Add font preload links
+**Status:** Complete
+
+**What was done:**
+- Added preload links for `founders.woff2` and `itc-std.woff2` to root.tsx `links()` function
+- Each link includes: `rel="preload"`, `as="font"`, `type="font/woff2"`, `crossOrigin="anonymous"`
+- Verified in browser using chrome-devtools MCP - both preload links present with correct attributes
+- Build passes successfully
+
+**Files changed:**
+- apps/website/app/root.tsx
+
+**Learnings for future iterations:**
+- React Router 7 uses `links()` function export to add link elements to the head
+- The `links()` function returns an array of link descriptor objects
+- Font preload links need `crossOrigin="anonymous"` even for same-origin fonts due to CORS requirements for fonts
+- Pre-existing typecheck errors in packages/ui/ and packages/hooks/ (missing @types/react) - these are documented in previous PRD notes
+- Website-specific build command (`pnpm run build` in apps/website) is sufficient to verify changes
+
