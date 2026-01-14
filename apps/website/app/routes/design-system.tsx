@@ -4,6 +4,7 @@ import {
   LogoBig,
   LogoSmall,
   HamburgerIcon,
+  MenuCloseIcon,
   CrossIcon,
   SmileyIcon,
   VisaIcon,
@@ -20,6 +21,7 @@ import {
   ShapeHalfCircle,
   BagIcon,
   AddBagIcon,
+  CheckoutIcon,
 } from '@wakey/ui';
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
@@ -591,13 +593,13 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
           </div>
           {/* Static preview - showing the popup content without fixed positioning */}
           <div className="max-w-[600px]">
-            <div className="bg-black text-sand rounded-card p-6">
+            <div className="bg-blue text-black rounded-card p-4 md:p-6 border border-black/10">
               {/* Header with title and close button */}
               <div className="flex items-center justify-between mb-4">
                 <span className="text-s2 font-display">Added to your bag</span>
                 <button
                   aria-label="Close"
-                  className="text-sand hover:opacity-70 transition-opacity"
+                  className="text-black hover:opacity-70 transition-opacity"
                 >
                   <CrossIcon className="w-8 h-8" />
                 </button>
@@ -614,30 +616,32 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     />
                   </div>
                 )}
-                <div className="flex flex-col justify-center">
-                  <span className="text-paragraph font-display">
-                    {productData?.title || 'Product Title'}
-                  </span>
+                <div className="flex flex-col justify-center flex-1 gap-1 md:gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-display uppercase leading-none">
+                      {productData?.title || 'Product Title'}
+                    </span>
+                    <span className="text-base font-display leading-none">
+                      {productData?.selectedVariant?.price?.amount || '19.00'}{' '}
+                      {productData?.selectedVariant?.price?.currencyCode || 'EUR'}
+                    </span>
+                  </div>
                   {productData?.subtitle && (
-                    <span className="text-small opacity-70">
+                    <span className="text-small font-body italic opacity-70">
                       {productData.subtitle}
                     </span>
                   )}
-                  <span className="text-paragraph mt-1">
-                    {productData?.selectedVariant?.price?.amount || '19.00'}{' '}
-                    {productData?.selectedVariant?.price?.currencyCode || 'EUR'}
-                  </span>
                 </div>
               </div>
 
               {/* Action buttons */}
               <div className="flex gap-3 mt-6">
-                <span className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full border border-sand text-sand bg-transparent">
+                <Button variant="outline" className="flex-1">
                   Your bag (2)
-                </span>
-                <span className="flex-1 inline-flex items-center justify-center px-6 py-3 font-display text-label rounded-full bg-sand text-black">
+                </Button>
+                <Button variant="primary" className="flex-1" icon={<CheckoutIcon className="w-5 h-5" />}>
                   Checkout
-                </span>
+                </Button>
               </div>
             </div>
           </div>
@@ -673,6 +677,12 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                 </div>
                 <div>
                   <div className="h-10 flex items-end">
+                    <MenuCloseIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">MenuCloseIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
                     <CrossIcon className="w-10 text-black" />
                   </div>
                   <p className="text-small font-body mt-2">CrossIcon</p>
@@ -694,6 +704,12 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     <AddBagIcon className="w-10 text-black" />
                   </div>
                   <p className="text-small font-body mt-2">AddBagIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <CheckoutIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">CheckoutIcon</p>
                 </div>
               </div>
             </div>
@@ -773,6 +789,210 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                   <p className="text-small font-body mt-2">KlarnaIcon</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* Footer */}
+        <Section title="Footer">
+          <p className="text-paragraph font-body mb-6">
+            Site footer with navigation, social links, and payment icons.
+            Background color changes based on page context.
+          </p>
+          <div className="space-y-4 mb-8">
+            <p className="text-s2 font-display">Features:</p>
+            <ul className="text-body-small font-body space-y-1 opacity-80">
+              <li>• Dynamic background color (blue default, yellow on /about)</li>
+              <li>• Responsive layout (stacked on mobile, horizontal on desktop)</li>
+              <li>• Navigation links with hover effects</li>
+              <li>• Social media links (Instagram, TikTok)</li>
+              <li>• Payment method icons</li>
+              <li>• Full-width logo</li>
+            </ul>
+          </div>
+          <p className="text-body-small font-body opacity-60">
+            Import: <code className="bg-black/10 px-1 rounded">{'import {Footer} from "~/components/Footer"'}</code>
+          </p>
+        </Section>
+
+        {/* Section Components Overview */}
+        <Section title="Section Components">
+          <p className="text-paragraph font-body mb-8">
+            Reusable page section components for building content pages.
+            Import from <code className="bg-black/10 px-1 rounded">~/components/sections</code>.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">Hero</p>
+              <p className="text-body-small font-body opacity-70">
+                Full-bleed hero with background image, logo, CTA buttons, and product tooltip.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">FeaturedProduct</p>
+              <p className="text-body-small font-body opacity-70">
+                Product showcase with image, title, price, and add-to-cart functionality.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">TextMedia</p>
+              <p className="text-body-small font-body opacity-70">
+                Two-column layout with text content and image/video media.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">ImageBanner</p>
+              <p className="text-body-small font-body opacity-70">
+                Full-width banner with background image, label, and HTML text overlay.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">USPSection</p>
+              <p className="text-body-small font-body opacity-70">
+                Three-column unique selling points with titles and descriptions.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">IngredientsSection</p>
+              <p className="text-body-small font-body opacity-70">
+                Product ingredients display with carousel of ingredient images.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">ProductDescription</p>
+              <p className="text-body-small font-body opacity-70">
+                Product description with USP list and rich HTML content.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">ProductReviews</p>
+              <p className="text-body-small font-body opacity-70">
+                Customer reviews section with rating summary and video testimonial.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">FAQ</p>
+              <p className="text-body-small font-body opacity-70">
+                Accordion-based FAQ section with title and description.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">CloudSection</p>
+              <p className="text-body-small font-body opacity-70">
+                Animated cloud background with scrolling text overlay.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">SocialSection</p>
+              <p className="text-body-small font-body opacity-70">
+                Social media integration with Instagram/TikTok embeds.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">Founder</p>
+              <p className="text-body-small font-body opacity-70">
+                Founder/team member profile with image and bio.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">IntroSection</p>
+              <p className="text-body-small font-body opacity-70">
+                Simple text intro section for page content.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">PageHeader</p>
+              <p className="text-body-small font-body opacity-70">
+                Page title header component.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">BlogArticle</p>
+              <p className="text-body-small font-body opacity-70">
+                Blog post layout with frontmatter support.
+              </p>
+            </div>
+          </div>
+        </Section>
+
+        {/* Website Components Overview */}
+        <Section title="Website Components">
+          <p className="text-paragraph font-body mb-8">
+            Core website components used across pages.
+            Import from <code className="bg-black/10 px-1 rounded">~/components</code>.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">Header</p>
+              <p className="text-body-small font-body opacity-70">
+                Floating pill header with menu, logo, search, and cart.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">Footer</p>
+              <p className="text-body-small font-body opacity-70">
+                Site footer with navigation and payment icons.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">ProductCarousel</p>
+              <p className="text-body-small font-body opacity-70">
+                Horizontal scrolling media carousel for product images/videos.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">MediaItem</p>
+              <p className="text-body-small font-body opacity-70">
+                Renders image or video based on Shopify media type.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">StickyAddToCart</p>
+              <p className="text-body-small font-body opacity-70">
+                Sticky bottom bar for adding products to cart.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">ProductTooltip</p>
+              <p className="text-body-small font-body opacity-70">
+                Hoverable tooltip showing product info with add-to-cart.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">NavigationDropdown</p>
+              <p className="text-body-small font-body opacity-70">
+                Full-screen navigation overlay with products grid.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">AnnouncementBar</p>
+              <p className="text-body-small font-body opacity-70">
+                Top-of-page announcement banner.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">FreeShippingBar</p>
+              <p className="text-body-small font-body opacity-70">
+                Progress bar showing free shipping threshold.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">CartMain</p>
+              <p className="text-body-small font-body opacity-70">
+                Main cart component with line items and summary.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">CartLineItem</p>
+              <p className="text-body-small font-body opacity-70">
+                Individual cart line item with quantity controls.
+              </p>
+            </div>
+            <div className="bg-black/5 p-4 rounded-card">
+              <p className="text-s2 font-display mb-2">SearchResults</p>
+              <p className="text-body-small font-body opacity-70">
+                Search results display with products and articles.
+              </p>
             </div>
           </div>
         </Section>
