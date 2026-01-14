@@ -15,6 +15,8 @@ interface AddedToBagPopupProps {
   product: AddedToBagPopupProduct | null;
   cartCount: number;
   checkoutUrl: string;
+  /** When true, positions the popup relatively instead of fixed to bottom of viewport */
+  relative?: boolean;
 }
 
 export function AddedToBagPopup({
@@ -23,6 +25,7 @@ export function AddedToBagPopup({
   product,
   cartCount,
   checkoutUrl,
+  relative = false,
 }: AddedToBagPopupProps) {
   // Track visibility state for animation
   const [isVisible, setIsVisible] = useState(false);
@@ -54,7 +57,13 @@ export function AddedToBagPopup({
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center">
+    <div
+      className={
+        relative
+          ? 'p-4 flex justify-center w-full'
+          : 'fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center'
+      }
+    >
       <div
         className={`w-full max-w-[600px] bg-blue text-black rounded-card p-4 md:p-6 border border-black/10 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
           isVisible
