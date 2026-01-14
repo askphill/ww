@@ -28,7 +28,7 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -42,8 +42,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Converted notifications from MDX to TypeScript file for proper typing"
     },
     {
       "id": "US-004",
@@ -58,7 +58,7 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -75,8 +75,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Also includes US-008 type indicators (New Product/New Post labels) and read/unread styling"
     },
     {
       "id": "US-006",
@@ -92,8 +92,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added NotificationButton component with badge, integrated NotificationDropdown, implemented mutual exclusion with nav dropdown"
     },
     {
       "id": "US-007",
@@ -123,8 +123,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Implemented as part of US-005 NotificationDropdown component"
     }
   ]
 }

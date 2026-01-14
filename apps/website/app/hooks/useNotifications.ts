@@ -99,6 +99,7 @@ export function useNotifications() {
     hasUnread,
     markAsRead,
     markAllAsRead,
+    readIds,
     isLoading: fetcher.state === 'loading',
   };
 }
