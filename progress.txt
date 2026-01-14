@@ -335,3 +335,23 @@
 - Integration verification stories require browser testing even without code changes
 - Flow progression: welcome (text) → interest-area (choice) → lifestyle (multi-choice) → age-range (choice) → name-email (input)
 
+### Iteration: 2026-01-14
+**Story:** US-015 - Implement name and email step
+**Status:** Complete
+
+**What was done:**
+- Verified that all acceptance criteria were already met by prior implementations
+- Step configuration in assistantSteps.ts (US-006) defines the name-email step with correct message and fields
+- AssistantInput component (US-009) handles floating labels, email validation, and disabled button state
+- PageLayout.tsx already handles 'input' type steps and passes correct props
+- Tested full flow in browser: verified message displays correctly, inputs work, button disabled until valid
+
+**Files changed:**
+- prd.json (updated to mark story complete)
+
+**Learnings for future iterations:**
+- Name-email step is an integration verification story - all components were already built in earlier stories
+- AssistantInput handles all form validation logic including email format checking
+- Button disabled state is computed from `isFormValid` which checks all required fields
+- The step definitions in assistantSteps.ts drive the UI rendering via type-based conditional rendering in PageLayout
+
