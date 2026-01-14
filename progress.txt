@@ -274,3 +274,22 @@
 - Use `variant="secondary"` for Button on dark backgrounds (sand bg with black text)
 - Import `TextStep` type from assistantSteps.ts to access actionLabel property
 
+### Iteration: 2026-01-14
+**Story:** US-012 - Implement interest area step
+**Status:** Complete
+
+**What was done:**
+- Verified that all acceptance criteria were already met by prior implementations
+- Step configuration in assistantSteps.ts (US-006) defines the question, options, and descriptions
+- AssistantChoiceCard component (US-008) renders the choice cards with proper styling
+- PageLayout.tsx already handles 'choice' type steps with auto-advance on selection
+- Tested full flow in browser: welcome → interest-area → lifestyle transition works correctly
+
+**Files changed:**
+- prd.json (updated to mark story complete)
+
+**Learnings for future iterations:**
+- Some user stories may be "integration stories" that verify existing implementations work together
+- Always verify in browser even when no code changes are needed - confirms the integration
+- Interest-area step uses 'choice' type which auto-advances; lifestyle step uses 'multi-choice' which requires explicit Next button
+
