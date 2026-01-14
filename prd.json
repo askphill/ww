@@ -550,8 +550,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 40,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Already implemented. TextMedia.tsx has preload=\"metadata\" (line 30). ProductCarousel uses MediaItem component which defaults to videoPreload=\"metadata\". Verified in browser - homepage video shows preload=\"metadata\", product carousel videos show preload=\"metadata\". Build passes."
     },
     {
       "id": "US-041",
