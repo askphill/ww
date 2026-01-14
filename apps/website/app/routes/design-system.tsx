@@ -591,59 +591,20 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               </li>
             </ul>
           </div>
-          {/* Static preview - showing the popup content without fixed positioning */}
-          <div className="max-w-[600px]">
-            <div className="bg-blue text-black rounded-card p-4 md:p-6 border border-black/10">
-              {/* Header with title and close button */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-s2 font-display">Added to your bag</span>
-                <button
-                  aria-label="Close"
-                  className="text-black hover:opacity-70 transition-opacity"
-                >
-                  <CrossIcon className="w-8 h-8" />
-                </button>
-              </div>
-
-              {/* Product info with image and details */}
-              <div className="flex gap-4">
-                {productData?.featuredImage && (
-                  <div className="shrink-0">
-                    <img
-                      src={productData.featuredImage}
-                      alt={productData.title}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                  </div>
-                )}
-                <div className="flex flex-col justify-center flex-1 gap-1 md:gap-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-display uppercase leading-none">
-                      {productData?.title || 'Product Title'}
-                    </span>
-                    <span className="text-base font-display leading-none">
-                      {productData?.selectedVariant?.price?.amount || '19.00'}{' '}
-                      {productData?.selectedVariant?.price?.currencyCode || 'EUR'}
-                    </span>
-                  </div>
-                  {productData?.subtitle && (
-                    <span className="text-small font-body italic opacity-70">
-                      {productData.subtitle}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Action buttons */}
-              <div className="flex gap-3 mt-6">
-                <Button variant="outline" className="flex-1">
-                  Your bag (2)
-                </Button>
-                <Button variant="primary" className="flex-1" icon={<CheckoutIcon className="w-5 h-5" />}>
-                  Checkout
-                </Button>
-              </div>
-            </div>
+          {/* Live preview using actual component */}
+          <div className="relative h-48">
+            <AddedToBagPopup
+              isOpen={true}
+              onClose={() => {}}
+              product={productData ? {
+                image: productData.featuredImage,
+                title: productData.title,
+                variantTitle: productData.subtitle,
+                price: <>{productData.selectedVariant?.price?.amount} {productData.selectedVariant?.price?.currencyCode}</>,
+              } : null}
+              cartCount={2}
+              checkoutUrl="/cart"
+            />
           </div>
         </Section>
 
