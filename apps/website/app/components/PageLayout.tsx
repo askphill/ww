@@ -6,7 +6,7 @@ import type {
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
-import {AssistantOverlay} from '~/components/assistant';
+import {AssistantOverlay, AssistantMessage} from '~/components/assistant';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -37,10 +37,7 @@ export function PageLayout({
         isOpen={isAssistantOpen}
         onClose={() => setIsAssistantOpen(false)}
       >
-        <div className="text-sand text-h2 font-display">AI Assistant</div>
-        <p className="text-sand/80 text-paragraph mt-4">
-          Press Escape or click the X to close
-        </p>
+        <AssistantMessage message="Hey there, welcome to Wakey! I'm here to help you discover your perfect morning routine. Ready to find products that match your lifestyle?" />
       </AssistantOverlay>
     </Aside.Provider>
   );
