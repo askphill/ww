@@ -11,6 +11,8 @@ interface AssistantInputProps {
   onSubmit: (values: Record<string, string>) => void;
   /** Animation delay index for staggered entrance */
   animationIndex?: number;
+  /** Initial values for pre-populating fields (e.g., when navigating back) */
+  initialValues?: Record<string, string>;
 }
 
 /**
@@ -30,12 +32,13 @@ export function AssistantInput({
   submitLabel,
   onSubmit,
   animationIndex = 0,
+  initialValues,
 }: AssistantInputProps) {
   // Track values for all fields
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     fields.forEach((field) => {
-      initial[field.name] = '';
+      initial[field.name] = initialValues?.[field.name] ?? '';
     });
     return initial;
   });

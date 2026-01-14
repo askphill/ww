@@ -1,10 +1,15 @@
 import {useEffect} from 'react';
 import {CrossIcon} from '@wakey/ui';
+import {AssistantBackButton} from './AssistantBackButton';
 
 interface AssistantOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   children?: React.ReactNode;
+  /** Whether to show the back button */
+  showBackButton?: boolean;
+  /** Callback when back button is clicked */
+  onBack?: () => void;
 }
 
 /**
@@ -15,6 +20,8 @@ export function AssistantOverlay({
   isOpen,
   onClose,
   children,
+  showBackButton = false,
+  onBack,
 }: AssistantOverlayProps) {
   // Body scroll lock
   useEffect(() => {
@@ -60,7 +67,15 @@ export function AssistantOverlay({
       {/* Animated gradient background */}
       <div className="absolute inset-0 assistant-gradient" />
 
-      {/* Close button */}
+      {/* Back button - top left */}
+      <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+        <AssistantBackButton
+          visible={showBackButton}
+          onClick={onBack ?? (() => {})}
+        />
+      </div>
+
+      {/* Close button - top right */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 md:top-6 md:right-6 z-10 w-10 h-10 md:w-12 md:h-12 text-sand transition-transform duration-200 hover:scale-110"
