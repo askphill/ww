@@ -355,3 +355,24 @@
 - Button disabled state is computed from `isFormValid` which checks all required fields
 - The step definitions in assistantSteps.ts drive the UI rendering via type-based conditional rendering in PageLayout
 
+### Iteration: 2026-01-14
+**Story:** US-016 - Create recommendation logic
+**Status:** Complete
+
+**What was done:**
+- Created `getRecommendation` function in `apps/website/app/lib/getRecommendation.ts`
+- Defined `Recommendation` interface with productHandle, quantity, and discountPercent
+- Function takes `Answers` from useAssistantFlow hook to calculate personalized recommendation
+- MVP logic: always returns 'deodorant' product handle
+- Quantity based on lifestyle multi-choice selections (1 = qty 1, 2 = qty 2, 3+ = qty 3)
+- Discount scales with quantity (5% for 1, 10% for 2, 15% for 3+)
+
+**Files changed:**
+- apps/website/app/lib/getRecommendation.ts (created)
+
+**Learnings for future iterations:**
+- Import `Answers` type from `~/hooks/useAssistantFlow` for type-safe answer access
+- Lifestyle step returns `string[]` (multi-choice), use `Array.isArray()` check and `.length` for count
+- Export interface types (like `Recommendation`) so components can import them for type safety
+- This function will be used by US-017 (recommendation display) and US-019 (summary view)
+

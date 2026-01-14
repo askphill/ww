@@ -253,7 +253,7 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
