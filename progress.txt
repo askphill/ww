@@ -1,9 +1,30 @@
 # Ralph Progress Log
 
 ## Codebase Patterns
-<!-- Ralph will add discovered patterns here -->
+- Icons in `packages/ui/src/icons/` use simple interface with `className?: string` prop
+- Icons use `stroke="currentColor"` and `strokeWidth="2"` for consistent styling
+- All icons use 24x24 viewBox
+- Icons must be exported from `packages/ui/src/icons/index.ts`
 
 ---
 
 ## Iterations
+
+### Iteration: 2026-01-14
+**Story:** US-001 - Create NotificationIcon component
+**Status:** Complete
+
+**What was done:**
+- Created `packages/ui/src/icons/NotificationIcon.tsx` with bell icon SVG
+- Followed same props pattern as BagIcon (className prop)
+- Exported from `packages/ui/src/icons/index.ts`
+
+**Files changed:**
+- `packages/ui/src/icons/NotificationIcon.tsx` (new)
+- `packages/ui/src/icons/index.ts` (modified)
+
+**Learnings for future iterations:**
+- Icon components follow a simple pattern: interface with className, return SVG with viewBox 0 0 24 24
+- Use stroke-based paths with strokeWidth="2" and strokeLinecap="round" for consistency
+- Typecheck runs quickly (~3s) and validates all packages
 
