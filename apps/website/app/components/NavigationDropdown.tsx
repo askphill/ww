@@ -62,7 +62,7 @@ export function NavigationDropdown({isOpen, onClose}: NavigationDropdownProps) {
           aria-label="Main navigation"
           aria-hidden={!isOpen}
         >
-          <div className="w-full max-w-[600px] bg-white border-blue/10 rounded-card px-4 py-6 md:px-6 md:py-8">
+          <div className="w-full mx-2 md:mx-0 md:max-w-[600px] bg-white md:rounded-card-s px-4 py-6 md:px-6 md:py-8">
             <div className="flex flex-col gap-6 md:gap-8">
               {/* Shop section - dynamic products */}
               <div>
