@@ -251,3 +251,26 @@
 - PageLayout now has full conversation flow wired up - future stories can build on this foundation
 - Back button visibility controlled by `!isFirstStep` from useAssistantFlow hook
 
+### Iteration: 2026-01-14
+**Story:** US-011 - Implement welcome step
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantWelcome` component in `apps/website/app/components/assistant/AssistantWelcome.tsx`
+- Component displays SparkleIcon (from @wakey/ui) prominently above the message
+- Uses `AssistantMessage` component for the welcome message bubble
+- Uses `Button` component (secondary variant) from @wakey/ui for "Let's go" action
+- Added staggered fade-in animations: icon first, then message (with typing indicator), then button
+- Updated PageLayout to render AssistantWelcome for welcome step, skipping default AssistantMessage render
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantWelcome.tsx (created)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/components/PageLayout.tsx (updated to use AssistantWelcome)
+
+**Learnings for future iterations:**
+- Button component from @wakey/ui does not accept `style` prop - wrap in div for custom animations
+- Welcome step needs special handling in PageLayout since it has custom layout (icon + message + button)
+- Use `variant="secondary"` for Button on dark backgrounds (sand bg with black text)
+- Import `TextStep` type from assistantSteps.ts to access actionLabel property
+
