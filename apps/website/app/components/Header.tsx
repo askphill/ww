@@ -58,7 +58,7 @@ export function Header({cart, inline = false}: HeaderProps) {
 
   const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
 
-  // Handle dropdown side effects: click-outside-to-close and body scroll lock
+  // Handle dropdown side effects: click-outside-to-close, escape key, and body scroll lock
   useEffect(() => {
     if (isAnyDropdownOpen) {
       // Lock body scroll when any dropdown is open
@@ -75,11 +75,21 @@ export function Header({cart, inline = false}: HeaderProps) {
         }
       };
 
+      // Close dropdowns when pressing Escape key
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          setIsMenuOpen(false);
+          setIsNotificationsOpen(false);
+        }
+      };
+
       // Use mousedown for immediate response (before click completes)
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
 
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
         document.body.classList.remove('overflow-hidden');
       };
     } else {
