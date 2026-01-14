@@ -604,8 +604,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 44,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added decoding=\"async\" attribute to Hero.tsx and ImageBanner.tsx background images. This allows the browser to decode images off the main thread, improving performance. Build passes."
     },
     {
       "id": "US-045",

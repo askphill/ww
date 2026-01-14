@@ -95,3 +95,23 @@
 - When documenting component status, compare with similar components to understand design intent
 - Components can be retained if they serve a distinct purpose even when currently unused
 
+### Iteration: 2026-01-14
+**Story:** US-044 - Add decoding=async to hero images
+**Status:** Complete
+
+**What was done:**
+- Added `decoding="async"` attribute to Hero.tsx background image (line 50)
+- Added `decoding="async"` attribute to ImageBanner.tsx background image (line 78)
+- This allows the browser to decode images asynchronously, avoiding main thread blocking
+- Build passes successfully
+
+**Files changed:**
+- apps/website/app/components/sections/Hero.tsx
+- apps/website/app/components/sections/ImageBanner.tsx
+
+**Learnings for future iterations:**
+- The `decoding="async"` attribute is a performance optimization that allows browsers to decode images off the main thread
+- Hero.tsx already had `fetchPriority="high"` - combining with `decoding="async"` is the recommended pattern for LCP images
+- ImageBanner.tsx images are not LCP-critical so only need `decoding="async"`, not `fetchPriority="high"`
+- Pre-existing build error in @wakey/seo-engine (TypeScript errors in gsc.ts) - unrelated to website changes, use website-specific build
+
