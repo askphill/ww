@@ -194,3 +194,30 @@
 - Import `StepOption` type from assistantSteps.ts for typed option props
 - Cards work well with flex-col gap-3 container for proper spacing
 
+### Iteration: 2026-01-14
+**Story:** US-009 - Create text input step component
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantInput` component in `apps/website/app/components/assistant/AssistantInput.tsx`
+- Implemented floating labels that move up when focused or filled using CSS transitions
+- Added email validation with simple regex pattern and error message display
+- Submit button uses disabled prop tied to form validity state
+- Inputs styled with `bg-sand text-black rounded-card px-4 pt-6 pb-3`
+- Uses `touched` state to only show errors after user has interacted with field
+- Exported from assistant index.ts barrel file
+- Updated PageLayout to test with name-email step
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantInput.tsx (created)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/components/PageLayout.tsx (updated to test input component)
+
+**Learnings for future iterations:**
+- Floating label pattern: use absolute positioning with top transition from 50% to 2
+- Use `touched` state pattern to avoid showing errors before user interaction
+- Form validation runs on every render to compute `isFormValid` for button state
+- Use `pt-6 pb-3` padding to make room for floating label in "up" position
+- Import `StepInputField` type from assistantSteps.ts for typed field props
+- Button component from @wakey/ui supports `disabled` prop with opacity styling
+
