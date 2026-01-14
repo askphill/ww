@@ -315,3 +315,23 @@
 - Button component needs to be wrapped in div for custom animation styles
 - Conditional rendering `{multiChoiceSelections.length > 0 && ...}` shows Next button only when selections exist
 
+### Iteration: 2026-01-14
+**Story:** US-014 - Implement age range step
+**Status:** Complete
+
+**What was done:**
+- Verified that all acceptance criteria were already met by prior implementations
+- Step configuration in assistantSteps.ts (US-006) defines the age-range step as 'choice' type with four options
+- PageLayout.tsx already handles 'choice' type steps with auto-advance on selection
+- Tested full flow in browser: welcome → interest-area → lifestyle → age-range → name-email transition works correctly
+- Clicking an age option immediately advances to the name-email step
+
+**Files changed:**
+- prd.json (updated to mark story complete)
+
+**Learnings for future iterations:**
+- Age-range step is similar to interest-area step - both are 'choice' type with auto-advance
+- Simple 'choice' steps without descriptions still render correctly using AssistantChoiceCard
+- Integration verification stories require browser testing even without code changes
+- Flow progression: welcome (text) → interest-area (choice) → lifestyle (multi-choice) → age-range (choice) → name-email (input)
+

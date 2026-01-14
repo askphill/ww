@@ -221,7 +221,7 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
