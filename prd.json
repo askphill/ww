@@ -206,7 +206,7 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

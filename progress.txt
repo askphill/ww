@@ -293,3 +293,25 @@
 - Always verify in browser even when no code changes are needed - confirms the integration
 - Interest-area step uses 'choice' type which auto-advances; lifestyle step uses 'multi-choice' which requires explicit Next button
 
+### Iteration: 2026-01-14
+**Story:** US-013 - Implement lifestyle step
+**Status:** Complete
+
+**What was done:**
+- Added `updateAnswer` function to useAssistantFlow hook for updating selections without advancing
+- Added multi-choice step rendering in PageLayout.tsx with toggle selection behavior
+- Next button appears after at least one selection using conditional rendering
+- Button has staggered animation delay based on number of options
+- Verified multi-select works correctly - can select multiple options
+- Verified back navigation preserves selections
+
+**Files changed:**
+- apps/website/app/hooks/useAssistantFlow.ts (added updateAnswer function)
+- apps/website/app/components/PageLayout.tsx (added multi-choice rendering and handlers)
+
+**Learnings for future iterations:**
+- Multi-choice steps need updateAnswer to store selections without advancing (unlike single-choice which auto-advances)
+- Use `multiChoiceSelections.includes(value)` pattern to check if option is selected in array
+- Button component needs to be wrapped in div for custom animation styles
+- Conditional rendering `{multiChoiceSelections.length > 0 && ...}` shows Next button only when selections exist
+
