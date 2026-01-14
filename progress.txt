@@ -376,3 +376,31 @@
 - Export interface types (like `Recommendation`) so components can import them for type safety
 - This function will be used by US-017 (recommendation display) and US-019 (summary view)
 
+### Iteration: 2026-01-14
+**Story:** US-017 - Implement recommendation display step
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantRecommendation` component in `apps/website/app/components/assistant/AssistantRecommendation.tsx`
+- Updated API route `api.product.$handle.tsx` to include `price` and `variantId` in response
+- Component fetches product data using `useFetcher` from react-router
+- Displays personalized message with user's name from answers
+- Shows product image with discount badge (e.g., "10% OFF")
+- Shows discounted price with original price crossed out
+- Displays quantity recommendation ("Recommended: 2 pack") and per-unit pricing for multi-packs
+- Wired up in PageLayout.tsx to render on 'recommendation' step type
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantRecommendation.tsx (created)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/routes/api.product.$handle.tsx (added priceRange and variant price to query)
+- apps/website/app/components/PageLayout.tsx (added recommendation step rendering)
+
+**Learnings for future iterations:**
+- Use `useFetcher` from react-router for client-side data fetching in components
+- API routes can return additional fields by adding to GraphQL query and response object
+- Price formatting uses `Intl.NumberFormat` for proper currency display
+- Skip the default `AssistantMessage` render for steps that have custom message rendering (welcome, recommendation)
+- Access name-email answers via `answers['name-email']` cast to `Record<string, string>`
+- `variantId` is needed for US-018 (add to cart functionality)
+
