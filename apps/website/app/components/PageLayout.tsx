@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import type {
   CartApiQueryFragment,
   HeaderQuery,
@@ -20,6 +20,7 @@ import {ASSISTANT_STEPS, getStepById} from '~/lib/assistantSteps';
 import type {ChoiceStep, MultiChoiceStep, InputStep, TextStep} from '~/lib/assistantSteps';
 import {useAssistantFlow} from '~/hooks/useAssistantFlow';
 import {getRecommendation} from '~/lib/getRecommendation';
+import {saveRoutineToStorage} from '~/lib/routineStorage';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -41,6 +42,24 @@ export function PageLayout({
 
   // Get the current step
   const currentStep = getStepById(currentStepId);
+
+  // Save routine to localStorage when reaching the summary step
+  useEffect(() => {
+    if (currentStepId === 'summary') {
+      const nameEmailAnswers = answers['name-email'];
+      const name =
+        typeof nameEmailAnswers === 'object'
+          ? (nameEmailAnswers as Record<string, string>).name ?? ''
+          : '';
+      const email =
+        typeof nameEmailAnswers === 'object'
+          ? (nameEmailAnswers as Record<string, string>).email ?? ''
+          : '';
+      const recommendation = getRecommendation(answers);
+
+      saveRoutineToStorage(name, email, answers, recommendation);
+    }
+  }, [currentStepId, answers]);
 
   // Get selected value for current step (for pre-selecting when going back)
   const currentAnswer = answers[currentStepId];
