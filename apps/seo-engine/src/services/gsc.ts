@@ -40,8 +40,8 @@ export async function fetchGscData(options: FetchOptions): Promise<GscQuery[]> {
     dimensionFilterGroups?: Array<{ filters: Array<{ dimension: string; operator: string; expression: string }> }>;
     rowLimit: number;
   } = {
-    startDate: startDate.toISOString().split('T')[0],
-    endDate: endDate.toISOString().split('T')[0],
+    startDate: startDate.toISOString().split('T')[0] ?? '',
+    endDate: endDate.toISOString().split('T')[0] ?? '',
     dimensions: ['query', 'date'],
     rowLimit: 5000,
   };

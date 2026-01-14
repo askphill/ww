@@ -61,6 +61,10 @@ const PRODUCT_QUERY = `#graphql
             amount
             currencyCode
           }
+          product {
+            title
+            handle
+          }
           selectedOptions {
             name
             value
@@ -548,8 +552,6 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               }}
               selectedVariant={productData.selectedVariant}
               subtitle={productData.subtitle}
-              reviewRating={productData.reviewRating}
-              reviewCount={productData.reviewCount}
               productImage={productData.featuredImage}
               inline
             />

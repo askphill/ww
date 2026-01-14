@@ -199,6 +199,9 @@ importers:
       globals:
         specifier: ^15.14.0
         version: 15.15.0
+      graphql-config:
+        specifier: ^5.1.5
+        version: 5.1.5(@types/node@25.0.5)(graphql@16.12.0)(typescript@5.9.3)
       jsdom:
         specifier: ^26.0.0
         version: 26.1.0
@@ -226,6 +229,10 @@ importers:
       react-router:
         specifier: ^7.0.0
         version: 7.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.22
+        version: 18.3.27
 
   packages/tailwind-config: {}
 
@@ -237,8 +244,13 @@ importers:
       react-router:
         specifier: ^7.0.0
         version: 7.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-
-  packages/utils: {}
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.22
+        version: 18.3.27
+      '@types/react-dom':
+        specifier: ^18.2.7
+        version: 18.3.7(@types/react@18.3.27)
 
 packages:
 

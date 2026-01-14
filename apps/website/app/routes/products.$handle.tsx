@@ -101,7 +101,11 @@ export const meta: Route.MetaFunction = ({data}) => {
     product?.description ||
     'Natural deodorant made with safe, effective ingredients. Free from aluminum and baking soda.';
   const variant = product?.selectedOrFirstAvailableVariant;
-  const image = variant?.image?.url || product?.media?.nodes?.[0]?.image?.url;
+  const firstMediaImage = product?.media?.nodes?.find(
+    (node): node is typeof node & {__typename: 'MediaImage'} =>
+      node.__typename === 'MediaImage',
+  );
+  const image = variant?.image?.url || firstMediaImage?.image?.url;
 
   // Parse review data for aggregateRating
   const ratingValue = product?.reviewRating?.value
@@ -352,16 +356,6 @@ export default function Product() {
         }}
         selectedVariant={selectedVariant}
         subtitle={product.subtitle?.value}
-        reviewRating={
-          product.reviewRating?.value
-            ? parseFloat(product.reviewRating.value)
-            : null
-        }
-        reviewCount={
-          product.reviews?.value
-            ? (JSON.parse(product.reviews.value as string) as unknown[]).length
-            : 0
-        }
         productImage={selectedVariant?.image?.url}
         analytics={{
           products: [

@@ -37,9 +37,9 @@ export function CustomAnalytics() {
       console.debug('[Analytics] collection_viewed', data.collection);
     });
 
-    // Subscribe to search submissions
-    subscribe('search_submitted', (data) => {
-      console.debug('[Analytics] search_submitted', data.searchTerm);
+    // Subscribe to search submissions (custom event)
+    subscribe('custom_search_submitted', (data) => {
+      console.debug('[Analytics] search_submitted', data);
     });
 
     // Subscribe to cart views
