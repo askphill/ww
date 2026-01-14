@@ -85,6 +85,10 @@ export function useContinuousCarousel(options: UseContinuousCarouselOptions = {}
     children.forEach((child) => {
       const clone = child.cloneNode(true) as HTMLElement;
       clone.setAttribute('data-clone', 'true');
+      // Ensure cloned videos are muted (cloneNode can lose muted state)
+      clone.querySelectorAll('video').forEach((video) => {
+        video.muted = true;
+      });
       wrapper.appendChild(clone);
     });
 
@@ -97,6 +101,10 @@ export function useContinuousCarousel(options: UseContinuousCarouselOptions = {}
             if (!rafRef.current) {
               rafRef.current = requestAnimationFrame(tick);
             }
+            // Ensure all videos remain muted when entering view
+            wrapper.querySelectorAll('video').forEach((video) => {
+              video.muted = true;
+            });
             // Call onEnterView callback (e.g., for video autoplay)
             onEnterView?.(wrapper);
           }
