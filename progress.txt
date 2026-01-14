@@ -141,3 +141,30 @@
 - Import step types (Step, ChoiceStep, etc.) when building step renderer components
 - Helper functions like `getStepById` will be useful for step rendering components
 
+### Iteration: 2026-01-14
+**Story:** US-007 - Create message bubble component
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantMessage` component in `apps/website/app/components/assistant/AssistantMessage.tsx`
+- Component shows typing indicator (3 animated bouncing dots) for 800ms before revealing message
+- Message text fades in with slide-up animation after typing delay
+- Styled with `bg-sand/90 text-black rounded-card p-6` and `font-display text-s2`
+- Added `skipTyping` prop for cases where message should appear immediately
+- Added fade-in animation keyframes to tailwind.css
+- Exported from assistant index.ts barrel file
+- Wired up in PageLayout for testing
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantMessage.tsx (created)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/components/PageLayout.tsx (updated to use AssistantMessage)
+- apps/website/app/styles/tailwind.css (added fade-in animation)
+
+**Learnings for future iterations:**
+- Use useState with setTimeout for typing indicator delay pattern
+- CSS `animate-bounce` with custom animation-delay creates staggered dot effect
+- Keep animations in tailwind.css for app-specific styles (not theme.css)
+- Use inline style for animation property when it needs custom keyframes
+- max-w-md provides reasonable chat bubble width constraint
+
