@@ -1,4 +1,5 @@
 import {Button} from '@wakey/ui';
+import {sanitizeHtml} from '~/lib/sanitize';
 
 interface TextMediaProps {
   videoUrl: string;
@@ -26,7 +27,7 @@ export function TextMedia({
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           aria-label={videoAlt}
         />
       </div>
@@ -37,7 +38,7 @@ export function TextMedia({
         <div className="md:col-start-5 md:col-span-8">
           <p
             className="block relative pb-8 text-h3 font-display md:pb-6"
-            dangerouslySetInnerHTML={{__html: text}}
+            dangerouslySetInnerHTML={{__html: sanitizeHtml(text)}}
           />
           {buttonText && buttonUrl && (
             <Button href={buttonUrl} variant="outline" className="w-full">

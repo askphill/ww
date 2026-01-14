@@ -1,7 +1,7 @@
 import {useState, useRef, useEffect} from 'react';
-import {Image} from '@shopify/hydrogen';
 import type {ProductFragment} from 'storefrontapi.generated';
 import {useContinuousCarousel} from '@wakey/hooks';
+import {MediaItem} from './MediaItem';
 
 type MediaNode = ProductFragment['media']['nodes'][number];
 
@@ -59,26 +59,11 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
                 key={itemId}
                 className="flex-none w-full h-[calc(100dvh-9.78rem)] snap-center overflow-hidden"
               >
-                {item.__typename === 'MediaImage' && item.image && (
-                  <Image
-                    alt={item.image.altText || 'Product image'}
-                    data={item.image}
-                    className="w-full h-full object-cover"
-                    sizes="100vw"
-                  />
-                )}
-                {item.__typename === 'Video' && (
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                    poster={item.previewImage?.url}
-                    src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
-                    className="w-full h-full object-cover"
-                  />
-                )}
+                <MediaItem
+                  media={item}
+                  sizes="100vw"
+                  className="w-full h-full object-cover"
+                />
               </div>
             );
           })}
@@ -166,28 +151,12 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
               key={itemId}
               className="flex-none w-[50vw] h-screen overflow-hidden"
             >
-              {item.__typename === 'MediaImage' && item.image && (
-                <Image
-                  alt={item.image.altText || 'Product image'}
-                  data={item.image}
-                  className="w-full h-full object-cover pointer-events-none"
-                  sizes="50vw"
-                  draggable={false}
-                />
-              )}
-              {item.__typename === 'Video' && (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  poster={item.previewImage?.url}
-                  src={item.sources.find((s) => s.mimeType === 'video/mp4')?.url || ''}
-                  className="w-full h-full object-cover pointer-events-none"
-                  draggable={false}
-                />
-              )}
+              <MediaItem
+                media={item}
+                sizes="50vw"
+                className="w-full h-full object-cover pointer-events-none"
+                draggable={false}
+              />
             </div>
           );
         })}

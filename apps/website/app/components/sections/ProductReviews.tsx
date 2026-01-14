@@ -1,5 +1,5 @@
-import {useFetcher} from 'react-router';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
+import {useLazyFetch} from '@wakey/hooks';
 import {Stars, Button} from '@wakey/ui';
 import {ProductTooltip} from '~/components/ProductTooltip';
 
@@ -18,6 +18,12 @@ interface Review {
   body: string;
 }
 
+interface ReviewsApiResponse {
+  reviews: Review[];
+  averageRating: number | null;
+  totalCount: number;
+}
+
 export function ProductReviews({
   productHandle,
   videoUrl,
@@ -25,14 +31,8 @@ export function ProductReviews({
   initialReviewCount = 4,
   loadMoreText = 'More reviews',
 }: ProductReviewsProps) {
-  const fetcher = useFetcher();
+  const fetcher = useLazyFetch<ReviewsApiResponse>(`/api/reviews/${productHandle}`);
   const [visibleCount, setVisibleCount] = useState(initialReviewCount);
-
-  useEffect(() => {
-    if (fetcher.state === 'idle' && !fetcher.data) {
-      fetcher.load(`/api/reviews/${productHandle}`);
-    }
-  }, [productHandle, fetcher]);
 
   const reviews: Review[] = fetcher.data?.reviews || [];
   const averageRating = fetcher.data?.averageRating;

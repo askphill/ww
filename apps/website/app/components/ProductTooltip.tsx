@@ -1,5 +1,4 @@
-import {useFetcher} from 'react-router';
-import {useEffect} from 'react';
+import {useLazyFetch} from '@wakey/hooks';
 import {Tooltip} from '@wakey/ui';
 
 interface ProductTooltipProps {
@@ -14,14 +13,20 @@ interface ProductTooltipProps {
   priority?: boolean;
 }
 
-export function ProductTooltip({handle, position, priority}: ProductTooltipProps) {
-  const fetcher = useFetcher();
+interface ProductApiResponse {
+  product: {
+    id: string;
+    title: string;
+    handle: string;
+    featuredImage: {url: string; altText: string | null} | null;
+    subtitle: string | null;
+    reviewRating: number | null;
+    reviewCount: number | null;
+  } | null;
+}
 
-  useEffect(() => {
-    if (fetcher.state === 'idle' && !fetcher.data) {
-      fetcher.load(`/api/product/${handle}`);
-    }
-  }, [handle, fetcher]);
+export function ProductTooltip({handle, position, priority}: ProductTooltipProps) {
+  const fetcher = useLazyFetch<ProductApiResponse>(`/api/product/${handle}`);
 
   const product = fetcher.data?.product;
 

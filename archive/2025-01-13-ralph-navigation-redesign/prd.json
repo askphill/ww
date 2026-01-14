@@ -1,0 +1,169 @@
+{
+  "branch": "ralph/navigation-redesign",
+  "description": "Redesign the navigation experience with an announcement bar below the header and a dropdown menu that slides down from under the header, replacing the side drawer.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create AnnouncementBar component",
+      "description": "As a user, I want to see promotional messages below the header so that I'm aware of current offers.",
+      "acceptance": [
+        "Component created at `apps/website/app/components/AnnouncementBar.tsx`",
+        "Same horizontal padding as header (`px-4` mobile, `md:px-6` desktop)",
+        "Same max-width as header (`max-w-[600px]`)",
+        "Uses `rounded-card` for border radius",
+        "Background is `bg-ocher` (#E3B012), text is `text-black font-display text-small`",
+        "Centered horizontally like header",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Add marquee animation to AnnouncementBar",
+      "description": "As a user, I want the announcement text to scroll continuously so that longer messages fit and create visual interest.",
+      "acceptance": [
+        "Text scrolls smoothly from right to left",
+        "Uses CSS animation for infinite horizontal scroll",
+        "Duplicate text content creates seamless loop",
+        "Uses existing `@keyframes marquee` from theme (30s linear infinite) or similar",
+        "Animation loops seamlessly without jumps",
+        "Works on both mobile and desktop",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Create NavigationDropdown component structure",
+      "description": "As a user, I want to see a clean navigation panel when I tap the menu button so that I can browse products and learn more about Wakey.",
+      "acceptance": [
+        "Component created at `apps/website/app/components/NavigationDropdown.tsx`",
+        "Two sections: 'Shop' and 'Learn' with items shown immediately (no accordion)",
+        "Shop items: 'Wakey Deodorant' → `/products/deodorant`, 'Natural Deodorant' → `/products/natural-deodorant`",
+        "Learn items: 'About us' → `/about`, 'FAQ' → `/faq`, 'Blog' → `/blog`",
+        "Section labels use `text-body-small font-display uppercase tracking-wide text-black/60`",
+        "Nav links use `text-h3 font-display`",
+        "Background is `bg-sand`",
+        "Same padding as header (`px-4` mobile, `md:px-6` desktop)",
+        "Uses `rounded-card` border radius",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Position NavigationDropdown below header",
+      "description": "As a user, I want the navigation to appear directly under the header so that it feels like part of the same element.",
+      "acceptance": [
+        "Dropdown positioned in same container/wrapper as header",
+        "Appears directly below header with small gap (`mt-2`)",
+        "Same max-width as header (`max-w-[600px]`)",
+        "Centered horizontally to align with header",
+        "When open, dropdown overlays the announcement bar (higher z-index)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Add slide-down animation to NavigationDropdown",
+      "description": "As a user, I want the menu to slide down smoothly so that it feels natural and connected to the header.",
+      "acceptance": [
+        "Menu slides down from under header with smooth animation",
+        "Initial state: `opacity-0 -translate-y-4` or similar hidden state",
+        "Open state: `opacity-100 translate-y-0`",
+        "Uses `ease-out-expo` easing from design system CSS variable",
+        "Animation duration 300-400ms",
+        "Page content moves down when menu opens (push effect, not overlay)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Implement menu toggle behavior",
+      "description": "As a user, I want to open and close the menu with the hamburger button so that I can access navigation when needed.",
+      "acceptance": [
+        "Clicking hamburger opens closed menu",
+        "Clicking hamburger again closes open menu",
+        "State is properly managed in Header or parent component",
+        "NavigationDropdown receives `isOpen` prop",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Implement click-outside-to-close behavior",
+      "description": "As a user, I want the menu to close when I click outside it so that I can easily dismiss it.",
+      "acceptance": [
+        "Clicking outside menu area closes it",
+        "Clicking inside menu does not close it",
+        "Clicking on nav links closes menu (after navigation)",
+        "Uses document click handler or backdrop overlay approach",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Integrate AnnouncementBar into PageLayout",
+      "description": "As a user, I want to see the announcement bar on all pages so that I always see current promotions.",
+      "acceptance": [
+        "AnnouncementBar added to `PageLayout.tsx`",
+        "Positioned after header, before main content",
+        "Example text: 'Free shipping on orders over €50'",
+        "Does not interfere with page content layout",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Handle body scroll when menu is open",
+      "description": "As a user, I want the page to not scroll when the menu is open so that I can focus on navigation.",
+      "acceptance": [
+        "Body scroll is locked when menu is open (`overflow-hidden` on body)",
+        "Scroll is restored when menu closes",
+        "Works correctly on navigation (scroll restored)",
+        "Uses effect cleanup to ensure scroll is always restored",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Remove old Aside mobile menu component",
+      "description": "As a developer, I want to remove the old side-drawer menu so that the codebase is clean and there's only one navigation pattern.",
+      "acceptance": [
+        "`MobileMenuAside` removed from `PageLayout.tsx`",
+        "Mobile menu type removed from `Aside.tsx` if no longer needed",
+        "Cart drawer (if separate) still works",
+        "No TypeScript errors",
+        "Old side drawer menu no longer appears",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}

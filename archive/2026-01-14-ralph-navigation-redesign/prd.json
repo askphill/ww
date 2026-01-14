@@ -550,8 +550,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 40,
-      "passes": true,
-      "notes": "Already implemented. TextMedia.tsx has preload=\"metadata\" (line 30). ProductCarousel uses MediaItem component which defaults to videoPreload=\"metadata\". Verified in browser - homepage video shows preload=\"metadata\", product carousel videos show preload=\"metadata\". Build passes."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-041",
@@ -564,8 +564,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 41,
-      "passes": true,
-      "notes": "Added preload links for founders.woff2 and itc-std.woff2 in root.tsx links() function. Includes as=\"font\", type=\"font/woff2\", and crossOrigin=\"anonymous\" attributes. Verified in browser - both preload links present with correct attributes. Build passes."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-042",
@@ -578,8 +578,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 42,
-      "passes": true,
-      "notes": "Removed empty packages/utils/ directory. Updated CLAUDE.md and README.md documentation. Build passes successfully."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-043",
@@ -591,8 +591,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 43,
-      "passes": true,
-      "notes": "Added JSDoc TODO comment documenting Hero is retained for future logo-centric hero pages. Component distinct from FeaturedProduct (text hero). Build passes."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-044",
@@ -604,8 +604,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 44,
-      "passes": true,
-      "notes": "Added decoding=\"async\" attribute to Hero.tsx and ImageBanner.tsx background images. This allows the browser to decode images off the main thread, improving performance. Build passes."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-045",
@@ -617,8 +617,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 45,
-      "passes": true,
-      "notes": "Added prefetch prop to @wakey/ui Button component. Updated FeaturedProduct.tsx CTA button to use prefetch=\"intent\". Hero.tsx has no CTA button so no changes needed. Build passes."
+      "passes": false,
+      "notes": ""
     }
   ]
 }

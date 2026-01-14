@@ -29,39 +29,33 @@ export function Header({cart, inline = false}: HeaderProps) {
     setIsMenuOpen(false);
   };
 
-  // Close menu when clicking outside header area
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        headerRef.current &&
-        !headerRef.current.contains(event.target as Node)
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    // Use mousedown for immediate response (before click completes)
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
-  // Lock body scroll when menu is open
+  // Handle menu-open side effects: click-outside-to-close and body scroll lock
   useEffect(() => {
     if (isMenuOpen) {
+      // Lock body scroll when menu is open
       document.body.classList.add('overflow-hidden');
+
+      // Close menu when clicking outside header area
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          headerRef.current &&
+          !headerRef.current.contains(event.target as Node)
+        ) {
+          setIsMenuOpen(false);
+        }
+      };
+
+      // Use mousedown for immediate response (before click completes)
+      document.addEventListener('mousedown', handleClickOutside);
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.body.classList.remove('overflow-hidden');
+      };
     } else {
+      // Ensure scroll is restored when menu closes
       document.body.classList.remove('overflow-hidden');
     }
-
-    // Cleanup: always restore scroll on unmount
-    return () => {
-      document.body.classList.remove('overflow-hidden');
-    };
   }, [isMenuOpen]);
 
   return (

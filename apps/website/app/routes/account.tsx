@@ -8,6 +8,13 @@ import {
 import type {Route} from './+types/account';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
 
+export const meta: Route.MetaFunction = () => {
+  return [
+    {title: 'Account'},
+    {name: 'robots', content: 'noindex, nofollow'},
+  ];
+};
+
 export function shouldRevalidate() {
   return true;
 }

@@ -23,7 +23,6 @@ pnpm dev:website
 | `@wakey/ui` | Design system components (Button, Stars, Accordion, etc.) |
 | `@wakey/hooks` | Shared React hooks |
 | `@wakey/tailwind-config` | Shared Tailwind v4 theme |
-| `@wakey/utils` | General utilities |
 
 ## Icons
 

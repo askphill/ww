@@ -26,20 +26,12 @@ export async function loader({context}: Route.LoaderArgs) {
 
   return {
     products:
-      products?.nodes?.map(
-        (product: {
-          id: string;
-          title: string;
-          handle: string;
-          featuredImage: {url: string; altText: string | null} | null;
-          subtitle: {value: string} | null;
-        }) => ({
-          id: product.id,
-          title: product.title,
-          handle: product.handle,
-          image: product.featuredImage?.url || null,
-          subtitle: product.subtitle?.value || null,
-        }),
-      ) || [],
+      products?.nodes?.map((product) => ({
+        id: product.id,
+        title: product.title,
+        handle: product.handle,
+        image: product.featuredImage?.url || null,
+        subtitle: product.subtitle?.value || null,
+      })) || [],
   };
 }

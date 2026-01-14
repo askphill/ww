@@ -101,10 +101,28 @@ export const meta: Route.MetaFunction = ({data}) => {
     product?.description ||
     'Natural deodorant made with safe, effective ingredients. Free from aluminum and baking soda.';
   const variant = product?.selectedOrFirstAvailableVariant;
-  const image = variant?.image?.url || product?.media?.nodes?.[0]?.image?.url;
+  const firstMediaImage = product?.media?.nodes?.find(
+    (node): node is typeof node & {__typename: 'MediaImage'} =>
+      node.__typename === 'MediaImage',
+  );
+  const image = variant?.image?.url || firstMediaImage?.image?.url;
+
+  // Parse review data for aggregateRating
+  const ratingValue = product?.reviewRating?.value
+    ? parseFloat(product.reviewRating.value)
+    : null;
+  let reviewCount = 0;
+  try {
+    if (product?.reviews?.value) {
+      const reviews = JSON.parse(product.reviews.value as string);
+      reviewCount = Array.isArray(reviews) ? reviews.length : 0;
+    }
+  } catch {
+    reviewCount = 0;
+  }
 
   // Product JSON-LD schema
-  const productSchema = {
+  const productSchema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product?.title,
@@ -129,6 +147,41 @@ export const meta: Route.MetaFunction = ({data}) => {
     },
   };
 
+  // Add aggregateRating if we have rating data
+  if (ratingValue !== null && reviewCount > 0) {
+    productSchema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: ratingValue,
+      reviewCount: reviewCount,
+    };
+  }
+
+  // Breadcrumb JSON-LD schema: Home > Products > [Product Name]
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.wakey.care/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Products',
+        item: 'https://www.wakey.care/products',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product?.title || 'Product',
+        item: `https://www.wakey.care/products/${product?.handle}`,
+      },
+    ],
+  };
+
   return [
     {title: `${title} | Wakey`},
     {name: 'description', content: description},
@@ -137,12 +190,15 @@ export const meta: Route.MetaFunction = ({data}) => {
     {property: 'og:type', content: 'product'},
     {property: 'og:url', content: `https://www.wakey.care/products/${product?.handle}`},
     {property: 'og:image', content: image},
+    {property: 'og:image:width', content: '1200'},
+    {property: 'og:image:height', content: '630'},
     {name: 'twitter:card', content: 'summary_large_image'},
     {name: 'twitter:title', content: `${title} | Wakey`},
     {name: 'twitter:description', content: description},
     {name: 'twitter:image', content: image},
     {rel: 'canonical', href: `/products/${product?.handle}`},
     {'script:ld+json': productSchema},
+    {'script:ld+json': breadcrumbSchema},
   ];
 };
 
@@ -171,6 +227,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   const [{product}] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
+      cache: storefront.CacheShort(),
     }),
     // Add other queries here, so that they are loaded in parallel
   ]);
@@ -299,16 +356,6 @@ export default function Product() {
         }}
         selectedVariant={selectedVariant}
         subtitle={product.subtitle?.value}
-        reviewRating={
-          product.reviewRating?.value
-            ? parseFloat(product.reviewRating.value)
-            : null
-        }
-        reviewCount={
-          product.reviews?.value
-            ? (JSON.parse(product.reviews.value as string) as unknown[]).length
-            : 0
-        }
         productImage={selectedVariant?.image?.url}
         analytics={{
           products: [

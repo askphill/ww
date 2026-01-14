@@ -383,6 +383,23 @@ export type StoreRobotsQueryVariables = StorefrontAPI.Exact<{
 
 export type StoreRobotsQuery = {shop: Pick<StorefrontAPI.Shop, 'id'>};
 
+export type NavProductsQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type NavProductsQuery = {
+  products: {
+    nodes: Array<
+      Pick<StorefrontAPI.Product, 'id' | 'title' | 'handle'> & {
+        featuredImage?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Image, 'url' | 'altText'>
+        >;
+        subtitle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      }
+    >;
+  };
+};
+
 export type ApiProductQueryVariables = StorefrontAPI.Exact<{
   handle: StorefrontAPI.Scalars['String']['input'];
 }>;
@@ -1230,6 +1247,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query StoreRobots($country: CountryCode, $language: LanguageCode)\n   @inContext(country: $country, language: $language) {\n    shop {\n      id\n    }\n  }\n': {
     return: StoreRobotsQuery;
     variables: StoreRobotsQueryVariables;
+  };
+  '#graphql\n  query NavProducts {\n    products(first: 10, query: "status:active") {\n      nodes {\n        id\n        title\n        handle\n        featuredImage {\n          url\n          altText\n        }\n        subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n          value\n        }\n      }\n    }\n  }\n': {
+    return: NavProductsQuery;
+    variables: NavProductsQueryVariables;
   };
   '#graphql\n  query ApiProduct($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      featuredImage {\n        url\n        altText\n      }\n      subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n        value\n      }\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        value\n      }\n      variants(first: 10) {\n        nodes {\n          id\n          title\n          selectedOptions {\n            name\n            value\n          }\n          subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n            value\n          }\n        }\n      }\n    }\n  }\n': {
     return: ApiProductQuery;
