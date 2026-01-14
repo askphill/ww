@@ -13,7 +13,7 @@ export function AnnouncementBar({message}: AnnouncementBarProps) {
 
   return (
     <div className="w-full flex justify-center md:px-6">
-      <div className="w-full max-w-[600px] bg-ocher rounded-card py-2 overflow-hidden flex items-center">
+      <div className="w-full max-w-[600px] bg-ocher rounded-card-s py-2 overflow-hidden flex items-center">
         <div className="animate-marquee inline-flex whitespace-nowrap items-center">
           {copies.map((text, i) => (
             <span key={i} className="text-black font-display text-small px-8 uppercase leading-none">
