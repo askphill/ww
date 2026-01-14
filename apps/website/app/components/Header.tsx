@@ -2,7 +2,7 @@ import {Suspense, useState, useEffect, useRef} from 'react';
 import {Await, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon} from '@wakey/ui';
+import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon, SparkleIcon} from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
 import {NotificationDropdown} from '~/components/NotificationDropdown';
 import {AnnouncementBar} from '~/components/AnnouncementBar';
@@ -12,6 +12,8 @@ interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
   /** When true, renders inline instead of fixed position */
   inline?: boolean;
+  /** Called when user clicks the AI assistant button */
+  onAssistantToggle?: () => void;
 }
 
 /**
@@ -19,7 +21,7 @@ interface HeaderProps {
  * Includes NavigationDropdown positioned directly below when open
  * Manages its own menu open/close state internally
  */
-export function Header({cart, inline = false}: HeaderProps) {
+export function Header({cart, inline = false, onAssistantToggle}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -112,9 +114,12 @@ export function Header({cart, inline = false}: HeaderProps) {
       <div
         className={`grid grid-cols-[1fr_auto_1fr] items-center w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
-        {/* Left side: Menu */}
+        {/* Left side: Menu + AI Assistant */}
         <div className="flex items-center gap-0.5 justify-self-start">
           <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
+          {onAssistantToggle && (
+            <AssistantButton onToggle={onAssistantToggle} />
+          )}
         </div>
         {/* Center: Logo */}
         <Link to="/" aria-label="Wakey home" onClick={handleMenuClose} className="justify-self-center">
@@ -215,6 +220,20 @@ function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
   );
 }
 
+interface AssistantButtonProps {
+  onToggle: () => void;
+}
+
+function AssistantButton({onToggle}: AssistantButtonProps) {
+  return (
+    <HeaderButton
+      onClick={onToggle}
+      ariaLabel="Open AI shopping assistant"
+    >
+      <SparkleIcon className="w-6" />
+    </HeaderButton>
+  );
+}
 
 interface NotificationButtonProps {
   hasUnread: boolean;

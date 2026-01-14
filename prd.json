@@ -1,15 +1,15 @@
 {
-  "branch": "ralph/notification-center",
-  "description": "Notification center with bell icon next to cart, dropdown panel showing new products and blog posts, localStorage-based read state tracking.",
+  "branch": "ralph/ai-shopping-assistant",
+  "description": "Immersive AI shopping assistant that dissolves the page into a fluid brand-colored gradient background. A conversational flow guides users through questions about lifestyle, interests, and preferences to recommend personalized product sets with tiered discounts. Users can save routines to localStorage, email them, or share via unique links.",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create NotificationIcon component",
-      "description": "As a developer, I want a bell/notification icon in the shared UI package so that it matches the existing icon pack style.",
+      "title": "Add AI assistant icon to @wakey/ui",
+      "description": "As a developer, I want a SparkleIcon component so that the AI assistant button has a distinctive, futuristic appearance.",
       "acceptance": [
-        "Icon added at `packages/ui/src/icons/NotificationIcon.tsx`",
+        "New `SparkleIcon` component in `packages/ui/src/icons/SparkleIcon.tsx`",
         "Icon exported from `packages/ui/src/icons/index.ts`",
-        "Icon follows same props pattern as `BagIcon` (className, size, etc.)",
+        "Icon uses `currentColor` for fill/stroke, accepts `className` prop",
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 1,
@@ -18,14 +18,15 @@
     },
     {
       "id": "US-002",
-      "title": "Create notifications MDX content file",
-      "description": "As a content editor, I want an MDX file to define notifications so that I can manually control what notifications appear.",
+      "title": "Add AI assistant button to header",
+      "description": "As a user, I want to see an AI button in the header so that I can access the shopping assistant.",
       "acceptance": [
-        "File created at `apps/website/app/content/notifications.mdx`",
-        "Exports a `notifications` array with structure: `{ id, type, title, description, href, date }`",
-        "Type can be `'product'` or `'blog'`",
-        "Contains 2-3 example notifications",
-        "Typecheck passes (`pnpm typecheck`)"
+        "Button appears between menu and logo in Header component",
+        "Uses `SparkleIcon` from @wakey/ui",
+        "Button follows existing `HeaderButton` pattern (same w-8 h-8 md:w-12 md:h-12 sizing, hover-scale effects)",
+        "Clicking button calls `onAssistantToggle` prop passed to Header",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 2,
       "passes": true,
@@ -33,76 +34,77 @@
     },
     {
       "id": "US-003",
-      "title": "Create API route for notifications",
-      "description": "As a developer, I want an API endpoint that returns the notifications list so that the dropdown can fetch data dynamically.",
+      "title": "Create full-screen overlay container",
+      "description": "As a user, I want the page to dissolve into an immersive background when I open the assistant so that I feel transported into a focused experience.",
       "acceptance": [
-        "Route created at `apps/website/app/routes/api.notifications.tsx`",
-        "Returns JSON array of notifications from the MDX content",
-        "Each notification includes: id, type, title, description, href, date",
-        "Typecheck passes (`pnpm typecheck`)"
+        "New `AssistantOverlay` component in `apps/website/app/components/assistant/AssistantOverlay.tsx`",
+        "Overlay covers full viewport with `fixed inset-0 z-40` (below header z-50)",
+        "Background uses animated CSS gradient with brand colors (black, sand, softorange, ocher, skyblue)",
+        "Gradient animates slowly (20-30s loop) using CSS keyframes",
+        "Header remains visible and functional above overlay",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 3,
-      "passes": true,
-      "notes": "Converted notifications from MDX to TypeScript file for proper typing"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Create useNotifications hook with localStorage",
-      "description": "As a developer, I want a hook to manage notification read state so that users don't see the badge after viewing notifications.",
+      "title": "Add overlay open/close state management",
+      "description": "As a user, I want smooth transitions when opening/closing the assistant so that the experience feels polished.",
       "acceptance": [
-        "Hook created at `apps/website/app/hooks/useNotifications.ts`",
-        "Fetches notifications from `/api/notifications`",
-        "Tracks read notification IDs in localStorage (key: `wakey-read-notifications`)",
-        "Exposes: `notifications`, `unreadCount`, `hasUnread`, `markAsRead`, `markAllAsRead`",
-        "`hasUnread` returns true if any notification ID is not in localStorage",
-        "Typecheck passes (`pnpm typecheck`)"
+        "Overlay animates in with fade and scale over 400ms transition",
+        "Pressing Escape key closes overlay",
+        "Close button (CrossIcon) in top-right of overlay content area",
+        "Body scroll locked when overlay is open using `overflow-hidden` on body",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 4,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-005",
-      "title": "Create NotificationDropdown component",
-      "description": "As a developer, I want a dropdown panel component that displays notifications so that users can see what's new.",
+      "title": "Create conversation state machine hook",
+      "description": "As a developer, I want a state machine to manage the conversation flow so that the assistant can guide users through questions predictably.",
       "acceptance": [
-        "Component created at `apps/website/app/components/NotificationDropdown.tsx`",
-        "Matches NavigationDropdown animation pattern (grid-template-rows transition)",
-        "Shows list of notifications with title, description, and type indicator",
-        "Each notification links to the relevant page (product or blog post)",
-        "Clicking a notification calls `onClose` and marks it as read",
-        "Typecheck passes (`pnpm typecheck`)",
-        "Verify in browser using chrome-devtools MCP"
+        "New `useAssistantFlow` hook in `apps/website/app/hooks/useAssistantFlow.ts`",
+        "Hook manages: currentStepId, answers (typed object), history (array of step IDs)",
+        "Exposes `next(answer?)`, `back()`, and `reset()` actions",
+        "Stores answers keyed by step ID in a typed Record",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "Also includes US-008 type indicators (New Product/New Post labels) and read/unread styling"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-006",
-      "title": "Add notification icon with badge to Header",
-      "description": "As a user, I want to see a notification icon next to the cart so that I know there's something new to check.",
+      "title": "Create conversation step definitions",
+      "description": "As a developer, I want step configurations defined so that the flow is data-driven and easy to modify.",
       "acceptance": [
-        "NotificationIcon added to Header component next to cart/bag icon",
-        "Dot badge appears when `hasUnread` is true (positioned top-right of icon)",
-        "Badge uses `bg-softorange` color for visibility",
-        "Clicking icon toggles NotificationDropdown open/closed",
-        "Only one dropdown can be open at a time (nav or notifications)",
-        "Typecheck passes (`pnpm typecheck`)",
-        "Verify in browser using chrome-devtools MCP"
+        "New `assistantSteps.ts` file in `apps/website/app/lib/assistantSteps.ts`",
+        "Each step has: id, type ('text' | 'choice' | 'multi-choice' | 'input' | 'recommendation' | 'summary'), message, options (if choice/multi-choice)",
+        "Steps defined: welcome, interest-area, lifestyle, age-range, name-email, recommendation, summary",
+        "All types exported (Step, StepType, StepOption, etc.)",
+        "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 6,
-      "passes": true,
-      "notes": "Added NotificationButton component with badge, integrated NotificationDropdown, implemented mutual exclusion with nav dropdown"
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-007",
-      "title": "Add close-on-outside-click behavior",
-      "description": "As a user, I want the notification dropdown to close when I click outside so that I can dismiss it easily.",
+      "title": "Create message bubble component",
+      "description": "As a user, I want to see assistant messages appear as chat bubbles so that the conversation feels natural.",
       "acceptance": [
-        "Clicking outside the dropdown closes it",
-        "Clicking the notification icon when open closes it",
-        "Pressing Escape key closes the dropdown",
+        "New `AssistantMessage` component in `apps/website/app/components/assistant/`",
+        "Shows typing indicator (3 animated dots) for 800ms before revealing text",
+        "Text fades in after typing delay",
+        "Bubbles styled with `bg-sand/90 text-black rounded-card p-6`",
+        "Uses `font-display` for message text",
         "Typecheck passes (`pnpm typecheck`)",
         "Verify in browser using chrome-devtools MCP"
       ],
@@ -112,19 +114,308 @@
     },
     {
       "id": "US-008",
-      "title": "Style notification items with type indicators",
-      "description": "As a user, I want to visually distinguish product vs blog notifications so that I know what type of content is new.",
+      "title": "Create choice card component",
+      "description": "As a user, I want to select options from visual cards so that choices feel interactive and clear.",
       "acceptance": [
-        "Product notifications show a small product icon or 'New Product' label",
-        "Blog notifications show a small article icon or 'New Post' label",
-        "Unread notifications have a subtle highlight or dot indicator",
-        "Read notifications appear slightly dimmed",
+        "New `AssistantChoiceCard` component in `apps/website/app/components/assistant/`",
+        "Cards show option label and optional description",
+        "Cards have hover state with scale transform (hover-scale class)",
+        "Selected card shows border-softorange indicator",
+        "Cards animate in with staggered 100ms delay using CSS animation-delay",
         "Typecheck passes (`pnpm typecheck`)",
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "Implemented as part of US-005 NotificationDropdown component"
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Create text input step component",
+      "description": "As a user, I want to enter my name and email so that I can receive my personalized routine.",
+      "acceptance": [
+        "New `AssistantInput` component in `apps/website/app/components/assistant/`",
+        "Input has floating label that moves up when focused or filled",
+        "Email field validates format and shows error message if invalid",
+        "Submit button disabled until all required fields are valid",
+        "Inputs styled with `bg-sand text-black rounded-card` styling",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Implement back navigation",
+      "description": "As a user, I want to go back to previous questions so that I can change my answers.",
+      "acceptance": [
+        "Back arrow button visible on all steps except welcome",
+        "Clicking back returns to previous step with previous answer pre-selected",
+        "Back button positioned top-left of conversation content area",
+        "Smooth opacity/transform transition when navigating back",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Implement welcome step",
+      "description": "As a user, I want to see a warm welcome message so that I understand what the assistant offers.",
+      "acceptance": [
+        "Welcome message displays: 'Hey there, welcome to Wakey! I'm here to help you discover your perfect morning routine. Ready to find products that match your lifestyle?'",
+        "Single 'Let's go' button styled as primary Button component",
+        "SparkleIcon displayed alongside or above the message",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Implement interest area step",
+      "description": "As a user, I want to tell the assistant what I'm interested in so that recommendations are relevant.",
+      "acceptance": [
+        "Question displays: 'What brings you to Wakey today?'",
+        "Three choice cards: 'Deodorant that actually works', 'Building a morning routine', 'Just exploring'",
+        "Each option has a brief 1-line description",
+        "Selecting an option automatically advances to next step",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Implement lifestyle step",
+      "description": "As a user, I want to share my lifestyle so that product recommendations fit my daily reality.",
+      "acceptance": [
+        "Question displays: 'Tell me a bit about your daily life'",
+        "Four choice cards: 'Active & athletic', 'Busy professional', 'Parent life', 'Student vibes'",
+        "Multi-select allowed - cards toggle selection on click",
+        "'Next' button appears after at least one selection",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Implement age range step",
+      "description": "As a user, I want to share my age range so that recommendations suit my needs.",
+      "acceptance": [
+        "Question displays: 'What age range are you in?'",
+        "Four choice cards: '18-25', '26-35', '36-50', '50+'",
+        "Single select - clicking advances to next step immediately",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Implement name and email step",
+      "description": "As a user, I want to provide my details so that I can save and share my routine.",
+      "acceptance": [
+        "Message displays: 'Almost there! What should I call you?'",
+        "Name input field (required)",
+        "Email input field (required, with validation)",
+        "'See my routine' button to proceed, disabled until valid",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Create recommendation logic",
+      "description": "As a developer, I want logic that maps answers to product recommendations so that users get personalized results.",
+      "acceptance": [
+        "New `getRecommendation` function in `apps/website/app/lib/getRecommendation.ts`",
+        "Function takes answers object, returns { productHandle: string, quantity: number, discountPercent: number }",
+        "For MVP: always returns 'deodorant' handle",
+        "Quantity based on lifestyle count (1 lifestyle = 1, 2+ = 2, 3+ = 3)",
+        "Discount: 5% for qty 1, 10% for qty 2, 15% for qty 3+",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Implement recommendation display step",
+      "description": "As a user, I want to see my personalized product recommendation so that I can add it to cart.",
+      "acceptance": [
+        "Shows personalized message with user's name from answers",
+        "Fetches product data using existing `/api/product/[handle]` route",
+        "Displays product image, title, and price",
+        "Shows original price crossed out with discounted price next to it",
+        "Discount badge shows percentage (e.g., '15% OFF')",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Add recommended set to cart",
+      "description": "As a user, I want to add my recommended set to cart so that I can purchase it.",
+      "acceptance": [
+        "'Add to bag' Button on recommendation step",
+        "Clicking adds product with correct quantity using Hydrogen cart actions",
+        "Button shows loading state (disabled with spinner or text change) during add",
+        "Success message appears after adding ('Added to your bag!')",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Create routine summary view",
+      "description": "As a user, I want to see a summary of my routine so that I can review before sharing.",
+      "acceptance": [
+        "Summary shows: user name, selected lifestyle preferences, recommended product",
+        "Displays as styled card with brand colors",
+        "Shows personalized title: '[Name]'s Morning Ritual'",
+        "Includes 'Add to bag' button if not already added",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Save routine to localStorage",
+      "description": "As a developer, I want to persist routine data so that returning users see their preferences.",
+      "acceptance": [
+        "Routine data saved to localStorage with key `wakey_routine`",
+        "Data structure includes: name, email, answers, recommendedProduct, discountPercent, createdAt ISO string",
+        "Data saved when user reaches summary step",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Create shareable routine link",
+      "description": "As a user, I want to copy a link to my routine so that I can share it on social or messaging apps.",
+      "acceptance": [
+        "'Copy link' button on summary step",
+        "Generates URL: `/routine/[base64-encoded-routine-data]`",
+        "Clicking copies URL to clipboard using navigator.clipboard API",
+        "Toast or inline message confirms 'Link copied!'",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Create shared routine page",
+      "description": "As a visitor, I want to view a shared routine so that I can see what was recommended.",
+      "acceptance": [
+        "New route at `apps/website/app/routes/routine.$id.tsx`",
+        "Decodes base64 routine data from URL parameter",
+        "Displays routine card with name, preferences, and product",
+        "'Get this routine' button adds product to cart",
+        "Graceful error handling if decode fails",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Add progress indicator",
+      "description": "As a user, I want to see my progress so that I know how many steps remain.",
+      "acceptance": [
+        "Progress dots at top of conversation area (7 dots for 7 steps)",
+        "Current step dot is larger or highlighted with softorange",
+        "Completed steps shown as filled dots",
+        "Upcoming steps shown as outlined/empty dots",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Add conversation animations",
+      "description": "As a user, I want smooth animations throughout so that the experience feels premium.",
+      "acceptance": [
+        "Messages slide up and fade in using CSS transform + opacity transition",
+        "Choice cards stagger in from bottom with 100ms delays",
+        "Step transitions use 300ms crossfade effect",
+        "Supports prefers-reduced-motion media query (disables animations)",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Wire up assistant in root layout",
+      "description": "As a developer, I want the assistant integrated into the app layout so that it's accessible from any page.",
+      "acceptance": [
+        "Assistant state managed in root.tsx or a context provider",
+        "Header receives `onAssistantToggle` and `isAssistantOpen` props",
+        "AssistantOverlay rendered conditionally based on open state",
+        "Opening assistant closes any open navigation dropdowns",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Add email sharing modal",
+      "description": "As a user, I want to email my routine to myself or someone else so that I can save or gift it.",
+      "acceptance": [
+        "'Send via email' button on summary step opens modal",
+        "Modal has recipient email input (defaults to user's email)",
+        "Optional personal message textarea",
+        "'Send' button is placeholder that shows 'Coming soon' toast (actual email API deferred)",
+        "Modal can be closed with X button or Escape key",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
     }
   ]
 }
