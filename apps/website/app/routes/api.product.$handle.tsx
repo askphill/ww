@@ -21,6 +21,12 @@ const PRODUCT_QUERY = `#graphql
       reviews: metafield(namespace: "askphill", key: "reviews") {
         value
       }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
       variants(first: 10) {
         nodes {
           id
@@ -31,6 +37,10 @@ const PRODUCT_QUERY = `#graphql
           }
           subtitle: metafield(namespace: "ask_phill", key: "subtitle") {
             value
+          }
+          price {
+            amount
+            currencyCode
           }
         }
       }
@@ -78,6 +88,10 @@ export async function loader({params, context}: Route.LoaderArgs) {
     }
   }
 
+  // Get price from first variant or priceRange
+  const price = product?.variants?.nodes?.[0]?.price ?? product?.priceRange?.minVariantPrice ?? null;
+  const variantId = product?.variants?.nodes?.[0]?.id ?? null;
+
   const responseData = {
     product: product ? {
       id: product.id,
@@ -87,6 +101,8 @@ export async function loader({params, context}: Route.LoaderArgs) {
       subtitle,
       reviewRating: product.reviewRating?.value ? parseFloat(product.reviewRating.value) : null,
       reviewCount,
+      price,
+      variantId,
     } : null,
   };
 

@@ -415,6 +415,9 @@ export type ApiProductQuery = {
         Pick<StorefrontAPI.Metafield, 'value'>
       >;
       reviews?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      priceRange: {
+        minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+      };
       variants: {
         nodes: Array<
           Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
@@ -424,6 +427,7 @@ export type ApiProductQuery = {
             subtitle?: StorefrontAPI.Maybe<
               Pick<StorefrontAPI.Metafield, 'value'>
             >;
+            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
           }
         >;
       };
@@ -1253,7 +1257,7 @@ interface GeneratedQueryTypes {
     return: NavProductsQuery;
     variables: NavProductsQueryVariables;
   };
-  '#graphql\n  query ApiProduct($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      featuredImage {\n        url\n        altText\n      }\n      subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n        value\n      }\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        value\n      }\n      variants(first: 10) {\n        nodes {\n          id\n          title\n          selectedOptions {\n            name\n            value\n          }\n          subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n            value\n          }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query ApiProduct($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      featuredImage {\n        url\n        altText\n      }\n      subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n        value\n      }\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        value\n      }\n      priceRange {\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      variants(first: 10) {\n        nodes {\n          id\n          title\n          selectedOptions {\n            name\n            value\n          }\n          subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n            value\n          }\n          price {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n': {
     return: ApiProductQuery;
     variables: ApiProductQueryVariables;
   };

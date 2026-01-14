@@ -13,10 +13,12 @@ import {
   AssistantChoiceCard,
   AssistantInput,
   AssistantWelcome,
+  AssistantRecommendation,
 } from '~/components/assistant';
 import {ASSISTANT_STEPS, getStepById} from '~/lib/assistantSteps';
 import type {ChoiceStep, MultiChoiceStep, InputStep, TextStep} from '~/lib/assistantSteps';
 import {useAssistantFlow} from '~/hooks/useAssistantFlow';
+import {getRecommendation} from '~/lib/getRecommendation';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -96,13 +98,15 @@ export function PageLayout({
         onBack={back}
       >
         <div className="flex flex-col gap-4 max-w-md w-full">
-          {/* Message - skip for welcome step which has its own layout */}
-          {currentStep && currentStepId !== 'welcome' && (
-            <AssistantMessage
-              message={currentStep.message}
-              key={currentStepId}
-            />
-          )}
+          {/* Message - skip for steps that render their own message (welcome, recommendation) */}
+          {currentStep &&
+            currentStepId !== 'welcome' &&
+            currentStepId !== 'recommendation' && (
+              <AssistantMessage
+                message={currentStep.message}
+                key={currentStepId}
+              />
+            )}
 
           {/* Choice cards for 'choice' type steps */}
           {currentStep?.type === 'choice' && (
@@ -176,6 +180,18 @@ export function PageLayout({
               message={currentStep.message}
               actionLabel={(currentStep as TextStep).actionLabel}
               onAction={() => next()}
+            />
+          )}
+
+          {/* Recommendation step */}
+          {currentStep?.type === 'recommendation' && (
+            <AssistantRecommendation
+              userName={
+                typeof answers['name-email'] === 'object'
+                  ? (answers['name-email'] as Record<string, string>).name ?? 'there'
+                  : 'there'
+              }
+              recommendation={getRecommendation(answers)}
             />
           )}
         </div>
