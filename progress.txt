@@ -404,3 +404,29 @@
 - Access name-email answers via `answers['name-email']` cast to `Record<string, string>`
 - `variantId` is needed for US-018 (add to cart functionality)
 
+### Iteration: 2026-01-14
+**Story:** US-018 - Add recommended set to cart
+**Status:** Complete
+
+**What was done:**
+- Created `CheckIcon` component in `packages/ui/src/icons/CheckIcon.tsx` for success state
+- Added CartForm integration in AssistantRecommendation component
+- Implemented three-state button: default (Add to bag), loading (spinning Smiley), success (Added to your bag!)
+- Button uses CSS transitions for smooth state changes (translate-y and opacity)
+- Button disabled after successful add to prevent duplicate additions
+- Cart quantity derived from `recommendation.quantity` (from getRecommendation logic)
+- Verified cart count increases correctly after adding product
+
+**Files changed:**
+- packages/ui/src/icons/CheckIcon.tsx (created)
+- packages/ui/src/icons/index.ts (updated export)
+- apps/website/app/components/assistant/AssistantRecommendation.tsx (added cart functionality)
+
+**Learnings for future iterations:**
+- Use CartForm from @shopify/hydrogen with `action={CartForm.ACTIONS.LinesAdd}` for add to cart
+- CartForm render prop provides fetcher with state ('idle', 'loading', 'submitting')
+- Track `hasAddedToCart` state separately to persist success state after fetcher returns to idle
+- Button animation pattern: absolute positioned spans with translate-y transitions for state changes
+- Import OptimisticCartLineInput type from @shopify/hydrogen for typed cart lines
+- lines array requires `merchandiseId` (variantId) and `quantity` properties
+
