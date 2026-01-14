@@ -137,3 +137,22 @@
 - Use `isAnyDropdownOpen` computed value for shared side effects (scroll lock, click-outside)
 - The dropdown should be placed in the same container as NavigationDropdown for consistent positioning
 
+### Iteration: 2026-01-14
+**Story:** US-007 - Add close-on-outside-click behavior
+**Status:** Complete
+
+**What was done:**
+- Added keydown event listener for Escape key to close dropdowns
+- Click-outside behavior was already implemented in US-006 (mousedown on document)
+- Toggle button behavior was already implemented in US-006 (handleNotificationsToggle)
+- All three dismissal methods verified in browser: click outside, Escape key, toggle button
+
+**Files changed:**
+- `apps/website/app/components/Header.tsx` (modified - added handleKeyDown listener)
+
+**Learnings for future iterations:**
+- The MCP chrome-devtools `click` tool triggers a `click` event, but code listens for `mousedown`
+- Use `evaluate_script` with `new MouseEvent('mousedown', ...)` to test mousedown handlers
+- Escape key handler pattern: `if (event.key === 'Escape')` in keydown listener
+- Good practice to add multiple event listeners in the same useEffect cleanup for related behaviors
+

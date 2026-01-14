@@ -114,7 +114,7 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-sand">
       <div className="max-w-section px-4 md:px-8 pt-24 md:pt-32 pb-8 md:pb-12">
-        <h1 className="text-h1 md:text-h2 font-display text-black mb-8 md:mb-12">Bag</h1>
+        <h1 className="text-h3 md:text-h2 font-display text-black mb-8 md:mb-12">Bag</h1>
         <CartMain layout="page" cart={cart} />
       </div>
     </div>

@@ -8,6 +8,7 @@ export interface Notification {
   description: string;
   href: string;
   date: string;
+  image?: string;
 }
 
 /**
@@ -31,6 +32,8 @@ export const notifications: Notification[] = [
       'Our refreshing new scent is here. Natural, aluminum-free protection.',
     href: '/products/deodorant',
     date: '2024-01-10',
+    image:
+      'https://cdn.shopify.com/s/files/1/0609/8747/4152/products/wakey-shot.png?v=1701280929',
   },
   {
     id: 'blog-good-morning-movement',
@@ -39,6 +42,8 @@ export const notifications: Notification[] = [
     description: 'Discover how Wakey is transforming morning rituals.',
     href: '/blog/join-the-good-morning-movement',
     date: '2023-09-06',
+    image:
+      'https://cdn.shopify.com/s/files/1/0609/8747/4152/articles/0_0_1_7ea9e9eb-8bec-4129-9d7a-9a835fce1e97.jpg?v=1761317682',
   },
   {
     id: 'blog-plastic-free',
@@ -48,5 +53,7 @@ export const notifications: Notification[] = [
       'Why plastic-free packaging matters for you and the planet.',
     href: '/blog/say-goodbye-to-plastic',
     date: '2023-03-17',
+    image:
+      'https://cdn.shopify.com/s/files/1/0609/8747/4152/articles/plasticfree-deodorant.jpg?v=1679055639',
   },
 ];

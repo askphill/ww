@@ -38,7 +38,7 @@ export function NotificationDropdown({
       <div className="overflow-hidden">
         <div
           className={`
-            w-full flex justify-end md:px-6
+            w-full flex justify-center md:px-6
             transition-all duration-300
             ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}
           `}
@@ -46,7 +46,9 @@ export function NotificationDropdown({
           aria-label="Notifications"
           aria-hidden={!isOpen}
         >
-          <div className="w-full mx-2 md:mx-0 md:max-w-[320px] bg-white md:rounded-card-s px-4 py-4 md:px-5 md:py-5">
+          {/* Container matches nav menu width */}
+          <div className="w-full mx-2 md:mx-0 md:max-w-[600px]">
+            <div className="w-full bg-white md:rounded-card-s px-4 py-4 md:px-5 md:py-5">
             {notifications.length === 0 ? (
               <p className="text-body-small text-black/60 text-center py-4">
                 No notifications
@@ -62,40 +64,63 @@ export function NotificationDropdown({
                         onClick={() => handleNotificationClick(notification.id)}
                         tabIndex={isOpen ? 0 : -1}
                         className={`
-                          block p-3 rounded-lg transition-colors
+                          flex items-start gap-3 py-3 rounded-lg transition-colors
                           hover:bg-black/5
                           ${isRead ? 'opacity-60' : ''}
                         `}
                       >
-                        <div className="flex items-start gap-3">
-                          {/* Type indicator */}
-                          <span
+                        {/* Image */}
+                        {notification.image && (
+                          <div
                             className={`
-                              flex-shrink-0 mt-0.5 text-xs font-display uppercase tracking-wide px-2 py-0.5 rounded
-                              ${notification.type === 'product' ? 'bg-softorange/20 text-black' : 'bg-skyblue/20 text-black'}
+                              w-14 h-14 md:w-16 md:h-16 rounded-lg flex-shrink-0 overflow-hidden
+                              ${notification.type === 'product' ? 'bg-blue flex items-center justify-center p-2' : ''}
                             `}
                           >
-                            {notification.type === 'product'
-                              ? 'New Product'
-                              : 'New Post'}
-                          </span>
-                          {/* Unread indicator dot */}
-                          {!isRead && (
-                            <span className="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-softorange" />
-                          )}
+                            <img
+                              src={notification.image}
+                              alt=""
+                              className={
+                                notification.type === 'product'
+                                  ? 'w-full h-full object-contain'
+                                  : 'w-full h-full object-cover'
+                              }
+                            />
+                          </div>
+                        )}
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            {/* Type indicator */}
+                            <span
+                              className={`
+                                flex-shrink-0 text-xs font-display uppercase tracking-wide px-2 py-0.5 rounded
+                                ${notification.type === 'product' ? 'bg-softorange/20 text-black' : 'bg-skyblue/20 text-black'}
+                              `}
+                            >
+                              {notification.type === 'product'
+                                ? 'New Product'
+                                : 'New Post'}
+                            </span>
+                            {/* Unread indicator dot */}
+                            {!isRead && (
+                              <span className="flex-shrink-0 w-2 h-2 rounded-full bg-softorange" />
+                            )}
+                          </div>
+                          <h3 className="text-label font-display mt-1.5 leading-tight">
+                            {notification.title}
+                          </h3>
+                          <p className="text-body-small text-black/70 mt-1 leading-snug">
+                            {notification.description}
+                          </p>
                         </div>
-                        <h3 className="text-label font-display mt-2 leading-tight">
-                          {notification.title}
-                        </h3>
-                        <p className="text-body-small text-black/70 mt-1 leading-snug">
-                          {notification.description}
-                        </p>
                       </Link>
                     </li>
                   );
                 })}
               </ul>
             )}
+            </div>
           </div>
         </div>
       </div>
