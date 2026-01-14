@@ -456,3 +456,26 @@
 - LIFESTYLE_LABELS map converts stored values ('active', 'professional') to display labels
 - Use `useEffect` to sync external prop changes to internal state (e.g., alreadyAddedToCart)
 
+### Iteration: 2026-01-14
+**Story:** US-020 - Save routine to localStorage
+**Status:** Complete
+
+**What was done:**
+- Created `routineStorage.ts` utility in `apps/website/app/lib/routineStorage.ts`
+- Defined `SavedRoutine` interface with all required fields: name, email, answers, recommendedProduct, discountPercent, createdAt
+- Implemented `saveRoutineToStorage()` function to persist data with JSON serialization
+- Added `loadRoutineFromStorage()` and `clearRoutineFromStorage()` helper functions for future use
+- Added useEffect in PageLayout that saves routine when currentStepId changes to 'summary'
+- Verified localStorage contains correct data structure after completing flow
+
+**Files changed:**
+- apps/website/app/lib/routineStorage.ts (created)
+- apps/website/app/components/PageLayout.tsx (added useEffect for localStorage save)
+
+**Learnings for future iterations:**
+- Use `typeof window !== 'undefined'` check for SSR-safe localStorage access
+- Wrap localStorage operations in try/catch for private browsing mode compatibility
+- Use ISO string format for timestamps (new Date().toISOString())
+- Import types from useAssistantFlow and getRecommendation for type safety
+- ROUTINE_STORAGE_KEY constant ('wakey_routine') enables consistent key usage
+
