@@ -75,6 +75,7 @@ export function ImageBanner({
               src={backgroundImage}
               alt={mediaAlt}
               className="absolute inset-0 w-full h-full object-cover"
+              decoding="async"
             />
           </picture>
         )}

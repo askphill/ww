@@ -47,6 +47,7 @@ export function Hero({
           alt=""
           className="absolute inset-0 w-full h-full object-cover z-0"
           fetchPriority="high"
+          decoding="async"
         />
       </picture>
       {productHandle && (
