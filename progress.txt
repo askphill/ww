@@ -50,3 +50,27 @@
 - Pre-existing typecheck errors in packages/ui/ and packages/hooks/ (missing @types/react) - these are documented in previous PRD notes
 - Website-specific build command (`pnpm run build` in apps/website) is sufficient to verify changes
 
+### Iteration: 2026-01-14
+**Story:** US-042 - Remove unused @wakey/utils package
+**Status:** Complete
+
+**What was done:**
+- Verified @wakey/utils package was empty (only contained placeholder comment in index.ts)
+- Verified no imports from @wakey/utils exist in the codebase (grep found no matches)
+- Verified @wakey/utils was not in apps/website/package.json dependencies
+- Deleted packages/utils/ directory
+- Updated CLAUDE.md monorepo structure documentation
+- Updated README.md packages table
+- Ran `pnpm install` - completes successfully (5 workspace projects remaining)
+- Build passes successfully
+
+**Files changed:**
+- packages/utils/ (deleted)
+- CLAUDE.md
+- README.md
+
+**Learnings for future iterations:**
+- Check if packages are actually used (grep for imports) before deletion
+- pnpm-workspace.yaml uses glob pattern `packages/*` so no update needed after removing a package
+- The pre-existing typecheck errors in packages/ui and packages/hooks are unrelated to the utils removal
+
