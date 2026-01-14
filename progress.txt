@@ -221,3 +221,33 @@
 - Import `StepInputField` type from assistantSteps.ts for typed field props
 - Button component from @wakey/ui supports `disabled` prop with opacity styling
 
+### Iteration: 2026-01-14
+**Story:** US-010 - Implement back navigation
+**Status:** Complete
+
+**What was done:**
+- Created `ArrowLeftIcon` component in `packages/ui/src/icons/ArrowLeftIcon.tsx` matching CrossIcon style
+- Created `AssistantBackButton` component with visibility toggle and smooth transitions
+- Added `showBackButton` and `onBack` props to AssistantOverlay
+- Updated AssistantInput to accept `initialValues` prop for pre-populating fields on back navigation
+- Wired up full conversation flow in PageLayout using useAssistantFlow hook
+- Back button positioned top-left of conversation area, mirroring close button position
+- Back button disabled on welcome step, enabled on all other steps
+
+**Files changed:**
+- packages/ui/src/icons/ArrowLeftIcon.tsx (created)
+- packages/ui/src/icons/index.ts (updated export)
+- apps/website/app/components/assistant/AssistantBackButton.tsx (created)
+- apps/website/app/components/assistant/AssistantOverlay.tsx (updated)
+- apps/website/app/components/assistant/AssistantInput.tsx (updated)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/components/PageLayout.tsx (updated to wire up full flow)
+
+**Learnings for future iterations:**
+- Icon positioning: use matching positions for symmetry (top-left back, top-right close)
+- AssistantBackButton uses `disabled` prop with `pointer-events-none` for non-interactive state
+- Transition classes: `transition-all duration-300 ease-out` with translate-x for smooth enter/exit
+- Use `initialValues` prop pattern to restore form state when navigating back
+- PageLayout now has full conversation flow wired up - future stories can build on this foundation
+- Back button visibility controlled by `!isFirstStep` from useAssistantFlow hook
+

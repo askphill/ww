@@ -159,7 +159,7 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
