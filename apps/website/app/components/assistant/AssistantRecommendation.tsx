@@ -1,7 +1,16 @@
 import {useEffect, useState} from 'react';
-import {useFetcher} from 'react-router';
+import {useFetcher, type FetcherWithComponents} from 'react-router';
+import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
+import {Button, AddBagIcon, SmileyIcon, CheckIcon} from '@wakey/ui';
 import {AssistantMessage} from './AssistantMessage';
 import type {Recommendation} from '~/lib/getRecommendation';
+
+/** Response type from cart action */
+type CartActionResponse = {
+  cart: unknown;
+  errors?: unknown;
+  warnings?: unknown;
+};
 
 interface ProductData {
   id: string;
@@ -28,6 +37,8 @@ interface AssistantRecommendationProps {
   recommendation: Recommendation;
   /** Called when product data is loaded (passes variantId for cart actions) */
   onProductLoaded?: (product: ProductData) => void;
+  /** Called when product is added to cart */
+  onAddedToCart?: () => void;
 }
 
 /**
@@ -37,9 +48,11 @@ export function AssistantRecommendation({
   userName,
   recommendation,
   onProductLoaded,
+  onAddedToCart,
 }: AssistantRecommendationProps) {
   const fetcher = useFetcher<{product: ProductData | null}>();
   const [hasLoadedProduct, setHasLoadedProduct] = useState(false);
+  const [hasAddedToCart, setHasAddedToCart] = useState(false);
 
   // Fetch product data on mount
   useEffect(() => {
@@ -58,6 +71,11 @@ export function AssistantRecommendation({
 
   const product = fetcher.data?.product;
   const isLoading = fetcher.state === 'loading' || !product;
+
+  // Cart lines for submission (quantity from recommendation)
+  const lines: OptimisticCartLineInput[] = product?.variantId
+    ? [{merchandiseId: product.variantId, quantity: recommendation.quantity}]
+    : [];
 
   // Calculate discounted price
   const originalPrice = product?.price?.amount
@@ -159,6 +177,75 @@ export function AssistantRecommendation({
                   {formatPrice(discountedPrice)} each
                 </p>
               )}
+
+              {/* Add to Cart Button */}
+              <div className="mt-4">
+                <CartForm
+                  route="/cart"
+                  inputs={{lines}}
+                  action={CartForm.ACTIONS.LinesAdd}
+                >
+                  {(cartFetcher: FetcherWithComponents<CartActionResponse>) => {
+                    const isAddingToCart = cartFetcher.state !== 'idle';
+
+                    // Handle successful add to cart
+                    useEffect(() => {
+                      if (
+                        cartFetcher.state === 'idle' &&
+                        cartFetcher.data &&
+                        !hasAddedToCart
+                      ) {
+                        setHasAddedToCart(true);
+                        onAddedToCart?.();
+                      }
+                    }, [cartFetcher.state, cartFetcher.data]);
+
+                    return (
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={isAddingToCart || hasAddedToCart}
+                        className="w-full relative overflow-hidden"
+                      >
+                        {/* Default state - Add to bag */}
+                        <span
+                          className={`
+                            flex items-center justify-center gap-2
+                            transition-all duration-300
+                            ${isAddingToCart || hasAddedToCart ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
+                          `}
+                        >
+                          <AddBagIcon className="w-5 h-5" />
+                          Add to bag
+                        </span>
+
+                        {/* Loading state - Spinner */}
+                        <span
+                          className={`
+                            absolute inset-0 flex items-center justify-center
+                            transition-all duration-300
+                            ${isAddingToCart && !hasAddedToCart ? 'translate-y-0 opacity-100' : hasAddedToCart ? '-translate-y-full opacity-0' : 'translate-y-full opacity-0'}
+                          `}
+                        >
+                          <SmileyIcon className="w-5 h-5 animate-spin" />
+                        </span>
+
+                        {/* Success state - Added message */}
+                        <span
+                          className={`
+                            absolute inset-0 flex items-center justify-center gap-2
+                            transition-all duration-300
+                            ${hasAddedToCart ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+                          `}
+                        >
+                          <CheckIcon className="w-5 h-5" />
+                          Added to your bag!
+                        </span>
+                      </Button>
+                    );
+                  }}
+                </CartForm>
+              </div>
             </div>
           </div>
         </div>

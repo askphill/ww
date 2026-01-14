@@ -27,3 +27,4 @@ export {NotificationIcon} from './NotificationIcon';
 export {SearchIcon} from './SearchIcon';
 export {SparkleIcon} from './SparkleIcon';
 export {ArrowLeftIcon} from './ArrowLeftIcon';
+export {CheckIcon} from './CheckIcon';
