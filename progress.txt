@@ -115,3 +115,25 @@
 - ImageBanner.tsx images are not LCP-critical so only need `decoding="async"`, not `fetchPriority="high"`
 - Pre-existing build error in @wakey/seo-engine (TypeScript errors in gsc.ts) - unrelated to website changes, use website-specific build
 
+### Iteration: 2026-01-14
+**Story:** US-045 - Add prefetch to hero CTA buttons
+**Status:** Complete
+
+**What was done:**
+- Added `prefetch` prop to @wakey/ui Button component interface
+- Supported values: 'intent' | 'render' | 'none' | 'viewport' (matching React Router Link)
+- Passed prefetch prop through to Link component when using `to` prop
+- Updated FeaturedProduct.tsx CTA button to use `prefetch="intent"`
+- Verified Hero.tsx has no CTA button (only shows logo and ProductTooltip)
+- Build passes successfully
+
+**Files changed:**
+- packages/ui/src/Button.tsx
+- apps/website/app/components/sections/FeaturedProduct.tsx
+
+**Learnings for future iterations:**
+- React Router Link supports prefetch prop with values: 'intent', 'render', 'none', 'viewport'
+- 'intent' prefetches on hover/focus - good balance between eager loading and bandwidth
+- Button component in @wakey/ui wraps Link from react-router when `to` prop is used
+- Hero.tsx is designed for logo display, not CTA buttons - confirmed in US-043
+

@@ -617,8 +617,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 45,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added prefetch prop to @wakey/ui Button component. Updated FeaturedProduct.tsx CTA button to use prefetch=\"intent\". Hero.tsx has no CTA button so no changes needed. Build passes."
     }
   ]
 }
