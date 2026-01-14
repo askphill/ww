@@ -5,3 +5,4 @@ export {AssistantInput} from './AssistantInput';
 export {AssistantBackButton} from './AssistantBackButton';
 export {AssistantWelcome} from './AssistantWelcome';
 export {AssistantRecommendation} from './AssistantRecommendation';
+export {AssistantSummary} from './AssistantSummary';

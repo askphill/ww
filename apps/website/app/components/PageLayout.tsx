@@ -14,6 +14,7 @@ import {
   AssistantInput,
   AssistantWelcome,
   AssistantRecommendation,
+  AssistantSummary,
 } from '~/components/assistant';
 import {ASSISTANT_STEPS, getStepById} from '~/lib/assistantSteps';
 import type {ChoiceStep, MultiChoiceStep, InputStep, TextStep} from '~/lib/assistantSteps';
@@ -34,6 +35,7 @@ export function PageLayout({
   isLoggedIn,
 }: PageLayoutProps) {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [hasAddedToCart, setHasAddedToCart] = useState(false);
   const {currentStepId, answers, next, back, reset, updateAnswer, isFirstStep} =
     useAssistantFlow();
 
@@ -79,6 +81,7 @@ export function PageLayout({
   const handleClose = () => {
     setIsAssistantOpen(false);
     reset();
+    setHasAddedToCart(false);
   };
 
   return (
@@ -98,10 +101,11 @@ export function PageLayout({
         onBack={back}
       >
         <div className="flex flex-col gap-4 max-w-md w-full">
-          {/* Message - skip for steps that render their own message (welcome, recommendation) */}
+          {/* Message - skip for steps that render their own message (welcome, recommendation, summary) */}
           {currentStep &&
             currentStepId !== 'welcome' &&
-            currentStepId !== 'recommendation' && (
+            currentStepId !== 'recommendation' &&
+            currentStepId !== 'summary' && (
               <AssistantMessage
                 message={currentStep.message}
                 key={currentStepId}
@@ -185,13 +189,52 @@ export function PageLayout({
 
           {/* Recommendation step */}
           {currentStep?.type === 'recommendation' && (
-            <AssistantRecommendation
+            <>
+              <AssistantRecommendation
+                userName={
+                  typeof answers['name-email'] === 'object'
+                    ? (answers['name-email'] as Record<string, string>).name ?? 'there'
+                    : 'there'
+                }
+                recommendation={getRecommendation(answers)}
+                onAddedToCart={() => setHasAddedToCart(true)}
+              />
+              {/* Continue to summary button */}
+              <div
+                className="opacity-0"
+                style={{
+                  animation: 'fade-in 300ms ease-out forwards',
+                  animationDelay: '1200ms',
+                }}
+              >
+                <Button
+                  variant="secondary"
+                  onClick={() => next()}
+                  className="w-full"
+                >
+                  See my routine
+                </Button>
+              </div>
+            </>
+          )}
+
+          {/* Summary step */}
+          {currentStep?.type === 'summary' && (
+            <AssistantSummary
               userName={
                 typeof answers['name-email'] === 'object'
                   ? (answers['name-email'] as Record<string, string>).name ?? 'there'
                   : 'there'
               }
+              userEmail={
+                typeof answers['name-email'] === 'object'
+                  ? (answers['name-email'] as Record<string, string>).email ?? ''
+                  : ''
+              }
+              answers={answers}
               recommendation={getRecommendation(answers)}
+              alreadyAddedToCart={hasAddedToCart}
+              onAddedToCart={() => setHasAddedToCart(true)}
             />
           )}
         </div>
