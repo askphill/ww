@@ -107,8 +107,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "Added Escape key handler to existing useEffect. Click-outside and toggle behaviors were already working from US-006."
+      "passes": false,
+      "notes": ""
     },
     {
       "id": "US-008",
