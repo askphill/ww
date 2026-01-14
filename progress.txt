@@ -430,3 +430,29 @@
 - Import OptimisticCartLineInput type from @shopify/hydrogen for typed cart lines
 - lines array requires `merchandiseId` (variantId) and `quantity` properties
 
+### Iteration: 2026-01-14
+**Story:** US-019 - Create routine summary view
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantSummary` component in `apps/website/app/components/assistant/AssistantSummary.tsx`
+- Displays personalized title "[Name]'s Morning Ritual" with user's email
+- Shows "YOUR LIFESTYLE" section with selected lifestyle preferences as styled tags
+- Shows "RECOMMENDED PRODUCT" section with product image, title, subtitle, qty, pricing, and discount badge
+- Includes "Add to bag" button if product wasn't already added in recommendation step
+- Added `hasAddedToCart` state in PageLayout to track cart additions across steps
+- Added "See my routine" button on recommendation step to advance to summary
+- Updated message skip condition to exclude summary step (renders its own content)
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantSummary.tsx (created)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/components/PageLayout.tsx (added summary rendering and cart state tracking)
+
+**Learnings for future iterations:**
+- Summary step follows same pattern as recommendation step - renders its own content container
+- Track shared state like `hasAddedToCart` at PageLayout level to pass between steps
+- Use `alreadyAddedToCart` prop to sync external cart state with component internal state
+- LIFESTYLE_LABELS map converts stored values ('active', 'professional') to display labels
+- Use `useEffect` to sync external prop changes to internal state (e.g., alreadyAddedToCart)
+
