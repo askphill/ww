@@ -1,139 +1,139 @@
 # Ralph Progress Log
 
 ## Codebase Patterns
-<!-- Ralph will add discovered patterns here -->
+- Icons in `packages/ui/src/icons/` use simple interface with `className?: string` prop
+- Icons use `stroke="currentColor"` and `strokeWidth="2"` for consistent styling
+- All icons use 24x24 viewBox
+- Icons must be exported from `packages/ui/src/icons/index.ts`
 
 ---
 
 ## Iterations
 
 ### Iteration: 2026-01-14
-**Story:** US-040 - Change video preload to metadata
-**Status:** Complete (Already Implemented)
-
-**What was done:**
-- Verified TextMedia.tsx already has `preload="metadata"` (line 30)
-- Verified ProductCarousel.tsx uses MediaItem component which defaults to `videoPreload="metadata"`
-- MediaItem.tsx (line 23) has default `videoPreload = 'metadata'`
-- Confirmed no `preload="auto"` exists anywhere in the codebase
-- Verified in browser: homepage video and product carousel videos use `preload="metadata"`
-- Build passes successfully
-
-**Files verified (no changes needed):**
-- apps/website/app/components/sections/TextMedia.tsx (already has preload="metadata")
-- apps/website/app/components/ProductCarousel.tsx (uses MediaItem)
-- apps/website/app/components/MediaItem.tsx (defaults to preload="metadata")
-
-**Learnings for future iterations:**
-- MediaItem component was created in US-035/US-036 with `videoPreload="metadata"` as default
-- TextMedia.tsx was already updated to use metadata preload in a previous iteration
-- Some video components (ProductReviews, ImageBanner) use `preload="none"` which is even more aggressive
-- Always check if stories might already be implemented before making changes
-
-### Iteration: 2026-01-14
-**Story:** US-041 - Add font preload links
+**Story:** US-001 - Create NotificationIcon component
 **Status:** Complete
 
 **What was done:**
-- Added preload links for `founders.woff2` and `itc-std.woff2` to root.tsx `links()` function
-- Each link includes: `rel="preload"`, `as="font"`, `type="font/woff2"`, `crossOrigin="anonymous"`
-- Verified in browser using chrome-devtools MCP - both preload links present with correct attributes
-- Build passes successfully
+- Created `packages/ui/src/icons/NotificationIcon.tsx` with bell icon SVG
+- Followed same props pattern as BagIcon (className prop)
+- Exported from `packages/ui/src/icons/index.ts`
 
 **Files changed:**
-- apps/website/app/root.tsx
+- `packages/ui/src/icons/NotificationIcon.tsx` (new)
+- `packages/ui/src/icons/index.ts` (modified)
 
 **Learnings for future iterations:**
-- React Router 7 uses `links()` function export to add link elements to the head
-- The `links()` function returns an array of link descriptor objects
-- Font preload links need `crossOrigin="anonymous"` even for same-origin fonts due to CORS requirements for fonts
-- Pre-existing typecheck errors in packages/ui/ and packages/hooks/ (missing @types/react) - these are documented in previous PRD notes
-- Website-specific build command (`pnpm run build` in apps/website) is sufficient to verify changes
+- Icon components follow a simple pattern: interface with className, return SVG with viewBox 0 0 24 24
+- Use stroke-based paths with strokeWidth="2" and strokeLinecap="round" for consistency
+- Typecheck runs quickly (~3s) and validates all packages
 
 ### Iteration: 2026-01-14
-**Story:** US-042 - Remove unused @wakey/utils package
+**Story:** US-002 - Create notifications MDX content file
 **Status:** Complete
 
 **What was done:**
-- Verified @wakey/utils package was empty (only contained placeholder comment in index.ts)
-- Verified no imports from @wakey/utils exist in the codebase (grep found no matches)
-- Verified @wakey/utils was not in apps/website/package.json dependencies
-- Deleted packages/utils/ directory
-- Updated CLAUDE.md monorepo structure documentation
-- Updated README.md packages table
-- Ran `pnpm install` - completes successfully (5 workspace projects remaining)
-- Build passes successfully
+- Created `apps/website/app/content/notifications.mdx` with exported notifications array
+- Added 3 example notifications (1 product, 2 blog)
+- Each notification has: id, type, title, description, href, date
 
 **Files changed:**
-- packages/utils/ (deleted)
-- CLAUDE.md
-- README.md
+- `apps/website/app/content/notifications.mdx` (new)
 
 **Learnings for future iterations:**
-- Check if packages are actually used (grep for imports) before deletion
-- pnpm-workspace.yaml uses glob pattern `packages/*` so no update needed after removing a package
-- The pre-existing typecheck errors in packages/ui and packages/hooks are unrelated to the utils removal
+- MDX files can export JavaScript values using `export const` syntax
+- This allows MDX to be used for both rendered content and data exports
+- The blog content pattern uses a separate `index.ts` file, but for simple data exports MDX works directly
+- Notification structure matches what API route will need: id, type, title, description, href, date
 
 ### Iteration: 2026-01-14
-**Story:** US-043 - Verify and document Hero component status
+**Story:** US-003 - Create API route for notifications
 **Status:** Complete
 
 **What was done:**
-- Investigated Hero.tsx usage - found it's exported from sections/index.ts but not used anywhere
-- The only reference to `<Hero` is in CLAUDE.md as documentation example
-- FeaturedProduct.tsx is used instead for homepage hero (shows text heading)
-- Hero.tsx shows Wakey logo - distinct purpose from FeaturedProduct
-- Added JSDoc TODO comment explaining status: retained for future logo-centric hero pages
-- Build passes successfully
+- Created `apps/website/app/routes/api.notifications.tsx` returning JSON from content file
+- Converted notifications from MDX to TypeScript (`notifications.ts`) for proper typing
+- Added `Notification` interface with proper type definitions
 
 **Files changed:**
-- apps/website/app/components/sections/Hero.tsx
+- `apps/website/app/routes/api.notifications.tsx` (new)
+- `apps/website/app/content/notifications.ts` (new - replaces notifications.mdx)
+- `apps/website/app/content/notifications.mdx` (deleted)
 
 **Learnings for future iterations:**
-- Hero and FeaturedProduct serve different purposes: Hero=logo hero, FeaturedProduct=text hero
-- CLAUDE.md documents Hero as an available MDX section - it's designed for future use
-- When documenting component status, compare with similar components to understand design intent
-- Components can be retained if they serve a distinct purpose even when currently unused
+- MDX named exports don't work with TypeScript module declarations - use `.ts` files for typed data
+- API routes follow pattern: return `new Response(JSON.stringify(data), {status, headers})`
+- Follow existing API route patterns in `apps/website/app/routes/api.*.tsx`
+- The blog content pattern uses TypeScript index.ts for data - notifications should follow same pattern
 
 ### Iteration: 2026-01-14
-**Story:** US-044 - Add decoding=async to hero images
+**Story:** US-004 - Create useNotifications hook with localStorage
 **Status:** Complete
 
 **What was done:**
-- Added `decoding="async"` attribute to Hero.tsx background image (line 50)
-- Added `decoding="async"` attribute to ImageBanner.tsx background image (line 78)
-- This allows the browser to decode images asynchronously, avoiding main thread blocking
-- Build passes successfully
+- Created `apps/website/app/hooks/useNotifications.ts` hook
+- Fetches notifications from `/api/notifications` using `useFetcher`
+- Tracks read notification IDs in localStorage (key: `wakey-read-notifications`)
+- Exposes: `notifications`, `unreadCount`, `hasUnread`, `markAsRead`, `markAllAsRead`, `isLoading`
+- SSR-safe: handles server/client rendering and hydration
 
 **Files changed:**
-- apps/website/app/components/sections/Hero.tsx
-- apps/website/app/components/sections/ImageBanner.tsx
+- `apps/website/app/hooks/useNotifications.ts` (new)
 
 **Learnings for future iterations:**
-- The `decoding="async"` attribute is a performance optimization that allows browsers to decode images off the main thread
-- Hero.tsx already had `fetchPriority="high"` - combining with `decoding="async"` is the recommended pattern for LCP images
-- ImageBanner.tsx images are not LCP-critical so only need `decoding="async"`, not `fetchPriority="high"`
-- Pre-existing build error in @wakey/seo-engine (TypeScript errors in gsc.ts) - unrelated to website changes, use website-specific build
+- Use `useFetcher` from `react-router` for data fetching in hooks (not `useLazyFetch` from packages/hooks for website-specific hooks)
+- Check for `typeof window === 'undefined'` for SSR safety with localStorage
+- Type assertions (`as string[]`) are needed after `JSON.parse()` for TypeScript
+- useState with function initializer `() => getReadIds()` for lazy initialization
+- Sync state from localStorage on mount with useEffect for SSR hydration
 
 ### Iteration: 2026-01-14
-**Story:** US-045 - Add prefetch to hero CTA buttons
+**Story:** US-005 - Create NotificationDropdown component (also completes US-008)
 **Status:** Complete
 
 **What was done:**
-- Added `prefetch` prop to @wakey/ui Button component interface
-- Supported values: 'intent' | 'render' | 'none' | 'viewport' (matching React Router Link)
-- Passed prefetch prop through to Link component when using `to` prop
-- Updated FeaturedProduct.tsx CTA button to use `prefetch="intent"`
-- Verified Hero.tsx has no CTA button (only shows logo and ProductTooltip)
-- Build passes successfully
+- Created `apps/website/app/components/NotificationDropdown.tsx`
+- Used CSS grid animation pattern from NavigationDropdown (grid-template-rows transition)
+- Added type indicator badges: "New Product" (softorange/20) and "New Post" (skyblue/20)
+- Added unread indicator dot (bg-softorange) for unread notifications
+- Read notifications dimmed with opacity-60
+- Each notification links to href and calls onMarkAsRead + onClose on click
+- Component receives notifications, readIds (Set), and callbacks as props
 
 **Files changed:**
-- packages/ui/src/Button.tsx
-- apps/website/app/components/sections/FeaturedProduct.tsx
+- `apps/website/app/components/NotificationDropdown.tsx` (new)
 
 **Learnings for future iterations:**
-- React Router Link supports prefetch prop with values: 'intent', 'render', 'none', 'viewport'
-- 'intent' prefetches on hover/focus - good balance between eager loading and bandwidth
-- Button component in @wakey/ui wraps Link from react-router when `to` prop is used
-- Hero.tsx is designed for logo display, not CTA buttons - confirmed in US-043
+- NavigationDropdown pattern: outer div with `grid transition-[grid-template-rows]`, inner with `overflow-hidden`
+- Use `gridTemplateRows: isOpen ? '1fr' : '0fr'` for smooth height animation
+- `var(--ease-out-expo)` for timing function consistency with nav dropdown
+- Component takes readIds as Set<string> for O(1) lookup of read state
+- US-008 (type indicators/styling) was naturally implemented as part of the dropdown component
+
+### Iteration: 2026-01-14
+**Story:** US-006 - Add notification icon with badge to Header
+**Status:** Complete
+
+**What was done:**
+- Added NotificationIcon import from @wakey/ui to Header component
+- Imported NotificationDropdown and useNotifications hook
+- Created NotificationButton component with:
+  - Bell icon using NotificationIcon
+  - Orange dot badge (bg-softorange) when hasUnread is true
+  - ARIA attributes for accessibility (aria-label, aria-controls, aria-expanded)
+- Added notification state management (isNotificationsOpen)
+- Implemented mutual exclusion: opening one dropdown closes the other
+- Updated click-outside handler to close both dropdowns
+- Extended useNotifications hook to export readIds for NotificationDropdown
+
+**Files changed:**
+- `apps/website/app/components/Header.tsx` (modified)
+- `apps/website/app/hooks/useNotifications.ts` (modified - added readIds to return)
+
+**Learnings for future iterations:**
+- Button component pattern: use same styling as HeaderButton but with relative positioning for badge
+- Badge positioning: `absolute top-1 right-1 md:top-2.5 md:right-2.5` for proper placement
+- Mutual exclusion pattern: in toggle handler, check `if (next) setOtherState(false)`
+- Use `isAnyDropdownOpen` computed value for shared side effects (scroll lock, click-outside)
+- The dropdown should be placed in the same container as NavigationDropdown for consistent positioning
 
