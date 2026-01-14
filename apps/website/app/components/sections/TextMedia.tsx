@@ -27,7 +27,7 @@ export function TextMedia({
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           aria-label={videoAlt}
         />
       </div>

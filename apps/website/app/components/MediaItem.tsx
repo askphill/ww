@@ -20,7 +20,7 @@ export function MediaItem({
   sizes = '100vw',
   className = 'w-full h-full object-cover',
   draggable = true,
-  videoPreload = 'auto',
+  videoPreload = 'metadata',
 }: MediaItemProps) {
   if (media.__typename === 'MediaImage' && media.image) {
     return (
