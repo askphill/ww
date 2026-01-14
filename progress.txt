@@ -117,3 +117,27 @@
 - Type-safe answers using `Partial<Record<StepId, AnswerValue>>`
 - Import types from this hook when building step components (US-006, US-007, etc.)
 
+### Iteration: 2026-01-14
+**Story:** US-006 - Create conversation step definitions
+**Status:** Complete
+
+**What was done:**
+- Created `assistantSteps.ts` in `apps/website/app/lib/assistantSteps.ts`
+- Defined `StepType` union: 'text' | 'choice' | 'multi-choice' | 'input' | 'recommendation' | 'summary'
+- Created `StepOption` interface for choice/multi-choice options with value, label, description
+- Created `StepInputField` interface for input step fields with name, type, label, placeholder, required
+- Defined variant step interfaces: `TextStep`, `ChoiceStep`, `MultiChoiceStep`, `InputStep`, `RecommendationStep`, `SummaryStep`
+- Created `Step` union type combining all step variants
+- Populated `ASSISTANT_STEPS` array with all 7 step configurations
+- Added helper functions: `getStepById(stepId)`, `getStepIndex(stepId)`, `TOTAL_STEPS`
+
+**Files changed:**
+- apps/website/app/lib/assistantSteps.ts (created)
+
+**Learnings for future iterations:**
+- Use discriminated union pattern with `type` field to create type-safe step variants
+- Step definitions are data-driven - easy to add/modify steps without changing component logic
+- Import `StepId` from useAssistantFlow.ts to ensure step IDs stay in sync
+- Import step types (Step, ChoiceStep, etc.) when building step renderer components
+- Helper functions like `getStepById` will be useful for step rendering components
+
