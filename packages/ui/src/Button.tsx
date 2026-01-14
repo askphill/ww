@@ -11,6 +11,7 @@ interface ButtonProps {
   disabled?: boolean;
   icon?: React.ReactNode;
   'aria-label'?: string;
+  prefetch?: 'intent' | 'render' | 'none' | 'viewport';
 }
 
 export function Button({
@@ -24,6 +25,7 @@ export function Button({
   disabled = false,
   icon,
   'aria-label': ariaLabel,
+  prefetch,
 }: ButtonProps) {
   const baseStyles =
     'inline-flex items-center justify-center gap-2 px-6 h-14 font-display text-label rounded-full transition-colors cursor-pointer';
@@ -47,7 +49,7 @@ export function Button({
 
   if (to) {
     return (
-      <Link to={to} className={combinedClassName} onClick={onClick} aria-label={ariaLabel}>
+      <Link to={to} className={combinedClassName} onClick={onClick} aria-label={ariaLabel} prefetch={prefetch}>
         {content}
       </Link>
     );
