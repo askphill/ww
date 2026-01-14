@@ -110,13 +110,18 @@ export function Header({cart, inline = false}: HeaderProps) {
     >
       {/* Header pill */}
       <div
-        className={`flex items-center justify-between w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`grid grid-cols-[1fr_auto_1fr] items-center w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
-        <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
-        <Link to="/" aria-label="Wakey home" onClick={handleMenuClose}>
+        {/* Left side: Menu */}
+        <div className="flex items-center gap-0.5 justify-self-start">
+          <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
+        </div>
+        {/* Center: Logo */}
+        <Link to="/" aria-label="Wakey home" onClick={handleMenuClose} className="justify-self-center">
           <LogoSmall className="h-6 md:h-7" />
         </Link>
-        <div className="flex items-center gap-0.5">
+        {/* Right side: Notifications + Cart */}
+        <div className="flex items-center gap-0.5 justify-self-end">
           <NotificationButton
             hasUnread={hasUnread}
             isOpen={isNotificationsOpen}
@@ -144,12 +149,12 @@ export function Header({cart, inline = false}: HeaderProps) {
         />
       </div>
 
-      {/* Announcement bar - hidden for now */}
-      {/* <div
-        className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      {/* Announcement bar - hidden when any dropdown is open */}
+     {/* <div
+        className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isAnyDropdownOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       >
         <AnnouncementBar message="Free shipping on orders over €50" />
-      </div> */}
+      </div>  */}
     </header>
   );
 }
@@ -210,6 +215,7 @@ function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
   );
 }
 
+
 interface NotificationButtonProps {
   hasUnread: boolean;
   isOpen: boolean;
@@ -257,9 +263,7 @@ function CartButton({count, onNavigate}: {count: number; onNavigate?: () => void
     >
       <BagIcon className="w-6" />
       {count > 0 && (
-        <span className="absolute top-[3px] right-0.5 md:top-2 md:right-2 min-w-3.5 h-3.5 px-1 flex items-center justify-center bg-ocher text-black text-xs font-display rounded-full leading-none">
-          {count}
-        </span>
+        <span className="absolute top-1 right-1 md:top-2.5 md:right-2.5 w-2 h-2 bg-softorange rounded-full" />
       )}
     </Link>
   );
