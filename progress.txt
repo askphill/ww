@@ -47,3 +47,50 @@
 - Optional props allow conditional rendering - good pattern for features being wired up later
 - PageLayout.tsx is where Header is instantiated with props from root
 
+### Iteration: 2026-01-14
+**Story:** US-003 - Create full-screen overlay container
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantOverlay` component in `apps/website/app/components/assistant/AssistantOverlay.tsx`
+- Component uses `fixed inset-0 z-40` positioning (below header z-50)
+- Added animated gradient background with brand colors using CSS keyframes
+- Gradient animation runs 25s loop with smooth position shifts
+- Created index.ts barrel export for assistant components
+- Verified overlay displays correctly and header remains functional via chrome-devtools MCP
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantOverlay.tsx (created)
+- apps/website/app/components/assistant/index.ts (created)
+- apps/website/app/styles/tailwind.css (added gradient animation)
+
+**Learnings for future iterations:**
+- z-index hierarchy: Header z-50, Aside backdrop z-60, Aside drawer z-70 - overlay uses z-40 to stay below header
+- Custom CSS classes for animations can be added to tailwind.css (not theme.css) for app-specific styles
+- Component uses `aria-hidden` for accessibility when overlay is closed
+- Future stories (US-025) will wire up the overlay in PageLayout with proper state management
+
+### Iteration: 2026-01-14
+**Story:** US-004 - Add overlay open/close state management
+**Status:** Complete
+
+**What was done:**
+- Added `onClose` prop to AssistantOverlay component
+- Added close button (CrossIcon from @wakey/ui) in top-right corner of overlay
+- Implemented body scroll lock using `document.body.style.overflow = 'hidden'`
+- Added Escape key handler using event listener with AbortController
+- Updated transition to 400ms with fade + scale effect using `--ease-out-expo`
+- Added accessibility attributes: `role="dialog"`, `aria-modal={isOpen}`
+- Wired up overlay in PageLayout.tsx with useState for testing
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantOverlay.tsx (updated)
+- apps/website/app/components/PageLayout.tsx (updated)
+
+**Learnings for future iterations:**
+- Follow Aside.tsx pattern for body scroll lock and Escape key handling
+- Use AbortController for clean event listener cleanup
+- `--ease-out-expo` CSS variable is available for smooth easing
+- Close button positioned at `top-4 right-4 md:top-6 md:right-6` matches responsive design
+- PageLayout now has overlay wired up - US-025 will just need to clean up the test content
+
