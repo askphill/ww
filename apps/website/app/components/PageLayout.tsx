@@ -11,9 +11,10 @@ import {
   AssistantMessage,
   AssistantChoiceCard,
   AssistantInput,
+  AssistantWelcome,
 } from '~/components/assistant';
 import {ASSISTANT_STEPS, getStepById} from '~/lib/assistantSteps';
-import type {ChoiceStep, MultiChoiceStep, InputStep} from '~/lib/assistantSteps';
+import type {ChoiceStep, MultiChoiceStep, InputStep, TextStep} from '~/lib/assistantSteps';
 import {useAssistantFlow} from '~/hooks/useAssistantFlow';
 
 interface PageLayoutProps {
@@ -84,8 +85,8 @@ export function PageLayout({
         onBack={back}
       >
         <div className="flex flex-col gap-4 max-w-md w-full">
-          {/* Message */}
-          {currentStep && (
+          {/* Message - skip for welcome step which has its own layout */}
+          {currentStep && currentStepId !== 'welcome' && (
             <AssistantMessage
               message={currentStep.message}
               key={currentStepId}
@@ -122,19 +123,13 @@ export function PageLayout({
             />
           )}
 
-          {/* Welcome step - "Let's go" button handled elsewhere (US-011) */}
+          {/* Welcome step with SparkleIcon and primary button */}
           {currentStep?.type === 'text' && currentStepId === 'welcome' && (
-            <button
-              type="button"
-              onClick={() => next()}
-              className="bg-softorange text-black font-display text-label px-8 py-4 rounded-card hover-scale opacity-0"
-              style={{
-                animation: 'fade-in 300ms ease-out forwards',
-                animationDelay: '100ms',
-              }}
-            >
-              Let&apos;s go
-            </button>
+            <AssistantWelcome
+              message={currentStep.message}
+              actionLabel={(currentStep as TextStep).actionLabel}
+              onAction={() => next()}
+            />
           )}
         </div>
       </AssistantOverlay>
