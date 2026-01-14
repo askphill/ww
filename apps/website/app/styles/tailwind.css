@@ -145,3 +145,31 @@ em {
   font-family: var(--font-itc);
   font-style: italic;
 }
+
+/* AI Assistant animated gradient background */
+@keyframes assistant-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.assistant-gradient {
+  background: linear-gradient(
+    -45deg,
+    var(--color-black) 0%,
+    #2a2520 15%,
+    var(--color-black) 30%,
+    #1f2530 45%,
+    var(--color-black) 60%,
+    #2a2015 75%,
+    var(--color-black) 100%
+  );
+  background-size: 400% 400%;
+  animation: assistant-gradient-shift 25s ease infinite;
+}
