@@ -24,8 +24,7 @@ wakey/
 ├── packages/
 │   ├── ui/                   # Shared React components (@wakey/ui)
 │   ├── tailwind-config/      # Shared Tailwind v4 theme (@wakey/tailwind-config)
-│   ├── hooks/                # Shared React hooks (@wakey/hooks)
-│   └── utils/                # General utilities (@wakey/utils)
+│   └── hooks/                # Shared React hooks (@wakey/hooks)
 │
 ├── turbo.json                # Turborepo pipeline config
 ├── pnpm-workspace.yaml       # Workspace definitions
