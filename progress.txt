@@ -74,3 +74,24 @@
 - pnpm-workspace.yaml uses glob pattern `packages/*` so no update needed after removing a package
 - The pre-existing typecheck errors in packages/ui and packages/hooks are unrelated to the utils removal
 
+### Iteration: 2026-01-14
+**Story:** US-043 - Verify and document Hero component status
+**Status:** Complete
+
+**What was done:**
+- Investigated Hero.tsx usage - found it's exported from sections/index.ts but not used anywhere
+- The only reference to `<Hero` is in CLAUDE.md as documentation example
+- FeaturedProduct.tsx is used instead for homepage hero (shows text heading)
+- Hero.tsx shows Wakey logo - distinct purpose from FeaturedProduct
+- Added JSDoc TODO comment explaining status: retained for future logo-centric hero pages
+- Build passes successfully
+
+**Files changed:**
+- apps/website/app/components/sections/Hero.tsx
+
+**Learnings for future iterations:**
+- Hero and FeaturedProduct serve different purposes: Hero=logo hero, FeaturedProduct=text hero
+- CLAUDE.md documents Hero as an available MDX section - it's designed for future use
+- When documenting component status, compare with similar components to understand design intent
+- Components can be retained if they serve a distinct purpose even when currently unused
+

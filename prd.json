@@ -591,8 +591,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 43,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added JSDoc TODO comment documenting Hero is retained for future logo-centric hero pages. Component distinct from FeaturedProduct (text hero). Build passes."
     },
     {
       "id": "US-044",
