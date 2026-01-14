@@ -70,7 +70,7 @@ export function Header({cart, inline = false}: HeaderProps) {
     >
       {/* Header pill */}
       <div
-        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto bg-white border-blue/10 rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`flex items-center justify-between w-full max-w-[600px] h-14 md:h-auto blur-bg border-blue/10 rounded-card px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
       >
         <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
         <Link to="/" aria-label="Wakey home" onClick={handleMenuClose}>

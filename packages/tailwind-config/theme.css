@@ -31,7 +31,7 @@
   --tracking-tight: -0.01em;
 
   /* Layout */
-  --min-height-section: 32rem;
+  --max-width-section: 87.5rem;
 
   /* Animation eases */
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
@@ -130,6 +130,12 @@
   @media (width >= 48rem) {
     font-size: 0.94rem;
   }
+}
+
+/* Section container */
+@utility max-w-section {
+  max-width: var(--max-width-section);
+  margin-inline: auto;
 }
 
 /* Hide scrollbar utility */
