@@ -168,3 +168,29 @@
 - Use inline style for animation property when it needs custom keyframes
 - max-w-md provides reasonable chat bubble width constraint
 
+### Iteration: 2026-01-14
+**Story:** US-008 - Create choice card component
+**Status:** Complete
+
+**What was done:**
+- Created `AssistantChoiceCard` component in `apps/website/app/components/assistant/AssistantChoiceCard.tsx`
+- Cards display option label (font-display text-s2) and optional description (font-body text-body-small)
+- Uses `hover-scale` class for desktop hover effect
+- Selected state shows `border-softorange` indicator with 2px border
+- Staggered fade-in animation using `animationIndex` prop (100ms delay per card)
+- Accepts `StepOption` from assistantSteps.ts for type safety
+- Updated PageLayout to test choice cards with interest-area step
+- Exported from assistant index.ts barrel file
+
+**Files changed:**
+- apps/website/app/components/assistant/AssistantChoiceCard.tsx (created)
+- apps/website/app/components/assistant/index.ts (updated export)
+- apps/website/app/components/PageLayout.tsx (updated to test choice cards)
+
+**Learnings for future iterations:**
+- Use `opacity-0` initial state with `animation: fade-in forwards` for staggered entrance
+- `animationDelay` via inline style enables dynamic stagger based on index
+- Cards use `border-2 border-transparent` by default, switching to `border-softorange` on select
+- Import `StepOption` type from assistantSteps.ts for typed option props
+- Cards work well with flex-col gap-3 container for proper spacing
+
