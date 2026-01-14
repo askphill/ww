@@ -9,10 +9,10 @@ import {Header} from '~/components/Header';
 import {
   AssistantOverlay,
   AssistantMessage,
-  AssistantChoiceCard,
+  AssistantInput,
 } from '~/components/assistant';
 import {ASSISTANT_STEPS} from '~/lib/assistantSteps';
-import type {ChoiceStep} from '~/lib/assistantSteps';
+import type {InputStep} from '~/lib/assistantSteps';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -28,12 +28,16 @@ export function PageLayout({
   isLoggedIn,
 }: PageLayoutProps) {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
 
-  // Get the interest-area step for testing choice cards
-  const interestStep = ASSISTANT_STEPS.find(
-    (step) => step.id === 'interest-area',
-  ) as ChoiceStep | undefined;
+  // Get the name-email step for testing input component
+  const inputStep = ASSISTANT_STEPS.find(
+    (step) => step.id === 'name-email',
+  ) as InputStep | undefined;
+
+  const handleInputSubmit = (values: Record<string, string>) => {
+    console.log('Form submitted:', values);
+    // In production, this would advance to the next step
+  };
 
   return (
     <Aside.Provider>
@@ -50,18 +54,15 @@ export function PageLayout({
         onClose={() => setIsAssistantOpen(false)}
       >
         <div className="flex flex-col gap-4 max-w-md">
-          <AssistantMessage message={interestStep?.message ?? ''} />
-          <div className="flex flex-col gap-3 mt-2">
-            {interestStep?.options.map((option, index) => (
-              <AssistantChoiceCard
-                key={option.value}
-                option={option}
-                isSelected={selectedChoice === option.value}
-                onClick={() => setSelectedChoice(option.value)}
-                animationIndex={index}
-              />
-            ))}
-          </div>
+          <AssistantMessage message={inputStep?.message ?? ''} />
+          {inputStep && (
+            <AssistantInput
+              fields={inputStep.fields}
+              submitLabel={inputStep.actionLabel}
+              onSubmit={handleInputSubmit}
+              animationIndex={1}
+            />
+          )}
         </div>
       </AssistantOverlay>
     </Aside.Provider>
