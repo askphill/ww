@@ -132,6 +132,19 @@ export function useAssistantFlow() {
     setState(INITIAL_STATE);
   }, []);
 
+  /**
+   * Update the answer for the current step without advancing.
+   * Used for multi-choice steps where user selects multiple options before clicking "Next".
+   *
+   * @param answer - The answer to store for the current step
+   */
+  const updateAnswer = useCallback((answer: AnswerValue) => {
+    setState((prev) => ({
+      ...prev,
+      answers: {...prev.answers, [prev.currentStepId]: answer},
+    }));
+  }, []);
+
   const currentIndex = STEP_ORDER.indexOf(state.currentStepId);
   const isFirstStep = currentIndex === 0;
   const isLastStep = currentIndex === STEP_ORDER.length - 1;
@@ -143,6 +156,7 @@ export function useAssistantFlow() {
     next,
     back,
     reset,
+    updateAnswer,
     isFirstStep,
     isLastStep,
   };

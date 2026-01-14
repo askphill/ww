@@ -3,6 +3,7 @@ import type {
   CartApiQueryFragment,
   HeaderQuery,
 } from 'storefrontapi.generated';
+import {Button} from '@wakey/ui';
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
@@ -31,7 +32,7 @@ export function PageLayout({
   isLoggedIn,
 }: PageLayoutProps) {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const {currentStepId, answers, next, back, reset, isFirstStep} =
+  const {currentStepId, answers, next, back, reset, updateAnswer, isFirstStep} =
     useAssistantFlow();
 
   // Get the current step
@@ -53,9 +54,19 @@ export function PageLayout({
       ? currentSelections.filter((v) => v !== value)
       : [...currentSelections, value];
     // Store but don't advance - user clicks "Next" button for multi-choice
-    // For now, just store the updated selections
-    // The next() will be called when clicking a submit button
+    updateAnswer(newSelections);
   };
+
+  // Handle multi-choice submit
+  const handleMultiChoiceSubmit = () => {
+    // Advance with the current selections already stored in answers
+    next(currentAnswer);
+  };
+
+  // Get current multi-choice selections as array
+  const multiChoiceSelections = Array.isArray(currentAnswer)
+    ? currentAnswer
+    : [];
 
   // Handle input submit
   const handleInputSubmit = (values: Record<string, string>) => {
@@ -106,6 +117,42 @@ export function PageLayout({
                 />
               ))}
             </div>
+          )}
+
+          {/* Multi-choice cards for 'multi-choice' type steps */}
+          {currentStep?.type === 'multi-choice' && (
+            <>
+              <div className="flex flex-col gap-3">
+                {(currentStep as MultiChoiceStep).options.map(
+                  (option, index) => (
+                    <AssistantChoiceCard
+                      key={option.value}
+                      option={option}
+                      isSelected={multiChoiceSelections.includes(option.value)}
+                      onClick={() => handleMultiChoiceToggle(option.value)}
+                      animationIndex={index + 1}
+                    />
+                  ),
+                )}
+              </div>
+              {multiChoiceSelections.length > 0 && (
+                <div
+                  className="opacity-0"
+                  style={{
+                    animation: 'fade-in 300ms ease-out forwards',
+                    animationDelay: `${((currentStep as MultiChoiceStep).options.length + 1) * 100}ms`,
+                  }}
+                >
+                  <Button
+                    variant="secondary"
+                    onClick={handleMultiChoiceSubmit}
+                    className="w-full"
+                  >
+                    {(currentStep as MultiChoiceStep).actionLabel}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
 
           {/* Input fields for 'input' type steps */}
