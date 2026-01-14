@@ -639,6 +639,7 @@ export type DesignSystemProductQuery = {
             'id' | 'title' | 'availableForSale' | 'sku'
           > & {
             price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+            product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
             selectedOptions: Array<
               Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
             >;
@@ -1272,7 +1273,7 @@ interface GeneratedQueryTypes {
     return: CatalogQuery;
     variables: CatalogQueryVariables;
   };
-  '#graphql\n  query DesignSystemProduct($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      featuredImage {\n        url\n        altText\n      }\n      subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n        value\n      }\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        value\n      }\n      variants(first: 1) {\n        nodes {\n          id\n          title\n          availableForSale\n          sku\n          price {\n            amount\n            currencyCode\n          }\n          selectedOptions {\n            name\n            value\n          }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query DesignSystemProduct($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      featuredImage {\n        url\n        altText\n      }\n      subtitle: metafield(namespace: "ask_phill", key: "subtitle") {\n        value\n      }\n      reviewRating: metafield(namespace: "ask_phill", key: "review_average_rating") {\n        value\n      }\n      reviews: metafield(namespace: "askphill", key: "reviews") {\n        value\n      }\n      variants(first: 1) {\n        nodes {\n          id\n          title\n          availableForSale\n          sku\n          price {\n            amount\n            currencyCode\n          }\n          product {\n            title\n            handle\n          }\n          selectedOptions {\n            name\n            value\n          }\n        }\n      }\n    }\n  }\n': {
     return: DesignSystemProductQuery;
     variables: DesignSystemProductQueryVariables;
   };

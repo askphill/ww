@@ -592,7 +592,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             </ul>
           </div>
           {/* Live preview using actual component */}
-          <div className="relative h-48">
+          <div className="relative">
             <AddedToBagPopup
               isOpen={true}
               onClose={() => {}}
@@ -604,6 +604,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               } : null}
               cartCount={2}
               checkoutUrl="/cart"
+              relative
             />
           </div>
         </Section>
