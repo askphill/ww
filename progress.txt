@@ -94,3 +94,26 @@
 - Close button positioned at `top-4 right-4 md:top-6 md:right-6` matches responsive design
 - PageLayout now has overlay wired up - US-025 will just need to clean up the test content
 
+### Iteration: 2026-01-14
+**Story:** US-005 - Create conversation state machine hook
+**Status:** Complete
+
+**What was done:**
+- Created `useAssistantFlow` hook in `apps/website/app/hooks/useAssistantFlow.ts`
+- Defined `StepId` type for all 7 conversation steps
+- Defined `AnswerValue` type supporting string, string array (multi-select), and Record (forms)
+- Implemented state: `currentStepId`, `answers` (typed Record), `history` (step array)
+- Implemented actions: `next(answer?)`, `back()`, `reset()`
+- Added computed properties: `isFirstStep`, `isLastStep`
+- Used STEP_ORDER array for linear progression through steps
+
+**Files changed:**
+- apps/website/app/hooks/useAssistantFlow.ts (created)
+
+**Learnings for future iterations:**
+- State machine pattern: use STEP_ORDER array to define flow sequence
+- History array enables back navigation by popping last entry
+- next(answer?) optionally stores answer before advancing
+- Type-safe answers using `Partial<Record<StepId, AnswerValue>>`
+- Import types from this hook when building step components (US-006, US-007, etc.)
+
