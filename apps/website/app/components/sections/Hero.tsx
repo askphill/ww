@@ -1,3 +1,16 @@
+/**
+ * Hero component for displaying full-screen hero sections with the Wakey logo.
+ *
+ * TODO: Currently unused but retained for future pages that need a logo-centric
+ * hero layout (vs. FeaturedProduct which shows text headings). This component
+ * is documented in CLAUDE.md as an available MDX section component.
+ *
+ * Usage in MDX:
+ * ```mdx
+ * import {Hero} from '~/components/sections'
+ * <Hero backgroundImage="..." productHandle="deodorant" />
+ * ```
+ */
 import {WakeyLogo} from '~/components/WakeyLogo';
 import {ProductTooltip} from '~/components/ProductTooltip';
 
