@@ -169,7 +169,7 @@ import { useLoaderData } from 'react-router';
 - Free on paid Shopify plans (Basic, Shopify, Advanced, Plus)
 
 ### Environment Variables
-Configured in `apps/website/.env`:
+Configured in `.env` (root):
 - `SESSION_SECRET` - Session encryption
 - `PUBLIC_STOREFRONT_API_TOKEN` - Storefront API access
 - `PUBLIC_STORE_DOMAIN` - Your Shopify store domain
