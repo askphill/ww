@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "setup": "pnpm install; cp $CONDUCTOR_ROOT_PATH/.env apps/website/.env",
+    "setup": "pnpm install; cp $CONDUCTOR_ROOT_PATH/apps/website/.env apps/website/.env; cp $CONDUCTOR_ROOT_PATH/.env .env",
     "run": "pnpm dev:website",
     "archive": "lsof -ti:3000-3010 | xargs kill 2>/dev/null || true"
   },
