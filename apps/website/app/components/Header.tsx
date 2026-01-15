@@ -1,8 +1,8 @@
-import {Suspense, useState, useEffect, useRef} from 'react';
+import {Suspense, useState, useEffect} from 'react';
 import {Await, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon} from '@wakey/ui';
+import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon, AiIcon} from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
 import {NotificationDropdown} from '~/components/NotificationDropdown';
 import {AnnouncementBar} from '~/components/AnnouncementBar';
@@ -22,7 +22,6 @@ interface HeaderProps {
 export function Header({cart, inline = false}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const headerRef = useRef<HTMLElement>(null);
   const {
     notifications,
     hasUnread,
@@ -39,8 +38,9 @@ export function Header({cart, inline = false}: HeaderProps) {
     });
   };
 
-  const handleMenuClose = () => {
+  const closeAll = () => {
     setIsMenuOpen(false);
+    setIsNotificationsOpen(false);
   };
 
   const handleNotificationsToggle = () => {
@@ -52,43 +52,24 @@ export function Header({cart, inline = false}: HeaderProps) {
     });
   };
 
-  const handleNotificationsClose = () => {
-    setIsNotificationsOpen(false);
-  };
-
   const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
 
-  // Handle dropdown side effects: click-outside-to-close, escape key, and body scroll lock
+  // Handle dropdown side effects: escape key and body scroll lock
   useEffect(() => {
     if (isAnyDropdownOpen) {
       // Lock body scroll when any dropdown is open
       document.body.classList.add('overflow-hidden');
 
-      // Close dropdowns when clicking outside header area
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          headerRef.current &&
-          !headerRef.current.contains(event.target as Node)
-        ) {
-          setIsMenuOpen(false);
-          setIsNotificationsOpen(false);
-        }
-      };
-
       // Close dropdowns when pressing Escape key
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-          setIsMenuOpen(false);
-          setIsNotificationsOpen(false);
+          closeAll();
         }
       };
 
-      // Use mousedown for immediate response (before click completes)
-      document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
 
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
         document.body.classList.remove('overflow-hidden');
       };
@@ -99,63 +80,76 @@ export function Header({cart, inline = false}: HeaderProps) {
   }, [isAnyDropdownOpen]);
 
   return (
-    <header
-      ref={headerRef}
-      className={
-        inline
-          ? 'w-full flex flex-col items-center'
-          : 'fixed z-50 w-full flex flex-col items-center md:px-6 md:pt-6 pointer-events-none'
-      }
-      role="banner"
-    >
-      {/* Header pill */}
-      <div
-        className={`grid grid-cols-[1fr_auto_1fr] items-center w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
-      >
-        {/* Left side: Menu */}
-        <div className="flex items-center gap-0.5 justify-self-start">
-          <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
-        </div>
-        {/* Center: Logo */}
-        <Link to="/" aria-label="Wakey home" onClick={handleMenuClose} className="justify-self-center">
-          <LogoSmall className="h-6 md:h-7" />
-        </Link>
-        {/* Right side: Notifications + Cart */}
-        <div className="flex items-center gap-0.5 justify-self-end">
-          <NotificationButton
-            hasUnread={hasUnread}
-            isOpen={isNotificationsOpen}
-            onToggle={handleNotificationsToggle}
-          />
-          <Suspense fallback={<CartButton count={0} onNavigate={handleMenuClose} />}>
-            <Await resolve={cart}>
-              {(cartData) => (
-                <CartBadge cart={cartData} onNavigate={handleMenuClose} />
-              )}
-            </Await>
-          </Suspense>
-        </div>
-      </div>
-
-      {/* Navigation dropdown - positioned directly below header */}
-      <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
-        <NavigationDropdown isOpen={isMenuOpen} onClose={handleMenuClose} />
-        <NotificationDropdown
-          isOpen={isNotificationsOpen}
-          onClose={handleNotificationsClose}
-          notifications={notifications}
-          readIds={readIds}
-          onMarkAsRead={markAsRead}
+    <>
+      {/* Backdrop overlay when menu/notifications are open - rendered outside header for correct z-stacking */}
+      {!inline && (
+        <div
+          className={`
+            fixed inset-0 z-40 bg-sand/5 backdrop-blur-[15px]
+            transition-opacity duration-300
+            ${isAnyDropdownOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+          `}
+          style={{transitionTimingFunction: 'var(--ease-out-expo)'}}
+          onClick={closeAll}
+          aria-hidden="true"
         />
-      </div>
+      )}
 
-      {/* Announcement bar - hidden when any dropdown is open */}
-     {/* <div
-        className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isAnyDropdownOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      <header
+        className={
+          inline
+            ? 'w-full flex flex-col items-center'
+            : 'fixed z-50 w-full flex flex-col items-center md:px-6 md:pt-6 pointer-events-none'
+        }
+        role="banner"
       >
-        <AnnouncementBar message="Free shipping on orders over €50" />
-      </div>  */}
-    </header>
+        {/* Header pill */}
+        <div
+          className={`grid grid-cols-[1fr_auto_1fr] items-center w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        >
+          {/* Left side: Menu + Notifications */}
+          <div className="flex items-center gap-0.5 justify-self-start">
+            <MenuToggleButton
+              isOpen={isMenuOpen}
+              isAnyOpen={isAnyDropdownOpen}
+              onToggle={isAnyDropdownOpen ? closeAll : handleMenuToggle}
+            />
+            <NotificationButton
+              hasUnread={hasUnread}
+              isOpen={isNotificationsOpen}
+              onToggle={handleNotificationsToggle}
+            />
+          </div>
+          {/* Center: Logo */}
+          <Link to="/" aria-label="Wakey home" onClick={closeAll} className="justify-self-center">
+            <LogoSmall className="h-6 md:h-7" />
+          </Link>
+          {/* Right side: AI + Cart */}
+          <div className="flex items-center gap-0.5 justify-self-end">
+            <AiButton />
+            <Suspense fallback={<CartButton count={0} onNavigate={closeAll} />}>
+              <Await resolve={cart}>
+                {(cartData) => (
+                  <CartBadge cart={cartData} onNavigate={closeAll} />
+                )}
+              </Await>
+            </Suspense>
+          </div>
+        </div>
+
+        {/* Navigation dropdown - positioned directly below header */}
+        <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
+          <NavigationDropdown isOpen={isMenuOpen} onClose={closeAll} />
+          <NotificationDropdown
+            isOpen={isNotificationsOpen}
+            onClose={closeAll}
+            notifications={notifications}
+            readIds={readIds}
+            onMarkAsRead={markAsRead}
+          />
+        </div>
+      </header>
+    </>
   );
 }
 
@@ -195,18 +189,19 @@ function HeaderButton({
 
 interface MenuToggleButtonProps {
   isOpen: boolean;
+  isAnyOpen: boolean;
   onToggle: () => void;
 }
 
-function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
+function MenuToggleButton({isOpen, isAnyOpen, onToggle}: MenuToggleButtonProps) {
   return (
     <HeaderButton
       onClick={onToggle}
-      ariaLabel={isOpen ? 'Close menu' : 'Open menu'}
+      ariaLabel={isAnyOpen ? 'Close menu' : 'Open menu'}
       ariaControls="navigation-dropdown"
       ariaExpanded={isOpen}
     >
-      {isOpen ? (
+      {isAnyOpen ? (
         <MenuCloseIcon className="w-6" />
       ) : (
         <HamburgerIcon className="w-6" />
@@ -243,6 +238,24 @@ function NotificationButton({hasUnread, isOpen, onToggle}: NotificationButtonPro
       {hasUnread && (
         <span className="absolute top-1 right-1 md:top-2.5 md:right-2.5 w-2 h-2 bg-softorange rounded-full" />
       )}
+    </button>
+  );
+}
+
+function AiButton() {
+  return (
+    <button
+      type="button"
+      aria-label="AI assistant"
+      className="
+        rounded-full w-8 h-8 md:w-12 md:h-12
+        flex items-center justify-center
+        hover-scale
+        transition-transform
+        cursor-pointer
+      "
+    >
+      <AiIcon className="w-6" />
     </button>
   );
 }

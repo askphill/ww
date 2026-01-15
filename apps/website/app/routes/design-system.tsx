@@ -22,6 +22,9 @@ import {
   BagIcon,
   AddBagIcon,
   CheckoutIcon,
+  NotificationIcon,
+  SearchIcon,
+  AiIcon,
 } from '@wakey/ui';
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
@@ -672,6 +675,24 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     <CheckoutIcon className="w-10 text-black" />
                   </div>
                   <p className="text-small font-body mt-2">CheckoutIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <NotificationIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">NotificationIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <SearchIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">SearchIcon</p>
+                </div>
+                <div>
+                  <div className="h-10 flex items-end">
+                    <AiIcon className="w-10 text-black" />
+                  </div>
+                  <p className="text-small font-body mt-2">AiIcon</p>
                 </div>
               </div>
             </div>
