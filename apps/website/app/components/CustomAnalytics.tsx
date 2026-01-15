@@ -1,5 +1,6 @@
-import {useEffect} from 'react';
-import {useAnalytics} from '@shopify/hydrogen';
+/* eslint-disable no-console */
+import { useEffect } from 'react';
+import { useAnalytics } from '@shopify/hydrogen';
 
 /**
  * Custom analytics component that subscribes to Hydrogen analytics events
@@ -16,8 +17,8 @@ import {useAnalytics} from '@shopify/hydrogen';
  * - cart_updated: Fires when cart lines change (add/remove/update)
  */
 export function CustomAnalytics() {
-  const {subscribe, register} = useAnalytics();
-  const {ready} = register('CustomAnalytics');
+  const { subscribe, register } = useAnalytics();
+  const { ready } = register('CustomAnalytics');
 
   useEffect(() => {
     // Subscribe to page views
@@ -85,7 +86,7 @@ export function CustomAnalytics() {
  * ```
  */
 export function useCustomAnalytics() {
-  const {publish, shop, cart, prevCart} = useAnalytics();
+  const { publish, shop, cart, prevCart } = useAnalytics();
 
   return {
     publish: (eventName: string, payload: Record<string, unknown>) => {
