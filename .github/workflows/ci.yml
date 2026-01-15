@@ -33,8 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate types
-        run: pnpm --filter=@wakey/website codegen
 
       - name: Lint
         run: pnpm lint
