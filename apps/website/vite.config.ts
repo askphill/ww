@@ -7,6 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 import mdx from '@mdx-js/rollup';
 
 export default defineConfig({
+  envDir: '../..',
   plugins: [
     mdx({
       jsxImportSource: 'react',
