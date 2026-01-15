@@ -1,12 +1,12 @@
-import {Suspense, useState, useEffect, useRef} from 'react';
-import {Await, Link} from 'react-router';
-import {useOptimisticCart} from '@shopify/hydrogen';
-import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon} from '@wakey/ui';
-import {NavigationDropdown} from '~/components/NavigationDropdown';
-import {NotificationDropdown} from '~/components/NotificationDropdown';
-import {AnnouncementBar} from '~/components/AnnouncementBar';
-import {useNotifications} from '~/hooks/useNotifications';
+import { Suspense, useState, useEffect, useRef } from 'react';
+import { Await, Link } from 'react-router';
+import { useOptimisticCart } from '@shopify/hydrogen';
+import type { CartApiQueryFragment } from 'storefrontapi.generated';
+import { HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon } from '@wakey/ui';
+import { NavigationDropdown } from '~/components/NavigationDropdown';
+import { NotificationDropdown } from '~/components/NotificationDropdown';
+import { AnnouncementBar } from '~/components/AnnouncementBar';
+import { useNotifications } from '~/hooks/useNotifications';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -19,7 +19,7 @@ interface HeaderProps {
  * Includes NavigationDropdown positioned directly below when open
  * Manages its own menu open/close state internally
  */
-export function Header({cart, inline = false}: HeaderProps) {
+export function Header({ cart, inline = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -30,17 +30,17 @@ export function Header({cart, inline = false}: HeaderProps) {
     readIds,
   } = useNotifications();
 
-  const handleMenuToggle = () => {
-    setIsMenuOpen((prev) => {
-      const next = !prev;
-      // Close notifications when opening menu
-      if (next) setIsNotificationsOpen(false);
-      return next;
-    });
+  const handleCloseAll = () => {
+    setIsMenuOpen(false);
+    setIsNotificationsOpen(false);
   };
 
-  const handleMenuClose = () => {
-    setIsMenuOpen(false);
+  const handleMenuToggle = () => {
+    if (isNotificationsOpen) {
+      setIsNotificationsOpen(false);
+      return;
+    }
+    setIsMenuOpen((prev) => !prev);
   };
 
   const handleNotificationsToggle = () => {
@@ -70,16 +70,14 @@ export function Header({cart, inline = false}: HeaderProps) {
           headerRef.current &&
           !headerRef.current.contains(event.target as Node)
         ) {
-          setIsMenuOpen(false);
-          setIsNotificationsOpen(false);
+          handleCloseAll();
         }
       };
 
       // Close dropdowns when pressing Escape key
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-          setIsMenuOpen(false);
-          setIsNotificationsOpen(false);
+          handleCloseAll();
         }
       };
 
@@ -99,63 +97,79 @@ export function Header({cart, inline = false}: HeaderProps) {
   }, [isAnyDropdownOpen]);
 
   return (
-    <header
-      ref={headerRef}
-      className={
-        inline
-          ? 'w-full flex flex-col items-center'
-          : 'fixed z-50 w-full flex flex-col items-center md:px-6 md:pt-6 pointer-events-none'
-      }
-      role="banner"
-    >
-      {/* Header pill */}
+    <>
+      {/* Blurred Overlay */}
       <div
-        className={`grid grid-cols-[1fr_auto_1fr] items-center w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        className={`fixed inset-0 z-40 transition-opacity duration-300 ${isAnyDropdownOpen
+            ? 'opacity-100 pointer-events-auto blur-bg'
+            : 'opacity-0 pointer-events-none'
+          }`}
+        onClick={handleCloseAll}
+        aria-hidden="true"
+      />
+
+      <header
+        ref={headerRef}
+        className={
+          inline
+            ? 'w-full flex flex-col items-center relative z-50'
+            : 'fixed z-50 w-full flex flex-col items-center md:px-6 md:pt-6 pointer-events-none'
+        }
+        role="banner"
       >
-        {/* Left side: Menu */}
-        <div className="flex items-center gap-0.5 justify-self-start">
-          <MenuToggleButton isOpen={isMenuOpen} onToggle={handleMenuToggle} />
+        {/* Header pill */}
+        <div
+          className={`grid grid-cols-[1fr_auto_1fr] items-center w-full md:max-w-[600px] h-14 md:h-auto bg-white md:rounded-card-s px-4 md:px-2 py-2 ${inline ? '' : 'pointer-events-auto'}`}
+        >
+          {/* Left side: Menu */}
+          <div className="flex items-center gap-0.5 justify-self-start">
+            <MenuToggleButton
+              isOpen={isMenuOpen}
+              isNotificationsOpen={isNotificationsOpen}
+              onToggle={handleMenuToggle}
+            />
+          </div>
+          {/* Center: Logo */}
+          <Link to="/" aria-label="Wakey home" onClick={handleCloseAll} className="justify-self-center">
+            <LogoSmall className="h-6 md:h-7" />
+          </Link>
+          {/* Right side: Notifications + Cart */}
+          <div className="flex items-center gap-0.5 justify-self-end">
+            <NotificationButton
+              hasUnread={hasUnread}
+              isOpen={isNotificationsOpen}
+              onToggle={handleNotificationsToggle}
+            />
+            <Suspense fallback={<CartButton count={0} onNavigate={handleCloseAll} />}>
+              <Await resolve={cart}>
+                {(cartData) => (
+                  <CartBadge cart={cartData} onNavigate={handleCloseAll} />
+                )}
+              </Await>
+            </Suspense>
+          </div>
         </div>
-        {/* Center: Logo */}
-        <Link to="/" aria-label="Wakey home" onClick={handleMenuClose} className="justify-self-center">
-          <LogoSmall className="h-6 md:h-7" />
-        </Link>
-        {/* Right side: Notifications + Cart */}
-        <div className="flex items-center gap-0.5 justify-self-end">
-          <NotificationButton
-            hasUnread={hasUnread}
+
+        {/* Navigation dropdown - positioned directly below header */}
+        <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
+          <NavigationDropdown isOpen={isMenuOpen} onClose={handleCloseAll} />
+          <NotificationDropdown
             isOpen={isNotificationsOpen}
-            onToggle={handleNotificationsToggle}
+            onClose={handleNotificationsClose}
+            notifications={notifications}
+            readIds={readIds}
+            onMarkAsRead={markAsRead}
           />
-          <Suspense fallback={<CartButton count={0} onNavigate={handleMenuClose} />}>
-            <Await resolve={cart}>
-              {(cartData) => (
-                <CartBadge cart={cartData} onNavigate={handleMenuClose} />
-              )}
-            </Await>
-          </Suspense>
         </div>
-      </div>
 
-      {/* Navigation dropdown - positioned directly below header */}
-      <div className={`w-full mt-2 ${inline ? '' : 'pointer-events-auto'}`}>
-        <NavigationDropdown isOpen={isMenuOpen} onClose={handleMenuClose} />
-        <NotificationDropdown
-          isOpen={isNotificationsOpen}
-          onClose={handleNotificationsClose}
-          notifications={notifications}
-          readIds={readIds}
-          onMarkAsRead={markAsRead}
-        />
-      </div>
-
-      {/* Announcement bar - hidden when any dropdown is open */}
-     {/* <div
-        className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isAnyDropdownOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-      >
-        <AnnouncementBar message="Free shipping on orders over €50" />
-      </div>  */}
-    </header>
+        {/* Announcement bar - hidden when any dropdown is open */}
+        {/* <div
+          className={`w-full transition-opacity duration-300 ${inline ? '' : 'pointer-events-auto'} ${isAnyDropdownOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        >
+          <AnnouncementBar message="Free shipping on orders over €50" />
+        </div>  */}
+      </header>
+    </>
   );
 }
 
@@ -195,18 +209,21 @@ function HeaderButton({
 
 interface MenuToggleButtonProps {
   isOpen: boolean;
+  isNotificationsOpen: boolean;
   onToggle: () => void;
 }
 
-function MenuToggleButton({isOpen, onToggle}: MenuToggleButtonProps) {
+function MenuToggleButton({ isOpen, isNotificationsOpen, onToggle }: MenuToggleButtonProps) {
+  const isAnyOpen = isOpen || isNotificationsOpen;
+
   return (
     <HeaderButton
       onClick={onToggle}
-      ariaLabel={isOpen ? 'Close menu' : 'Open menu'}
+      ariaLabel={isAnyOpen ? 'Close menu' : 'Open menu'}
       ariaControls="navigation-dropdown"
       ariaExpanded={isOpen}
     >
-      {isOpen ? (
+      {isAnyOpen ? (
         <MenuCloseIcon className="w-6" />
       ) : (
         <HamburgerIcon className="w-6" />
@@ -222,7 +239,7 @@ interface NotificationButtonProps {
   onToggle: () => void;
 }
 
-function NotificationButton({hasUnread, isOpen, onToggle}: NotificationButtonProps) {
+function NotificationButton({ hasUnread, isOpen, onToggle }: NotificationButtonProps) {
   return (
     <button
       type="button"
@@ -247,7 +264,7 @@ function NotificationButton({hasUnread, isOpen, onToggle}: NotificationButtonPro
   );
 }
 
-function CartButton({count, onNavigate}: {count: number; onNavigate?: () => void}) {
+function CartButton({ count, onNavigate }: { count: number; onNavigate?: () => void }) {
   return (
     <Link
       to="/cart"
@@ -269,7 +286,7 @@ function CartButton({count, onNavigate}: {count: number; onNavigate?: () => void
   );
 }
 
-function CartBadge({cart: originalCart, onNavigate}: {cart: CartApiQueryFragment | null; onNavigate?: () => void}) {
+function CartBadge({ cart: originalCart, onNavigate }: { cart: CartApiQueryFragment | null; onNavigate?: () => void }) {
   const cart = useOptimisticCart(originalCart);
   const count = cart?.totalQuantity ?? 0;
 
