@@ -169,7 +169,7 @@ import { useLoaderData } from 'react-router';
 - Free on paid Shopify plans (Basic, Shopify, Advanced, Plus)
 
 ### Environment Variables
-Configured in `.env` (root):
+Configured in `apps/website/.env`:
 - `SESSION_SECRET` - Session encryption
 - `PUBLIC_STOREFRONT_API_TOKEN` - Storefront API access
 - `PUBLIC_STORE_DOMAIN` - Your Shopify store domain
@@ -609,10 +609,12 @@ After cloning this repo:
    npx shopify hydrogen link
    ```
 
-3. **Pull environment variables**:
+3. **Pull environment variables** (from apps/website/):
    ```bash
+   cd apps/website
    npx shopify hydrogen env pull
    ```
+   > This creates `.env` in `apps/website/` where mini-oxygen expects it.
 
 4. **Start dev server** (from root):
    ```bash
