@@ -169,7 +169,7 @@ import { useLoaderData } from 'react-router';
 - Free on paid Shopify plans (Basic, Shopify, Advanced, Plus)
 
 ### Environment Variables
-Configured in `.env` (root):
+Configured in `apps/website/.env`:
 - `SESSION_SECRET` - Session encryption
 - `PUBLIC_STOREFRONT_API_TOKEN` - Storefront API access
 - `PUBLIC_STORE_DOMAIN` - Your Shopify store domain
@@ -609,23 +609,19 @@ After cloning this repo:
    npx shopify hydrogen link
    ```
 
-3. **Pull environment variables**:
+3. **Pull environment variables** (from apps/website/):
    ```bash
+   cd apps/website
    npx shopify hydrogen env pull
    ```
+   > This creates `.env` in `apps/website/` where mini-oxygen expects it.
 
-4. **Symlink .env to apps/website** (required for mini-oxygen):
-   ```bash
-   ln -s ../../.env apps/website/.env
-   ```
-   > **Note**: The `.env` file lives at the monorepo root, but Shopify's mini-oxygen runtime loads env vars from the app's working directory. This symlink makes the root `.env` available to the Hydrogen dev server.
-
-5. **Start dev server** (from root):
+4. **Start dev server** (from root):
    ```bash
    pnpm dev:website
    ```
 
-6. **Clone source theme** (if needed for reference):
+5. **Clone source theme** (if needed for reference):
    ```bash
    git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wakey-source
    ```
