@@ -14,6 +14,7 @@ import {NavigationDropdown} from '~/components/NavigationDropdown';
 import {NotificationDropdown} from '~/components/NotificationDropdown';
 import {AnnouncementBar} from '~/components/AnnouncementBar';
 import {useNotifications} from '~/hooks/useNotifications';
+import {AiOverlay} from '~/components/AiOverlay';
 
 interface HeaderProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -29,6 +30,7 @@ interface HeaderProps {
 export function Header({cart, inline = false}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isAiOverlayOpen, setIsAiOverlayOpen] = useState(false);
   const {notifications, hasUnread, markAsRead, readIds} = useNotifications();
 
   const handleMenuToggle = () => {
@@ -52,6 +54,17 @@ export function Header({cart, inline = false}: HeaderProps) {
       if (next) setIsMenuOpen(false);
       return next;
     });
+  };
+
+  const handleAiOverlayToggle = () => {
+    setIsAiOverlayOpen(true);
+    // Close other dropdowns when opening AI overlay
+    setIsMenuOpen(false);
+    setIsNotificationsOpen(false);
+  };
+
+  const closeAiOverlay = () => {
+    setIsAiOverlayOpen(false);
   };
 
   const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
@@ -133,7 +146,7 @@ export function Header({cart, inline = false}: HeaderProps) {
           </Link>
           {/* Right side: AI + Cart */}
           <div className="flex items-center gap-0.5 justify-self-end">
-            <AiButton />
+            <AiButton onClick={handleAiOverlayToggle} />
             <Suspense fallback={<CartButton count={0} onNavigate={closeAll} />}>
               <Await resolve={cart}>
                 {(cartData) => (
@@ -156,6 +169,9 @@ export function Header({cart, inline = false}: HeaderProps) {
           />
         </div>
       </header>
+
+      {/* AI Overlay - full page overlay */}
+      <AiOverlay isOpen={isAiOverlayOpen} onClose={closeAiOverlay} />
     </>
   );
 }
@@ -256,10 +272,11 @@ function NotificationButton({
   );
 }
 
-function AiButton() {
+function AiButton({onClick}: {onClick: () => void}) {
   return (
     <button
       type="button"
+      onClick={onClick}
       aria-label="AI assistant"
       className="
         rounded-full w-8 h-8 md:w-12 md:h-12
