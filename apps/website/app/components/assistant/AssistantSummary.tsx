@@ -1,9 +1,10 @@
 import {useEffect, useState} from 'react';
 import {useFetcher, type FetcherWithComponents} from 'react-router';
 import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
-import {Button, AddBagIcon, SmileyIcon, CheckIcon} from '@wakey/ui';
+import {Button, AddBagIcon, SmileyIcon, CheckIcon, LinkIcon} from '@wakey/ui';
 import type {Recommendation} from '~/lib/getRecommendation';
 import type {Answers} from '~/hooks/useAssistantFlow';
+import {generateShareableUrl} from '~/lib/routineStorage';
 
 /** Response type from cart action */
 type CartActionResponse = {
@@ -64,6 +65,7 @@ export function AssistantSummary({
 }: AssistantSummaryProps) {
   const fetcher = useFetcher<{product: ProductData | null}>();
   const [hasAddedToCart, setHasAddedToCart] = useState(alreadyAddedToCart);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Fetch product data on mount
   useEffect(() => {
@@ -107,6 +109,32 @@ export function AssistantSummary({
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(amount);
+  };
+
+  // Handle copy link to clipboard
+  const handleCopyLink = async () => {
+    const shareableUrl = generateShareableUrl(
+      userName,
+      lifestyleSelections,
+      recommendation.productHandle,
+      recommendation.quantity,
+      recommendation.discountPercent,
+    );
+
+    // Build full URL with current origin
+    const fullUrl =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}${shareableUrl}`
+        : shareableUrl;
+
+    try {
+      await navigator.clipboard.writeText(fullUrl);
+      setLinkCopied(true);
+      // Reset after 3 seconds
+      setTimeout(() => setLinkCopied(false), 3000);
+    } catch (error) {
+      console.warn('Unable to copy link to clipboard:', error);
+    }
   };
 
   return (
@@ -276,6 +304,28 @@ export function AssistantSummary({
           <div className="mt-6 flex items-center justify-center gap-2 text-black/70 font-body text-body-small">
             <CheckIcon className="w-4 h-4" />
             Already in your bag
+          </div>
+        )}
+
+        {/* Copy link button */}
+        {!isLoading && (
+          <div className="mt-4 pt-4 border-t border-black/10">
+            <button
+              onClick={handleCopyLink}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-card bg-black/5 hover:bg-black/10 transition-colors duration-200 font-display text-label text-black"
+            >
+              {linkCopied ? (
+                <>
+                  <CheckIcon className="w-4 h-4" />
+                  Link copied!
+                </>
+              ) : (
+                <>
+                  <LinkIcon className="w-4 h-4" />
+                  Copy link
+                </>
+              )}
+            </button>
           </div>
         )}
       </div>
