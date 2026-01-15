@@ -1,24 +1,18 @@
-import type {ZodSchema} from 'zod';
+import type { ZodSchema } from 'zod';
 
 /**
- * Safely parses a JSON string and validates it against a Zod schema.
- *
- * This utility provides defense-in-depth for JSON parsing:
- * - Returns null instead of throwing on JSON.parse errors
- * - Returns null instead of throwing on Zod validation errors
- * - Returns typed data when parsing and validation succeed
+ * Safely parses a JSON string using a Zod schema.
+ * Returns null if parsing fails or schema validation fails, instead of throwing.
  *
  * @param json - The JSON string to parse
- * @param schema - A Zod schema to validate the parsed data against
- * @returns The validated data of type T, or null if parsing/validation fails
+ * @param schema - The Zod schema to validate against
+ * @returns The parsed data if valid, or null
  */
 export function safeJsonParse<T>(
   json: string | null | undefined,
   schema: ZodSchema<T>,
 ): T | null {
-  if (json == null) {
-    return null;
-  }
+  if (!json) return null;
 
   try {
     const parsed = JSON.parse(json);
@@ -27,7 +21,6 @@ export function safeJsonParse<T>(
     if (result.success) {
       return result.data;
     }
-
     return null;
   } catch {
     return null;

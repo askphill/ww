@@ -1,7 +1,7 @@
 // Virtual entry point for the app
-import {storefrontRedirect} from '@shopify/hydrogen';
-import {createRequestHandler} from '@shopify/hydrogen/oxygen';
-import {createHydrogenRouterContext} from '~/lib/context';
+import { storefrontRedirect } from '@shopify/hydrogen';
+import { createRequestHandler } from '@shopify/hydrogen/oxygen';
+import { createHydrogenRouterContext } from '~/lib/context';
 
 /**
  * Export a fetch handler in module format.
@@ -13,6 +13,12 @@ export default {
     executionContext: ExecutionContext,
   ): Promise<Response> {
     try {
+      if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) {
+        return new Response('SESSION_SECRET must be at least 32 characters long', {
+          status: 500,
+        });
+      }
+
       const hydrogenContext = await createHydrogenRouterContext(
         request,
         env,
@@ -55,7 +61,7 @@ export default {
       return response;
     } catch (error) {
       console.error(error);
-      return new Response('An unexpected error occurred', {status: 500});
+      return new Response('An unexpected error occurred', { status: 500 });
     }
   },
 };
