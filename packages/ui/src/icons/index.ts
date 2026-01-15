@@ -25,3 +25,4 @@ export {AddBagIcon} from './AddBagIcon';
 export {CheckoutIcon} from './CheckoutIcon';
 export {NotificationIcon} from './NotificationIcon';
 export {SearchIcon} from './SearchIcon';
+export {AiIcon} from './AiIcon';
