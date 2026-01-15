@@ -5,6 +5,8 @@ import type { CartApiQueryFragment } from 'storefrontapi.generated';
 import { HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon } from '@wakey/ui';
 import { NavigationDropdown } from '~/components/NavigationDropdown';
 import { NotificationDropdown } from '~/components/NotificationDropdown';
+import { AIIcon } from '~/components/AIIcon';
+import { AIOverlay } from '~/components/AIOverlay';
 import { AnnouncementBar } from '~/components/AnnouncementBar';
 import { useNotifications } from '~/hooks/useNotifications';
 
@@ -22,6 +24,7 @@ interface HeaderProps {
 export function Header({ cart, inline = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isAIOpen, setIsAIOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const {
     notifications,
@@ -36,8 +39,9 @@ export function Header({ cart, inline = false }: HeaderProps) {
   };
 
   const handleMenuToggle = () => {
-    if (isNotificationsOpen) {
+    if (isNotificationsOpen || isAIOpen) {
       setIsNotificationsOpen(false);
+      setIsAIOpen(false);
       return;
     }
     setIsMenuOpen((prev) => !prev);
@@ -46,8 +50,11 @@ export function Header({ cart, inline = false }: HeaderProps) {
   const handleNotificationsToggle = () => {
     setIsNotificationsOpen((prev) => {
       const next = !prev;
-      // Close menu when opening notifications
-      if (next) setIsMenuOpen(false);
+      // Close menu and AI when opening notifications
+      if (next) {
+        setIsMenuOpen(false);
+        setIsAIOpen(false);
+      }
       return next;
     });
   };
@@ -56,7 +63,23 @@ export function Header({ cart, inline = false }: HeaderProps) {
     setIsNotificationsOpen(false);
   };
 
-  const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
+  const handleAIToggle = () => {
+    setIsAIOpen((prev) => {
+      const next = !prev;
+      // Close menu and notifications when opening AI
+      if (next) {
+        setIsMenuOpen(false);
+        setIsNotificationsOpen(false);
+      }
+      return next;
+    });
+  };
+
+  const handleAIClose = () => {
+    setIsAIOpen(false);
+  };
+
+  const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen || isAIOpen;
 
   // Handle dropdown side effects: click-outside-to-close, escape key, and body scroll lock
   useEffect(() => {
@@ -101,8 +124,8 @@ export function Header({ cart, inline = false }: HeaderProps) {
       {/* Blurred Overlay */}
       <div
         className={`fixed inset-0 z-40 transition-opacity duration-300 ${isAnyDropdownOpen
-            ? 'opacity-100 pointer-events-auto blur-bg'
-            : 'opacity-0 pointer-events-none'
+          ? 'opacity-100 pointer-events-auto blur-bg'
+          : 'opacity-0 pointer-events-none'
           }`}
         onClick={handleCloseAll}
         aria-hidden="true"
@@ -128,6 +151,11 @@ export function Header({ cart, inline = false }: HeaderProps) {
               isNotificationsOpen={isNotificationsOpen}
               onToggle={handleMenuToggle}
             />
+            <NotificationButton
+              hasUnread={hasUnread}
+              isOpen={isNotificationsOpen}
+              onToggle={handleNotificationsToggle}
+            />
           </div>
           {/* Center: Logo */}
           <Link to="/" aria-label="Wakey home" onClick={handleCloseAll} className="justify-self-center">
@@ -135,11 +163,7 @@ export function Header({ cart, inline = false }: HeaderProps) {
           </Link>
           {/* Right side: Notifications + Cart */}
           <div className="flex items-center gap-0.5 justify-self-end">
-            <NotificationButton
-              hasUnread={hasUnread}
-              isOpen={isNotificationsOpen}
-              onToggle={handleNotificationsToggle}
-            />
+            <AIAssistantButton isOpen={isAIOpen} onToggle={handleAIToggle} />
             <Suspense fallback={<CartButton count={0} onNavigate={handleCloseAll} />}>
               <Await resolve={cart}>
                 {(cartData) => (
@@ -160,6 +184,7 @@ export function Header({ cart, inline = false }: HeaderProps) {
             readIds={readIds}
             onMarkAsRead={markAsRead}
           />
+          <AIOverlay isOpen={isAIOpen} onClose={handleAIClose} />
         </div>
 
         {/* Announcement bar - hidden when any dropdown is open */}
@@ -291,4 +316,29 @@ function CartBadge({ cart: originalCart, onNavigate }: { cart: CartApiQueryFragm
   const count = cart?.totalQuantity ?? 0;
 
   return <CartButton count={count} onNavigate={onNavigate} />;
+}
+
+interface AIAssistantButtonProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+function AIAssistantButton({ isOpen, onToggle }: AIAssistantButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={isOpen ? 'Close AI assistant' : 'Open AI assistant'}
+      aria-expanded={isOpen}
+      className="
+        rounded-full w-8 h-8 md:w-12 md:h-12
+        flex items-center justify-center
+        hover-scale
+        transition-transform
+        cursor-pointer
+      "
+    >
+      <AIIcon className="w-6" />
+    </button>
+  );
 }
