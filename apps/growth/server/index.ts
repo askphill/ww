@@ -27,6 +27,13 @@ const app = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
 // Middleware
 app.use('*', logger());
+
+// Prevent search engine indexing
+app.use('*', async (c, next) => {
+  await next();
+  c.res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+});
+
 app.use(
   '/api/*',
   cors({
@@ -43,6 +50,11 @@ app.route('/api/opportunities', opportunitiesRoutes);
 // Health check
 app.get('/api/health', (c) => {
   return c.json({status: 'ok', timestamp: new Date().toISOString()});
+});
+
+// Robots.txt - disallow all crawlers
+app.get('/robots.txt', (c) => {
+  return c.text('User-agent: *\nDisallow: /');
 });
 
 // Serve static assets (React app)
