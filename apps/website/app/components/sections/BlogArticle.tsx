@@ -80,8 +80,10 @@ export function BlogArticle({frontmatter, children}: BlogArticleProps) {
       )}
 
       {/* Content */}
-      <div className="px-4 pt-8 pb-16 max-w-2xl mx-auto md:px-0 md:pt-12 md:pb-20">
-        <div className="prose-wakey font-body text-paragraph">{children}</div>
+      <div className="px-8 pt-8 pb-16 max-w-xl mx-auto md:px-0 md:pt-12 md:pb-20">
+        <div className="prose-wakey font-display text-paragraph">
+          {children}
+        </div>
 
         {/* Back to blog */}
         <div className="mt-12 pt-8 border-t border-text/20">

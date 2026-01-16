@@ -25,7 +25,7 @@ export default function BlogIndex({loaderData}: Route.ComponentProps) {
     <div className="bg-sand">
       <header className="pt-24 px-4 pb-4 md:pt-36 md:px-8 md:pb-6">
         <h1 className="text-h1 font-display">Blog</h1>
-        <p className="mt-4 max-w-prose font-body text-paragraph text-text/70">
+        <p className="mt-4 max-w-prose font-display text-paragraph text-text/70">
           Stories, tips, and insights about natural personal care and
           sustainable living.
         </p>
@@ -71,7 +71,7 @@ function ArticleCard({
           <div className="flex items-center gap-2 text-small text-text/60">
             <time dateTime={article.publishedAt}>{publishedAt}</time>
           </div>
-          <p className="text-paragraph text-text/75 font-body">
+          <p className="text-paragraph text-text/75 font-display">
             {article.description}
           </p>
         </div>
