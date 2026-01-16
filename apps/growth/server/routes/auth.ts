@@ -7,9 +7,9 @@ import {users, sessions, magicLinkTokens} from '../db/schema';
 import {eq, and, gt, isNull} from 'drizzle-orm';
 import {sendMagicLinkEmail} from '../services/resend';
 import {authMiddleware} from '../middleware/auth';
-import type {Env} from '../index';
+import type {AppVariables, Env} from '../index';
 
-const authRoutes = new Hono<{Bindings: Env}>();
+const authRoutes = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
 // Allowed emails (whitelist)
 const ALLOWED_EMAILS = ['bd@askphill.com', 'phill@askphill.com'];

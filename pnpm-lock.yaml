@@ -34,13 +34,13 @@ importers:
         version: 0.4.3(hono@4.11.4)(zod@3.25.76)
       '@tanstack/react-query':
         specifier: ^5.62.0
-        version: 5.90.18(react@19.2.3)
+        version: 5.90.18(react@18.3.1)
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
       drizzle-orm:
         specifier: ^0.38.3
-        version: 0.38.4(@cloudflare/workers-types@4.20260116.0)(@types/better-sqlite3@7.6.13)(@types/react@19.2.8)(better-sqlite3@11.10.0)(react@19.2.3)
+        version: 0.38.4(@cloudflare/workers-types@4.20260116.0)(@types/better-sqlite3@7.6.13)(@types/react@18.3.27)(better-sqlite3@11.10.0)(react@18.3.1)
       googleapis:
         specifier: ^144.0.0
         version: 144.0.0
@@ -48,20 +48,20 @@ importers:
         specifier: ^4.6.0
         version: 4.11.4
       react:
-        specifier: ^19.0.0
-        version: 19.2.3
+        specifier: 18.3.1
+        version: 18.3.1
       react-dom:
-        specifier: ^19.0.0
-        version: 19.2.3(react@19.2.3)
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
       react-markdown:
         specifier: ^10.1.0
-        version: 10.1.0(@types/react@19.2.8)(react@19.2.3)
+        version: 10.1.0(@types/react@18.3.27)(react@18.3.1)
       react-router-dom:
         specifier: ^7.1.0
-        version: 7.9.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 7.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       resend:
         specifier: ^4.0.0
-        version: 4.8.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 4.8.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.6.0
         version: 2.6.0
@@ -76,11 +76,11 @@ importers:
         specifier: ^4.1.0
         version: 4.1.18(vite@6.4.1(@types/node@25.0.5)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
       '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.8
+        specifier: ^18.2.22
+        version: 18.3.27
       '@types/react-dom':
-        specifier: ^19.0.0
-        version: 19.2.3(@types/react@19.2.8)
+        specifier: ^18.2.7
+        version: 18.3.7(@types/react@18.3.27)
       '@vitejs/plugin-react':
         specifier: ^4.3.0
         version: 4.7.0(vite@6.4.1(@types/node@25.0.5)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
@@ -2549,16 +2549,8 @@ packages:
     peerDependencies:
       '@types/react': ^18.0.0
 
-  '@types/react-dom@19.2.3':
-    resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
-    peerDependencies:
-      '@types/react': ^19.2.0
-
   '@types/react@18.3.27':
     resolution: {integrity: sha512-cisd7gxkzjBKU2GgdYrTdtQx1SORymWyaAFhaxQPK9bYO9ot3Y5OikQRvY0VYQtvwjeQnizCINJAenh/V7MK2w==}
-
-  '@types/react@19.2.8':
-    resolution: {integrity: sha512-3MbSL37jEchWZz2p2mjntRZtPt837ij10ApxKfgmXCTuHWagYg7iA5bqPw6C8BMPfwidlvfPI/fxOc42HLhcyg==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -5381,10 +5373,6 @@ packages:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
 
-  react@19.2.3:
-    resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
-    engines: {node: '>=0.10.0'}
-
   readable-stream@3.6.2:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
@@ -8081,12 +8069,12 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@react-email/render@1.1.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@react-email/render@1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       html-to-text: 9.0.5
       prettier: 3.7.4
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
       react-promise-suspense: 0.3.4
 
   '@react-router/dev@7.9.2(@types/node@25.0.5)(jiti@2.6.1)(lightningcss@1.30.2)(react-router@7.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tsx@4.21.0)(typescript@5.9.3)(vite@6.4.1(@types/node@25.0.5)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))(wrangler@3.114.17(@cloudflare/workers-types@4.20260116.0))(yaml@2.8.2)':
@@ -8412,10 +8400,10 @@ snapshots:
 
   '@tanstack/query-core@5.90.18': {}
 
-  '@tanstack/react-query@5.90.18(react@19.2.3)':
+  '@tanstack/react-query@5.90.18(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 5.90.18
-      react: 19.2.3
+      react: 18.3.1
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -8551,17 +8539,9 @@ snapshots:
     dependencies:
       '@types/react': 18.3.27
 
-  '@types/react-dom@19.2.3(@types/react@19.2.8)':
-    dependencies:
-      '@types/react': 19.2.8
-
   '@types/react@18.3.27':
     dependencies:
       '@types/prop-types': 15.7.15
-      csstype: 3.2.3
-
-  '@types/react@19.2.8':
-    dependencies:
       csstype: 3.2.3
 
   '@types/trusted-types@2.0.7': {}
@@ -9494,13 +9474,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.38.4(@cloudflare/workers-types@4.20260116.0)(@types/better-sqlite3@7.6.13)(@types/react@19.2.8)(better-sqlite3@11.10.0)(react@19.2.3):
+  drizzle-orm@0.38.4(@cloudflare/workers-types@4.20260116.0)(@types/better-sqlite3@7.6.13)(@types/react@18.3.27)(better-sqlite3@11.10.0)(react@18.3.1):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20260116.0
       '@types/better-sqlite3': 7.6.13
-      '@types/react': 19.2.8
+      '@types/react': 18.3.27
       better-sqlite3: 11.10.0
-      react: 19.2.3
+      react: 18.3.1
 
   dset@3.1.4: {}
 
@@ -11893,25 +11873,20 @@ snapshots:
       scheduler: 0.27.0
     optional: true
 
-  react-dom@19.2.3(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      scheduler: 0.27.0
-
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
 
-  react-markdown@10.1.0(@types/react@19.2.8)(react@19.2.3):
+  react-markdown@10.1.0(@types/react@18.3.27)(react@18.3.1):
     dependencies:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
-      '@types/react': 19.2.8
+      '@types/react': 18.3.27
       devlop: 1.1.0
       hast-util-to-jsx-runtime: 2.3.6
       html-url-attributes: 3.0.1
       mdast-util-to-hast: 13.2.1
-      react: 19.2.3
+      react: 18.3.1
       remark-parse: 11.0.0
       remark-rehype: 11.1.2
       unified: 11.0.5
@@ -11936,12 +11911,6 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-router: 7.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  react-router-dom@7.9.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-      react-router: 7.9.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-
   react-router@7.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       cookie: 1.1.1
@@ -11958,19 +11927,9 @@ snapshots:
     optionalDependencies:
       react-dom: 19.2.3(react@18.3.1)
 
-  react-router@7.9.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      cookie: 1.1.1
-      react: 19.2.3
-      set-cookie-parser: 2.7.2
-    optionalDependencies:
-      react-dom: 19.2.3(react@19.2.3)
-
   react@18.3.1:
     dependencies:
       loose-envify: 1.4.0
-
-  react@19.2.3: {}
 
   readable-stream@3.6.2:
     dependencies:
@@ -12084,9 +12043,9 @@ snapshots:
 
   require-directory@2.1.1: {}
 
-  resend@4.8.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  resend@4.8.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@react-email/render': 1.1.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@react-email/render': 1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -12222,7 +12181,8 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  scheduler@0.27.0: {}
+  scheduler@0.27.0:
+    optional: true
 
   scuid@1.1.0: {}
 

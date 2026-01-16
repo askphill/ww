@@ -6,7 +6,7 @@ import {opportunities, opportunityInsights, gscQueries} from '../db/schema';
 import {analyzeOpportunities} from '../analyzers/opportunities';
 import {authMiddleware} from '../middleware/auth';
 import {desc, eq, sql} from 'drizzle-orm';
-import type {Env} from '../index';
+import type {AppVariables, Env} from '../index';
 import {fetchWebsiteContent} from '../services/website';
 import {
   analyzeOpportunitiesWithAI,
@@ -15,7 +15,10 @@ import {
   type GscQueryData,
 } from '../services/gemini';
 
-const opportunitiesRoutes = new Hono<{Bindings: Env}>();
+const opportunitiesRoutes = new Hono<{
+  Bindings: Env;
+  Variables: AppVariables;
+}>();
 
 // All opportunities routes require authentication
 opportunitiesRoutes.use('*', authMiddleware);

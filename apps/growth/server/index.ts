@@ -4,6 +4,7 @@ import {logger} from 'hono/logger';
 import {authRoutes} from './routes/auth';
 import {gscRoutes} from './routes/gsc';
 import {opportunitiesRoutes} from './routes/opportunities';
+import type {AuthUser} from './middleware/auth';
 
 export interface Env {
   DB: D1Database;
@@ -18,7 +19,11 @@ export interface Env {
   VITE_APP_URL: string;
 }
 
-const app = new Hono<{Bindings: Env}>();
+export interface AppVariables {
+  user: AuthUser;
+}
+
+const app = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
 // Middleware
 app.use('*', logger());

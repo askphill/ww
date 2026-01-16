@@ -3,7 +3,7 @@ import {getCookie} from 'hono/cookie';
 import {createDb} from '../db';
 import {sessions, users} from '../db/schema';
 import {eq, and, gt} from 'drizzle-orm';
-import type {Env} from '../index';
+import type {AppVariables, Env} from '../index';
 
 export interface AuthUser {
   id: string;
@@ -11,7 +11,7 @@ export interface AuthUser {
 }
 
 export async function authMiddleware(
-  c: Context<{Bindings: Env}>,
+  c: Context<{Bindings: Env; Variables: AppVariables}>,
   next: Next,
 ): Promise<Response | void> {
   const sessionId = getCookie(c, 'session');

@@ -6,9 +6,9 @@ import {gscQueries} from '../db/schema';
 import {fetchGscQueries} from '../services/gsc';
 import {authMiddleware} from '../middleware/auth';
 import {desc, sql} from 'drizzle-orm';
-import type {Env} from '../index';
+import type {AppVariables, Env} from '../index';
 
-const gscRoutes = new Hono<{Bindings: Env}>();
+const gscRoutes = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
 // All GSC routes require authentication
 gscRoutes.use('*', authMiddleware);
