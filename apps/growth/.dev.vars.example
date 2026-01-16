@@ -1,0 +1,15 @@
+# Google Search Console
+GSC_CLIENT_ID=
+GSC_CLIENT_SECRET=
+GSC_REFRESH_TOKEN=
+GSC_SITE_URL=https://www.wakey.care
+
+# Google Gemini
+GEMINI_API_KEY=
+
+# Resend (Email Auth)
+RESEND_API_KEY=
+AUTH_SECRET=
+
+# App
+VITE_APP_URL=http://localhost:8787

@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**"]
+      "outputs": ["dist/**", "build/**", ".wrangler/**"]
     },
     "dev": {
       "cache": false,
@@ -12,21 +12,6 @@
     "lint": {},
     "typecheck": {
       "dependsOn": ["^build"]
-    },
-    "fetch": {
-      "cache": false
-    },
-    "analyze": {
-      "cache": false
-    },
-    "generate": {
-      "cache": false
-    },
-    "track": {
-      "cache": false
-    },
-    "sync": {
-      "cache": false
     }
   }
 }

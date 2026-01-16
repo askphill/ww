@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/schemas/config.schema.json",
+  "name": "wakey-growth",
+  "main": "server/index.ts",
+  "compatibility_date": "2024-12-18",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // D1 Database binding
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "wakey-growth",
+      "database_id": "placeholder-create-with-wrangler-d1-create",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ],
+
+  // Static assets (React client build)
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS"
+  },
+
+  // Environment variables (set in dashboard or .dev.vars)
+  "vars": {
+    "VITE_APP_URL": "https://growth.wakey.care"
+  }
+}
