@@ -12,7 +12,7 @@ import type {AppVariables, Env} from '../index';
 const authRoutes = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
 // Allowed emails (whitelist)
-const ALLOWED_EMAILS = ['bd@askphill.com', 'phill@askphill.com'];
+const ALLOWED_EMAILS = ['paulveen1@gmail.com'];
 
 function generateId(): string {
   return crypto.randomUUID();
