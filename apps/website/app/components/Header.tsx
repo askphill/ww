@@ -8,6 +8,7 @@ import {
   LogoSmall,
   BagIcon,
   NotificationIcon,
+  // AiIcon,
 } from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
 import {NotificationDropdown} from '~/components/NotificationDropdown';
@@ -55,6 +56,13 @@ export function Header({cart, inline = false}: HeaderProps) {
     });
   };
 
+  // const handleAiOverlayToggle = () => {
+  //   setIsAiOverlayOpen(true);
+  //   // Close other dropdowns when opening AI overlay
+  //   setIsMenuOpen(false);
+  //   setIsNotificationsOpen(false);
+  // };
+
   const closeAiOverlay = () => {
     setIsAiOverlayOpen(false);
   };
@@ -62,19 +70,19 @@ export function Header({cart, inline = false}: HeaderProps) {
   const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
 
   // Handle Cmd+A keyboard shortcut to open AI overlay
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.metaKey && event.key === 'a' && !isAiOverlayOpen) {
-        event.preventDefault();
-        setIsAiOverlayOpen(true);
-        setIsMenuOpen(false);
-        setIsNotificationsOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isAiOverlayOpen]);
+  // useEffect(() => {
+  //   const handleKeyDown = (event: KeyboardEvent) => {
+  //     if (event.metaKey && event.key === 'a' && !isAiOverlayOpen) {
+  //       event.preventDefault();
+  //       setIsAiOverlayOpen(true);
+  //       setIsMenuOpen(false);
+  //       setIsNotificationsOpen(false);
+  //     }
+  //   };
+  //
+  //   document.addEventListener('keydown', handleKeyDown);
+  //   return () => document.removeEventListener('keydown', handleKeyDown);
+  // }, [isAiOverlayOpen]);
 
   // Handle dropdown side effects: escape key and body scroll lock
   useEffect(() => {
@@ -152,6 +160,8 @@ export function Header({cart, inline = false}: HeaderProps) {
             <LogoSmall className="h-6 md:h-7" />
           </Link>
           {/* Right side: Cart */}
+          {/* TODO: Re-enable AI button when ready */}
+          {/* <AiButton onClick={handleAiOverlayToggle} /> */}
           <div className="flex items-center gap-0.5 justify-self-end">
             <Suspense fallback={<CartButton count={0} onNavigate={closeAll} />}>
               <Await resolve={cart}>
@@ -277,6 +287,25 @@ function NotificationButton({
     </button>
   );
 }
+
+// function AiButton({onClick}: {onClick: () => void}) {
+//   return (
+//     <button
+//       type="button"
+//       onClick={onClick}
+//       aria-label="AI assistant"
+//       className="
+//         rounded-full w-8 h-8 md:w-12 md:h-12
+//         flex items-center justify-center
+//         hover-scale
+//         transition-transform
+//         cursor-pointer
+//       "
+//     >
+//       <AiIcon className="w-6" />
+//     </button>
+//   );
+// }
 
 function CartButton({
   count,
