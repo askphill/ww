@@ -15,48 +15,72 @@ type StoryStep =
   | {type: 'logo'; duration: number};
 
 const storySteps: StoryStep[] = [
-  {type: 'text', content: 'Hi there!', duration: 1500},
-  {type: 'text', content: 'First time here?', duration: 1500},
-  {type: 'text', content: 'Let me show you around.', duration: 2000},
-  {type: 'images', content: '', duration: 3000},
-  {type: 'text', content: 'Our mission is to make the world a better place.', duration: 2500},
-  {type: 'text', content: 'One morning at a time.', duration: 2000},
-  {type: 'text', content: 'But enough about me, let me get to know you!', duration: 2500},
+  {type: 'text', content: "Join the Good Morning Movement. Let's find your *morning* *personality.*", duration: 1500, className: 'text-h1 font-display'},
+  {type: 'images', content: '', duration: 2500},
+  {type: 'text', content: "Mornings are *messy,* *chaotic,* and *alive.* Let's reinvent yours with *0%* *bullshit.*", duration: 2000, className: 'text-h2 font-body'},
+  {type: 'text', content: 'Are you ready? Show us your *morning* *face.*', duration: 1500, className: 'text-h2 font-body italic'},
 ];
 
 // Questionnaire data
 type Question =
-  | {type: 'choice'; question: string; options: string[]}
-  | {type: 'text'; question: string; placeholder: string};
+  | {type: 'choice'; key: string; question: string; options: string[]}
+  | {type: 'text'; key: string; question: string; placeholder: string};
+
+// Morning type mapping from first question answer index
+const morningTypes = [
+  {emoji: '☀️', label: 'Early Bird'},
+  {emoji: '☕', label: 'Revolutionist'},
+  {emoji: '😴', label: 'Snoozer'},
+  {emoji: '🏃‍♂️', label: 'Sprinter'},
+];
 
 const questions: Question[] = [
   {
     type: 'choice',
-    question: 'How would you rate your morning routine?',
-    options: ['Love it', "It's okay", 'Needs work', 'What routine?'],
+    key: 'morningType',
+    question: 'How does your alarm usually find you?',
+    options: [
+      "☀️ The Early Bird — I'm up and energized before the sun.",
+      '☕ The Revolutionist — Serving revolution with a side of coffee.',
+      '😴 The Snoozer — My morning officially starts at 11:00 AM.',
+      '🏃‍♂️ The Sprinter — Life is short, and my mornings are shorter.',
+    ],
   },
   {
     type: 'choice',
-    question: 'How much time do you have in the morning?',
-    options: ['5 minutes max', '10-15 minutes', '20+ minutes', 'It varies'],
+    key: 'soundtrack',
+    question: "What's the soundtrack to your morning face?",
+    options: [
+      '🎶 A curated morning playlist.',
+      '🐦 Just the sound of birds.',
+      "📢 News, podcasts, or the 'Voice of Now.'",
+      '🤫 Silence is the only peace I get.',
+    ],
   },
   {
     type: 'choice',
-    question: 'How active is your typical day?',
-    options: ['Desk warrior', 'Moderately active', 'Always moving', 'Gym is life'],
+    key: 'values',
+    question: 'When it comes to your skin, what are you most protective of?',
+    options: [
+      '🌍 The Planet — No plastic, no waste.',
+      '🐰 The Animals — Cruelty-free and vegan only.',
+      '🧬 The Ingredients — No hormone-disruptors or heavy metals.',
+      '✨ The Results — I just want it to work and feel good.',
+    ],
   },
   {
     type: 'choice',
-    question: 'What matters most to you?',
-    options: ['Natural ingredients', 'Long-lasting', 'Gentle on skin', 'Eco-friendly'],
-  },
-  {
-    type: 'choice',
-    question: "Biggest frustration with products you've tried?",
-    options: ["Don't last long enough", 'Irritate my skin', 'Too many chemicals', "Can't find what works"],
+    key: 'habitView',
+    question: 'How do you view your personal care routine?',
+    options: [
+      "🛠️ It's a basic set of actions to get energized.",
+      "🧘 It's my 'me-time'—moments are as long as I make them.",
+      "♻️ It's my way of making the world a better place.",
+    ],
   },
   {
     type: 'text',
+    key: 'name',
     question: "Oh and I almost forgot, what's your name?",
     placeholder: 'Type your name...',
   },
@@ -87,16 +111,17 @@ const wordVariants = {
   }),
   exit: (i: number) => ({
     opacity: 0,
+    y: -30,
     transition: {
       delay: i * 0.06,
-      duration: 0.2,
+      duration: 0.25,
       ease: 'easeOut' as const,
     },
   }),
 };
 
-// Card stack positions - each card gets a fixed offset for stacking effect
-const cardStackPositions = [
+// Card stack positions - mobile (compact stack)
+const mobileCardPositions = [
   {x: 0, y: 0, rotate: -3},
   {x: 8, y: -4, rotate: 2},
   {x: -6, y: -8, rotate: -1},
@@ -105,7 +130,18 @@ const cardStackPositions = [
   {x: 4, y: -20, rotate: 1},
 ];
 
-const imageVariants = {
+// Card stack positions - desktop (half-circle fan) - values scale with vw sizing
+const desktopCardPositions = [
+  {x: '-28vw', y: '8vw', rotate: -18},
+  {x: '-16vw', y: '2vw', rotate: -10},
+  {x: '-5vw', y: '-2vw', rotate: -3},
+  {x: '5vw', y: '-2vw', rotate: 3},
+  {x: '16vw', y: '2vw', rotate: 10},
+  {x: '28vw', y: '8vw', rotate: 18},
+];
+
+// Factory to create image variants with responsive positions
+const createImageVariants = (isDesktop: boolean) => ({
   hidden: () => ({
     opacity: 0,
     y: '100vh', // Start from bottom of screen
@@ -113,7 +149,8 @@ const imageVariants = {
     rotate: 15,
   }),
   visible: (i: number) => {
-    const pos = cardStackPositions[i] || {x: 0, y: 0, rotate: 0};
+    const positions = isDesktop ? desktopCardPositions : mobileCardPositions;
+    const pos = positions[i] || {x: 0, y: 0, rotate: 0};
     return {
       opacity: 1,
       x: pos.x,
@@ -135,12 +172,12 @@ const imageVariants = {
     scale: 0.8,
     rotate: -5,
     transition: {
-      delay: (flyingImages.length - 1 - i) * 0.05,
+      delay: i * 0.08,
       duration: 0.5,
       ease: 'easeIn' as const,
     },
   }),
-};
+});
 
 const optionVariants = {
   hidden: {opacity: 0, y: 20},
@@ -192,11 +229,25 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
   const [showStoryContent, setShowStoryContent] = useState(false);
 
   // Questionnaire state
-  const [phase, setPhase] = useState<'story' | 'questionnaire' | 'complete'>('story');
+  const [phase, setPhase] = useState<'story' | 'questionnaire' | 'images-interstitial' | 'complete'>('story');
   const [questionIndex, setQuestionIndex] = useState(0);
   const [showQuestion, setShowQuestion] = useState(false);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [morningTypeIndex, setMorningTypeIndex] = useState<number | null>(null);
   const [nameInput, setNameInput] = useState('');
+  const [showImagesInterstitial, setShowImagesInterstitial] = useState(false);
+
+  // Responsive detection for card layout
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  const imageVariants = createImageVariants(isDesktop);
 
   const currentStory = storySteps[storyIndex];
   const currentQuestion = questions[questionIndex];
@@ -220,12 +271,22 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
   }, [storyIndex]);
 
   // Handle answer selection
-  const selectAnswer = useCallback((answer: string) => {
-    setAnswers((prev) => ({...prev, [questionIndex]: answer}));
+  const selectAnswer = useCallback((answer: string, answerIndex?: number) => {
+    const currentQ = questions[questionIndex];
+    setAnswers((prev) => ({...prev, [currentQ.key]: answer}));
     setShowQuestion(false);
 
+    // If this is the first question (morningType), save the index for the card
+    if (currentQ.key === 'morningType' && answerIndex !== undefined) {
+      setMorningTypeIndex(answerIndex);
+    }
+
     setTimeout(() => {
-      if (questionIndex < questions.length - 1) {
+      // After Q1 (morningType), show images interstitial
+      if (currentQ.key === 'morningType') {
+        setPhase('images-interstitial');
+        setShowImagesInterstitial(true);
+      } else if (questionIndex < questions.length - 1) {
         setQuestionIndex((prev) => prev + 1);
         setShowQuestion(true);
       } else {
@@ -252,7 +313,9 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
       setQuestionIndex(0);
       setShowQuestion(false);
       setAnswers({});
+      setMorningTypeIndex(null);
       setNameInput('');
+      setShowImagesInterstitial(false);
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -291,6 +354,22 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
 
     return () => clearTimeout(timer);
   }, [phase, showStoryContent, uiStep, currentStory.duration, advanceStory]);
+
+  // Auto-advance from images interstitial (2000ms as per flow)
+  useEffect(() => {
+    if (phase !== 'images-interstitial' || !showImagesInterstitial) return;
+
+    const timer = setTimeout(() => {
+      setShowImagesInterstitial(false);
+      setTimeout(() => {
+        setPhase('questionnaire');
+        setQuestionIndex((prev) => prev + 1);
+        setShowQuestion(true);
+      }, 500);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [phase, showImagesInterstitial]);
 
   // Handle escape key to close
   useEffect(() => {
@@ -351,25 +430,31 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
               className={`${'className' in currentStory && currentStory.className ? currentStory.className : 'text-h1'} font-display text-black flex flex-wrap justify-center gap-x-4 gap-y-2 max-w-4xl text-center`}
               aria-label={currentStory.content}
             >
-              {currentStory.content.split(' ').map((word, i) => (
-                <motion.span
-                  key={i}
-                  custom={i}
-                  variants={wordVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  {word}
-                </motion.span>
-              ))}
+              {currentStory.content.split(' ').map((word, i) => {
+                const isEmphasized = word.startsWith('*') && word.endsWith('*');
+                const displayWord = isEmphasized ? word.slice(1, -1) : word;
+                return (
+                  <motion.span
+                    key={i}
+                    custom={i}
+                    variants={wordVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className={isEmphasized ? 'italic' : ''}
+                  >
+                    {displayWord}
+                  </motion.span>
+                );
+              })}
             </motion.p>
           )}
 
           {showStoryContent && currentStory.type === 'images' && (
             <motion.div
               key="images"
-              className="relative w-64 h-64 md:w-80 md:h-80"
+              className="relative flex items-center justify-center"
+              style={{width: isDesktop ? '80vw' : '200px', height: isDesktop ? '45vw' : '280px'}}
             >
               {flyingImages.map((src, i) => (
                 <motion.div
@@ -379,8 +464,12 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute inset-0 rounded-card overflow-hidden shadow-2xl"
-                  style={{zIndex: i}}
+                  className="absolute rounded-card overflow-hidden shadow-2xl"
+                  style={{
+                    zIndex: i,
+                    width: isDesktop ? '16vw' : '220px',
+                    height: isDesktop ? '20vw' : '280px',
+                  }}
                 >
                   <img
                     src={src}
@@ -406,6 +495,38 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
               }}
             >
               <WakeyLogo className="w-64 md:w-96 h-auto" color="#1A1A1A" />
+            </motion.div>
+          )}
+
+          {/* Images interstitial after Q1 */}
+          {phase === 'images-interstitial' && showImagesInterstitial && (
+            <motion.div
+              key="images-interstitial"
+              className="relative flex items-center justify-center"
+              style={{width: isDesktop ? '80vw' : '200px', height: isDesktop ? '45vw' : '280px'}}
+            >
+              {flyingImages.map((src, i) => (
+                <motion.div
+                  key={i}
+                  custom={i}
+                  variants={imageVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="absolute rounded-card overflow-hidden shadow-2xl"
+                  style={{
+                    zIndex: i,
+                    width: isDesktop ? '16vw' : '220px',
+                    height: isDesktop ? '20vw' : '280px',
+                  }}
+                >
+                  <img
+                    src={src}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+              ))}
             </motion.div>
           )}
 
@@ -436,7 +557,7 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
                       animate="visible"
                       exit="exit"
                       type="button"
-                      onClick={() => selectAnswer(option)}
+                      onClick={() => selectAnswer(option, i)}
                       className="w-full py-4 px-6 bg-white rounded-card text-paragraph font-body text-black text-left hover:bg-black hover:text-white transition-colors cursor-pointer shadow-sm"
                     >
                       {option}
@@ -476,11 +597,11 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
             </motion.div>
           )}
 
-          {/* Completion message */}
+          {/* Completion message with Morning Type card */}
           {phase === 'complete' && (
             <motion.div
               key="complete"
-              className="flex flex-col items-center gap-6 text-center"
+              className="flex flex-col items-center gap-8 text-center"
               initial={{opacity: 0, y: 40}}
               animate={{opacity: 1, y: 0}}
               transition={{
@@ -489,19 +610,44 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
                 damping: 25,
               }}
             >
-              <h2 className="text-h1 font-display text-black">
-                Nice to meet you{answers[5] ? `, ${answers[5]}` : ''}!
-              </h2>
-              <p className="text-paragraph font-body text-black/70 max-w-md">
-                We've got just the right products for you. Let's start your journey to better mornings.
-              </p>
-              <button
-                type="button"
-                onClick={onClose}
-                className="mt-4 py-4 px-8 bg-black text-white rounded-card text-paragraph font-body hover:bg-black/80 transition-colors cursor-pointer"
+              {/* Morning Type Preview Card */}
+              <motion.div
+                className="bg-white rounded-card p-8 md:p-12 shadow-xl max-w-sm w-full"
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{delay: 0.2, type: 'spring', stiffness: 300, damping: 25}}
               >
-                Let's go
-              </button>
+                {/* Emoji and Morning Type */}
+                {morningTypeIndex !== null && morningTypes[morningTypeIndex] && (
+                  <div className="mb-6">
+                    <span className="text-display block mb-2">
+                      {morningTypes[morningTypeIndex].emoji}
+                    </span>
+                    <h3 className="text-h3 font-display text-black">
+                      {morningTypes[morningTypeIndex].label}
+                    </h3>
+                  </div>
+                )}
+
+                {/* Personalized greeting */}
+                <p className="text-s2 font-display text-black mb-4">
+                  Nice to meet you{answers.name ? `, ${answers.name}` : ''}!
+                </p>
+
+                {/* Community welcome */}
+                <p className="text-paragraph font-body text-black/70 mb-6">
+                  You're now part of the Good Morning Movement. Are you ready?
+                </p>
+
+                {/* CTA Button */}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-full py-4 px-8 bg-black text-white rounded-card text-paragraph font-body hover:bg-black/80 transition-colors cursor-pointer"
+                >
+                  Let's go
+                </button>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
