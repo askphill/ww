@@ -3,17 +3,20 @@ import Home from '~/content/home.mdx';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'Wakey | Feel-Good Morning Rituals'},
+    {title: 'Wakey | Natural Morning Essentials for a Feel-Good Start'},
     {
       name: 'description',
       content:
-        'Start your day right with Wakey natural deodorant. Aluminum-free, baking soda-free, and made with safe ingredients for all-day freshness.',
+        'Wakey crafts upbeat, zero-fuss morning essentials designed to spark joy. Shop our natural deodorant and other feel-good products!',
     },
-    {property: 'og:title', content: 'Wakey | Feel-Good Morning Rituals'},
+    {
+      property: 'og:title',
+      content: 'Wakey | Natural Morning Essentials for a Feel-Good Start',
+    },
     {
       property: 'og:description',
       content:
-        'Start your day right with Wakey natural deodorant. Aluminum-free, baking soda-free, and made with safe ingredients for all-day freshness.',
+        'Wakey crafts upbeat, zero-fuss morning essentials designed to spark joy. Shop our natural deodorant and other feel-good products!',
     },
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: 'https://www.wakey.care'},
@@ -25,11 +28,14 @@ export const meta: Route.MetaFunction = () => {
     {property: 'og:image:width', content: '1200'},
     {property: 'og:image:height', content: '630'},
     {name: 'twitter:card', content: 'summary_large_image'},
-    {name: 'twitter:title', content: 'Wakey | Feel-Good Morning Rituals'},
+    {
+      name: 'twitter:title',
+      content: 'Wakey | Natural Morning Essentials for a Feel-Good Start',
+    },
     {
       name: 'twitter:description',
       content:
-        'Start your day right with Wakey natural deodorant. Aluminum-free, baking soda-free, and made with safe ingredients for all-day freshness.',
+        'Wakey crafts upbeat, zero-fuss morning essentials designed to spark joy. Shop our natural deodorant and other feel-good products!',
     },
     {
       name: 'twitter:image',
