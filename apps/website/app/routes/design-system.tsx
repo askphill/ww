@@ -268,83 +268,110 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             {/* Type Scale */}
             <div>
               <h3 className="text-h3 font-display mb-6">Type Scale</h3>
-              <div className="space-y-6">
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-display · 2.56rem → 8.75rem
-                  </p>
-                  <p className="text-display font-display leading-tight">
-                    Display
-                  </p>
+
+              {/* Column Headers */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pb-4 border-b border-black/20 mb-6">
+                <div className="text-small font-display opacity-60">Class</div>
+                <div className="text-small font-display opacity-60">Mobile</div>
+                <div className="text-small font-display opacity-60 hidden md:block">
+                  Desktop
                 </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-h1 · 2.5rem → 5rem
-                  </p>
-                  <p className="text-h1 font-display leading-tight">
-                    Heading 1
-                  </p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-h2 · 1.88rem → 3.75rem
-                  </p>
-                  <p className="text-h2 font-display leading-tight">
-                    Heading 2
-                  </p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-h3 · 1.63rem → 2.5rem
-                  </p>
-                  <p className="text-h3 font-display leading-tight">
-                    Heading 3
-                  </p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-s1 · 1.5rem → 1.88rem
-                  </p>
-                  <p className="text-s1 font-display">Subtitle 1</p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-s2 · 1.13rem → 1.44rem
-                  </p>
-                  <p className="text-s2 font-display">Subtitle 2</p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-paragraph (base) · 1rem → 1.25rem
-                  </p>
-                  <p className="text-paragraph font-display">
-                    Paragraph text for body content and longer form reading.
-                  </p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-body-small · 0.81rem → 1.06rem
-                  </p>
-                  <p className="text-body-small font-display">
-                    Body small for secondary content.
-                  </p>
-                </div>
-                <div className="border-b border-black/10 pb-4">
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-small · 0.75rem → 0.88rem
-                  </p>
-                  <p className="text-small font-display">
-                    Small text for captions and fine print.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-small font-body opacity-60 mb-1">
-                    text-label · 0.88rem → 0.94rem
-                  </p>
-                  <p className="text-label font-display">
-                    Label text for buttons and forms
-                  </p>
-                </div>
+              </div>
+
+              {/* Type Scale Rows */}
+              <div className="space-y-0">
+                {[
+                  {
+                    name: 'text-display',
+                    mobile: '2.56rem',
+                    desktop: '8.75rem',
+                    label: 'Display',
+                  },
+                  {
+                    name: 'text-h1',
+                    mobile: '2.5rem',
+                    desktop: '5rem',
+                    label: 'Heading 1',
+                  },
+                  {
+                    name: 'text-h2',
+                    mobile: '1.88rem',
+                    desktop: '3.75rem',
+                    label: 'Heading 2',
+                  },
+                  {
+                    name: 'text-h3',
+                    mobile: '1.63rem',
+                    desktop: '2.5rem',
+                    label: 'Heading 3',
+                  },
+                  {
+                    name: 'text-s1',
+                    mobile: '1.5rem',
+                    desktop: '1.88rem',
+                    label: 'Subtitle 1',
+                  },
+                  {
+                    name: 'text-s2',
+                    mobile: '1.13rem',
+                    desktop: '1.44rem',
+                    label: 'Subtitle 2',
+                  },
+                  {
+                    name: 'text-paragraph',
+                    mobile: '1rem',
+                    desktop: '1.25rem',
+                    label: 'Paragraph',
+                  },
+                  {
+                    name: 'text-body-small',
+                    mobile: '0.81rem',
+                    desktop: '1.06rem',
+                    label: 'Body small',
+                  },
+                  {
+                    name: 'text-small',
+                    mobile: '0.75rem',
+                    desktop: '0.88rem',
+                    label: 'Small',
+                  },
+                  {
+                    name: 'text-label',
+                    mobile: '0.88rem',
+                    desktop: '0.94rem',
+                    label: 'Label',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.name}
+                    className="grid grid-cols-2 md:grid-cols-3 gap-4 items-center py-6 border-b border-black/10"
+                  >
+                    <div>
+                      <code className="text-small bg-black/5 px-2 py-1 rounded font-body">
+                        {item.name}
+                      </code>
+                      <p className="text-small font-body opacity-60 mt-1">
+                        {item.mobile}
+                        <span className="hidden md:inline">
+                          {' '}
+                          / {item.desktop}
+                        </span>
+                      </p>
+                    </div>
+                    <div
+                      className="font-display leading-normal truncate"
+                      style={{fontSize: item.mobile}}
+                    >
+                      {item.label}
+                    </div>
+                    <div
+                      className="font-display leading-normal truncate hidden md:block"
+                      style={{fontSize: item.desktop}}
+                    >
+                      {item.label}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

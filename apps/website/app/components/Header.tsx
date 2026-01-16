@@ -267,6 +267,7 @@ function AiButton() {
         hover-scale
         transition-transform
         cursor-pointer
+        opacity-0
       "
     >
       <AiIcon className="w-6" />

@@ -286,7 +286,7 @@ function MobileCarousel({
   return (
     <div className={`relative flex-1 flex items-end pb-8 ${className || ''}`}>
       <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-        <div className="flex gap-4 px-4">
+        <div className="flex gap-4 pl-4">
           {images.map((image, index) => (
             <div key={index} className="flex-shrink-0 w-4/5 snap-center">
               <div className="aspect-3/4 overflow-hidden">
@@ -298,6 +298,8 @@ function MobileCarousel({
               </div>
             </div>
           ))}
+          {/* Spacer for end padding */}
+          <div className="flex-shrink-0 w-4" aria-hidden="true" />
         </div>
       </div>
     </div>
