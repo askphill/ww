@@ -69,20 +69,28 @@ export function Header({cart, inline = false}: HeaderProps) {
 
   const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
 
-  // Handle Cmd+A keyboard shortcut to open AI overlay
-  // useEffect(() => {
-  //   const handleKeyDown = (event: KeyboardEvent) => {
-  //     if (event.metaKey && event.key === 'a' && !isAiOverlayOpen) {
-  //       event.preventDefault();
-  //       setIsAiOverlayOpen(true);
-  //       setIsMenuOpen(false);
-  //       setIsNotificationsOpen(false);
-  //     }
-  //   };
-  //
-  //   document.addEventListener('keydown', handleKeyDown);
-  //   return () => document.removeEventListener('keydown', handleKeyDown);
-  // }, [isAiOverlayOpen]);
+  // Handle 'a' key shortcut to open AI overlay
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore if typing in an input or textarea
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+      if (event.key === 'a' && !isAiOverlayOpen && !isAnyDropdownOpen) {
+        setIsAiOverlayOpen(true);
+        setIsMenuOpen(false);
+        setIsNotificationsOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isAiOverlayOpen, isAnyDropdownOpen]);
 
   // Handle dropdown side effects: escape key and body scroll lock
   useEffect(() => {
