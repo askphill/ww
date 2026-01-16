@@ -12,13 +12,13 @@ export const meta: Route.MetaFunction = () => {
     {
       name: 'description',
       content:
-        'Shop all Wakey products. Natural deodorants and morning essentials made with safe, effective ingredients.',
+        'Welcome to the Wakey collection, where natural ingredients meet joyful mornings. Discover our carefully crafted products designed to make your daily routine brighter.',
     },
     {property: 'og:title', content: 'All Products | Wakey'},
     {
       property: 'og:description',
       content:
-        'Shop all Wakey products. Natural deodorants and morning essentials made with safe, effective ingredients.',
+        'Welcome to the Wakey collection, where natural ingredients meet joyful mornings. Discover our carefully crafted products designed to make your daily routine brighter.',
     },
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: 'https://www.wakey.care/collections/all'},
@@ -27,7 +27,7 @@ export const meta: Route.MetaFunction = () => {
     {
       name: 'twitter:description',
       content:
-        'Shop all Wakey products. Natural deodorants and morning essentials.',
+        'Welcome to the Wakey collection, where natural ingredients meet joyful mornings.',
     },
     {
       tagName: 'link',
@@ -69,7 +69,7 @@ export default function Collection() {
     <div className="flex flex-col">
       <PageHeader
         title="All Products"
-        subtitle="Explore our complete collection"
+        subtitle="Welcome to the Wakey collection, where natural ingredients meet joyful mornings. Discover our range of carefully crafted products designed to make your daily routine a little brighter, starting with our best-selling Natural Deodorant."
       />
       <section className="bg-sand p-4 pb-8 md:p-8 md:pb-12">
         <PaginatedResourceSection<CollectionItemFragment>
