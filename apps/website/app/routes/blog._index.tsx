@@ -7,7 +7,8 @@ export const meta: Route.MetaFunction = () => {
     {title: 'Blog | Wakey'},
     {
       name: 'description',
-      content: 'Read the latest articles about natural deodorant, sustainability, and morning routines.',
+      content:
+        'Read the latest articles about natural deodorant, sustainability, and morning routines.',
     },
   ];
 };
@@ -25,7 +26,8 @@ export default function BlogIndex({loaderData}: Route.ComponentProps) {
       <header className="pt-24 px-4 pb-4 md:pt-36 md:px-8 md:pb-6">
         <h1 className="text-h1 font-display">Blog</h1>
         <p className="mt-4 max-w-prose font-body text-paragraph text-text/70">
-          Stories, tips, and insights about natural personal care and sustainable living.
+          Stories, tips, and insights about natural personal care and
+          sustainable living.
         </p>
       </header>
       <div className="px-4 pt-8 pb-8 md:px-8 md:pt-12 md:pb-12">

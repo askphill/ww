@@ -52,7 +52,10 @@ export async function loader({request, context}: Route.LoaderArgs) {
         items: {
           articles: {nodes: []},
           pages: {nodes: []},
-          products: {nodes: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}},
+          products: {
+            nodes: [],
+            pageInfo: {hasNextPage: false, hasPreviousPage: false},
+          },
         },
       },
     };

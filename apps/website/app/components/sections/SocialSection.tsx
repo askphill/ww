@@ -237,7 +237,7 @@ function MouseTrail({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [imageOrder, setImageOrder] = useState<number[]>(() =>
-    initialImages.map((_, i) => i)
+    initialImages.map((_, i) => i),
   );
 
   const {
@@ -246,7 +246,12 @@ function MouseTrail({
     handleMouseLeave,
     handleMouseEnter,
     cycleOrder,
-  } = useMouseTrail(initialImages.length, lerpFactor, containerRef, setImageOrder);
+  } = useMouseTrail(
+    initialImages.length,
+    lerpFactor,
+    containerRef,
+    setImageOrder,
+  );
 
   return (
     <div

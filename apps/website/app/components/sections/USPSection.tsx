@@ -57,7 +57,10 @@ export function USPSection({items}: USPSectionProps) {
           className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
         >
           {items.map((item, index) => (
-            <div key={index} className="flex-none snap-center bg-blue overflow-hidden">
+            <div
+              key={index}
+              className="flex-none snap-center bg-blue overflow-hidden"
+            >
               <USPCard title={item.title} body={item.body} />
             </div>
           ))}

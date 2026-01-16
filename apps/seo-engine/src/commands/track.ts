@@ -1,10 +1,13 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import type { TrackOptions } from '../types/index.js';
-import { getDatabase } from '../db/schema.js';
-import { fetchGscDataForUrls } from '../services/gsc.js';
+import type {TrackOptions} from '../types/index.js';
+import {getDatabase} from '../db/schema.js';
+import {fetchGscDataForUrls} from '../services/gsc.js';
 
-export async function trackCommand(options: { all: boolean; period: string }): Promise<void> {
+export async function trackCommand(options: {
+  all: boolean;
+  period: string;
+}): Promise<void> {
   const spinner = ora('Loading published articles...').start();
 
   try {
@@ -17,14 +20,22 @@ export async function trackCommand(options: { all: boolean; period: string }): P
 
     // Get published articles
     const articles = db
-      .prepare(`
+      .prepare(
+        `
         SELECT id, slug, title, target_keyword, published_at
         FROM articles
         WHERE status = 'published'
         ${trackOptions.all ? '' : 'AND published_at >= date("now", "-30 days")'}
         ORDER BY published_at DESC
-      `)
-      .all() as Array<{ id: number; slug: string; title: string; target_keyword: string; published_at: string }>;
+      `,
+      )
+      .all() as Array<{
+      id: number;
+      slug: string;
+      title: string;
+      target_keyword: string;
+      published_at: string;
+    }>;
 
     if (articles.length === 0) {
       spinner.warn('No published articles found');
@@ -36,7 +47,10 @@ export async function trackCommand(options: { all: boolean; period: string }): P
     spinner.start('Fetching performance data from GSC...');
 
     const articleUrls = articles.map((a) => `/blog/${a.slug}`);
-    const performanceData = await fetchGscDataForUrls(articleUrls, trackOptions.period);
+    const performanceData = await fetchGscDataForUrls(
+      articleUrls,
+      trackOptions.period,
+    );
 
     // Store performance data
     const insertStmt = db.prepare(`
@@ -50,7 +64,13 @@ export async function trackCommand(options: { all: boolean; period: string }): P
       const articlePath = `/blog/${article.slug}`;
       const data = performanceData.get(articlePath);
       if (data) {
-        insertStmt.run(article.id, today, data.impressions, data.clicks, data.avgPosition);
+        insertStmt.run(
+          article.id,
+          today,
+          data.impressions,
+          data.clicks,
+          data.avgPosition,
+        );
       }
     }
 
@@ -62,7 +82,8 @@ export async function trackCommand(options: { all: boolean; period: string }): P
 
     for (const article of articles) {
       const perf = db
-        .prepare(`
+        .prepare(
+          `
           SELECT
             SUM(impressions) as total_impressions,
             SUM(clicks) as total_clicks,
@@ -70,21 +91,29 @@ export async function trackCommand(options: { all: boolean; period: string }): P
           FROM article_performance
           WHERE article_id = ?
           AND date >= date('now', '-' || ? || ' days')
-        `)
-        .get(article.id, trackOptions.period) as { total_impressions: number | null; total_clicks: number | null; avg_position: number | null } | undefined;
+        `,
+        )
+        .get(article.id, trackOptions.period) as
+        | {
+            total_impressions: number | null;
+            total_clicks: number | null;
+            avg_position: number | null;
+          }
+        | undefined;
 
       console.log(`\n  ${chalk.cyan(article.title)}`);
       console.log(`  ${chalk.dim(`/blog/${article.slug}`)}`);
 
       if (perf && perf.total_impressions !== null) {
-        const ctr = perf.total_clicks && perf.total_impressions
-          ? ((perf.total_clicks / perf.total_impressions) * 100).toFixed(2)
-          : '0';
+        const ctr =
+          perf.total_clicks && perf.total_impressions
+            ? ((perf.total_clicks / perf.total_impressions) * 100).toFixed(2)
+            : '0';
         console.log(
           `  Impressions: ${chalk.white(perf.total_impressions)} | ` +
-          `Clicks: ${chalk.green(perf.total_clicks ?? 0)} | ` +
-          `CTR: ${chalk.yellow(ctr + '%')} | ` +
-          `Avg Position: ${chalk.blue((perf.avg_position ?? 0).toFixed(1))}`
+            `Clicks: ${chalk.green(perf.total_clicks ?? 0)} | ` +
+            `CTR: ${chalk.yellow(ctr + '%')} | ` +
+            `Avg Position: ${chalk.blue((perf.avg_position ?? 0).toFixed(1))}`,
         );
       } else {
         console.log(chalk.dim('  No data available yet'));
@@ -94,7 +123,9 @@ export async function trackCommand(options: { all: boolean; period: string }): P
     db.close();
   } catch (error) {
     spinner.fail('Failed to track article performance');
-    console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
+    console.error(
+      chalk.red(error instanceof Error ? error.message : 'Unknown error'),
+    );
     process.exit(1);
   }
 }

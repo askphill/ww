@@ -1,10 +1,13 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import type { FetchOptions } from '../types/index.js';
-import { initializeDatabase } from '../db/schema.js';
-import { fetchGscData } from '../services/gsc.js';
+import type {FetchOptions} from '../types/index.js';
+import {initializeDatabase} from '../db/schema.js';
+import {fetchGscData} from '../services/gsc.js';
 
-export async function fetchCommand(options: { days: string; country: string }): Promise<void> {
+export async function fetchCommand(options: {
+  days: string;
+  country: string;
+}): Promise<void> {
   const spinner = ora('Initializing database...').start();
 
   try {
@@ -16,7 +19,9 @@ export async function fetchCommand(options: { days: string; country: string }): 
       country: options.country,
     };
 
-    spinner.start(`Fetching GSC data for ${fetchOptions.country} (last ${fetchOptions.days} days)...`);
+    spinner.start(
+      `Fetching GSC data for ${fetchOptions.country} (last ${fetchOptions.days} days)...`,
+    );
 
     const data = await fetchGscData(fetchOptions);
 
@@ -40,7 +45,7 @@ export async function fetchCommand(options: { days: string; country: string }): 
           row.impressions,
           row.ctr,
           row.position,
-          row.date
+          row.date,
         );
       }
     });
@@ -52,26 +57,34 @@ export async function fetchCommand(options: { days: string; country: string }): 
     // Show top queries
     console.log('\n' + chalk.bold('Top 10 queries by impressions:'));
     const topQueries = db
-      .prepare(`
+      .prepare(
+        `
         SELECT query, SUM(impressions) as total_impressions, AVG(position) as avg_position
         FROM gsc_queries
         WHERE country = ?
         GROUP BY query
         ORDER BY total_impressions DESC
         LIMIT 10
-      `)
-      .all(fetchOptions.country) as Array<{ query: string; total_impressions: number; avg_position: number }>;
+      `,
+      )
+      .all(fetchOptions.country) as Array<{
+      query: string;
+      total_impressions: number;
+      avg_position: number;
+    }>;
 
     topQueries.forEach((q, i) => {
       console.log(
-        `  ${i + 1}. ${chalk.cyan(q.query)} - ${q.total_impressions} impressions (avg pos: ${q.avg_position.toFixed(1)})`
+        `  ${i + 1}. ${chalk.cyan(q.query)} - ${q.total_impressions} impressions (avg pos: ${q.avg_position.toFixed(1)})`,
       );
     });
 
     db.close();
   } catch (error) {
     spinner.fail('Failed to fetch GSC data');
-    console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
+    console.error(
+      chalk.red(error instanceof Error ? error.message : 'Unknown error'),
+    );
     process.exit(1);
   }
 }

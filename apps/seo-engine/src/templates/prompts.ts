@@ -56,7 +56,10 @@ Output: Geef je antwoord als JSON in een codeblok met de volgende structuur:
 \`\`\``;
 }
 
-export function getArticlePrompt(topic: string, relatedProduct: RelatedProduct | null): string {
+export function getArticlePrompt(
+  topic: string,
+  relatedProduct: RelatedProduct | null,
+): string {
   const productContext = relatedProduct
     ? `
 

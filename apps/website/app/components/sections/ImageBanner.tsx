@@ -69,7 +69,10 @@ export function ImageBanner({
         ) : (
           <picture>
             {backgroundImageMobile && (
-              <source media="(max-width: 767px)" srcSet={backgroundImageMobile} />
+              <source
+                media="(max-width: 767px)"
+                srcSet={backgroundImageMobile}
+              />
             )}
             <img
               src={backgroundImage}
@@ -98,10 +101,7 @@ export function ImageBanner({
       >
         <div className="max-w-160">
           {label && (
-            <p
-              className="text-paragraph mb-4"
-              style={{color: textColor}}
-            >
+            <p className="text-paragraph mb-4" style={{color: textColor}}>
               {label}
             </p>
           )}

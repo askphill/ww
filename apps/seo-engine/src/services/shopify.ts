@@ -1,4 +1,4 @@
-import type { Product } from '../types/index.js';
+import type {Product} from '../types/index.js';
 
 interface ShopifyProduct {
   id: string;
@@ -47,7 +47,9 @@ export async function fetchShopifyProducts(): Promise<Product[]> {
   const adminApiToken = process.env.ADMIN_API_TOKEN;
 
   if (!store || !adminApiToken) {
-    throw new Error('Missing Shopify credentials. Set STORE and ADMIN_API_TOKEN in .env');
+    throw new Error(
+      'Missing Shopify credentials. Set STORE and ADMIN_API_TOKEN in .env',
+    );
   }
 
   const products: Product[] = [];
@@ -70,11 +72,13 @@ export async function fetchShopifyProducts(): Promise<Product[]> {
             after: cursor,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
-      throw new Error(`Shopify API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Shopify API error: ${response.status} ${response.statusText}`,
+      );
     }
 
     const result = (await response.json()) as ShopifyResponse;

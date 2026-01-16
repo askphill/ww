@@ -18,11 +18,11 @@ pnpm dev:website
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `@wakey/ui` | Design system components (Button, Stars, Accordion, etc.) |
-| `@wakey/hooks` | Shared React hooks |
-| `@wakey/tailwind-config` | Shared Tailwind v4 theme |
+| Package                  | Description                                               |
+| ------------------------ | --------------------------------------------------------- |
+| `@wakey/ui`              | Design system components (Button, Stars, Accordion, etc.) |
+| `@wakey/hooks`           | Shared React hooks                                        |
+| `@wakey/tailwind-config` | Shared Tailwind v4 theme                                  |
 
 ## Icons
 

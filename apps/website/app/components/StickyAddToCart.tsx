@@ -106,14 +106,21 @@ export function StickyAddToCart({
             <div className="flex items-center gap-1.5 md:gap-2 whitespace-nowrap">
               <span className="text-label md:text-[1.0625rem] font-display uppercase leading-tight">
                 {/* Full title on screens >= 395px */}
-                <span className="hidden min-[395px]:inline">{product.title}</span>
+                <span className="hidden min-[395px]:inline">
+                  {product.title}
+                </span>
                 {/* Title without "Natural" on screens < 395px */}
-                <span className="min-[395px]:hidden">{product.title.replace(/natural\s*/i, '')}</span>
+                <span className="min-[395px]:hidden">
+                  {product.title.replace(/natural\s*/i, '')}
+                </span>
               </span>
               <span className="hidden md:flex text-label md:text-[1.0625rem] font-display leading-tight items-center gap-1.5">
                 {selectedVariant?.compareAtPrice && (
                   <s className="opacity-50">
-                    <Money data={selectedVariant.compareAtPrice} withoutTrailingZeros />
+                    <Money
+                      data={selectedVariant.compareAtPrice}
+                      withoutTrailingZeros
+                    />
                   </s>
                 )}
                 {selectedVariant?.price && (
@@ -173,7 +180,10 @@ export function StickyAddToCart({
                         <span className="md:hidden inline-flex items-center gap-1">
                           Add
                           {selectedVariant?.price && (
-                            <Money data={selectedVariant.price} withoutTrailingZeros />
+                            <Money
+                              data={selectedVariant.price}
+                              withoutTrailingZeros
+                            />
                           )}
                         </span>
                         {/* Desktop: Add to Bag */}

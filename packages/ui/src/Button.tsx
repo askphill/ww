@@ -49,7 +49,13 @@ export function Button({
 
   if (to) {
     return (
-      <Link to={to} className={combinedClassName} onClick={onClick} aria-label={ariaLabel} prefetch={prefetch}>
+      <Link
+        to={to}
+        className={combinedClassName}
+        onClick={onClick}
+        aria-label={ariaLabel}
+        prefetch={prefetch}
+      >
         {content}
       </Link>
     );
@@ -57,7 +63,12 @@ export function Button({
 
   if (href) {
     return (
-      <a href={href} className={combinedClassName} onClick={onClick} aria-label={ariaLabel}>
+      <a
+        href={href}
+        className={combinedClassName}
+        onClick={onClick}
+        aria-label={ariaLabel}
+      >
         {content}
       </a>
     );

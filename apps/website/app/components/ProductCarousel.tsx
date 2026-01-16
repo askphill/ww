@@ -10,7 +10,10 @@ interface ProductCarouselProps {
   skipFirst?: boolean;
 }
 
-export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps) {
+export function ProductCarousel({
+  media,
+  skipFirst = true,
+}: ProductCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +79,8 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
             <button
               onClick={() => {
                 scrollRef.current?.scrollTo({
-                  left: (activeIndex - 1) * (scrollRef.current?.offsetWidth || 0),
+                  left:
+                    (activeIndex - 1) * (scrollRef.current?.offsetWidth || 0),
                   behavior: 'smooth',
                 });
               }}
@@ -85,25 +89,50 @@ export function ProductCarousel({media, skipFirst = true}: ProductCarouselProps)
               }`}
               aria-label="Previous slide"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <path d="M13.6893 16L10.2197 12.5303C9.92678 12.2374 9.92678 11.7626 10.2197 11.4697L13.6893 8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="w-4 h-4"
+              >
+                <path
+                  d="M13.6893 16L10.2197 12.5303C9.92678 12.2374 9.92678 11.7626 10.2197 11.4697L13.6893 8"
+                  stroke="black"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             {/* Right arrow */}
             <button
               onClick={() => {
                 scrollRef.current?.scrollTo({
-                  left: (activeIndex + 1) * (scrollRef.current?.offsetWidth || 0),
+                  left:
+                    (activeIndex + 1) * (scrollRef.current?.offsetWidth || 0),
                   behavior: 'smooth',
                 });
               }}
               className={`absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center transition-opacity ${
-                activeIndex === displayMedia.length - 1 ? 'opacity-20' : 'opacity-100'
+                activeIndex === displayMedia.length - 1
+                  ? 'opacity-20'
+                  : 'opacity-100'
               }`}
               aria-label="Next slide"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" className="w-4 h-4 rotate-180">
-                <path d="M13.6893 16L10.2197 12.5303C9.92678 12.2374 9.92678 11.7626 10.2197 11.4697L13.6893 8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="w-4 h-4 rotate-180"
+              >
+                <path
+                  d="M13.6893 16L10.2197 12.5303C9.92678 12.2374 9.92678 11.7626 10.2197 11.4697L13.6893 8"
+                  stroke="black"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </>

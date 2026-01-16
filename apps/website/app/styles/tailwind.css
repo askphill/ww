@@ -133,12 +133,24 @@ em {
 }
 
 /* Mouse trail rotation variants */
-@utility rotate-trail-1 { transform: rotate(3deg); }
-@utility rotate-trail-2 { transform: rotate(-2deg); }
-@utility rotate-trail-3 { transform: rotate(-4deg); }
-@utility rotate-trail-4 { transform: rotate(1deg); }
-@utility rotate-trail-5 { transform: rotate(-3deg); }
-@utility rotate-trail-6 { transform: rotate(4deg); }
+@utility rotate-trail-1 {
+  transform: rotate(3deg);
+}
+@utility rotate-trail-2 {
+  transform: rotate(-2deg);
+}
+@utility rotate-trail-3 {
+  transform: rotate(-4deg);
+}
+@utility rotate-trail-4 {
+  transform: rotate(1deg);
+}
+@utility rotate-trail-5 {
+  transform: rotate(-3deg);
+}
+@utility rotate-trail-6 {
+  transform: rotate(4deg);
+}
 
 /* Ingredient card text - handles em/italics within display font */
 .ingredient-text em {

@@ -1,6 +1,11 @@
 import type {CartLineUpdateInput} from '@shopify/hydrogen/storefront-api-types';
 import type {CartLayout} from '~/components/CartMain';
-import {CartForm, Image, Money, type OptimisticCartLine} from '@shopify/hydrogen';
+import {
+  CartForm,
+  Image,
+  Money,
+  type OptimisticCartLine,
+} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
 import {Link} from 'react-router';
 import {useAside} from './Aside';
@@ -20,7 +25,8 @@ export function CartLineItem({
   layout: CartLayout;
   line: CartLine;
 }) {
-  const {id, merchandise, quantity, cost, isOptimistic, discountAllocations} = line;
+  const {id, merchandise, quantity, cost, isOptimistic, discountAllocations} =
+    line;
   const {product, title, image, selectedOptions} = merchandise;
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
   const {close} = useAside();
@@ -83,7 +89,10 @@ export function CartLineItem({
                         ? discount.code
                         : 'Discount';
                   return (
-                    <span key={index} className="text-small font-body italic opacity-70">
+                    <span
+                      key={index}
+                      className="text-small font-body italic opacity-70"
+                    >
                       {discountTitle}
                     </span>
                   );
@@ -95,9 +104,10 @@ export function CartLineItem({
                     data={{
                       amount: String(
                         discountAllocations.reduce(
-                          (sum, d) => sum + parseFloat(d.discountedAmount.amount),
-                          0
-                        )
+                          (sum, d) =>
+                            sum + parseFloat(d.discountedAmount.amount),
+                          0,
+                        ),
                       ),
                       currencyCode: cost?.totalAmount?.currencyCode || 'EUR',
                     }}
@@ -117,24 +127,29 @@ export function CartLineItem({
             />
             <div className="text-base font-display flex items-center gap-2">
               {/* Show original price strikethrough if discounts */}
-              {discountAllocations && discountAllocations.length > 0 && cost?.totalAmount && (
-                <span className="line-through opacity-50">
-                  <Money
-                    data={{
-                      amount: String(
-                        parseFloat(cost.totalAmount.amount) +
-                          discountAllocations.reduce(
-                            (sum, d) => sum + parseFloat(d.discountedAmount.amount),
-                            0
-                          )
-                      ),
-                      currencyCode: cost.totalAmount.currencyCode,
-                    }}
-                    withoutTrailingZeros
-                  />
-                </span>
+              {discountAllocations &&
+                discountAllocations.length > 0 &&
+                cost?.totalAmount && (
+                  <span className="line-through opacity-50">
+                    <Money
+                      data={{
+                        amount: String(
+                          parseFloat(cost.totalAmount.amount) +
+                            discountAllocations.reduce(
+                              (sum, d) =>
+                                sum + parseFloat(d.discountedAmount.amount),
+                              0,
+                            ),
+                        ),
+                        currencyCode: cost.totalAmount.currencyCode,
+                      }}
+                      withoutTrailingZeros
+                    />
+                  </span>
+                )}
+              {cost?.totalAmount && (
+                <Money data={cost.totalAmount} withoutTrailingZeros />
               )}
-              {cost?.totalAmount && <Money data={cost.totalAmount} withoutTrailingZeros />}
             </div>
           </div>
         </div>

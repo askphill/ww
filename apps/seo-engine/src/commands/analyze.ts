@@ -1,10 +1,13 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import type { AnalyzeOptions } from '../types/index.js';
-import { getDatabase } from '../db/schema.js';
-import { analyzeOpportunities } from '../analyzers/opportunities.js';
+import type {AnalyzeOptions} from '../types/index.js';
+import {getDatabase} from '../db/schema.js';
+import {analyzeOpportunities} from '../analyzers/opportunities.js';
 
-export async function analyzeCommand(options: { minImpressions: string; maxPosition: string }): Promise<void> {
+export async function analyzeCommand(options: {
+  minImpressions: string;
+  maxPosition: string;
+}): Promise<void> {
   const spinner = ora('Analyzing content opportunities...').start();
 
   try {
@@ -38,29 +41,36 @@ export async function analyzeCommand(options: { minImpressions: string; maxPosit
           opp.clicks30d,
           opp.currentPosition,
           opp.relatedProductId,
-          opp.opportunityScore
+          opp.opportunityScore,
         );
       }
     });
 
     insertMany(opportunities);
 
-    spinner.succeed(`Found ${chalk.green(opportunities.length)} content opportunities`);
+    spinner.succeed(
+      `Found ${chalk.green(opportunities.length)} content opportunities`,
+    );
 
     // Display opportunities
     console.log('\n' + chalk.bold('Top Content Opportunities:'));
     console.log(chalk.dim('─'.repeat(80)));
 
     opportunities.slice(0, 15).forEach((opp, i) => {
-      const scoreColor = opp.opportunityScore >= 70 ? chalk.green : opp.opportunityScore >= 40 ? chalk.yellow : chalk.red;
+      const scoreColor =
+        opp.opportunityScore >= 70
+          ? chalk.green
+          : opp.opportunityScore >= 40
+            ? chalk.yellow
+            : chalk.red;
+      console.log(`  ${chalk.dim(`${i + 1}.`)} ${chalk.cyan(opp.keyword)}`);
       console.log(
-        `  ${chalk.dim(`${i + 1}.`)} ${chalk.cyan(opp.keyword)}`
-      );
-      console.log(
-        `     Impressions: ${chalk.white(opp.impressions30d)} | Position: ${chalk.white(opp.currentPosition.toFixed(1))} | Score: ${scoreColor(opp.opportunityScore.toFixed(0))}`
+        `     Impressions: ${chalk.white(opp.impressions30d)} | Position: ${chalk.white(opp.currentPosition.toFixed(1))} | Score: ${scoreColor(opp.opportunityScore.toFixed(0))}`,
       );
       if (opp.relatedProductId) {
-        console.log(`     Related product: ${chalk.magenta(opp.relatedProductId)}`);
+        console.log(
+          `     Related product: ${chalk.magenta(opp.relatedProductId)}`,
+        );
       }
       console.log();
     });
@@ -68,7 +78,9 @@ export async function analyzeCommand(options: { minImpressions: string; maxPosit
     db.close();
   } catch (error) {
     spinner.fail('Failed to analyze opportunities');
-    console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
+    console.error(
+      chalk.red(error instanceof Error ? error.message : 'Unknown error'),
+    );
     process.exit(1);
   }
 }

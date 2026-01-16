@@ -1,5 +1,5 @@
-import { google } from 'googleapis';
-import type { FetchOptions, GscQuery } from '../types/index.js';
+import {google} from 'googleapis';
+import type {FetchOptions, GscQuery} from '../types/index.js';
 
 const webmasters = google.webmasters('v3');
 
@@ -10,12 +10,12 @@ function getAuth() {
 
   if (!clientId || !clientSecret || !refreshToken) {
     throw new Error(
-      'Missing GSC credentials. Set GSC_CLIENT_ID, GSC_CLIENT_SECRET, and GSC_REFRESH_TOKEN in .env'
+      'Missing GSC credentials. Set GSC_CLIENT_ID, GSC_CLIENT_SECRET, and GSC_REFRESH_TOKEN in .env',
     );
   }
 
   const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
-  oauth2Client.setCredentials({ refresh_token: refreshToken });
+  oauth2Client.setCredentials({refresh_token: refreshToken});
 
   return oauth2Client;
 }
@@ -37,7 +37,9 @@ export async function fetchGscData(options: FetchOptions): Promise<GscQuery[]> {
     startDate: string;
     endDate: string;
     dimensions: string[];
-    dimensionFilterGroups?: Array<{ filters: Array<{ dimension: string; operator: string; expression: string }> }>;
+    dimensionFilterGroups?: Array<{
+      filters: Array<{dimension: string; operator: string; expression: string}>;
+    }>;
     rowLimit: number;
   } = {
     startDate: startDate.toISOString().split('T')[0] ?? '',
@@ -84,8 +86,10 @@ export async function fetchGscData(options: FetchOptions): Promise<GscQuery[]> {
 
 export async function fetchGscDataForUrls(
   urls: string[],
-  days: number
-): Promise<Map<string, { impressions: number; clicks: number; avgPosition: number }>> {
+  days: number,
+): Promise<
+  Map<string, {impressions: number; clicks: number; avgPosition: number}>
+> {
   const siteUrl = process.env.GSC_SITE_URL;
 
   if (!siteUrl) {
@@ -98,7 +102,10 @@ export async function fetchGscDataForUrls(
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
-  const results = new Map<string, { impressions: number; clicks: number; avgPosition: number }>();
+  const results = new Map<
+    string,
+    {impressions: number; clicks: number; avgPosition: number}
+  >();
 
   // Fetch data for each URL
   for (const url of urls) {

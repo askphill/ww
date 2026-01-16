@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.react-router/
+
+# Generated files
+*.generated.d.ts
+*.generated.ts
+*.graphql.d.ts
+*.graphql.ts
+storefrontapi.generated.d.ts
+customer-accountapi.generated.d.ts
+
+# Lockfiles
+pnpm-lock.yaml
+
+# Cache
+.turbo/
+.cache/

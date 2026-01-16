@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { initializeDatabase } from '../db/schema.js';
-import { fetchShopifyProducts } from '../services/shopify.js';
+import {initializeDatabase} from '../db/schema.js';
+import {fetchShopifyProducts} from '../services/shopify.js';
 
 export async function syncCommand(): Promise<void> {
   const spinner = ora('Connecting to Shopify...').start();
@@ -35,7 +35,7 @@ export async function syncCommand(): Promise<void> {
           product.title,
           product.description,
           JSON.stringify(product.tags),
-          now
+          now,
         );
       }
     });
@@ -60,7 +60,9 @@ export async function syncCommand(): Promise<void> {
     db.close();
   } catch (error) {
     spinner.fail('Failed to sync products');
-    console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
+    console.error(
+      chalk.red(error instanceof Error ? error.message : 'Unknown error'),
+    );
     process.exit(1);
   }
 }

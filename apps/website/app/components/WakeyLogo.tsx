@@ -3,7 +3,10 @@ interface WakeyLogoProps {
   color?: string;
 }
 
-export function WakeyLogo({ className = '', color = 'currentColor' }: WakeyLogoProps) {
+export function WakeyLogo({
+  className = '',
+  color = 'currentColor',
+}: WakeyLogoProps) {
   return (
     <svg
       className={className}

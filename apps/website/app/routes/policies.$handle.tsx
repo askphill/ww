@@ -12,7 +12,10 @@ export const meta: Route.MetaFunction = ({data}) => {
   const policy = data?.policy;
   return [
     {title: `${policy?.title || 'Policy'} | Wakey`},
-    {name: 'description', content: `Read Wakey's ${policy?.title?.toLowerCase() || 'policy'}.`},
+    {
+      name: 'description',
+      content: `Read Wakey's ${policy?.title?.toLowerCase() || 'policy'}.`,
+    },
     {name: 'robots', content: 'noindex, follow'},
   ];
 };

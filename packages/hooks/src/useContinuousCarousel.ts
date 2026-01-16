@@ -14,7 +14,9 @@ interface UseContinuousCarouselOptions {
  * On desktop: continuous scroll with velocity/friction physics and infinite loop.
  * On mobile: returns isDesktop=false so you can render a snap scroll fallback.
  */
-export function useContinuousCarousel(options: UseContinuousCarouselOptions = {}) {
+export function useContinuousCarousel(
+  options: UseContinuousCarouselOptions = {},
+) {
   const {onEnterView} = options;
 
   const [isDesktop, setIsDesktop] = useState(false);

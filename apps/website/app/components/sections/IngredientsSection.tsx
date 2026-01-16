@@ -20,9 +20,7 @@ export function IngredientsSection({
     <section>
       {/* Text Container */}
       <div className="bg-sand p-8 px-4 md:p-8 md:pb-12 md:grid md:grid-cols-12 md:gap-0">
-        <h2 className="text-h3 font-display md:col-span-5">
-          {title}
-        </h2>
+        <h2 className="text-h3 font-display md:col-span-5">{title}</h2>
         <div
           className="text-s2 md:text-s1 pt-28 pl-16 md:pt-48 md:pl-0 md:col-span-7"
           dangerouslySetInnerHTML={{__html: ingredientsList}}

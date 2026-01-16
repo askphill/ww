@@ -29,7 +29,11 @@ export const meta: Route.MetaFunction = () => {
       content:
         'Shop all Wakey products. Natural deodorants and morning essentials.',
     },
-    {tagName: 'link', rel: 'canonical', href: 'https://www.wakey.care/collections/all'},
+    {
+      tagName: 'link',
+      rel: 'canonical',
+      href: 'https://www.wakey.care/collections/all',
+    },
   ];
 };
 

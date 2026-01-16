@@ -49,8 +49,7 @@ export const notifications: Notification[] = [
     id: 'blog-plastic-free',
     type: 'blog',
     title: 'Say Goodbye to Plastic',
-    description:
-      'Why plastic-free packaging matters for you and the planet.',
+    description: 'Why plastic-free packaging matters for you and the planet.',
     href: '/blog/say-goodbye-to-plastic',
     date: '2023-03-17',
     image:

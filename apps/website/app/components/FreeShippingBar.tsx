@@ -14,10 +14,16 @@ const FREE_SHIPPING_THRESHOLD = 80;
  * A progress bar showing how close the user is to free shipping.
  * Hardcoded threshold at 80 euros.
  */
-export function FreeShippingBar({currentTotal, currencyCode = 'EUR'}: FreeShippingBarProps) {
+export function FreeShippingBar({
+  currentTotal,
+  currencyCode = 'EUR',
+}: FreeShippingBarProps) {
   const amountRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - currentTotal);
   const isFreeShipping = currentTotal >= FREE_SHIPPING_THRESHOLD;
-  const progress = Math.min(100, (currentTotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const progress = Math.min(
+    100,
+    (currentTotal / FREE_SHIPPING_THRESHOLD) * 100,
+  );
 
   return (
     <div className="w-full">

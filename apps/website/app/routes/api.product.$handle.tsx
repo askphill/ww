@@ -79,15 +79,19 @@ export async function loader({params, context}: Route.LoaderArgs) {
   }
 
   const responseData = {
-    product: product ? {
-      id: product.id,
-      title: product.title,
-      handle: product.handle,
-      featuredImage: product.featuredImage,
-      subtitle,
-      reviewRating: product.reviewRating?.value ? parseFloat(product.reviewRating.value) : null,
-      reviewCount,
-    } : null,
+    product: product
+      ? {
+          id: product.id,
+          title: product.title,
+          handle: product.handle,
+          featuredImage: product.featuredImage,
+          subtitle,
+          reviewRating: product.reviewRating?.value
+            ? parseFloat(product.reviewRating.value)
+            : null,
+          reviewCount,
+        }
+      : null,
   };
 
   return new Response(JSON.stringify(responseData), {

@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
-import type { ArticleFrontmatter } from '../types/index.js';
-import { getArticlePrompt, getSystemPrompt } from '../templates/prompts.js';
+import type {ArticleFrontmatter} from '../types/index.js';
+import {getArticlePrompt, getSystemPrompt} from '../templates/prompts.js';
 
 interface RelatedProduct {
   id: string;
@@ -17,7 +17,7 @@ export interface GeneratedArticle {
 
 export async function generateArticle(
   topic: string,
-  relatedProduct: RelatedProduct | null
+  relatedProduct: RelatedProduct | null,
 ): Promise<GeneratedArticle> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -25,7 +25,7 @@ export async function generateArticle(
     throw new Error('Missing ANTHROPIC_API_KEY in .env');
   }
 
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({apiKey});
 
   const systemPrompt = getSystemPrompt();
   const userPrompt = getArticlePrompt(topic, relatedProduct);
@@ -71,7 +71,7 @@ export async function generateArticle(
 
 function generateJsonLd(
   frontmatter: ArticleFrontmatter,
-  relatedProduct: RelatedProduct | null
+  relatedProduct: RelatedProduct | null,
 ): object {
   const baseUrl = 'https://wakey.care';
 

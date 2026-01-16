@@ -6,14 +6,14 @@
 /* Theme tokens */
 @theme {
   /* Colors */
-  --color-black: #1A1A1A;
-  --color-white: #FFFFFF;
+  --color-black: #1a1a1a;
+  --color-white: #ffffff;
   --color-text: #383838;
   --color-yellow: #ffff00;
-  --color-softorange: #FAD103;
-  --color-ocher: #E3B012;
-  --color-sand: #FFF5EB;
-  --color-skyblue: #99BDFF;
+  --color-softorange: #fad103;
+  --color-ocher: #e3b012;
+  --color-sand: #fff5eb;
+  --color-skyblue: #99bdff;
   --color-blue: #d4e8ff;
 
   /* Fonts - apps must define @font-face for these */
@@ -152,14 +152,12 @@
 }
 
 /* Frosted glass effects */
-@utility blur-bg{
+@utility blur-bg {
   border: 1px solid oklch(from var(--color-blue) l c h / 0.5);
-  background:rgba(255, 245, 235, 0.03);
+  background: rgba(255, 245, 235, 0.03);
   backdrop-filter: blur(20px);
   backdrop-filter: blur(15px);
 }
-
-
 
 /* Hover scale effect - desktop only */
 @utility hover-scale {
@@ -173,8 +171,12 @@
 
 /* Marquee animation */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @utility animate-marquee {
@@ -187,16 +189,35 @@
 
 /* Cloud section animations */
 @keyframes cloud-text-appear {
-  0% { transform: translate3d(0, 100%, 0); opacity: 0; }
-  12.5% { transform: translate3d(0, 0, 0); opacity: 1; }
-  37.5% { transform: translate3d(0, 0, 0); opacity: 1; }
-  50% { transform: translate3d(0, -100%, 0); opacity: 0; }
-  100% { transform: translate3d(0, 100%, 0); opacity: 0; }
+  0% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0;
+  }
+  12.5% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  37.5% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(0, -100%, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0;
+  }
 }
 
 @keyframes cloud-scroll {
-  from { transform: translateY(0); }
-  to { transform: translateY(-50%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
 }
 
 @utility animate-cloud-text {
@@ -209,9 +230,15 @@
 
 /* Sticky ATC pop animation */
 @keyframes sticky-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.99); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.99);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @utility animate-sticky-pop {

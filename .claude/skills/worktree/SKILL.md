@@ -9,16 +9,19 @@ Manage git worktrees for parallel development.
 Sets up a new worktree with environment files and dependencies.
 
 **Usage:**
+
 ```bash
 bash .claude/skills/worktree/scripts/setup-worktree.sh <worktree-path> <main-repo-path>
 ```
 
 **Example:**
+
 ```bash
 bash .claude/skills/worktree/scripts/setup-worktree.sh .worktrees/my-feature $(pwd)
 ```
 
 **What it does:**
+
 1. Copies `.env` from root (if exists)
 2. Copies `apps/website/.env` (if exists)
 3. Copies any other `apps/*/.env` files

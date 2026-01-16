@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import {z} from 'zod';
 
 // GSC Query data
 export const GscQuerySchema = z.object({
@@ -34,7 +34,9 @@ export const OpportunitySchema = z.object({
   currentPosition: z.number(),
   relatedProductId: z.string().nullable(),
   opportunityScore: z.number(),
-  status: z.enum(['identified', 'in_progress', 'completed', 'skipped']).default('identified'),
+  status: z
+    .enum(['identified', 'in_progress', 'completed', 'skipped'])
+    .default('identified'),
 });
 
 export type Opportunity = z.infer<typeof OpportunitySchema>;

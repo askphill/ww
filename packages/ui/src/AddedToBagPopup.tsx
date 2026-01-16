@@ -66,9 +66,7 @@ export function AddedToBagPopup({
     >
       <div
         className={`w-full max-w-[600px] bg-blue text-black rounded-card p-4 md:p-6 border border-black/10 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-          isVisible
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-4'
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >
         {/* Header with title and close button */}
@@ -100,23 +98,37 @@ export function AddedToBagPopup({
           {/* Product details */}
           <div className="flex flex-col justify-center flex-1 gap-1 md:gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-base font-display uppercase leading-none">{product.title}</span>
+              <span className="text-base font-display uppercase leading-none">
+                {product.title}
+              </span>
               <span className="text-base font-display leading-none">
                 {product.price}
               </span>
             </div>
             {product.variantTitle && (
-              <span className="text-small font-body italic opacity-70">{product.variantTitle}</span>
+              <span className="text-small font-body italic opacity-70">
+                {product.variantTitle}
+              </span>
             )}
           </div>
         </div>
 
         {/* Action buttons */}
         <div className="flex gap-3 mt-6">
-          <Button to="/cart" variant="outline" onClick={onClose} className="flex-1">
+          <Button
+            to="/cart"
+            variant="outline"
+            onClick={onClose}
+            className="flex-1"
+          >
             Your bag ({cartCount})
           </Button>
-          <Button href={checkoutUrl} variant="primary" className="flex-1" icon={<CheckoutIcon className="w-5 h-5" />}>
+          <Button
+            href={checkoutUrl}
+            variant="primary"
+            className="flex-1"
+            icon={<CheckoutIcon className="w-5 h-5" />}
+          >
             Checkout
           </Button>
         </div>

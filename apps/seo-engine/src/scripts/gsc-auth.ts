@@ -11,18 +11,18 @@
  * 4. Print the refresh token for you to add to .env
  */
 
-import { google } from 'googleapis';
+import {google} from 'googleapis';
 import http from 'node:http';
-import { URL } from 'node:url';
+import {URL} from 'node:url';
 import open from 'open';
 import dotenv from 'dotenv';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Try app-level .env first, then fall back to root .env
-dotenv.config({ path: path.join(__dirname, '../../.env') });
-dotenv.config({ path: path.join(__dirname, '../../../../.env') });
+dotenv.config({path: path.join(__dirname, '../../.env')});
+dotenv.config({path: path.join(__dirname, '../../../../.env')});
 
 const SCOPES = ['https://www.googleapis.com/auth/webmasters.readonly'];
 const REDIRECT_PORT = 3333;
@@ -37,11 +37,17 @@ async function main() {
     console.log('Add these to apps/seo-engine/.env first:\n');
     console.log('  GSC_CLIENT_ID=your-client-id');
     console.log('  GSC_CLIENT_SECRET=your-client-secret\n');
-    console.log('Get them from: https://console.cloud.google.com/apis/credentials');
+    console.log(
+      'Get them from: https://console.cloud.google.com/apis/credentials',
+    );
     process.exit(1);
   }
 
-  const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, REDIRECT_URI);
+  const oauth2Client = new google.auth.OAuth2(
+    clientId,
+    clientSecret,
+    REDIRECT_URI,
+  );
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -65,23 +71,25 @@ async function main() {
     const error = url.searchParams.get('error');
 
     if (error) {
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end('<h1>❌ Authorization Failed</h1><p>You can close this window.</p>');
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.end(
+        '<h1>❌ Authorization Failed</h1><p>You can close this window.</p>',
+      );
       console.error(`\n❌ Authorization failed: ${error}`);
       server.close();
       process.exit(1);
     }
 
     if (!code) {
-      res.writeHead(400, { 'Content-Type': 'text/html' });
+      res.writeHead(400, {'Content-Type': 'text/html'});
       res.end('<h1>❌ No code received</h1><p>You can close this window.</p>');
       return;
     }
 
     try {
-      const { tokens } = await oauth2Client.getToken(code);
+      const {tokens} = await oauth2Client.getToken(code);
 
-      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(`
         <html>
           <body style="font-family: system-ui; padding: 40px; text-align: center;">
@@ -100,8 +108,10 @@ async function main() {
       server.close();
       process.exit(0);
     } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'text/html' });
-      res.end('<h1>❌ Token Exchange Failed</h1><p>Check the terminal for details.</p>');
+      res.writeHead(500, {'Content-Type': 'text/html'});
+      res.end(
+        '<h1>❌ Token Exchange Failed</h1><p>Check the terminal for details.</p>',
+      );
       console.error('\n❌ Failed to exchange code for token:', err);
       server.close();
       process.exit(1);
