@@ -8,7 +8,6 @@ import {
   LogoSmall,
   BagIcon,
   NotificationIcon,
-  AiIcon,
 } from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
 import {NotificationDropdown} from '~/components/NotificationDropdown';
@@ -56,18 +55,26 @@ export function Header({cart, inline = false}: HeaderProps) {
     });
   };
 
-  const handleAiOverlayToggle = () => {
-    setIsAiOverlayOpen(true);
-    // Close other dropdowns when opening AI overlay
-    setIsMenuOpen(false);
-    setIsNotificationsOpen(false);
-  };
-
   const closeAiOverlay = () => {
     setIsAiOverlayOpen(false);
   };
 
   const isAnyDropdownOpen = isMenuOpen || isNotificationsOpen;
+
+  // Handle Cmd+A keyboard shortcut to open AI overlay
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey && event.key === 'a' && !isAiOverlayOpen) {
+        event.preventDefault();
+        setIsAiOverlayOpen(true);
+        setIsMenuOpen(false);
+        setIsNotificationsOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isAiOverlayOpen]);
 
   // Handle dropdown side effects: escape key and body scroll lock
   useEffect(() => {
@@ -144,9 +151,8 @@ export function Header({cart, inline = false}: HeaderProps) {
           >
             <LogoSmall className="h-6 md:h-7" />
           </Link>
-          {/* Right side: AI + Cart */}
+          {/* Right side: Cart */}
           <div className="flex items-center gap-0.5 justify-self-end">
-            <AiButton onClick={handleAiOverlayToggle} />
             <Suspense fallback={<CartButton count={0} onNavigate={closeAll} />}>
               <Await resolve={cart}>
                 {(cartData) => (
@@ -268,26 +274,6 @@ function NotificationButton({
       {hasUnread && (
         <span className="absolute top-1 right-1 md:top-2.5 md:right-2.5 w-2 h-2 bg-softorange rounded-full" />
       )}
-    </button>
-  );
-}
-
-function AiButton({onClick}: {onClick: () => void}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="AI assistant"
-      className="
-        rounded-full w-8 h-8 md:w-12 md:h-12
-        flex items-center justify-center
-        hover-scale
-        transition-transform
-        cursor-pointer
-        opacity-0
-      "
-    >
-      <AiIcon className="w-6" />
     </button>
   );
 }
