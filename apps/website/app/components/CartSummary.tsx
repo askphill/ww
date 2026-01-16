@@ -57,7 +57,11 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
 
       {/* Checkout button - large, full width */}
       {cart?.checkoutUrl && (
-        <Button href={cart.checkoutUrl} className="w-full" icon={<CheckoutIcon className="w-5 h-5" />}>
+        <Button
+          href={cart.checkoutUrl}
+          className="w-full"
+          icon={<CheckoutIcon className="w-5 h-5" />}
+        >
           Checkout
         </Button>
       )}

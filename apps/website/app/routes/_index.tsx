@@ -17,7 +17,11 @@ export const meta: Route.MetaFunction = () => {
     },
     {property: 'og:type', content: 'website'},
     {property: 'og:url', content: 'https://www.wakey.care'},
-    {property: 'og:image', content: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-og-image.jpg'},
+    {
+      property: 'og:image',
+      content:
+        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-og-image.jpg',
+    },
     {property: 'og:image:width', content: '1200'},
     {property: 'og:image:height', content: '630'},
     {name: 'twitter:card', content: 'summary_large_image'},
@@ -27,7 +31,11 @@ export const meta: Route.MetaFunction = () => {
       content:
         'Start your day right with Wakey natural deodorant. Aluminum-free, baking soda-free, and made with safe ingredients for all-day freshness.',
     },
-    {name: 'twitter:image', content: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-og-image.jpg'},
+    {
+      name: 'twitter:image',
+      content:
+        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-og-image.jpg',
+    },
     {tagName: 'link', rel: 'canonical', href: 'https://www.wakey.care'},
   ];
 };

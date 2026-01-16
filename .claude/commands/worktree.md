@@ -3,6 +3,7 @@
 Create a new git worktree for isolated development work.
 
 ## Arguments
+
 - `$ARGUMENTS` - Branch name for the worktree (required)
 
 ## Instructions
@@ -10,21 +11,25 @@ Create a new git worktree for isolated development work.
 When the user runs `/worktree <branch-name>`, perform these steps:
 
 1. **Create the worktree directory** if it doesn't exist:
+
    ```bash
    mkdir -p .worktrees
    ```
 
 2. **Add the git worktree** in `.worktrees/<branch-name>`:
+
    ```bash
    git worktree add .worktrees/<branch-name> -b <branch-name>
    ```
 
    If the branch already exists, use:
+
    ```bash
    git worktree add .worktrees/<branch-name> <branch-name>
    ```
 
 3. **Run the setup script** to copy .env files and install dependencies:
+
    ```bash
    bash .claude/skills/worktree/scripts/setup-worktree.sh .worktrees/<branch-name> $(pwd)
    ```
@@ -44,6 +49,7 @@ When the user runs `/worktree <branch-name>`, perform these steps:
 ```
 
 This creates:
+
 - `.worktrees/feature/new-homepage/` - The worktree directory
 - A new branch `feature/new-homepage` (or uses existing)
 - Copies all `.env` files for local development

@@ -39,7 +39,10 @@ export function ProductItem({
           {product.title}
         </h4>
         <span className="text-small font-body opacity-80">
-          <Money data={product.priceRange.minVariantPrice} withoutTrailingZeros />
+          <Money
+            data={product.priceRange.minVariantPrice}
+            withoutTrailingZeros
+          />
         </span>
       </div>
     </Link>

@@ -2,7 +2,14 @@ import {Suspense, useState, useEffect} from 'react';
 import {Await, Link} from 'react-router';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {HamburgerIcon, MenuCloseIcon, LogoSmall, BagIcon, NotificationIcon, AiIcon} from '@wakey/ui';
+import {
+  HamburgerIcon,
+  MenuCloseIcon,
+  LogoSmall,
+  BagIcon,
+  NotificationIcon,
+  AiIcon,
+} from '@wakey/ui';
 import {NavigationDropdown} from '~/components/NavigationDropdown';
 import {NotificationDropdown} from '~/components/NotificationDropdown';
 import {AnnouncementBar} from '~/components/AnnouncementBar';
@@ -22,12 +29,7 @@ interface HeaderProps {
 export function Header({cart, inline = false}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const {
-    notifications,
-    hasUnread,
-    markAsRead,
-    readIds,
-  } = useNotifications();
+  const {notifications, hasUnread, markAsRead, readIds} = useNotifications();
 
   const handleMenuToggle = () => {
     setIsMenuOpen((prev) => {
@@ -121,7 +123,12 @@ export function Header({cart, inline = false}: HeaderProps) {
             />
           </div>
           {/* Center: Logo */}
-          <Link to="/" aria-label="Wakey home" onClick={closeAll} className="justify-self-center">
+          <Link
+            to="/"
+            aria-label="Wakey home"
+            onClick={closeAll}
+            className="justify-self-center"
+          >
             <LogoSmall className="h-6 md:h-7" />
           </Link>
           {/* Right side: AI + Cart */}
@@ -193,7 +200,11 @@ interface MenuToggleButtonProps {
   onToggle: () => void;
 }
 
-function MenuToggleButton({isOpen, isAnyOpen, onToggle}: MenuToggleButtonProps) {
+function MenuToggleButton({
+  isOpen,
+  isAnyOpen,
+  onToggle,
+}: MenuToggleButtonProps) {
   return (
     <HeaderButton
       onClick={onToggle}
@@ -210,14 +221,17 @@ function MenuToggleButton({isOpen, isAnyOpen, onToggle}: MenuToggleButtonProps) 
   );
 }
 
-
 interface NotificationButtonProps {
   hasUnread: boolean;
   isOpen: boolean;
   onToggle: () => void;
 }
 
-function NotificationButton({hasUnread, isOpen, onToggle}: NotificationButtonProps) {
+function NotificationButton({
+  hasUnread,
+  isOpen,
+  onToggle,
+}: NotificationButtonProps) {
   return (
     <button
       type="button"
@@ -260,7 +274,13 @@ function AiButton() {
   );
 }
 
-function CartButton({count, onNavigate}: {count: number; onNavigate?: () => void}) {
+function CartButton({
+  count,
+  onNavigate,
+}: {
+  count: number;
+  onNavigate?: () => void;
+}) {
   return (
     <Link
       to="/cart"
@@ -282,7 +302,13 @@ function CartButton({count, onNavigate}: {count: number; onNavigate?: () => void
   );
 }
 
-function CartBadge({cart: originalCart, onNavigate}: {cart: CartApiQueryFragment | null; onNavigate?: () => void}) {
+function CartBadge({
+  cart: originalCart,
+  onNavigate,
+}: {
+  cart: CartApiQueryFragment | null;
+  onNavigate?: () => void;
+}) {
   const cart = useOptimisticCart(originalCart);
   const count = cart?.totalQuantity ?? 0;
 

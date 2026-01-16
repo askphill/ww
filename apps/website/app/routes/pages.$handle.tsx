@@ -6,7 +6,8 @@ import {sanitizeHtml} from '~/lib/sanitize';
 export const meta: Route.MetaFunction = ({data}) => {
   const page = data?.page;
   const title = page?.seo?.title || page?.title || 'Page';
-  const description = page?.seo?.description || 'Natural deodorant and morning rituals by Wakey.';
+  const description =
+    page?.seo?.description || 'Natural deodorant and morning rituals by Wakey.';
 
   return [
     {title: `${title} | Wakey`},

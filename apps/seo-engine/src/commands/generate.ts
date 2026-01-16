@@ -1,20 +1,31 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
 import fs from 'node:fs/promises';
-import type { GenerateOptions } from '../types/index.js';
-import { getDatabase } from '../db/schema.js';
-import { generateArticle } from '../services/claude.js';
-import { buildMdxArticle } from '../generators/article.js';
+import type {GenerateOptions} from '../types/index.js';
+import {getDatabase} from '../db/schema.js';
+import {generateArticle} from '../services/claude.js';
+import {buildMdxArticle} from '../generators/article.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const BLOG_OUTPUT_DIR = path.resolve(__dirname, '../../../../website/app/content/blog');
+const BLOG_OUTPUT_DIR = path.resolve(
+  __dirname,
+  '../../../../website/app/content/blog',
+);
 
-export async function generateCommand(options: { topic?: string; product?: string; dryRun: boolean }): Promise<void> {
+export async function generateCommand(options: {
+  topic?: string;
+  product?: string;
+  dryRun: boolean;
+}): Promise<void> {
   if (!options.topic) {
     console.error(chalk.red('Error: --topic is required'));
-    console.log(chalk.dim('Usage: seo-engine generate --topic "natuurlijke deodorant" [--product deodorant]'));
+    console.log(
+      chalk.dim(
+        'Usage: seo-engine generate --topic "natuurlijke deodorant" [--product deodorant]',
+      ),
+    );
     process.exit(1);
   }
 
@@ -30,22 +41,34 @@ export async function generateCommand(options: { topic?: string; product?: strin
     };
 
     // Get related product if specified
-    let relatedProduct: { id: string; handle: string; title: string; description: string } | null = null;
+    let relatedProduct: {
+      id: string;
+      handle: string;
+      title: string;
+      description: string;
+    } | null = null;
     if (generateOptions.product) {
       const result = db
         .prepare('SELECT * FROM products WHERE handle = ?')
-        .get(generateOptions.product) as { id: string; handle: string; title: string; description: string } | undefined;
+        .get(generateOptions.product) as
+        | {id: string; handle: string; title: string; description: string}
+        | undefined;
 
       if (result) {
         relatedProduct = result;
       } else {
-        spinner.warn(`Product "${generateOptions.product}" not found. Run 'seo-engine sync' first.`);
+        spinner.warn(
+          `Product "${generateOptions.product}" not found. Run 'seo-engine sync' first.`,
+        );
       }
     }
 
     spinner.text = 'Generating article with Claude...';
 
-    const articleContent = await generateArticle(generateOptions.topic, relatedProduct);
+    const articleContent = await generateArticle(
+      generateOptions.topic,
+      relatedProduct,
+    );
 
     spinner.succeed('Article generated');
 
@@ -69,35 +92,44 @@ export async function generateCommand(options: { topic?: string; product?: strin
       console.log('\n' + chalk.yellow('No files were written (dry run mode)'));
     } else {
       // Ensure blog directory exists
-      await fs.mkdir(BLOG_OUTPUT_DIR, { recursive: true });
+      await fs.mkdir(BLOG_OUTPUT_DIR, {recursive: true});
 
-      const filePath = path.join(BLOG_OUTPUT_DIR, `${articleContent.frontmatter.slug}.mdx`);
+      const filePath = path.join(
+        BLOG_OUTPUT_DIR,
+        `${articleContent.frontmatter.slug}.mdx`,
+      );
       await fs.writeFile(filePath, mdxContent, 'utf-8');
 
       // Store in database
       const now = new Date().toISOString();
-      db.prepare(`
+      db.prepare(
+        `
         INSERT INTO articles (slug, title, target_keyword, related_product_id, status, mdx_path, generated_at)
         VALUES (?, ?, ?, ?, 'draft', ?, ?)
-      `).run(
+      `,
+      ).run(
         articleContent.frontmatter.slug,
         articleContent.frontmatter.title,
         generateOptions.topic,
         relatedProduct?.id ?? null,
         filePath,
-        now
+        now,
       );
 
       console.log('\n' + chalk.green.bold('Article created successfully!'));
       console.log(`  ${chalk.bold('File:')} ${chalk.cyan(filePath)}`);
       console.log(`  ${chalk.bold('Status:')} draft`);
-      console.log(`\n  Preview at: ${chalk.underline(`http://localhost:3000/blog/${articleContent.frontmatter.slug}`)}`);
+      console.log(
+        `\n  Preview at: ${chalk.underline(`http://localhost:3000/blog/${articleContent.frontmatter.slug}`)}`,
+      );
     }
 
     db.close();
   } catch (error) {
     spinner.fail('Failed to generate article');
-    console.error(chalk.red(error instanceof Error ? error.message : 'Unknown error'));
+    console.error(
+      chalk.red(error instanceof Error ? error.message : 'Unknown error'),
+    );
     process.exit(1);
   }
 }

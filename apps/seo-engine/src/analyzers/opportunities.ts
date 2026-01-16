@@ -1,6 +1,6 @@
 import type Database from 'better-sqlite3';
-import type { AnalyzeOptions, Opportunity } from '../types/index.js';
-import { clusterKeywords } from './keywords.js';
+import type {AnalyzeOptions, Opportunity} from '../types/index.js';
+import {clusterKeywords} from './keywords.js';
 
 interface GscQueryRow {
   query: string;
@@ -18,11 +18,12 @@ interface ProductRow {
 
 export async function analyzeOpportunities(
   db: Database.Database,
-  options: AnalyzeOptions
+  options: AnalyzeOptions,
 ): Promise<Opportunity[]> {
   // Get aggregated query data from last 30 days
   const queries = db
-    .prepare(`
+    .prepare(
+      `
       SELECT
         query,
         SUM(impressions) as total_impressions,
@@ -34,7 +35,8 @@ export async function analyzeOpportunities(
       HAVING total_impressions >= ?
         AND avg_position <= ?
       ORDER BY total_impressions DESC
-    `)
+    `,
+    )
     .all(options.minImpressions, options.maxPosition) as GscQueryRow[];
 
   if (queries.length === 0) {
@@ -52,22 +54,35 @@ export async function analyzeOpportunities(
 
   for (const cluster of clusters) {
     // Find the best query in the cluster (highest impressions)
-    const clusterQueries = queries.filter((q) => cluster.keywords.includes(q.query));
+    const clusterQueries = queries.filter((q) =>
+      cluster.keywords.includes(q.query),
+    );
     const primaryQuery = clusterQueries.reduce((best, current) =>
-      current.total_impressions > best.total_impressions ? current : best
+      current.total_impressions > best.total_impressions ? current : best,
     );
 
     // Sum up all impressions and clicks in the cluster
-    const totalImpressions = clusterQueries.reduce((sum, q) => sum + q.total_impressions, 0);
-    const totalClicks = clusterQueries.reduce((sum, q) => sum + q.total_clicks, 0);
+    const totalImpressions = clusterQueries.reduce(
+      (sum, q) => sum + q.total_impressions,
+      0,
+    );
+    const totalClicks = clusterQueries.reduce(
+      (sum, q) => sum + q.total_clicks,
+      0,
+    );
     const avgPosition =
-      clusterQueries.reduce((sum, q) => sum + q.avg_position, 0) / clusterQueries.length;
+      clusterQueries.reduce((sum, q) => sum + q.avg_position, 0) /
+      clusterQueries.length;
 
     // Match to a product if possible
     const relatedProduct = findRelatedProduct(cluster.keywords, products);
 
     // Calculate opportunity score
-    const score = calculateOpportunityScore(totalImpressions, avgPosition, relatedProduct !== null);
+    const score = calculateOpportunityScore(
+      totalImpressions,
+      avgPosition,
+      relatedProduct !== null,
+    );
 
     opportunities.push({
       keyword: primaryQuery.query,
@@ -86,7 +101,7 @@ export async function analyzeOpportunities(
 
 function findRelatedProduct(
   keywords: string[],
-  products: ProductRow[]
+  products: ProductRow[],
 ): ProductRow | null {
   const keywordText = keywords.join(' ').toLowerCase();
 
@@ -94,12 +109,17 @@ function findRelatedProduct(
     const productTerms = [
       product.title.toLowerCase(),
       product.handle.toLowerCase(),
-      ...(JSON.parse(product.tags) as string[]).map((t: string) => t.toLowerCase()),
+      ...(JSON.parse(product.tags) as string[]).map((t: string) =>
+        t.toLowerCase(),
+      ),
     ];
 
     // Check if any product term appears in the keywords
     for (const term of productTerms) {
-      if (keywordText.includes(term) || term.includes(keywordText.split(' ')[0] ?? '')) {
+      if (
+        keywordText.includes(term) ||
+        term.includes(keywordText.split(' ')[0] ?? '')
+      ) {
         return product;
       }
     }
@@ -111,7 +131,7 @@ function findRelatedProduct(
 function calculateOpportunityScore(
   impressions: number,
   position: number,
-  hasProduct: boolean
+  hasProduct: boolean,
 ): number {
   // Base score from impressions (logarithmic scale)
   const impressionScore = Math.log10(impressions + 1) * 10;
@@ -135,5 +155,8 @@ function calculateOpportunityScore(
   // CTR potential (lower positions have more room to improve CTR)
   const ctrPotential = position > 3 ? 10 : 0;
 
-  return Math.min(100, impressionScore + positionScore + productBonus + ctrPotential);
+  return Math.min(
+    100,
+    impressionScore + positionScore + productBonus + ctrPotential,
+  );
 }

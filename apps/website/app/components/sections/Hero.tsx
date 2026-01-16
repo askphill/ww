@@ -51,7 +51,11 @@ export function Hero({
         />
       </picture>
       {productHandle && (
-        <ProductTooltip handle={productHandle} position={tooltipPosition} priority />
+        <ProductTooltip
+          handle={productHandle}
+          position={tooltipPosition}
+          priority
+        />
       )}
       {showLogo && (
         <div className="relative z-1 w-full p-4 md:p-8 max-w-section">
@@ -67,12 +71,10 @@ interface TextSectionProps {
   className?: string;
 }
 
-export function TextSection({ children, className = '' }: TextSectionProps) {
+export function TextSection({children, className = ''}: TextSectionProps) {
   return (
     <section className={`p-6 md:p-12 bg-sand ${className}`}>
-      <div className="prose-wakey">
-        {children}
-      </div>
+      <div className="prose-wakey">{children}</div>
     </section>
   );
 }

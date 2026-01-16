@@ -42,10 +42,14 @@ describe('Button', () => {
 
     it('renders with icon', () => {
       render(
-        <Button icon={<span data-testid="test-icon">★</span>}>With Icon</Button>,
+        <Button icon={<span data-testid="test-icon">★</span>}>
+          With Icon
+        </Button>,
       );
       expect(screen.getByTestId('test-icon')).toBeInTheDocument();
-      expect(screen.getByRole('button', {name: /With Icon/})).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', {name: /With Icon/}),
+      ).toBeInTheDocument();
     });
   });
 

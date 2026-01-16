@@ -49,77 +49,79 @@ export function NotificationDropdown({
           {/* Container matches nav menu width */}
           <div className="w-full mx-2 md:mx-0 md:max-w-[600px]">
             <div className="w-full bg-white md:rounded-card-s px-4 py-4 md:px-5 md:py-5">
-            {notifications.length === 0 ? (
-              <p className="text-body-small text-black/60 text-center py-4">
-                No notifications
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {notifications.map((notification) => {
-                  const isRead = readIds.has(notification.id);
-                  return (
-                    <li key={notification.id}>
-                      <Link
-                        to={notification.href}
-                        onClick={() => handleNotificationClick(notification.id)}
-                        tabIndex={isOpen ? 0 : -1}
-                        className={`
+              {notifications.length === 0 ? (
+                <p className="text-body-small text-black/60 text-center py-4">
+                  No notifications
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-3">
+                  {notifications.map((notification) => {
+                    const isRead = readIds.has(notification.id);
+                    return (
+                      <li key={notification.id}>
+                        <Link
+                          to={notification.href}
+                          onClick={() =>
+                            handleNotificationClick(notification.id)
+                          }
+                          tabIndex={isOpen ? 0 : -1}
+                          className={`
                           flex items-start gap-3 py-3 rounded-lg transition-colors
                           hover:bg-black/5
                           ${isRead ? 'opacity-60' : ''}
                         `}
-                      >
-                        {/* Image */}
-                        {notification.image && (
-                          <div
-                            className={`
+                        >
+                          {/* Image */}
+                          {notification.image && (
+                            <div
+                              className={`
                               w-14 h-14 md:w-16 md:h-16 rounded-lg flex-shrink-0 overflow-hidden
                               ${notification.type === 'product' ? 'bg-blue flex items-center justify-center p-2' : ''}
                             `}
-                          >
-                            <img
-                              src={notification.image}
-                              alt=""
-                              className={
-                                notification.type === 'product'
-                                  ? 'w-full h-full object-contain'
-                                  : 'w-full h-full object-cover'
-                              }
-                            />
-                          </div>
-                        )}
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            {/* Type indicator */}
-                            <span
-                              className={`
+                            >
+                              <img
+                                src={notification.image}
+                                alt=""
+                                className={
+                                  notification.type === 'product'
+                                    ? 'w-full h-full object-contain'
+                                    : 'w-full h-full object-cover'
+                                }
+                              />
+                            </div>
+                          )}
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              {/* Type indicator */}
+                              <span
+                                className={`
                                 flex-shrink-0 text-xs font-display uppercase tracking-wide px-2 py-0.5 rounded
                                 ${notification.type === 'product' ? 'bg-softorange/20 text-black' : 'bg-skyblue/20 text-black'}
                               `}
-                            >
-                              {notification.type === 'product'
-                                ? 'New Product'
-                                : 'New Post'}
-                            </span>
-                            {/* Unread indicator dot */}
-                            {!isRead && (
-                              <span className="flex-shrink-0 w-2 h-2 rounded-full bg-softorange" />
-                            )}
+                              >
+                                {notification.type === 'product'
+                                  ? 'New Product'
+                                  : 'New Post'}
+                              </span>
+                              {/* Unread indicator dot */}
+                              {!isRead && (
+                                <span className="flex-shrink-0 w-2 h-2 rounded-full bg-softorange" />
+                              )}
+                            </div>
+                            <h3 className="text-label font-display mt-1.5 leading-tight">
+                              {notification.title}
+                            </h3>
+                            <p className="text-body-small text-black/70 mt-1 leading-snug">
+                              {notification.description}
+                            </p>
                           </div>
-                          <h3 className="text-label font-display mt-1.5 leading-tight">
-                            {notification.title}
-                          </h3>
-                          <p className="text-body-small text-black/70 mt-1 leading-snug">
-                            {notification.description}
-                          </p>
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           </div>
         </div>

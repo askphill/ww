@@ -76,7 +76,9 @@ function CartEmpty({layout}: {layout: CartLayout}) {
   if (layout === 'page') {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-16 md:py-24">
-        <h3 className="text-h2 font-display text-black mb-6">Your bag is empty</h3>
+        <h3 className="text-h2 font-display text-black mb-6">
+          Your bag is empty
+        </h3>
         <Link
           to="/"
           className="text-paragraph font-display text-black underline hover:opacity-70 transition-opacity"

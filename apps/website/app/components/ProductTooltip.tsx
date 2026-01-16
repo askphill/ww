@@ -25,7 +25,11 @@ interface ProductApiResponse {
   } | null;
 }
 
-export function ProductTooltip({handle, position, priority}: ProductTooltipProps) {
+export function ProductTooltip({
+  handle,
+  position,
+  priority,
+}: ProductTooltipProps) {
   const fetcher = useLazyFetch<ProductApiResponse>(`/api/product/${handle}`);
 
   const product = fetcher.data?.product;

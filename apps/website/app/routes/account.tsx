@@ -1,18 +1,9 @@
-import {
-  data,
-  Form,
-  NavLink,
-  Outlet,
-  useLoaderData,
-} from 'react-router';
+import {data, Form, NavLink, Outlet, useLoaderData} from 'react-router';
 import type {Route} from './+types/account';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
 
 export const meta: Route.MetaFunction = () => {
-  return [
-    {title: 'Account'},
-    {name: 'robots', content: 'noindex, nofollow'},
-  ];
+  return [{title: 'Account'}, {name: 'robots', content: 'noindex, nofollow'}];
 };
 
 export function shouldRevalidate() {

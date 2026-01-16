@@ -31,7 +31,9 @@ export function ProductReviews({
   initialReviewCount = 4,
   loadMoreText = 'More reviews',
 }: ProductReviewsProps) {
-  const fetcher = useLazyFetch<ReviewsApiResponse>(`/api/reviews/${productHandle}`);
+  const fetcher = useLazyFetch<ReviewsApiResponse>(
+    `/api/reviews/${productHandle}`,
+  );
   const [visibleCount, setVisibleCount] = useState(initialReviewCount);
 
   const reviews: Review[] = fetcher.data?.reviews || [];

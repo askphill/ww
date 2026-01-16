@@ -116,6 +116,7 @@ As a user, I want to visually distinguish product vs blog notifications so that 
 ## Technical Considerations
 
 ### Component Structure
+
 ```
 packages/ui/src/icons/NotificationIcon.tsx    # New icon
 apps/website/app/
@@ -126,6 +127,7 @@ apps/website/app/
 ```
 
 ### MDX Content Format
+
 ```typescript
 // notifications.mdx exports
 export const notifications = [
@@ -149,13 +151,15 @@ export const notifications = [
 ```
 
 ### localStorage Schema
+
 ```typescript
 // Key: 'wakey-read-notifications'
 // Value: JSON array of notification IDs
-['deodorant-launch-2025', 'sustainability-blog']
+['deodorant-launch-2025', 'sustainability-blog'];
 ```
 
 ### Dependencies
+
 - Existing: NavigationDropdown pattern, icon components, Header component
 - New: NotificationIcon from Centralicons pack
 

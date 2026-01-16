@@ -380,7 +380,8 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
         {/* Grid */}
         <Section title="Grid">
           <p className="text-paragraph font-body mb-6">
-            12 columns on mobile, 24 columns on desktop. No gaps between columns.
+            12 columns on mobile, 24 columns on desktop. No gaps between
+            columns.
           </p>
 
           <div className="grid grid-cols-12 md:grid-cols-24 gap-0">
@@ -416,9 +417,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                   }}
                 />
                 <p className="text-small font-body">p-{size}</p>
-                <p className="text-small font-body opacity-60">
-                  {size * 4}px
-                </p>
+                <p className="text-small font-body opacity-60">{size * 4}px</p>
               </div>
             ))}
           </div>
@@ -430,9 +429,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             <div className="text-center">
               <div className="w-32 h-32 bg-softorange rounded-card" />
               <p className="text-small font-body mt-2">rounded-card</p>
-              <p className="text-small font-body opacity-60">
-                0.625rem (10px)
-              </p>
+              <p className="text-small font-body opacity-60">0.625rem (10px)</p>
             </div>
             <div className="text-center">
               <div className="w-32 h-32 bg-softorange rounded-full" />
@@ -451,7 +448,9 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
         <Section title="Buttons">
           <div className="space-y-6">
             <div>
-              <p className="text-small font-body opacity-60 mb-3">Without icon</p>
+              <p className="text-small font-body opacity-60 mb-3">
+                Without icon
+              </p>
               <div className="flex flex-wrap gap-4 items-center">
                 <Button variant="primary">Primary</Button>
                 <Button variant="secondary">Secondary</Button>
@@ -461,17 +460,29 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             <div>
               <p className="text-small font-body opacity-60 mb-3">With icon</p>
               <div className="flex flex-wrap gap-4 items-center">
-                <Button variant="primary" icon={<AddBagIcon />}>Add to Bag</Button>
-                <Button variant="secondary" icon={<AddBagIcon />}>Add to Bag</Button>
-                <Button variant="outline" icon={<AddBagIcon />}>Add to Bag</Button>
+                <Button variant="primary" icon={<AddBagIcon />}>
+                  Add to Bag
+                </Button>
+                <Button variant="secondary" icon={<AddBagIcon />}>
+                  Add to Bag
+                </Button>
+                <Button variant="outline" icon={<AddBagIcon />}>
+                  Add to Bag
+                </Button>
               </div>
             </div>
             <div>
               <p className="text-small font-body opacity-60 mb-3">Disabled</p>
               <div className="flex flex-wrap gap-4 items-center">
-                <Button variant="primary" disabled>Primary</Button>
-                <Button variant="secondary" disabled>Secondary</Button>
-                <Button variant="outline" disabled>Outline</Button>
+                <Button variant="primary" disabled>
+                  Primary
+                </Button>
+                <Button variant="secondary" disabled>
+                  Secondary
+                </Button>
+                <Button variant="outline" disabled>
+                  Outline
+                </Button>
               </div>
             </div>
           </div>
@@ -505,9 +516,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               <Stars rating={4.5} color="black" size="sm" />
             </div>
             <div>
-              <p className="text-small font-body opacity-60 mb-2">
-                Size: md
-              </p>
+              <p className="text-small font-body opacity-60 mb-2">Size: md</p>
               <Stars rating={4.5} color="black" size="md" />
             </div>
           </div>
@@ -599,12 +608,21 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             <AddedToBagPopup
               isOpen={true}
               onClose={() => {}}
-              product={productData ? {
-                image: productData.featuredImage,
-                title: productData.title,
-                variantTitle: productData.subtitle,
-                price: <>{productData.selectedVariant?.price?.amount} {productData.selectedVariant?.price?.currencyCode}</>,
-              } : null}
+              product={
+                productData
+                  ? {
+                      image: productData.featuredImage,
+                      title: productData.title,
+                      variantTitle: productData.subtitle,
+                      price: (
+                        <>
+                          {productData.selectedVariant?.price?.amount}{' '}
+                          {productData.selectedVariant?.price?.currencyCode}
+                        </>
+                      ),
+                    }
+                  : null
+              }
               cartCount={2}
               checkoutUrl="/cart"
               relative
@@ -785,8 +803,12 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
           <div className="space-y-4 mb-8">
             <p className="text-s2 font-display">Features:</p>
             <ul className="text-body-small font-body space-y-1 opacity-80">
-              <li>• Dynamic background color (blue default, yellow on /about)</li>
-              <li>• Responsive layout (stacked on mobile, horizontal on desktop)</li>
+              <li>
+                • Dynamic background color (blue default, yellow on /about)
+              </li>
+              <li>
+                • Responsive layout (stacked on mobile, horizontal on desktop)
+              </li>
               <li>• Navigation links with hover effects</li>
               <li>• Social media links (Instagram, TikTok)</li>
               <li>• Payment method icons</li>
@@ -794,27 +816,36 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             </ul>
           </div>
           <p className="text-body-small font-body opacity-60">
-            Import: <code className="bg-black/10 px-1 rounded">{'import {Footer} from "~/components/Footer"'}</code>
+            Import:{' '}
+            <code className="bg-black/10 px-1 rounded">
+              {'import {Footer} from "~/components/Footer"'}
+            </code>
           </p>
         </Section>
 
         {/* Section Components Overview */}
         <Section title="Section Components">
           <p className="text-paragraph font-body mb-8">
-            Reusable page section components for building content pages.
-            Import from <code className="bg-black/10 px-1 rounded">~/components/sections</code>.
+            Reusable page section components for building content pages. Import
+            from{' '}
+            <code className="bg-black/10 px-1 rounded">
+              ~/components/sections
+            </code>
+            .
           </p>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="bg-black/5 p-4 rounded-card">
               <p className="text-s2 font-display mb-2">Hero</p>
               <p className="text-body-small font-body opacity-70">
-                Full-bleed hero with background image, logo, CTA buttons, and product tooltip.
+                Full-bleed hero with background image, logo, CTA buttons, and
+                product tooltip.
               </p>
             </div>
             <div className="bg-black/5 p-4 rounded-card">
               <p className="text-s2 font-display mb-2">FeaturedProduct</p>
               <p className="text-body-small font-body opacity-70">
-                Product showcase with image, title, price, and add-to-cart functionality.
+                Product showcase with image, title, price, and add-to-cart
+                functionality.
               </p>
             </div>
             <div className="bg-black/5 p-4 rounded-card">
@@ -826,7 +857,8 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             <div className="bg-black/5 p-4 rounded-card">
               <p className="text-s2 font-display mb-2">ImageBanner</p>
               <p className="text-body-small font-body opacity-70">
-                Full-width banner with background image, label, and HTML text overlay.
+                Full-width banner with background image, label, and HTML text
+                overlay.
               </p>
             </div>
             <div className="bg-black/5 p-4 rounded-card">
@@ -850,7 +882,8 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             <div className="bg-black/5 p-4 rounded-card">
               <p className="text-s2 font-display mb-2">ProductReviews</p>
               <p className="text-body-small font-body opacity-70">
-                Customer reviews section with rating summary and video testimonial.
+                Customer reviews section with rating summary and video
+                testimonial.
               </p>
             </div>
             <div className="bg-black/5 p-4 rounded-card">
@@ -901,8 +934,8 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
         {/* Website Components Overview */}
         <Section title="Website Components">
           <p className="text-paragraph font-body mb-8">
-            Core website components used across pages.
-            Import from <code className="bg-black/10 px-1 rounded">~/components</code>.
+            Core website components used across pages. Import from{' '}
+            <code className="bg-black/10 px-1 rounded">~/components</code>.
           </p>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="bg-black/5 p-4 rounded-card">
@@ -1045,7 +1078,6 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             </div>
           </div>
         </Section>
-
       </div>
     </div>
   );

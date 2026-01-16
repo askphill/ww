@@ -16,10 +16,7 @@ export type ActionResponse = {
 };
 
 export const meta: Route.MetaFunction = () => {
-  return [
-    {title: 'Profile'},
-    {name: 'robots', content: 'noindex, nofollow'},
-  ];
+  return [{title: 'Profile'}, {name: 'robots', content: 'noindex, nofollow'}];
 };
 
 export async function loader({context}: Route.LoaderArgs) {

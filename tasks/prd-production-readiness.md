@@ -483,14 +483,14 @@ As a user, I want linked pages to prefetch so that navigation feels instant.
 
 ## Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Typecheck errors | 0 |
-| Test coverage | >30% on critical paths |
-| Lighthouse Performance | >90 |
-| Lighthouse SEO | >95 |
-| Security vulnerabilities | 0 critical/high |
-| CI pipeline pass rate | >95% |
+| Metric                   | Target                 |
+| ------------------------ | ---------------------- |
+| Typecheck errors         | 0                      |
+| Test coverage            | >30% on critical paths |
+| Lighthouse Performance   | >90                    |
+| Lighthouse SEO           | >95                    |
+| Security vulnerabilities | 0 critical/high        |
+| CI pipeline pass rate    | >95%                   |
 
 ## Open Questions
 

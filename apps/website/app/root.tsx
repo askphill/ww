@@ -90,10 +90,7 @@ const ORGANIZATION_SCHEMA = {
   logo: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/wakey-logo.svg',
   description:
     'Natural deodorant and morning essentials. Aluminum-free, baking soda-free, made with safe ingredients.',
-  sameAs: [
-    'https://instagram.com/wakeycare',
-    'https://tiktok.com/@wakeycare',
-  ],
+  sameAs: ['https://instagram.com/wakeycare', 'https://tiktok.com/@wakeycare'],
 };
 
 export async function loader(args: Route.LoaderArgs) {

@@ -55,7 +55,9 @@ export function Tooltip({
           {(hasSubtitle || hasReviews) && (
             <div className="flex items-center gap-1.5 leading-none">
               {hasSubtitle && (
-                <span className="text-base font-body italic leading-none">{product.subtitle}</span>
+                <span className="text-base font-body italic leading-none">
+                  {product.subtitle}
+                </span>
               )}
               {hasReviews && (
                 <div className="flex items-center font-display">

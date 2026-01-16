@@ -115,6 +115,7 @@ export function getArticleBySlug(slug: string) {
 // Get all articles sorted by date (newest first)
 export function getAllArticles() {
   return [...articles].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 }

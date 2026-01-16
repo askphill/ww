@@ -13,7 +13,11 @@ export function DevGrid() {
       if (e.key === 'g' && !e.metaKey && !e.ctrlKey && !e.altKey) {
         // Ignore if user is typing in an input
         const target = e.target as HTMLElement;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        if (
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        ) {
           return;
         }
         setVisible((v) => !v);

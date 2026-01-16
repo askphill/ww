@@ -10,8 +10,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'How long does shipping take?',
-    answer:
-      'Domestic delivery within the Netherlands takes 1-2 business days.',
+    answer: 'Domestic delivery within the Netherlands takes 1-2 business days.',
   },
   {
     question: 'What are the shipping costs?',

@@ -1,6 +1,6 @@
-import type { GeneratedArticle } from '../services/claude.js';
-import { generateFrontmatter } from './frontmatter.js';
-import { generateJsonLdScript } from './jsonld.js';
+import type {GeneratedArticle} from '../services/claude.js';
+import {generateFrontmatter} from './frontmatter.js';
+import {generateJsonLdScript} from './jsonld.js';
 
 export function buildMdxArticle(article: GeneratedArticle): string {
   const frontmatter = generateFrontmatter(article.frontmatter);

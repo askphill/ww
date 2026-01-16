@@ -122,7 +122,9 @@ export default function OrderRoute() {
                   {discountPercentage ? (
                     <span>-{discountPercentage}% OFF</span>
                   ) : (
-                    discountValue && <Money data={discountValue!} withoutTrailingZeros />
+                    discountValue && (
+                      <Money data={discountValue!} withoutTrailingZeros />
+                    )
                   )}
                 </td>
               </tr>

@@ -16,7 +16,8 @@ const DANGEROUS_TAGS =
   /<(script|style|iframe|object|embed|form|meta|link|base)[^>]*>[\s\S]*?<\/\1>|<(script|style|iframe|object|embed|form|meta|link|base)[^>]*\/>/gi;
 
 // Self-closing dangerous tags
-const DANGEROUS_SELF_CLOSING = /<(script|style|iframe|object|embed|form|meta|link|base)[^>]*>/gi;
+const DANGEROUS_SELF_CLOSING =
+  /<(script|style|iframe|object|embed|form|meta|link|base)[^>]*>/gi;
 
 // Event handlers (onclick, onerror, onload, etc.)
 const EVENT_HANDLERS = /\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]*)/gi;

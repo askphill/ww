@@ -1,4 +1,4 @@
-import type { ArticleFrontmatter } from '../types/index.js';
+import type {ArticleFrontmatter} from '../types/index.js';
 
 export function generateFrontmatter(frontmatter: ArticleFrontmatter): string {
   const lines: string[] = ['---'];

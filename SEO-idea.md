@@ -18,6 +18,7 @@ wakey/
 ```
 
 **Tech Stack:**
+
 - Node.js CLI with Commander.js
 - Google Search Console API for rankings/traffic
 - Claude API for article generation
@@ -155,24 +156,26 @@ CREATE TABLE article_performance (
 Articles are generated to: `apps/website/app/content/blog/`
 
 **Example frontmatter:**
+
 ```yaml
 ---
-title: "Beste Natuurlijke Deodorant 2024: Complete Gids"
-slug: "beste-natuurlijke-deodorant"
-description: "Ontdek de beste natuurlijke deodorant voor jouw huid."
-publishedAt: "2024-01-15"
-author: "Wakey Team"
-category: "deodorant"
-tags: ["natuurlijke deodorant", "aluminium-vrij", "duurzaam"]
+title: 'Beste Natuurlijke Deodorant 2024: Complete Gids'
+slug: 'beste-natuurlijke-deodorant'
+description: 'Ontdek de beste natuurlijke deodorant voor jouw huid.'
+publishedAt: '2024-01-15'
+author: 'Wakey Team'
+category: 'deodorant'
+tags: ['natuurlijke deodorant', 'aluminium-vrij', 'duurzaam']
 featuredImage:
-  url: "https://cdn.shopify.com/..."
-  alt: "Natuurlijke deodorant"
+  url: 'https://cdn.shopify.com/...'
+  alt: 'Natuurlijke deodorant'
 relatedProduct:
-  handle: "deodorant"
+  handle: 'deodorant'
 ---
 ```
 
 **Includes JSON-LD structured data** for LLM discoverability:
+
 - Article schema (author, dates, publisher)
 - FAQ schema for question sections
 - Product mentions linking to Shopify products
@@ -182,11 +185,13 @@ relatedProduct:
 ## Website Integration
 
 ### New blog route for MDX articles
+
 ```
 apps/website/app/routes/blog.$slug.tsx
 ```
 
 ### New section components
+
 ```
 apps/website/app/components/sections/
 ├── BlogArticle.tsx          # Article wrapper/styling
@@ -235,6 +240,7 @@ ANTHROPIC_API_KEY=sk-ant-xxx
 ## Implementation Steps
 
 ### Phase 1: Setup
+
 1. Create `apps/seo-engine/` directory structure
 2. Create package.json with dependencies
 3. Set up tsconfig.json for Node.js
@@ -242,28 +248,33 @@ ANTHROPIC_API_KEY=sk-ant-xxx
 5. Add root package.json scripts for CLI
 
 ### Phase 2: Data Collection
+
 6. Implement Google Search Console OAuth flow
 7. Create GSC fetch command (NL market filter)
 8. Implement Shopify product sync command
 9. Store data in SQLite
 
 ### Phase 3: Analysis
+
 10. Build opportunity analyzer (cross-reference GSC + products)
 11. Create keyword clustering logic
 12. Implement opportunity scoring algorithm
 
 ### Phase 4: Generation
+
 13. Create Claude API service with prompt templates
 14. Build MDX article generator with frontmatter
 15. Add JSON-LD structured data generation
 16. Implement dry-run preview mode
 
 ### Phase 5: Website Integration
+
 17. Create blog.$slug.tsx route for MDX articles
 18. Build BlogArticle section component
 19. Add sitemap integration for blog articles
 
 ### Phase 6: Tracking
+
 20. Implement performance tracking command
 21. Create historical data comparison
 22. Build simple CLI reporting
@@ -283,11 +294,11 @@ ANTHROPIC_API_KEY=sk-ant-xxx
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `package.json` (root) | Add `seo:*` scripts |
-| `turbo.json` | Add `cli` task for seo-engine |
-| `.gitignore` | Add `apps/seo-engine/data/*.db` |
+| File                  | Change                                       |
+| --------------------- | -------------------------------------------- |
+| `package.json` (root) | Add `seo:*` scripts                          |
+| `turbo.json`          | Add `cli` task for seo-engine                |
+| `.gitignore`          | Add `apps/seo-engine/data/*.db`              |
 | `pnpm-workspace.yaml` | Already includes `apps/*` (no change needed) |
 
 ---
