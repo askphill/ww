@@ -10,7 +10,7 @@
     {
       "binding": "DB",
       "database_name": "wakey-growth",
-      "database_id": "placeholder-create-with-wrangler-d1-create",
+      "database_id": "aeae393f-7482-4852-bdee-60225a12f942",
       "migrations_dir": "drizzle/migrations"
     }
   ],
