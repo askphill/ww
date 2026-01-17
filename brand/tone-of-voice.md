@@ -4,19 +4,21 @@
 
 ### WHO WE ARE IN ONE LINE
 
-The friend who texts you something funny while you're still half asleep, then reminds you that you've got this.
+The one who actually likes mornings and makes you think maybe you could too.
 
 ---
 
-### THE ENEMY WE'RE AGAINST
+### WHAT WE BELIEVE
 
-We're not against other brands. We're not against mornings. We're against the performance.
+Mornings get a bad reputation. They're rushed, they're chaotic, they're something to get through. But we see it differently.
 
-The toothpaste smile. The perfectly lit bathroom. The "I woke up like this" that nobody believes. The idea that your morning needs to look a certain way to count.
+Every morning is a fresh start. You get a new one every day. Might as well like it.
 
-Wakey is for the 7am version of you, not the Instagram version.
+We're not here to sell you a 10-step routine or a perfect sunrise moment. We're here for the real version. The calm ones. The messy ones. The alarms that get snoozed. The coffee that spills. The kids jumping on the bed.
 
-This tension runs through everything we say. We choose real over polished. Pillow creases over ring lights. The face you actually have over the one you're supposed to show.
+We believe the first five minutes matter. Not because they need to be optimized, but because they're yours. A small ritual. A moment to check in with yourself, your skin, your people, before the day really begins.
+
+In a world full of sameness and negativity, we choose to highlight the beauty of mornings. Small rituals can shift your whole day. And mornings are the perfect place to begin.
 
 ---
 
@@ -34,8 +36,27 @@ We embrace the mess of mornings. Pillow creases, snooze buttons, that first look
 **4. Confident, not preachy**
 We know what we stand for. We don't need to lecture you about sustainability or guilt you into better choices. We just do the right thing and invite you along.
 
-**5. Specific, not vague**
+**5. Positive, not naive**
+We know mornings aren't always easy. But we choose to see what's good in them. Not toxic positivity. Just a lens that looks for the light.
+
+**6. Specific, not vague**
 We point to things you can picture, count, or verify. If we can't prove it, we don't say it.
+
+---
+
+### THE WAKEY CONTRAST
+
+We don't have enemies. But we do have a point of view.
+
+| Wakey is for | Not for |
+| ------------ | ------- |
+| Real mornings | Performed mornings |
+| The 7am version of you | The Instagram version |
+| Small rituals | 10-step routines |
+| Appreciating the chaos | Just getting through it |
+| Fresh starts | Autopilot |
+
+We're not against anything. We just choose to notice what others scroll past.
 
 ---
 
@@ -77,6 +98,13 @@ Our humor comes from shared experience. The snooze button. The toothpaste on you
 _Yes:_ "For faces that need a minute."
 _No:_ "Wake up and seize the day with our energizing formula."
 
+**We use dashes sparingly**
+Dashes can create rhythm and land a punchline. Use them when you need a beat, a pause before the payoff. Not as default punctuation.
+
+_Yes:_ "You're not you when you're hungry." becomes "You're not you - when you're hungry."
+_Yes:_ "We know life is short - and mornings are shorter - but moments are as long as you make them."
+_No:_ Using dashes in every other sentence.
+
 ---
 
 ### WORDS WE LOVE
@@ -91,6 +119,7 @@ _No:_ "Wake up and seize the day with our energizing formula."
 | Real      | Authentic                  |
 | You       | Customers / Users          |
 | We        | The brand / Wakey believes |
+| Ritual    | Routine / Regimen          |
 
 **Slang is welcome:** vibe, lowkey, kind of obsessed, into it, not gonna lie
 
@@ -100,9 +129,8 @@ _No:_ "Wake up and seize the day with our energizing formula."
 
 ### WORDS AND THINGS WE NEVER USE
 
-- Dashes of any kind
 - Emojis
-- Exclamation marks
+- Exclamation marks (very rare exceptions)
 - "Seamless" / "Solution" / "Elevated" / "Curated"
 - "Clean beauty" (we just are, we don't need to say it)
 - "Sustainable" as a selling point (it's a given, not a headline)
@@ -144,6 +172,32 @@ If a competitor selling garbage could make the same claim, rewrite it.
 | Ingredient info        | Clear, minimal, factual               | "Coconut oil. Softens skin. From Sri Lanka."                                          |
 | Customer complaints    | Warm first, light if appropriate      | "That's not the morning we wanted for you. Let's fix it."                             |
 | Serious issues         | Warm, direct, no jokes                | "We hear you. Here's what we're doing about it."                                      |
+
+---
+
+### WAKEY LINES
+
+These phrases capture who we are. Use them as reference points, in campaigns, or as inspiration.
+
+**The tagline:**
+Making the world a better place, one morning at a time.
+
+**The slogans:**
+- Show us your morning face.
+- Join the good morning movement.
+- Everyone's a morning person. (Some mornings just start at 11:00 AM.)
+- Live a little. Or a lot.
+- Each morning is a new beginning. Celebrate new beginnings with new habits.
+- You get a new one every day. Might as well like it.
+- Rise & Shine.
+- Happiness is power.
+
+**Movement moments:**
+Use these where it feels natural - email sign-offs, post-purchase, social CTAs, packaging. Make people feel like insiders without asking them to "join" anything explicitly. Less recruitment energy, more "you get it, we get it."
+
+- "Welcome to the club"
+- "You're in"
+- Time-based greetings: "Hi, Early bird!" / "Hey, Fresh face." / "You: Stop scrolling!"
 
 ---
 
@@ -191,8 +245,12 @@ If any answer is wrong, rewrite.
 
 ### ONE LAST THING
 
-Wakey celebrates mornings as they actually are. Messy, slow, rushed, late, early, quiet, chaotic. All of them count.
+Every morning is a fresh start. Some are calm. Some are chaos. All of them count.
 
-We're not here to fix your morning. We're here to be the one good thing in it.
+We're not here to optimize your morning. We're here to help you notice it.
+
+Small rituals. Real moments. The first five minutes that set up everything else.
+
+Making the world a better place, one morning at a time.
 
 ---
