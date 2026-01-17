@@ -25,6 +25,17 @@ export interface AppVariables {
 
 const app = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
+// Global error handler - ensure all errors return JSON
+app.onError((err, c) => {
+  console.error('Server error:', err);
+  return c.json(
+    {
+      error: err.message || 'Internal Server Error',
+    },
+    500,
+  );
+});
+
 // Middleware
 app.use('*', logger());
 
