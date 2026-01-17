@@ -127,7 +127,7 @@ export const meta: Route.MetaFunction = ({data}) => {
     '@type': 'Product',
     name: product?.title,
     description: product?.description,
-    image: image,
+    image,
     brand: {
       '@type': 'Brand',
       name: 'Wakey',
@@ -151,8 +151,8 @@ export const meta: Route.MetaFunction = ({data}) => {
   if (ratingValue !== null && reviewCount > 0) {
     productSchema.aggregateRating = {
       '@type': 'AggregateRating',
-      ratingValue: ratingValue,
-      reviewCount: reviewCount,
+      ratingValue,
+      reviewCount,
     };
   }
 
