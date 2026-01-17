@@ -50,6 +50,17 @@ for env_file in "$MAIN_REPO_PATH"/apps/*/.env; do
   fi
 done
 
+# Copy .dev.vars files (used by Cloudflare Workers/Wrangler)
+for dev_vars_file in "$MAIN_REPO_PATH"/apps/*/.dev.vars; do
+  if [ -f "$dev_vars_file" ]; then
+    app_name=$(basename "$(dirname "$dev_vars_file")")
+    echo "Copying apps/$app_name/.dev.vars..."
+    mkdir -p "$WORKTREE_PATH/apps/$app_name"
+    cp "$dev_vars_file" "$WORKTREE_PATH/apps/$app_name/.dev.vars"
+    echo "  ✓ Copied apps/$app_name/.dev.vars"
+  fi
+done
+
 echo ""
 
 # Install dependencies
