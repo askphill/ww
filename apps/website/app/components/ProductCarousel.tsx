@@ -47,7 +47,10 @@ export function ProductCarousel({
   // Mobile: snap scroll carousel
   if (!isDesktop) {
     return (
-      <div className="relative">
+      <div
+        className="relative"
+        style={{paddingTop: 'var(--height-header-mobile)'}}
+      >
         <div
           ref={scrollRef}
           className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
