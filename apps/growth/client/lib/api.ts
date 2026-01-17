@@ -6,8 +6,18 @@ interface ApiError {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const error = (await response.json()) as ApiError;
-    throw new Error(error.error || 'An error occurred');
+    let errorMessage = 'An error occurred';
+    try {
+      const error = (await response.json()) as ApiError;
+      errorMessage = error.error || errorMessage;
+    } catch {
+      // Response body is not valid JSON (e.g., plain text "Internal Server Error")
+      const text = await response.text().catch(() => '');
+      if (text) {
+        errorMessage = text;
+      }
+    }
+    throw new Error(errorMessage);
   }
   return response.json() as Promise<T>;
 }

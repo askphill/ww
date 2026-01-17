@@ -38,6 +38,7 @@ When the user runs `/worktree <branch-name>`, perform these steps:
    - Copies `.env` from the root (if exists)
    - Copies `apps/website/.env` (if exists)
    - Copies any other `apps/*/.env` files
+   - Copies `apps/*/.dev.vars` files (for Cloudflare Workers)
    - Runs `pnpm install` in the worktree
 
 4. **Confirm completion** and provide the path to the new worktree.
