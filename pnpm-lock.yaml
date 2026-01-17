@@ -24,7 +24,7 @@ importers:
         specifier: ^2.3.0
         version: 2.7.3
 
-  apps/growth:
+  apps/admin:
     dependencies:
       '@google/generative-ai':
         specifier: ^0.21.0
