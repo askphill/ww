@@ -16,7 +16,7 @@ Every morning is a fresh start. You get a new one every day. Might as well like 
 
 We're not here to sell you a 10-step routine or a perfect sunrise moment. We're here for the real version. The calm ones. The messy ones. The alarms that get snoozed. The coffee that spills. The kids jumping on the bed.
 
-We believe the first five minutes matter. Not because they need to be optimized, but because they're yours. A small ritual. A moment to check in with yourself, your skin, your people, before the day really begins.
+We believe the first moments matter. Not because they need to be optimized, but because they're yours. A small ritual. A moment to check in with yourself, your skin, your people, before the day really begins.
 
 In a world full of sameness and negativity, we choose to highlight the beauty of mornings. Small rituals can shift your whole day. And mornings are the perfect place to begin.
 
@@ -205,14 +205,13 @@ Use these where it feels natural - email sign-offs, post-purchase, social CTAs, 
 
 Before publishing any copy, ask:
 
-1. Would I actually say this to a friend at 7am?
+1. Would I actually say this to a friend?
 2. Can someone picture what I'm describing?
-3. Can I cut any words without losing meaning?
-4. Does it sound like a person or a brand?
+3. Is every word earning its place?
+4. Does it sound like a person?
 5. Is it true? Could I prove it?
-6. Could a bad product make the same claim?
 
-If any answer is wrong, rewrite.
+If any answer is no, rewrite.
 
 ---
 
@@ -249,7 +248,7 @@ Every morning is a fresh start. Some are calm. Some are chaos. All of them count
 
 We're not here to optimize your morning. We're here to help you notice it.
 
-Small rituals. Real moments. The first five minutes that set up everything else.
+Small rituals. Real moments. The first moments that set up everything else.
 
 Making the world a better place, one morning at a time.
 
