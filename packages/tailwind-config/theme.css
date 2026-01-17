@@ -40,6 +40,9 @@
 
   /* Drawer - 8 columns of 24-column grid + left padding (px-8 = 2rem) */
   --drawer-width: clamp(30rem, calc(2rem + (100vw - 4rem) / 3), 50rem);
+
+  /* Header heights */
+  --height-header-mobile: 3.5rem; /* h-14 = 56px */
 }
 
 /* Responsive utilities */
