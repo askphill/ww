@@ -1,5 +1,5 @@
 {
-  "name": "@wakey/growth",
+  "name": "@wakey/admin",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,8 +11,8 @@
     "deploy": "vite build && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "wrangler d1 migrations apply wakey-growth --local",
-    "db:migrate:prod": "wrangler d1 migrations apply wakey-growth --remote"
+    "db:migrate": "wrangler d1 migrations apply wakey-admin --local",
+    "db:migrate:prod": "wrangler d1 migrations apply wakey-admin --remote"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

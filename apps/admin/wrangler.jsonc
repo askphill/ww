@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/schemas/config.schema.json",
-  "name": "wakey-growth",
+  "name": "wakey-admin",
   "main": "server/index.ts",
   "compatibility_date": "2024-12-18",
   "compatibility_flags": ["nodejs_compat"],
@@ -9,8 +9,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "wakey-growth",
-      "database_id": "aeae393f-7482-4852-bdee-60225a12f942",
+      "database_name": "wakey-admin",
+      "database_id": "500f25cf-f600-4329-8c1b-bda65ff5b43a",
       "migrations_dir": "drizzle/migrations"
     }
   ],
@@ -23,6 +23,6 @@
 
   // Environment variables (set in dashboard or .dev.vars)
   "vars": {
-    "VITE_APP_URL": "https://growth.wakey.care"
+    "VITE_APP_URL": "https://admin.wakey.care"
   }
 }
