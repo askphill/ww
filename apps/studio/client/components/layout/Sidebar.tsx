@@ -4,7 +4,10 @@ import {cn} from '../../lib/utils';
 const navigation = [
   {
     name: 'SEO',
-    items: [{name: 'Overview', href: '/seo'}],
+    items: [
+      {name: 'Tracking', href: '/seo/tracking'},
+      {name: 'Opportunities', href: '/seo/opportunities'},
+    ],
   },
   {
     name: 'Marketing',

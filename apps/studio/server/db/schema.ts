@@ -78,6 +78,34 @@ export const opportunityInsights = sqliteTable(
   (table) => [index('idx_insights_type').on(table.insightType)],
 );
 
+// Keyword tracking
+export const trackedKeywords = sqliteTable(
+  'tracked_keywords',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    keyword: text('keyword').notNull().unique(),
+    createdAt: text('created_at').default("datetime('now')"),
+  },
+  (table) => [index('idx_tracked_keywords_keyword').on(table.keyword)],
+);
+
+export const keywordPositions = sqliteTable(
+  'keyword_positions',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    keywordId: integer('keyword_id')
+      .notNull()
+      .references(() => trackedKeywords.id, {onDelete: 'cascade'}),
+    position: integer('position'), // null if not in top 100
+    url: text('url'), // which page ranks
+    date: text('date').notNull(),
+    createdAt: text('created_at').default("datetime('now')"),
+  },
+  (table) => [
+    index('idx_positions_keyword_date').on(table.keywordId, table.date),
+  ],
+);
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -91,3 +119,7 @@ export type Opportunity = typeof opportunities.$inferSelect;
 export type NewOpportunity = typeof opportunities.$inferInsert;
 export type OpportunityInsight = typeof opportunityInsights.$inferSelect;
 export type NewOpportunityInsight = typeof opportunityInsights.$inferInsert;
+export type TrackedKeyword = typeof trackedKeywords.$inferSelect;
+export type NewTrackedKeyword = typeof trackedKeywords.$inferInsert;
+export type KeywordPosition = typeof keywordPositions.$inferSelect;
+export type NewKeywordPosition = typeof keywordPositions.$inferInsert;

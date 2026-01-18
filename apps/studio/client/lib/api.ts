@@ -184,4 +184,84 @@ export const api = {
         credentials: 'include',
       }).then(handleResponse<{success: boolean}>),
   },
+
+  // Keyword Tracking
+  tracking: {
+    list: () =>
+      fetch(`${API_BASE}/tracking`, {credentials: 'include'}).then(
+        handleResponse<{
+          keywords: Array<{
+            id: number;
+            keyword: string;
+            createdAt: string;
+            currentPosition: number | null;
+            currentUrl: string | null;
+            lastChecked: string | null;
+            change: number | null;
+          }>;
+        }>,
+      ),
+
+    add: (keyword: string) =>
+      fetch(`${API_BASE}/tracking`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({keyword}),
+        credentials: 'include',
+      }).then(
+        handleResponse<{
+          success: boolean;
+          keyword: {id: number; keyword: string};
+        }>,
+      ),
+
+    remove: (id: number) =>
+      fetch(`${API_BASE}/tracking/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      }).then(handleResponse<{success: boolean}>),
+
+    getHistory: (id: number, days = 30) =>
+      fetch(`${API_BASE}/tracking/${id}/history?days=${days}`, {
+        credentials: 'include',
+      }).then(
+        handleResponse<{
+          history: Array<{
+            position: number | null;
+            url: string | null;
+            date: string;
+          }>;
+        }>,
+      ),
+
+    checkPositions: () =>
+      fetch(`${API_BASE}/tracking/check`, {
+        method: 'POST',
+        credentials: 'include',
+      }).then(
+        handleResponse<{
+          success: boolean;
+          checked: number;
+          stored: number;
+          results: Array<{
+            keyword: string;
+            position: number | null;
+            url: string | null;
+          }>;
+        }>,
+      ),
+
+    getSuggestions: (query: string) =>
+      fetch(`${API_BASE}/tracking/suggestions?q=${encodeURIComponent(query)}`, {
+        credentials: 'include',
+      }).then(
+        handleResponse<{
+          suggestions: Array<{
+            query: string;
+            totalImpressions: number;
+            avgPosition: number;
+          }>;
+        }>,
+      ),
+  },
 };

@@ -4,6 +4,7 @@ import {logger} from 'hono/logger';
 import {authRoutes} from './routes/auth';
 import {gscRoutes} from './routes/gsc';
 import {opportunitiesRoutes} from './routes/opportunities';
+import {trackingRoutes} from './routes/tracking';
 import type {AuthUser} from './middleware/auth';
 
 export interface Env {
@@ -17,6 +18,8 @@ export interface Env {
   RESEND_API_KEY: string;
   AUTH_SECRET: string;
   VITE_APP_URL: string;
+  DATAFORSEO_LOGIN: string;
+  DATAFORSEO_PASSWORD: string;
 }
 
 export interface AppVariables {
@@ -57,6 +60,7 @@ app.use(
 app.route('/api/auth', authRoutes);
 app.route('/api/gsc', gscRoutes);
 app.route('/api/opportunities', opportunitiesRoutes);
+app.route('/api/tracking', trackingRoutes);
 
 // Health check
 app.get('/api/health', (c) => {
