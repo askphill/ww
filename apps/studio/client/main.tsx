@@ -1,7 +1,8 @@
-import {StrictMode} from 'react';
+import {StrictMode, type ReactNode} from 'react';
 import {createRoot} from 'react-dom/client';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {App} from './App';
+import {useDarkMode} from './hooks/useDarkMode';
 import './globals.css';
 
 const queryClient = new QueryClient({
@@ -13,10 +14,17 @@ const queryClient = new QueryClient({
   },
 });
 
+function DarkModeProvider({children}: {children: ReactNode}) {
+  useDarkMode();
+  return <>{children}</>;
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <DarkModeProvider>
+        <App />
+      </DarkModeProvider>
     </QueryClientProvider>
   </StrictMode>,
 );
