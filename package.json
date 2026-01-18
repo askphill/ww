@@ -3,7 +3,7 @@
   "private": true,
   "prettier": "@shopify/prettier-config",
   "scripts": {
-    "dev": "turbo dev --filter=@wakey/website --filter=@wakey/admin",
+    "dev": "turbo dev --filter=@wakey/website --filter=@wakey/studio",
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
@@ -11,8 +11,8 @@
     "format:check": "prettier --check .",
     "dev:website": "turbo dev --filter=@wakey/website",
     "build:website": "turbo build --filter=@wakey/website",
-    "dev:admin": "turbo dev --filter=@wakey/admin",
-    "build:admin": "turbo build --filter=@wakey/admin",
+    "dev:studio": "turbo dev --filter=@wakey/studio",
+    "build:studio": "turbo build --filter=@wakey/studio",
     "prepare": "husky"
   },
   "devDependencies": {
