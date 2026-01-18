@@ -20,7 +20,7 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-col border-r border-sidebar-border bg-sidebar">
       <div className="flex h-16 items-center border-b border-sidebar-border px-6">
         <span className="text-xl font-bold text-sidebar-foreground">
-          Wakey Growth
+          Wakey Studio
         </span>
       </div>
       <nav className="flex-1 overflow-y-auto p-4">
