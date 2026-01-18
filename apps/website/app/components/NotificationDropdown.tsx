@@ -66,8 +66,8 @@ export function NotificationDropdown({
                           }
                           tabIndex={isOpen ? 0 : -1}
                           className={`
-                          flex items-start gap-3 py-3 rounded-lg transition-colors
-                          hover:bg-black/5
+                          flex items-start gap-3 py-3 rounded-lg transition-opacity
+                          hover:opacity-80
                           ${isRead ? 'opacity-60' : ''}
                         `}
                         >
