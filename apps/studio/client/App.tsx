@@ -1,7 +1,8 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {DashboardLayout} from './components/layout/DashboardLayout';
 import {Login} from './pages/Login';
-import {Overview} from './pages/seo/Overview';
+import {Opportunities} from './pages/seo/Opportunities';
+import {Tracking} from './pages/seo/Tracking';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
 import {useAuth} from './hooks/useAuth';
@@ -35,8 +36,15 @@ export function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <Routes>
-                  <Route path="/" element={<Navigate to="/seo" replace />} />
-                  <Route path="/seo" element={<Overview />} />
+                  <Route
+                    path="/"
+                    element={<Navigate to="/seo/tracking" replace />}
+                  />
+                  <Route path="/seo/tracking" element={<Tracking />} />
+                  <Route
+                    path="/seo/opportunities"
+                    element={<Opportunities />}
+                  />
                   <Route path="/klaviyo" element={<Klaviyo />} />
                   <Route path="/meta" element={<Meta />} />
                 </Routes>

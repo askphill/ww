@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import {api} from '../../lib/api';
 import {formatNumber, formatPosition} from '../../lib/utils';
 
-export function Overview() {
+export function Opportunities() {
   const queryClient = useQueryClient();
   const [generatingPlanId, setGeneratingPlanId] = useState<number | null>(null);
   const [generatingBlogPostId, setGeneratingBlogPostId] = useState<

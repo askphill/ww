@@ -167,12 +167,10 @@ authRoutes.post('/logout', async (c) => {
 
 // Dev login (local only)
 authRoutes.post('/dev-login', async (c) => {
-  // Only allow in local development
-  const url = new URL(c.req.url);
-  if (
-    !url.hostname.includes('localhost') &&
-    !url.hostname.includes('127.0.0.1')
-  ) {
+  // Only allow in local development (check VITE_APP_URL which is localhost in dev)
+  const appUrl = c.env.VITE_APP_URL;
+  const isLocal = appUrl.includes('localhost') || appUrl.includes('127.0.0.1');
+  if (!isLocal) {
     return c.json({error: 'Dev login only available locally'}, 403);
   }
 
