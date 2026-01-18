@@ -199,3 +199,132 @@ body {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+/* Dark mode badge variants */
+.dark .badge-red {
+  background-color: oklch(0.396 0.141 25.723 / 20%);
+  color: oklch(0.7 0.15 25);
+}
+
+.dark .badge-amber {
+  background-color: oklch(0.459 0.128 78.934 / 20%);
+  color: oklch(0.8 0.15 85);
+}
+
+.dark .badge-blue {
+  background-color: oklch(0.379 0.146 265.522 / 20%);
+  color: oklch(0.7 0.15 265);
+}
+
+.dark .badge-green {
+  background-color: oklch(0.393 0.111 162.589 / 20%);
+  color: oklch(0.7 0.12 162);
+}
+
+.dark .badge-orange {
+  background-color: oklch(0.495 0.163 38.548 / 20%);
+  color: oklch(0.75 0.15 55);
+}
+
+/* Dark mode action plan */
+.dark .action-plan {
+  background-color: oklch(0.35 0.05 155);
+  border-color: oklch(0.45 0.06 155);
+}
+
+.dark .action-plan-title {
+  color: oklch(0.75 0.1 155);
+}
+
+.dark .action-plan-content {
+  color: oklch(0.85 0.05 155);
+}
+
+.dark .action-plan-content h1,
+.dark .action-plan-content h2,
+.dark .action-plan-content h3,
+.dark .action-plan-content h4 {
+  color: oklch(0.9 0.06 155);
+}
+
+.dark .action-plan-content strong {
+  color: oklch(0.95 0.04 155);
+}
+
+.dark .action-plan-content code {
+  background-color: oklch(0.3 0.04 155);
+}
+
+.dark .action-plan-content pre {
+  background-color: oklch(0.3 0.04 155);
+}
+
+/* Warning box (amber) */
+.warning-box {
+  background-color: oklch(0.962 0.059 70 / 20%);
+  border-color: oklch(0.7 0.15 70 / 30%);
+}
+
+.warning-box-title {
+  color: oklch(0.55 0.15 55);
+}
+
+.warning-box-content {
+  color: oklch(0.5 0.12 55);
+}
+
+.warning-box-hint {
+  color: oklch(0.55 0.15 55);
+}
+
+.dark .warning-box {
+  background-color: oklch(0.4 0.08 70 / 20%);
+  border-color: oklch(0.55 0.12 70 / 30%);
+}
+
+.dark .warning-box-title {
+  color: oklch(0.8 0.12 70);
+}
+
+.dark .warning-box-content {
+  color: oklch(0.75 0.1 70);
+}
+
+.dark .warning-box-hint {
+  color: oklch(0.8 0.12 70);
+}
+
+/* Blog post card (green) */
+.blog-post-card {
+  background-color: oklch(0.962 0.052 145 / 10%);
+  border-color: oklch(0.6 0.15 145 / 30%);
+}
+
+.blog-post-title {
+  color: oklch(0.45 0.12 145);
+}
+
+.blog-post-button {
+  color: oklch(0.45 0.12 145);
+}
+
+.blog-post-button:hover {
+  background-color: oklch(0.6 0.15 145 / 10%);
+}
+
+.dark .blog-post-card {
+  background-color: oklch(0.35 0.06 145 / 15%);
+  border-color: oklch(0.5 0.1 145 / 30%);
+}
+
+.dark .blog-post-title {
+  color: oklch(0.75 0.1 145);
+}
+
+.dark .blog-post-button {
+  color: oklch(0.75 0.1 145);
+}
+
+.dark .blog-post-button:hover {
+  background-color: oklch(0.5 0.1 145 / 15%);
+}

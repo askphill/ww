@@ -180,16 +180,16 @@ export function Overview() {
                   )}
                   {insight.matchingExistingContent &&
                     insight.matchingExistingContent.length > 0 && (
-                      <div className="mt-3 rounded border border-amber-500/30 bg-amber-500/10 p-3">
-                        <p className="text-xs font-medium uppercase text-amber-600 dark:text-amber-400">
+                      <div className="warning-box mt-3 rounded border p-3">
+                        <p className="warning-box-title text-xs font-medium uppercase">
                           Existing Content That May Cover This Topic
                         </p>
-                        <ul className="mt-1 list-inside list-disc text-sm text-amber-700 dark:text-amber-300">
+                        <ul className="warning-box-content mt-1 list-inside list-disc text-sm">
                           {insight.matchingExistingContent.map((content, i) => (
                             <li key={i}>{content}</li>
                           ))}
                         </ul>
-                        <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                        <p className="warning-box-hint mt-2 text-xs">
                           Consider optimizing existing content before creating
                           new.
                         </p>
@@ -566,21 +566,21 @@ function BlogPostCard({blogPost}: {blogPost: string}) {
   };
 
   return (
-    <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/5 p-4">
+    <div className="blog-post-card mt-4 rounded-lg border p-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium uppercase text-green-600 dark:text-green-400">
+        <p className="blog-post-title text-xs font-medium uppercase">
           Generated Blog Post
         </p>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="rounded px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-500/10 dark:text-green-400"
+            className="blog-post-button rounded px-2 py-1 text-xs font-medium"
           >
             {expanded ? 'Collapse' : 'Expand'}
           </button>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-500/10 dark:text-green-400"
+            className="blog-post-button flex items-center gap-1 rounded px-2 py-1 text-xs font-medium"
           >
             {copied ? (
               <>
@@ -629,7 +629,7 @@ function BlogPostCard({blogPost}: {blogPost: string}) {
         <div className="mt-2 text-center">
           <button
             onClick={() => setExpanded(true)}
-            className="text-xs font-medium text-green-600 hover:underline dark:text-green-400"
+            className="blog-post-button text-xs font-medium hover:underline"
           >
             Show full blog post...
           </button>
