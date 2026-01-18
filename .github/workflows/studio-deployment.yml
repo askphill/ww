@@ -1,8 +1,8 @@
-name: Storefront 1000081526
+name: Studio Deployment
 on:
   push:
     paths:
-      - 'apps/website/**'
+      - 'apps/studio/**'
       - 'packages/**'
       - 'pnpm-lock.yaml'
 
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to Oxygen
+    name: Deploy Studio to Workers
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
@@ -31,11 +31,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Copy lockfile for Oxygen build
-        run: cp pnpm-lock.yaml apps/website/
-
-      - name: Build and Publish to Oxygen
-        working-directory: apps/website
-        run: npx shopify hydrogen deploy --force
+      - name: Build and Deploy to Cloudflare Workers
+        working-directory: apps/studio
+        run: pnpm deploy
         env:
-          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000081526 }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
