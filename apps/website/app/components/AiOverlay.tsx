@@ -15,10 +15,25 @@ type StoryStep =
   | {type: 'logo'; duration: number};
 
 const storySteps: StoryStep[] = [
-  {type: 'text', content: "Join the Good Morning Movement. Let's find your *morning* *personality.*", duration: 1500, className: 'text-h1 font-display'},
+  {
+    type: 'text',
+    content: "Let's find your *morning* *personality.*",
+    duration: 1500,
+    className: 'text-h1 font-display',
+  },
   {type: 'images', content: '', duration: 2500},
-  {type: 'text', content: "Mornings are *messy,* *chaotic,* and *alive.* Let's reinvent yours with *0%* *bullshit.*", duration: 2000, className: 'text-h2 font-body'},
-  {type: 'text', content: 'Are you ready? Show us your *morning* *face.*', duration: 1500, className: 'text-h2 font-body italic'},
+  {
+    type: 'text',
+    content: 'Mornings are *messy,* *chaotic,* and *alive.* Yours too.',
+    duration: 2000,
+    className: 'text-h2 font-body',
+  },
+  {
+    type: 'text',
+    content: 'Ready? Show us your *morning* *face.*',
+    duration: 1500,
+    className: 'text-h2 font-body italic',
+  },
 ];
 
 // Questionnaire data
@@ -28,10 +43,10 @@ type Question =
 
 // Morning type mapping from first question answer index
 const morningTypes = [
-  {emoji: '☀️', label: 'Early Bird'},
-  {emoji: '☕', label: 'Revolutionist'},
-  {emoji: '😴', label: 'Snoozer'},
-  {emoji: '🏃‍♂️', label: 'Sprinter'},
+  {label: 'The Early Bird'},
+  {label: 'The Morning Manager'},
+  {label: 'The Revolutionist'},
+  {label: 'The Snoozer'},
 ];
 
 const questions: Question[] = [
@@ -40,48 +55,60 @@ const questions: Question[] = [
     key: 'morningType',
     question: 'How does your alarm usually find you?',
     options: [
-      "☀️ The Early Bird — I'm up and energized before the sun.",
-      '☕ The Revolutionist — Serving revolution with a side of coffee.',
-      '😴 The Snoozer — My morning officially starts at 11:00 AM.',
-      '🏃‍♂️ The Sprinter — Life is short, and my mornings are shorter.',
+      'The Early Bird. Up before the sun, somehow energized.',
+      'The Morning Manager. Kids, pets, chaos. You handle it.',
+      'The Revolutionist. Coffee first. Everything else second.',
+      'The Snoozer. Morning officially starts at 11.',
+    ],
+  },
+  {
+    type: 'choice',
+    key: 'favoriteActivity',
+    question: 'First thing you actually want to do?',
+    options: [
+      'Move. Sweat. Get the blood going.',
+      'Step outside. Feel the air. See the light.',
+      'Eat. Coffee. The whole ritual.',
+      'Sit still. Journal, meditate, or just be.',
     ],
   },
   {
     type: 'choice',
     key: 'soundtrack',
-    question: "What's the soundtrack to your morning face?",
+    question: "What's playing in the background?",
     options: [
-      '🎶 A curated morning playlist.',
-      '🐦 Just the sound of birds.',
-      "📢 News, podcasts, or the 'Voice of Now.'",
-      '🤫 Silence is the only peace I get.',
+      'A playlist I actually made.',
+      'Birds. Just birds.',
+      'News, podcasts, someone talking.',
+      'Nothing. Silence is the point.',
     ],
   },
   {
     type: 'choice',
     key: 'values',
-    question: 'When it comes to your skin, what are you most protective of?',
+    question: 'When it comes to your skin, what matters most?',
     options: [
-      '🌍 The Planet — No plastic, no waste.',
-      '🐰 The Animals — Cruelty-free and vegan only.',
-      '🧬 The Ingredients — No hormone-disruptors or heavy metals.',
-      '✨ The Results — I just want it to work and feel good.',
+      'The planet. No plastic, no waste.',
+      'The animals. Vegan and cruelty-free only.',
+      "The ingredients. Nothing I can't pronounce.",
+      'The results. I just want it to work.',
     ],
   },
   {
     type: 'choice',
     key: 'habitView',
-    question: 'How do you view your personal care routine?',
+    question: 'How do you feel about your morning routine?',
     options: [
-      "🛠️ It's a basic set of actions to get energized.",
-      "🧘 It's my 'me-time'—moments are as long as I make them.",
-      "♻️ It's my way of making the world a better place.",
+      "It's the basics. Gets me going.",
+      "It's my time. I take as long as I want.",
+      'I wish I had more of it.',
+      "Honestly? I don't think about it.",
     ],
   },
   {
     type: 'text',
     key: 'name',
-    question: "Oh and I almost forgot, what's your name?",
+    question: "Almost forgot. What's your name?",
     placeholder: 'Type your name...',
   },
 ];
@@ -229,13 +256,16 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
   const [showStoryContent, setShowStoryContent] = useState(false);
 
   // Questionnaire state
-  const [phase, setPhase] = useState<'story' | 'questionnaire' | 'images-interstitial' | 'complete'>('story');
+  const [phase, setPhase] = useState<
+    'story' | 'questionnaire' | 'images-interstitial' | 'complete'
+  >('story');
   const [questionIndex, setQuestionIndex] = useState(0);
   const [showQuestion, setShowQuestion] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [morningTypeIndex, setMorningTypeIndex] = useState<number | null>(null);
   const [nameInput, setNameInput] = useState('');
   const [showImagesInterstitial, setShowImagesInterstitial] = useState(false);
+  const [waitingForStart, setWaitingForStart] = useState(false);
 
   // Responsive detection for card layout
   const [isDesktop, setIsDesktop] = useState(false);
@@ -271,29 +301,32 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
   }, [storyIndex]);
 
   // Handle answer selection
-  const selectAnswer = useCallback((answer: string, answerIndex?: number) => {
-    const currentQ = questions[questionIndex];
-    setAnswers((prev) => ({...prev, [currentQ.key]: answer}));
-    setShowQuestion(false);
+  const selectAnswer = useCallback(
+    (answer: string, answerIndex?: number) => {
+      const currentQ = questions[questionIndex];
+      setAnswers((prev) => ({...prev, [currentQ.key]: answer}));
+      setShowQuestion(false);
 
-    // If this is the first question (morningType), save the index for the card
-    if (currentQ.key === 'morningType' && answerIndex !== undefined) {
-      setMorningTypeIndex(answerIndex);
-    }
-
-    setTimeout(() => {
-      // After Q1 (morningType), show images interstitial
-      if (currentQ.key === 'morningType') {
-        setPhase('images-interstitial');
-        setShowImagesInterstitial(true);
-      } else if (questionIndex < questions.length - 1) {
-        setQuestionIndex((prev) => prev + 1);
-        setShowQuestion(true);
-      } else {
-        setPhase('complete');
+      // If this is the first question (morningType), save the index for the card
+      if (currentQ.key === 'morningType' && answerIndex !== undefined) {
+        setMorningTypeIndex(answerIndex);
       }
-    }, 400);
-  }, [questionIndex]);
+
+      setTimeout(() => {
+        // After Q1 (morningType), show images interstitial
+        if (currentQ.key === 'morningType') {
+          setPhase('images-interstitial');
+          setShowImagesInterstitial(true);
+        } else if (questionIndex < questions.length - 1) {
+          setQuestionIndex((prev) => prev + 1);
+          setShowQuestion(true);
+        } else {
+          setPhase('complete');
+        }
+      }, 400);
+    },
+    [questionIndex],
+  );
 
   // Handle name submission
   const submitName = useCallback(() => {
@@ -301,6 +334,12 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
       selectAnswer(nameInput.trim());
     }
   }, [nameInput, selectAnswer]);
+
+  // Handle Start button click (after first slide)
+  const handleStart = useCallback(() => {
+    setWaitingForStart(false);
+    advanceStory();
+  }, [advanceStory]);
 
   // Initial UI animation sequence
   useEffect(() => {
@@ -316,6 +355,7 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
       setMorningTypeIndex(null);
       setNameInput('');
       setShowImagesInterstitial(false);
+      setWaitingForStart(false);
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -344,16 +384,32 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
     }
   }, [isOpen]);
 
-  // Auto-advance story
+  // Auto-advance story (except for first slide which waits for Start button)
   useEffect(() => {
     if (phase !== 'story' || !showStoryContent || uiStep < 4) return;
 
+    // First slide (storyIndex === 0): wait for Start button instead of auto-advance
+    if (storyIndex === 0) {
+      const timer = setTimeout(() => {
+        setWaitingForStart(true);
+      }, currentStory.duration);
+      return () => clearTimeout(timer);
+    }
+
+    // Other slides: auto-advance as normal
     const timer = setTimeout(() => {
       advanceStory();
     }, currentStory.duration);
 
     return () => clearTimeout(timer);
-  }, [phase, showStoryContent, uiStep, currentStory.duration, advanceStory]);
+  }, [
+    phase,
+    showStoryContent,
+    uiStep,
+    currentStory.duration,
+    advanceStory,
+    storyIndex,
+  ]);
 
   // Auto-advance from images interstitial (2000ms as per flow)
   useEffect(() => {
@@ -425,36 +481,63 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
       <div className="flex items-center justify-center h-full relative z-10 px-6">
         <AnimatePresence mode="wait">
           {showStoryContent && currentStory.type === 'text' && (
-            <motion.p
+            <motion.div
               key={storyIndex}
-              className={`${'className' in currentStory && currentStory.className ? currentStory.className : 'text-h1'} font-display text-black flex flex-wrap justify-center gap-x-4 gap-y-2 max-w-4xl text-center`}
-              aria-label={currentStory.content}
+              className="flex flex-col items-center gap-8 max-w-4xl"
             >
-              {currentStory.content.split(' ').map((word, i) => {
-                const isEmphasized = word.startsWith('*') && word.endsWith('*');
-                const displayWord = isEmphasized ? word.slice(1, -1) : word;
-                return (
-                  <motion.span
-                    key={i}
-                    custom={i}
-                    variants={wordVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className={isEmphasized ? 'italic' : ''}
-                  >
-                    {displayWord}
-                  </motion.span>
-                );
-              })}
-            </motion.p>
+              <motion.p
+                className={`${'className' in currentStory && currentStory.className ? currentStory.className : 'text-h1'} font-display text-black flex flex-wrap justify-center gap-x-4 gap-y-2 text-center`}
+                aria-label={currentStory.content}
+              >
+                {currentStory.content.split(' ').map((word, i) => {
+                  const isEmphasized =
+                    word.startsWith('*') && word.endsWith('*');
+                  const displayWord = isEmphasized ? word.slice(1, -1) : word;
+                  return (
+                    <motion.span
+                      key={i}
+                      custom={i}
+                      variants={wordVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className={isEmphasized ? 'italic' : ''}
+                    >
+                      {displayWord}
+                    </motion.span>
+                  );
+                })}
+              </motion.p>
+
+              {/* Start button - only shown after first slide animation */}
+              {storyIndex === 0 && waitingForStart && (
+                <motion.button
+                  type="button"
+                  onClick={handleStart}
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 25,
+                    delay: 0.2,
+                  }}
+                  className="py-4 px-12 bg-black text-white rounded-card text-paragraph font-body hover:bg-black/80 transition-colors cursor-pointer"
+                >
+                  Start
+                </motion.button>
+              )}
+            </motion.div>
           )}
 
           {showStoryContent && currentStory.type === 'images' && (
             <motion.div
               key="images"
               className="relative flex items-center justify-center"
-              style={{width: isDesktop ? '80vw' : '200px', height: isDesktop ? '45vw' : '280px'}}
+              style={{
+                width: isDesktop ? '80vw' : '200px',
+                height: isDesktop ? '45vw' : '280px',
+              }}
             >
               {flyingImages.map((src, i) => (
                 <motion.div
@@ -503,7 +586,10 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
             <motion.div
               key="images-interstitial"
               className="relative flex items-center justify-center"
-              style={{width: isDesktop ? '80vw' : '200px', height: isDesktop ? '45vw' : '280px'}}
+              style={{
+                width: isDesktop ? '80vw' : '200px',
+                height: isDesktop ? '45vw' : '280px',
+              }}
             >
               {flyingImages.map((src, i) => (
                 <motion.div
@@ -615,28 +701,29 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
                 className="bg-white rounded-card p-8 md:p-12 shadow-xl max-w-sm w-full"
                 initial={{opacity: 0, scale: 0.9}}
                 animate={{opacity: 1, scale: 1}}
-                transition={{delay: 0.2, type: 'spring', stiffness: 300, damping: 25}}
+                transition={{
+                  delay: 0.2,
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 25,
+                }}
               >
-                {/* Emoji and Morning Type */}
-                {morningTypeIndex !== null && morningTypes[morningTypeIndex] && (
-                  <div className="mb-6">
-                    <span className="text-display block mb-2">
-                      {morningTypes[morningTypeIndex].emoji}
-                    </span>
-                    <h3 className="text-h3 font-display text-black">
+                {/* Morning Type Label */}
+                {morningTypeIndex !== null &&
+                  morningTypes[morningTypeIndex] && (
+                    <h3 className="text-h2 font-display text-black mb-6">
                       {morningTypes[morningTypeIndex].label}
                     </h3>
-                  </div>
-                )}
+                  )}
 
                 {/* Personalized greeting */}
-                <p className="text-s2 font-display text-black mb-4">
-                  Nice to meet you{answers.name ? `, ${answers.name}` : ''}!
+                <p className="text-s1 font-display text-black mb-2">
+                  Hey{answers.name ? ` ${answers.name}` : ''}.
                 </p>
 
-                {/* Community welcome */}
-                <p className="text-paragraph font-body text-black/70 mb-6">
-                  You're now part of the Good Morning Movement. Are you ready?
+                {/* Welcome message */}
+                <p className="text-paragraph font-body text-black/70 mb-8">
+                  You're in. Welcome to mornings as they actually are.
                 </p>
 
                 {/* CTA Button */}
@@ -653,16 +740,19 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
         </AnimatePresence>
       </div>
 
-      {/* Skip button */}
-      {phase === 'story' && uiStep >= 4 && storyIndex < storySteps.length - 1 && (
-        <button
-          type="button"
-          onClick={advanceStory}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-black/40 hover:text-black/60 transition-colors font-body text-small z-20"
-        >
-          tap to skip
-        </button>
-      )}
+      {/* Skip button - hide on first slide when waiting for Start */}
+      {phase === 'story' &&
+        uiStep >= 4 &&
+        storyIndex < storySteps.length - 1 &&
+        !waitingForStart && (
+          <button
+            type="button"
+            onClick={advanceStory}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-black/40 hover:text-black/60 transition-colors font-body text-small z-20"
+          >
+            tap to skip
+          </button>
+        )}
 
       {/* Animated gradient glow - bottom half of screen */}
       <div
@@ -703,8 +793,10 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
             )`,
             backgroundSize: '200% 100%',
             animation: 'ai-gradient-flow 4s ease-in-out infinite',
-            maskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 100%)',
+            maskImage:
+              'linear-gradient(to top, black 0%, black 40%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(to top, black 0%, black 40%, transparent 100%)',
           }}
         />
         {/* Secondary glow layer - offset animation */}
@@ -721,8 +813,10 @@ export function AiOverlay({isOpen, onClose}: AiOverlayProps) {
             )`,
             backgroundSize: '200% 100%',
             animation: 'ai-gradient-flow 3s ease-in-out infinite reverse',
-            maskImage: 'linear-gradient(to top, black 0%, black 30%, transparent 80%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 0%, black 30%, transparent 80%)',
+            maskImage:
+              'linear-gradient(to top, black 0%, black 30%, transparent 80%)',
+            WebkitMaskImage:
+              'linear-gradient(to top, black 0%, black 30%, transparent 80%)',
           }}
         />
         {/* Bright center glow */}
