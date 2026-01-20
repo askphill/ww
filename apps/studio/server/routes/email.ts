@@ -1634,6 +1634,134 @@ emailRoutes.patch(
   },
 );
 
+// Schedule a campaign (or send immediately)
+emailRoutes.post(
+  '/campaigns/:id/schedule',
+  zValidator(
+    'json',
+    z.object({
+      scheduledAt: z.string().datetime().optional(),
+    }),
+  ),
+  async (c) => {
+    const id = parseInt(c.req.param('id'));
+    const {scheduledAt} = c.req.valid('json');
+    const db = createDb(c.env.DB);
+
+    // Check if campaign exists and is draft
+    const [campaign] = await db
+      .select({
+        id: campaigns.id,
+        status: campaigns.status,
+        templateId: campaigns.templateId,
+        segmentIds: campaigns.segmentIds,
+      })
+      .from(campaigns)
+      .where(eq(campaigns.id, id))
+      .limit(1);
+
+    if (!campaign) {
+      return c.json({error: 'Campaign not found'}, 404);
+    }
+
+    if (campaign.status !== 'draft') {
+      return c.json({error: 'Only draft campaigns can be scheduled'}, 400);
+    }
+
+    // Validate campaign has template and segments
+    if (!campaign.templateId) {
+      return c.json({error: 'Campaign must have a template selected'}, 400);
+    }
+
+    if (!campaign.segmentIds) {
+      return c.json(
+        {error: 'Campaign must have at least one segment selected'},
+        400,
+      );
+    }
+
+    // Validate scheduledAt is at least 15 minutes in the future if provided
+    if (scheduledAt) {
+      const scheduledTime = new Date(scheduledAt);
+      const minTime = new Date();
+      minTime.setMinutes(minTime.getMinutes() + 15);
+
+      if (scheduledTime < minTime) {
+        return c.json(
+          {error: 'Scheduled time must be at least 15 minutes from now'},
+          400,
+        );
+      }
+    }
+
+    // If no scheduledAt, this is a "send now" - set status to scheduled with current time
+    // The cron job will pick it up immediately
+    const newStatus = 'scheduled';
+    const newScheduledAt = scheduledAt || new Date().toISOString();
+
+    const [updatedCampaign] = await db
+      .update(campaigns)
+      .set({
+        status: newStatus,
+        scheduledAt: newScheduledAt,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(campaigns.id, id))
+      .returning({
+        id: campaigns.id,
+        name: campaigns.name,
+        status: campaigns.status,
+        scheduledAt: campaigns.scheduledAt,
+      });
+
+    console.log(
+      `[Campaign] Campaign ${id} scheduled for ${newScheduledAt} (${scheduledAt ? 'scheduled' : 'send now'})`,
+    );
+
+    return c.json({campaign: updatedCampaign});
+  },
+);
+
+// Cancel a scheduled campaign
+emailRoutes.post('/campaigns/:id/cancel', async (c) => {
+  const id = parseInt(c.req.param('id'));
+  const db = createDb(c.env.DB);
+
+  // Check if campaign exists and is scheduled
+  const [campaign] = await db
+    .select({id: campaigns.id, status: campaigns.status})
+    .from(campaigns)
+    .where(eq(campaigns.id, id))
+    .limit(1);
+
+  if (!campaign) {
+    return c.json({error: 'Campaign not found'}, 404);
+  }
+
+  if (campaign.status !== 'scheduled') {
+    return c.json({error: 'Only scheduled campaigns can be cancelled'}, 400);
+  }
+
+  // Set status back to draft and clear scheduledAt
+  const [updatedCampaign] = await db
+    .update(campaigns)
+    .set({
+      status: 'draft',
+      scheduledAt: null,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(campaigns.id, id))
+    .returning({
+      id: campaigns.id,
+      name: campaigns.name,
+      status: campaigns.status,
+    });
+
+  console.log(`[Campaign] Campaign ${id} cancelled and returned to draft`);
+
+  return c.json({campaign: updatedCampaign});
+});
+
 // Delete a campaign (only if draft)
 emailRoutes.delete('/campaigns/:id', async (c) => {
   const id = parseInt(c.req.param('id'));

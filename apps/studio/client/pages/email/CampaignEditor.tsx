@@ -32,6 +32,13 @@ export function CampaignEditor() {
   const [templateId, setTemplateId] = useState<number | null>(null);
   const [selectedSegmentIds, setSelectedSegmentIds] = useState<number[]>([]);
 
+  // Schedule state
+  const [scheduleType, setScheduleType] = useState<'now' | 'later'>('now');
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+
   // Preview modal state
   const [showPreview, setShowPreview] = useState(false);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
@@ -78,6 +85,16 @@ export function CampaignEditor() {
           setSelectedSegmentIds([]);
         }
       }
+
+      // Initialize schedule state if campaign is scheduled
+      if (campaign.scheduledAt) {
+        setScheduleType('later');
+        const scheduledDateTime = new Date(campaign.scheduledAt);
+        setScheduledDate(scheduledDateTime.toISOString().split('T')[0]);
+        setScheduledTime(
+          scheduledDateTime.toTimeString().split(':').slice(0, 2).join(':'),
+        );
+      }
     }
   }, [campaignData]);
 
@@ -103,6 +120,26 @@ export function CampaignEditor() {
       templateId?: number;
       segmentIds?: number[] | null;
     }) => api.email.campaigns.update(Number(id), data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['email', 'campaigns']});
+      queryClient.invalidateQueries({queryKey: ['email', 'campaign', id]});
+    },
+  });
+
+  // Schedule campaign mutation
+  const scheduleMutation = useMutation({
+    mutationFn: (data: {scheduledAt?: string}) =>
+      api.email.campaigns.schedule(Number(id), data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['email', 'campaigns']});
+      queryClient.invalidateQueries({queryKey: ['email', 'campaign', id]});
+      navigate(`/email/campaigns/${id}`);
+    },
+  });
+
+  // Cancel scheduled campaign mutation
+  const cancelMutation = useMutation({
+    mutationFn: () => api.email.campaigns.cancel(Number(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['email', 'campaigns']});
       queryClient.invalidateQueries({queryKey: ['email', 'campaign', id]});
@@ -187,8 +224,128 @@ export function CampaignEditor() {
     );
   };
 
+  // Get minimum datetime (15 minutes from now)
+  const getMinDateTime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 15);
+    return now;
+  };
+
+  const getMinDate = () => {
+    return getMinDateTime().toISOString().split('T')[0];
+  };
+
+  const getMinTime = () => {
+    const minDateTime = getMinDateTime();
+    const today = new Date().toISOString().split('T')[0];
+    // Only enforce min time if selected date is today
+    if (scheduledDate === today) {
+      return minDateTime.toTimeString().split(':').slice(0, 2).join(':');
+    }
+    return '00:00';
+  };
+
+  // Get user's timezone
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Validate scheduled time is at least 15 minutes in future
+  const isScheduledTimeValid = () => {
+    if (scheduleType === 'now') return true;
+    if (!scheduledDate || !scheduledTime) return false;
+
+    const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+    const minDateTime = getMinDateTime();
+    return scheduledDateTime >= minDateTime;
+  };
+
+  const handleSendOrSchedule = async () => {
+    // Validate required fields
+    if (!name.trim()) {
+      setSendError('Please enter a campaign name');
+      return;
+    }
+    if (!subject.trim()) {
+      setSendError('Please enter a subject line');
+      return;
+    }
+    if (!templateId) {
+      setSendError('Please select a template');
+      return;
+    }
+    if (selectedSegmentIds.length === 0) {
+      setSendError('Please select at least one segment');
+      return;
+    }
+
+    setSendError(null);
+    setIsSending(true);
+
+    try {
+      // First save/create the campaign if needed
+      if (isNew) {
+        const result = await api.email.campaigns.create({
+          name: name.trim(),
+          subject: subject.trim(),
+          templateId,
+          segmentIds: selectedSegmentIds,
+        });
+
+        // Then schedule/send it
+        if (scheduleType === 'later') {
+          const scheduledAt = new Date(
+            `${scheduledDate}T${scheduledTime}`,
+          ).toISOString();
+          await api.email.campaigns.schedule(result.campaign.id, {scheduledAt});
+        } else {
+          await api.email.campaigns.schedule(result.campaign.id, {});
+        }
+
+        queryClient.invalidateQueries({queryKey: ['email', 'campaigns']});
+        navigate(`/email/campaigns/${result.campaign.id}`);
+      } else {
+        // Update existing campaign first
+        await api.email.campaigns.update(Number(id), {
+          name: name.trim(),
+          subject: subject.trim(),
+          templateId,
+          segmentIds: selectedSegmentIds,
+        });
+
+        // Then schedule/send it
+        if (scheduleType === 'later') {
+          const scheduledAt = new Date(
+            `${scheduledDate}T${scheduledTime}`,
+          ).toISOString();
+          scheduleMutation.mutate({scheduledAt});
+        } else {
+          scheduleMutation.mutate({});
+        }
+      }
+    } catch (err) {
+      setSendError(
+        err instanceof Error ? err.message : 'Failed to schedule campaign',
+      );
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleCancelScheduled = async () => {
+    if (
+      confirm(
+        'Are you sure you want to cancel this scheduled campaign? It will return to draft status.',
+      )
+    ) {
+      cancelMutation.mutate();
+    }
+  };
+
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const isScheduling =
+    scheduleMutation.isPending || cancelMutation.isPending || isSending;
   const saveError = createMutation.error || updateMutation.error;
+  const scheduleError =
+    scheduleMutation.error || cancelMutation.error || sendError;
 
   if (!isNew && campaignLoading) {
     return (
@@ -200,6 +357,9 @@ export function CampaignEditor() {
 
   // Check if campaign is editable (only draft status)
   const isEditable = isNew || campaignData?.campaign?.status === 'draft';
+
+  // Check if campaign is scheduled (can be cancelled)
+  const isScheduled = campaignData?.campaign?.status === 'scheduled';
 
   if (!isNew && !isEditable) {
     return (
@@ -215,18 +375,46 @@ export function CampaignEditor() {
         </div>
         <div className="rounded-lg border border-border bg-card p-8 text-center">
           <h2 className="mb-2 text-lg font-medium text-foreground">
-            Campaign Not Editable
+            {isScheduled ? 'Campaign Scheduled' : 'Campaign Not Editable'}
           </h2>
           <p className="text-muted-foreground">
-            This campaign has already been sent or scheduled and cannot be
-            edited. View the campaign details instead.
+            {isScheduled ? (
+              <>
+                This campaign is scheduled to send on{' '}
+                {new Date(
+                  campaignData.campaign.scheduledAt!,
+                ).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })}
+                .
+              </>
+            ) : (
+              'This campaign has already been sent and cannot be edited. View the campaign details instead.'
+            )}
           </p>
-          <button
-            onClick={() => navigate(`/email/campaigns/${id}`)}
-            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            View Campaign Details
-          </button>
+          <div className="mt-4 flex justify-center gap-3">
+            {isScheduled && (
+              <button
+                onClick={handleCancelScheduled}
+                disabled={cancelMutation.isPending}
+                className="rounded-md border border-red-500 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
+              >
+                {cancelMutation.isPending
+                  ? 'Cancelling...'
+                  : 'Cancel Scheduled Send'}
+              </button>
+            )}
+            <button
+              onClick={() => navigate(`/email/campaigns/${id}`)}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              View Campaign Details
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -489,26 +677,146 @@ export function CampaignEditor() {
             </div>
           </div>
 
-          {/* Quick Actions */}
+          {/* Schedule Section */}
           <div className="rounded-lg border border-border bg-card p-6">
             <h2 className="mb-4 text-lg font-medium text-foreground">
-              Quick Actions
+              Schedule
             </h2>
-            <div className="space-y-2">
-              <button
-                onClick={handleSaveAsDraft}
-                disabled={isSaving}
-                className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-              >
-                {isSaving ? 'Saving...' : 'Save as Draft'}
-              </button>
-              <button
-                onClick={handlePreview}
-                disabled={!templateId}
-                className="w-full rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Preview Email
-              </button>
+            <div className="space-y-4">
+              {/* Schedule Type Selection */}
+              <div className="space-y-2">
+                <label className="flex cursor-pointer items-center gap-3 rounded-md border border-border p-3 hover:bg-muted/50">
+                  <input
+                    type="radio"
+                    name="scheduleType"
+                    checked={scheduleType === 'now'}
+                    onChange={() => setScheduleType('now')}
+                    className="h-4 w-4 border-border text-primary focus:ring-primary"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Send Now
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Send immediately to all recipients
+                    </p>
+                  </div>
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-3 rounded-md border border-border p-3 hover:bg-muted/50">
+                  <input
+                    type="radio"
+                    name="scheduleType"
+                    checked={scheduleType === 'later'}
+                    onChange={() => setScheduleType('later')}
+                    className="h-4 w-4 border-border text-primary focus:ring-primary"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Schedule for Later
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Choose a specific date and time
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Date/Time Picker (shown when Schedule for Later is selected) */}
+              {scheduleType === 'later' && (
+                <div className="space-y-3 rounded-md border border-border bg-muted/30 p-3">
+                  <div>
+                    <label
+                      htmlFor="scheduledDate"
+                      className="mb-1 block text-xs font-medium text-foreground"
+                    >
+                      Date
+                    </label>
+                    <input
+                      id="scheduledDate"
+                      type="date"
+                      value={scheduledDate}
+                      onChange={(e) => setScheduledDate(e.target.value)}
+                      min={getMinDate()}
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="scheduledTime"
+                      className="mb-1 block text-xs font-medium text-foreground"
+                    >
+                      Time
+                    </label>
+                    <input
+                      id="scheduledTime"
+                      type="time"
+                      value={scheduledTime}
+                      onChange={(e) => setScheduledTime(e.target.value)}
+                      min={getMinTime()}
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Timezone: {userTimezone}
+                  </p>
+                  {!isScheduledTimeValid() &&
+                    scheduledDate &&
+                    scheduledTime && (
+                      <p className="text-xs text-red-500">
+                        Scheduled time must be at least 15 minutes from now
+                      </p>
+                    )}
+                </div>
+              )}
+
+              {/* Schedule Error */}
+              {scheduleError && (
+                <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+                  {scheduleError instanceof Error
+                    ? scheduleError.message
+                    : scheduleError}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="space-y-2 pt-2">
+                <button
+                  onClick={handleSendOrSchedule}
+                  disabled={
+                    isScheduling ||
+                    (scheduleType === 'later' && !isScheduledTimeValid())
+                  }
+                  className="w-full rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isScheduling ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      {scheduleType === 'now' ? 'Sending...' : 'Scheduling...'}
+                    </span>
+                  ) : scheduleType === 'now' ? (
+                    'Send Campaign Now'
+                  ) : (
+                    'Schedule Campaign'
+                  )}
+                </button>
+
+                <button
+                  onClick={handleSaveAsDraft}
+                  disabled={isSaving}
+                  className="w-full rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving...' : 'Save as Draft'}
+                </button>
+
+                <button
+                  onClick={handlePreview}
+                  disabled={!templateId}
+                  className="w-full rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Preview Email
+                </button>
+              </div>
             </div>
           </div>
         </div>

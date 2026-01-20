@@ -600,6 +600,37 @@ export const api = {
           method: 'DELETE',
           credentials: 'include',
         }).then(handleResponse<{success: boolean}>),
+
+      schedule: (id: number, data: {scheduledAt?: string}) =>
+        fetch(`${API_BASE}/email/campaigns/${id}/schedule`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaign: {
+              id: number;
+              name: string;
+              status: string;
+              scheduledAt: string | null;
+            };
+          }>,
+        ),
+
+      cancel: (id: number) =>
+        fetch(`${API_BASE}/email/campaigns/${id}/cancel`, {
+          method: 'POST',
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaign: {
+              id: number;
+              name: string;
+              status: string;
+            };
+          }>,
+        ),
     },
   },
 
