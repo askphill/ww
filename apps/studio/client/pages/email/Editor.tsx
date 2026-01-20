@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {useParams, useNavigate} from 'react-router-dom';
 import {
@@ -130,6 +130,11 @@ export function Editor() {
   // Modal states
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showTestEmailModal, setShowTestEmailModal] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Auto-save timer ref
+  const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialLoadRef = useRef(true);
 
   // Drag and drop state
   const [activeDragType, setActiveDragType] = useState<string | null>(null);
@@ -271,22 +276,92 @@ export function Editor() {
       setSaveStatus('saved');
       setLastSaved(new Date());
       setHasUnsavedChanges(false);
+      setSaveError(null);
       queryClient.invalidateQueries({queryKey: ['email', 'template', id]});
     },
-    onError: () => {
+    onError: (error: Error) => {
       setSaveStatus('error');
+      setSaveError(error.message || 'Failed to save template');
+      // Clear error after 5 seconds
+      setTimeout(() => setSaveError(null), 5000);
     },
   });
 
-  // Track changes
-  useEffect(() => {
-    if (!isLoading && templateData) {
-      setHasUnsavedChanges(true);
+  // Auto-save function (debounced)
+  const triggerAutoSave = useCallback(() => {
+    if (isNewTemplate || isInitialLoadRef.current) return;
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
     }
-  }, [templateName, subject, previewText, components]);
+
+    // Set new timeout for auto-save after 5 seconds of inactivity
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      if (hasUnsavedChanges && !updateMutation.isPending) {
+        setSaveStatus('saving');
+        updateMutation.mutate({
+          name: templateName,
+          subject,
+          previewText: previewText || undefined,
+          components,
+        });
+      }
+    }, 5000);
+  }, [
+    isNewTemplate,
+    hasUnsavedChanges,
+    templateName,
+    subject,
+    previewText,
+    components,
+    updateMutation,
+  ]);
+
+  // Track changes and trigger auto-save
+  useEffect(() => {
+    if (isInitialLoadRef.current) return;
+    if (!isLoading && !isNewTemplate) {
+      setHasUnsavedChanges(true);
+      triggerAutoSave();
+    }
+  }, [
+    templateName,
+    subject,
+    previewText,
+    components,
+    isLoading,
+    isNewTemplate,
+    triggerAutoSave,
+  ]);
+
+  // Mark initial load complete after template data is loaded
+  useEffect(() => {
+    if (templateData && isInitialLoadRef.current) {
+      // Use a small delay to ensure all state updates from templateData have completed
+      setTimeout(() => {
+        isInitialLoadRef.current = false;
+      }, 100);
+    }
+  }, [templateData]);
+
+  // Cleanup auto-save timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Save handler
   const handleSave = async () => {
+    // Clear any pending auto-save since we're saving manually
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+      autoSaveTimeoutRef.current = null;
+    }
+
     if (isNewTemplate) {
       createMutation.mutate({
         name: templateName,
@@ -308,6 +383,48 @@ export function Editor() {
   const selectedComponent = components.find(
     (c) => c.id === selectedComponentId,
   );
+
+  // State for unsaved changes navigation warning
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(
+    null,
+  );
+
+  // Navigate with unsaved changes check
+  const handleNavigate = useCallback(
+    (to: string) => {
+      if (
+        hasUnsavedChanges &&
+        !updateMutation.isPending &&
+        !createMutation.isPending
+      ) {
+        setPendingNavigation(to);
+        setShowUnsavedModal(true);
+      } else {
+        navigate(to);
+      }
+    },
+    [
+      hasUnsavedChanges,
+      updateMutation.isPending,
+      createMutation.isPending,
+      navigate,
+    ],
+  );
+
+  // Handle beforeunload event for browser tab/window close
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
   if (!isNewTemplate && isLoading) {
     return (
@@ -344,7 +461,7 @@ export function Editor() {
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/email/templates')}
+              onClick={() => handleNavigate('/email/templates')}
               className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <ArrowLeftIcon className="h-5 w-5" />
@@ -561,6 +678,85 @@ export function Editor() {
             </div>
           ) : null}
         </DragOverlay>
+
+        {/* Error Toast */}
+        {saveError && (
+          <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 shadow-lg">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/20">
+              <CrossIcon className="h-4 w-4 text-red-500" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">Save failed</p>
+              <p className="text-xs text-muted-foreground">{saveError}</p>
+            </div>
+            <button
+              onClick={() => setSaveError(null)}
+              className="ml-2 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <CrossIcon className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Unsaved Changes Modal */}
+        {showUnsavedModal && pendingNavigation && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-card p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/20">
+                  <WarningIcon className="h-5 w-5 text-yellow-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-foreground">
+                    Unsaved changes
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    You have unsaved changes that will be lost.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setShowUnsavedModal(false);
+                    setPendingNavigation(null);
+                  }}
+                  className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // Save before navigating
+                    handleSave();
+                    // Wait a bit for save to complete then proceed
+                    const navTo = pendingNavigation;
+                    setTimeout(() => {
+                      setShowUnsavedModal(false);
+                      setPendingNavigation(null);
+                      navigate(navTo);
+                    }, 500);
+                  }}
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Save and leave
+                </button>
+                <button
+                  onClick={() => {
+                    const navTo = pendingNavigation;
+                    setShowUnsavedModal(false);
+                    setPendingNavigation(null);
+                    setHasUnsavedChanges(false); // Prevent beforeunload warning
+                    navigate(navTo);
+                  }}
+                  className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
+                >
+                  Leave without saving
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DndContext>
   );
