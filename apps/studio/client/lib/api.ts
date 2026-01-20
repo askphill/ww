@@ -456,6 +456,26 @@ export const api = {
         ),
     },
 
+    segments: {
+      list: () =>
+        fetch(`${API_BASE}/email/segments`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            segments: Array<{
+              id: number;
+              name: string;
+              type: 'shopify_sync' | 'custom';
+              shopifySegmentId: string | null;
+              filters: string | null;
+              subscriberCount: number;
+              createdAt: string;
+              updatedAt: string | null;
+            }>;
+          }>,
+        ),
+    },
+
     campaigns: {
       list: (status?: string) => {
         const params = new URLSearchParams();

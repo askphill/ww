@@ -7,6 +7,7 @@ import {Subscribers} from './pages/email/Subscribers';
 import {Templates} from './pages/email/Templates';
 import {Editor} from './pages/email/Editor';
 import {Campaigns} from './pages/email/Campaigns';
+import {CampaignEditor} from './pages/email/CampaignEditor';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
 import {useAuth} from './hooks/useAuth';
@@ -54,6 +55,14 @@ export function App() {
                   <Route path="/email/templates/new" element={<Editor />} />
                   <Route path="/email/templates/:id" element={<Editor />} />
                   <Route path="/email/campaigns" element={<Campaigns />} />
+                  <Route
+                    path="/email/campaigns/new"
+                    element={<CampaignEditor />}
+                  />
+                  <Route
+                    path="/email/campaigns/:id/edit"
+                    element={<CampaignEditor />}
+                  />
                   <Route path="/klaviyo" element={<Klaviyo />} />
                   <Route path="/meta" element={<Meta />} />
                 </Routes>
