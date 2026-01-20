@@ -378,8 +378,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 22,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added POST /api/email/templates/:id/test endpoint with rate limiting (10 per hour per user). Sends via Resend with [TEST] subject prefix. Returns messageId and remainingTestEmails. Build passes."
     },
     {
       "id": "US-023",

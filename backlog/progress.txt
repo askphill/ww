@@ -633,3 +633,33 @@
 - `getDefaultVariables` export useful for returning the full variable context to clients
 - Preview endpoints should return both rendered output AND the variables used for transparency
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-022 - Add send test email endpoint
+**Status:** Complete
+
+**What was done:**
+
+- Added POST /api/email/templates/:id/test endpoint to apps/studio/server/routes/email.ts
+- Requires `to` email address in request body (validated with Zod email schema)
+- Subject prefixed with "[TEST] " for clear identification in inbox
+- Uses existing `renderTemplate` and `getDefaultVariables` for sample variable interpolation
+- Returns Resend message ID on success plus remaining test emails count
+- Implemented rate limiting at 10 test emails per hour per authenticated user
+- Rate limiting uses in-memory Map tracking userEmail -> {count, windowStart}
+- Sends via existing Resend integration with dynamic import
+- Build passes successfully
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (modified - added ~126 lines for test endpoint and rate limiting)
+- `backlog/backlog.json` (updated US-022 passes status)
+
+**Learnings for future iterations:**
+
+- Rate limiting can use Map with sliding window pattern: track count and windowStart per user
+- Return `remainingTestEmails` count to help users understand their quota
+- Dynamic `import('resend')` works well for on-demand module loading in routes
+- Resend `emails.send()` returns `{data: {id}, error}` - check error first before accessing data
+- Authenticated user available via `c.get('user')` in Hono routes with auth middleware
+
