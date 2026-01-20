@@ -8,10 +8,19 @@ import {
   useDroppable,
   DragStartEvent,
   DragEndEvent,
+  DragOverEvent,
   PointerSensor,
   useSensor,
   useSensors,
+  closestCenter,
 } from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import {api} from '../../lib/api';
 
 interface ComponentInstance {
@@ -124,6 +133,8 @@ export function Editor() {
 
   // Drag and drop state
   const [activeDragType, setActiveDragType] = useState<string | null>(null);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [isDraggingFromLibrary, setIsDraggingFromLibrary] = useState(false);
 
   // Configure sensors for drag detection
   const sensors = useSensors(
@@ -137,27 +148,80 @@ export function Editor() {
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
     const {active} = event;
+    const isFromLibrary = String(active.id).startsWith('library-');
+    setIsDraggingFromLibrary(isFromLibrary);
+    setActiveDragId(String(active.id));
+
     if (active.data.current?.type) {
       setActiveDragType(active.data.current.type);
+    } else if (!isFromLibrary) {
+      // Dragging an existing canvas component
+      const component = components.find((c) => c.id === active.id);
+      if (component) {
+        setActiveDragType(component.type);
+      }
     }
+  };
+
+  // Handle drag over for sorting
+  const handleDragOver = (event: DragOverEvent) => {
+    // We can use this for visual feedback during sorting
+    // Currently not needed but available for future enhancements
   };
 
   // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
     const {active, over} = event;
-    setActiveDragType(null);
+    const isFromLibrary = String(active.id).startsWith('library-');
 
-    // Check if dropped on canvas
-    if (over?.id === 'canvas-drop-zone' && active.data.current?.type) {
-      const componentType = active.data.current.type;
+    // Reset drag state
+    setActiveDragType(null);
+    setActiveDragId(null);
+    setIsDraggingFromLibrary(false);
+
+    if (!over) return;
+
+    if (isFromLibrary) {
+      // Dragging from library - add new component
+      const componentType = active.data.current?.type;
+      if (!componentType) return;
+
       const newComponent: ComponentInstance = {
         id: `${componentType}-${Date.now()}`,
         type: componentType,
         props: {},
       };
-      setComponents([...components, newComponent]);
+
+      // Check if dropping on canvas drop zone or on a specific component
+      if (over.id === 'canvas-drop-zone') {
+        // Add at the end
+        setComponents([...components, newComponent]);
+      } else {
+        // Insert at position - find the index of the component being hovered
+        const overIndex = components.findIndex((c) => c.id === over.id);
+        if (overIndex !== -1) {
+          const newComponents = [...components];
+          newComponents.splice(overIndex, 0, newComponent);
+          setComponents(newComponents);
+        } else {
+          // Fallback - add at end
+          setComponents([...components, newComponent]);
+        }
+      }
+
       setSelectedComponentId(newComponent.id);
       setHasUnsavedChanges(true);
+    } else {
+      // Reordering existing components
+      if (active.id !== over.id) {
+        const oldIndex = components.findIndex((c) => c.id === active.id);
+        const newIndex = components.findIndex((c) => c.id === over.id);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          setComponents(arrayMove(components, oldIndex, newIndex));
+          setHasUnsavedChanges(true);
+        }
+      }
     }
   };
 
@@ -175,7 +239,12 @@ export function Editor() {
       setTemplateName(t.name);
       setSubject(t.subject);
       setPreviewText(t.previewText || '');
-      setComponents(t.components || []);
+      // Ensure all components have IDs (handle legacy data without IDs)
+      const componentsWithIds = (t.components || []).map((c, index) => ({
+        ...c,
+        id: c.id || `${c.type}-${Date.now()}-${index}`,
+      }));
+      setComponents(componentsWithIds);
       setHasUnsavedChanges(false);
     }
   }, [templateData]);
@@ -256,7 +325,9 @@ export function Editor() {
   return (
     <DndContext
       sensors={sensors}
+      collisionDetection={closestCenter}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex h-full flex-col">
@@ -404,6 +475,8 @@ export function Editor() {
             components={components}
             selectedComponentId={selectedComponentId}
             isDragging={!!activeDragType}
+            isDraggingFromLibrary={isDraggingFromLibrary}
+            activeDragId={activeDragId}
             onSelectComponent={setSelectedComponentId}
             onDeleteComponent={(id) => {
               setComponents(components.filter((c) => c.id !== id));
@@ -538,6 +611,8 @@ function CanvasDropZone({
   components,
   selectedComponentId,
   isDragging,
+  isDraggingFromLibrary,
+  activeDragId,
   onSelectComponent,
   onDeleteComponent,
   onAddComponent,
@@ -545,6 +620,8 @@ function CanvasDropZone({
   components: ComponentInstance[];
   selectedComponentId: string | null;
   isDragging: boolean;
+  isDraggingFromLibrary: boolean;
+  activeDragId: string | null;
   onSelectComponent: (id: string) => void;
   onDeleteComponent: (id: string) => void;
   onAddComponent: (type: string) => void;
@@ -552,6 +629,8 @@ function CanvasDropZone({
   const {setNodeRef, isOver} = useDroppable({
     id: 'canvas-drop-zone',
   });
+
+  const componentIds = components.map((c) => c.id);
 
   return (
     <div
@@ -567,68 +646,98 @@ function CanvasDropZone({
           isOver={isOver}
         />
       ) : (
-        <div className="mx-auto w-full max-w-[600px] space-y-2">
-          {components.map((component) => (
-            <CanvasComponent
-              key={component.id}
-              component={component}
-              isSelected={component.id === selectedComponentId}
-              onSelect={() => onSelectComponent(component.id)}
-              onDelete={() => onDeleteComponent(component.id)}
-            />
-          ))}
-          {/* Drop zone indicator when dragging */}
-          {isDragging && (
-            <div
-              className={`flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed py-8 text-sm transition-colors ${
-                isOver
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border text-muted-foreground'
-              }`}
-            >
-              <PlusIcon className="h-4 w-4" />
-              Drop component here
-            </div>
-          )}
-          {/* Add Component Button when not dragging */}
-          {!isDragging && (
-            <button
-              onClick={() => onAddComponent('TextBlock')}
-              className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-border py-4 text-sm text-muted-foreground hover:border-primary hover:text-foreground"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add Component
-            </button>
-          )}
-        </div>
+        <SortableContext
+          items={componentIds}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="mx-auto w-full max-w-[600px] space-y-2">
+            {components.map((component) => (
+              <SortableCanvasComponent
+                key={component.id}
+                component={component}
+                isSelected={component.id === selectedComponentId}
+                isDraggingThis={activeDragId === component.id}
+                onSelect={() => onSelectComponent(component.id)}
+                onDelete={() => onDeleteComponent(component.id)}
+              />
+            ))}
+            {/* Drop zone indicator when dragging from library */}
+            {isDraggingFromLibrary && (
+              <div
+                className={`flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed py-8 text-sm transition-colors ${
+                  isOver
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border text-muted-foreground'
+                }`}
+              >
+                <PlusIcon className="h-4 w-4" />
+                Drop component here
+              </div>
+            )}
+            {/* Add Component Button when not dragging */}
+            {!isDragging && (
+              <button
+                onClick={() => onAddComponent('TextBlock')}
+                className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-border py-4 text-sm text-muted-foreground hover:border-primary hover:text-foreground"
+              >
+                <PlusIcon className="h-4 w-4" />
+                Add Component
+              </button>
+            )}
+          </div>
+        </SortableContext>
       )}
     </div>
   );
 }
 
-// Canvas Component
-function CanvasComponent({
+// Sortable Canvas Component - allows dragging to reorder
+function SortableCanvasComponent({
   component,
   isSelected,
+  isDraggingThis,
   onSelect,
   onDelete,
 }: {
   component: ComponentInstance;
   isSelected: boolean;
+  isDraggingThis: boolean;
   onSelect: () => void;
   onDelete: () => void;
 }) {
+  const {attributes, listeners, setNodeRef, transform, transition, isDragging} =
+    useSortable({id: component.id});
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const componentInfo = COMPONENT_TYPES.find((c) => c.type === component.type);
 
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       onClick={onSelect}
       className={`group relative cursor-pointer rounded-md border-2 bg-card p-4 transition-colors ${
         isSelected
           ? 'border-primary bg-primary/5'
-          : 'border-transparent hover:border-border'
+          : isDragging || isDraggingThis
+            ? 'border-primary/50 opacity-50'
+            : 'border-transparent hover:border-border'
       }`}
     >
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="absolute left-2 top-2 hidden cursor-grab rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground group-hover:block active:cursor-grabbing"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <GripVerticalIcon className="h-4 w-4" />
+      </button>
+
       {/* Delete button */}
       <button
         onClick={(e) => {
@@ -641,11 +750,11 @@ function CanvasComponent({
       </button>
 
       {/* Component preview */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pl-6">
         <div className="flex h-10 w-10 items-center justify-center rounded bg-muted text-muted-foreground">
           <ComponentIcon type={component.type} />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="font-medium text-foreground">
             {componentInfo?.name || component.type}
           </p>
@@ -1174,6 +1283,24 @@ function CheckIcon({className}: {className?: string}) {
         strokeLinejoin="round"
         strokeWidth={2}
         d="M5 13l4 4L19 7"
+      />
+    </svg>
+  );
+}
+
+function GripVerticalIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"
       />
     </svg>
   );

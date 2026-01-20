@@ -341,7 +341,11 @@ export const api = {
               name: string;
               subject: string;
               previewText: string | null;
-              components: Array<{type: string; props: Record<string, unknown>}>;
+              components: Array<{
+                id: string;
+                type: string;
+                props: Record<string, unknown>;
+              }>;
               variables: Record<string, unknown> | null;
               category: string | null;
               status: 'draft' | 'active' | 'archived';
