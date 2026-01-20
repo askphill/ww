@@ -1144,3 +1144,34 @@
 - getMinDate() and getMinTime() need to handle date boundaries (min time only applies for today)
 - Use confirm() dialog for destructive actions like cancelling a scheduled campaign
 
+### Iteration: 2026-01-20 US-038
+
+**Story:** US-038 - Implement campaign sending service
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/services/campaignSender.ts`
+- Implemented `sendCampaign(db, resendApiKey, campaignId, fromEmail)` function
+- Fetch subscribers from segments via segmentSubscribers join, with deduplication using Set
+- Filter to active subscribers only (status === 'active')
+- Render templates with subscriber-specific variables (firstName, lastName, email)
+- Send via Resend batch API with BATCH_SIZE = 100
+- Implemented exponential backoff retry for rate limiting (MAX_RETRIES = 3)
+- Create email_sends record for each recipient with resendId for tracking
+- Update campaign status: scheduled -> sending -> sent
+- Handle errors with graceful rollback to draft status
+
+**Files changed:**
+
+- apps/studio/server/services/campaignSender.ts (created - 435 lines)
+
+**Learnings for future iterations:**
+
+- Resend batch.send() returns nested data: result.data.data contains the array of {id} objects
+- Use Set for efficient deduplication when subscribers may be in multiple segments
+- Batch processing with delay between batches respects API rate limits
+- Log batch progress for visibility during long campaign sends
+- On critical failure, roll back campaign status to draft so it can be retried
+- Sleep function using Promise with setTimeout for async delay
+
