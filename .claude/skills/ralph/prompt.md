@@ -13,13 +13,13 @@ You are an autonomous coding agent working on a feature. Each iteration, you:
 
 Read these files to understand current state:
 
-- `prd.json` - User stories with completion status
-- `progress.txt` - Learnings from previous iterations
+- `backlog/backlog.json` - User stories with completion status
+- `backlog/progress.txt` - Learnings from previous iterations
 - `AGENTS.md` - Codebase patterns and conventions
 
 ## Step 2: Branch Management
 
-Check the `branch` field in `prd.json`. Ensure you're on that branch:
+Check the `branch` field in `backlog/backlog.json`. Ensure you're on that branch:
 
 ```bash
 git checkout [branch-name] || git checkout -b [branch-name]
@@ -30,7 +30,7 @@ git checkout [branch-name] || git checkout -b [branch-name]
 Find the highest-priority story where `passes: false`:
 
 ```bash
-jq '.userStories[] | select(.passes == false) | {id, title, priority}' prd.json | head -20
+jq '.userStories[] | select(.passes == false) | {id, title, priority}' backlog/backlog.json | head -20
 ```
 
 Work on ONE story per iteration. Pick the lowest priority number that hasn't passed.
@@ -74,17 +74,17 @@ git commit -m "[US-XXX] Story title
 Co-Authored-By: Ralph <ralph@autonomous.agent>"
 ```
 
-## Step 7: Update PRD
+## Step 7: Update Backlog
 
-Mark the story as complete in `prd.json`:
+Mark the story as complete in `backlog/backlog.json`:
 
 ```bash
-jq '(.userStories[] | select(.id == "US-XXX")).passes = true' prd.json > tmp.json && mv tmp.json prd.json
+jq '(.userStories[] | select(.id == "US-XXX")).passes = true' backlog/backlog.json > tmp.json && mv tmp.json backlog/backlog.json
 ```
 
 ## Step 8: Record Progress
 
-APPEND to `progress.txt` (never replace, always append):
+APPEND to `backlog/progress.txt` (never replace, always append):
 
 ```markdown
 ### Iteration: [Date/Time]
@@ -140,8 +140,8 @@ Otherwise, just complete your one story and exit. The next iteration will contin
 
 If you encounter blockers:
 
-1. Add notes to the story in `prd.json`
-2. Document the issue in `progress.txt`
+1. Add notes to the story in `backlog/backlog.json`
+2. Document the issue in `backlog/progress.txt`
 3. Exit cleanly (next iteration may have better luck)
 
 Don't spend too long stuck - record what you learned and move on.
