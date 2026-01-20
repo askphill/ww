@@ -394,3 +394,32 @@
 - Keep font size options simple (paragraph/small) rather than arbitrary pixel values
 - Text component styling uses inline `style` prop for email client compatibility
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-014 - Create CallToAction email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/CallToAction.tsx` for CTA buttons
+- Implemented CallToAction component with text, url, and variant props
+- Primary variant: #FAD103 background, #1a1a1a text (Wakey yellow)
+- Secondary variant: transparent background, #FAD103 border and text
+- Button uses Founders Grotesk font, 16px 32px padding, 8px border-radius
+- Button centered in Section with 24px padding
+- Exported CallToActionSchema JSON with select options for variant
+- Exported CallToActionDefaultProps with sensible defaults
+- Build passes (pre-existing typecheck error in Login.tsx unrelated)
+
+**Files changed:**
+
+- `apps/studio/server/email-components/CallToAction.tsx` (created)
+- `backlog/backlog.json` (updated US-014 passes status)
+
+**Learnings for future iterations:**
+
+- @react-email/components Button uses `href` prop for the URL destination
+- Variant styling uses conditional expressions based on props (e.g., `isPrimary ? 'value1' : 'value2'`)
+- Email buttons need explicit `display: 'inline-block'` for proper rendering
+- Secondary button variant uses transparent background with border for outline effect
+

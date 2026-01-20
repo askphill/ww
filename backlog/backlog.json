@@ -246,8 +246,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created CallToAction.tsx with text, url, variant props. Primary variant uses #FAD103 background with #1a1a1a text. Secondary variant uses transparent background with #FAD103 border and text. Button centered in 24px padded section. Schema and default props exported. Build passes."
     },
     {
       "id": "US-015",
