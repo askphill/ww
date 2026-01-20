@@ -15,6 +15,7 @@ import {
   syncCustomersFromShopify,
   syncSegmentsFromShopify,
 } from '../services/shopifySync';
+import {renderTemplate, getDefaultVariables} from '../services/emailRenderer';
 
 const emailRoutes = new Hono<{
   Bindings: Env;
@@ -1049,5 +1050,60 @@ emailRoutes.delete('/templates/:id', async (c) => {
 
   return c.json({success: true});
 });
+
+// Preview template - renders HTML and plain text
+emailRoutes.post(
+  '/templates/:id/preview',
+  zValidator(
+    'json',
+    z
+      .object({
+        variables: z.record(z.string()).optional(),
+      })
+      .optional(),
+  ),
+  async (c) => {
+    const id = parseInt(c.req.param('id'));
+    const data = c.req.valid('json');
+
+    // Check template exists
+    const db = createDb(c.env.DB);
+    const [existing] = await db
+      .select({id: emailTemplates.id})
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, id))
+      .limit(1);
+
+    if (!existing) {
+      return c.json({error: 'Template not found'}, 404);
+    }
+
+    try {
+      // Render the template with provided variables or defaults
+      const variables = data?.variables || {};
+      const result = await renderTemplate(c.env.DB, id, variables);
+
+      return c.json({
+        html: result.html,
+        text: result.text,
+        variables: {
+          ...getDefaultVariables(),
+          ...variables,
+        },
+      });
+    } catch (error) {
+      console.error('[Template Preview] Error rendering template:', error);
+      return c.json(
+        {
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to render template',
+        },
+        500,
+      );
+    }
+  },
+);
 
 export {emailRoutes};
