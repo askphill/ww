@@ -29,5 +29,12 @@
   // Environment variables (set in dashboard or .dev.vars)
   "vars": {
     "VITE_APP_URL": "https://studio.wakey.care"
+  },
+
+  // Cron triggers for scheduled tasks
+  "triggers": {
+    "crons": [
+      "0 6 * * *"  // Daily at 6:00 AM UTC (7:00 AM CET / 8:00 AM CEST)
+    ]
   }
 }
