@@ -1175,3 +1175,29 @@
 - On critical failure, roll back campaign status to draft so it can be retried
 - Sleep function using Promise with setTimeout for async delay
 
+### Iteration: 2026-01-20 US-039
+
+**Story:** US-039 - Add send now endpoint
+**Status:** Complete
+
+**What was done:**
+
+- Added `POST /api/email/campaigns/:id/send` endpoint to email.ts
+- Validates campaign is in draft status before sending
+- Validates template and segments are properly configured
+- Updates campaign status to 'scheduled' with current timestamp
+- Triggers sendCampaign service asynchronously via waitUntil
+- Returns immediately with "Campaign sending started" message and campaign info
+- Dynamic import of campaignSender service for code splitting
+
+**Files changed:**
+
+- apps/studio/server/routes/email.ts (modified - added ~97 lines)
+
+**Learnings for future iterations:**
+
+- waitUntil allows background processing while returning response immediately
+- Dynamic import() useful for loading heavy services only when needed
+- Return campaign ID and name in response for client tracking
+- Separate /send endpoint from /schedule provides clearer API semantics
+

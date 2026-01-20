@@ -680,8 +680,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 39,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added POST /api/email/campaigns/:id/send endpoint. Validates draft status, template, and segments. Triggers async send via waitUntil. Build and typecheck pass."
     },
     {
       "id": "US-040",
