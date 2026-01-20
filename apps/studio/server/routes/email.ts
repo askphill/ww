@@ -6,6 +6,10 @@ import {subscribers, segmentSubscribers, segments} from '../db/schema';
 import {authMiddleware} from '../middleware/auth';
 import {eq, desc, like, or, sql, and, inArray} from 'drizzle-orm';
 import type {AppVariables, Env} from '../index';
+import {
+  syncCustomersFromShopify,
+  syncSegmentsFromShopify,
+} from '../services/shopifySync';
 
 const emailRoutes = new Hono<{
   Bindings: Env;
@@ -765,6 +769,80 @@ emailRoutes.delete('/segments/:id', async (c) => {
   await db.delete(segments).where(eq(segments.id, id));
 
   return c.json({success: true});
+});
+
+// Rate limit tracking for sync (5 minutes between syncs)
+const SYNC_RATE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+let lastSyncTime: number | null = null;
+
+// Trigger full Shopify sync (customers + segments)
+emailRoutes.post('/segments/sync', async (c) => {
+  // Check rate limit
+  const now = Date.now();
+  if (lastSyncTime && now - lastSyncTime < SYNC_RATE_LIMIT_MS) {
+    const remainingSeconds = Math.ceil(
+      (SYNC_RATE_LIMIT_MS - (now - lastSyncTime)) / 1000,
+    );
+    return c.json(
+      {
+        error: 'Rate limited. Please wait before syncing again.',
+        retryAfterSeconds: remainingSeconds,
+      },
+      429,
+    );
+  }
+
+  // Update last sync time immediately to prevent concurrent syncs
+  lastSyncTime = now;
+
+  // Validate required environment variables
+  if (!c.env.SHOPIFY_ADMIN_API_TOKEN || !c.env.SHOPIFY_STORE_DOMAIN) {
+    return c.json(
+      {
+        error:
+          'Shopify credentials not configured. Please set SHOPIFY_ADMIN_API_TOKEN and SHOPIFY_STORE_DOMAIN.',
+      },
+      500,
+    );
+  }
+
+  // Return immediately with acknowledgment, run sync async
+  // Using waitUntil to run the sync in the background
+  c.executionCtx.waitUntil(
+    (async () => {
+      try {
+        console.log('[ShopifySync] Starting full sync...');
+
+        // Sync customers first
+        const customerStats = await syncCustomersFromShopify(
+          c.env.DB,
+          c.env.SHOPIFY_STORE_DOMAIN,
+          c.env.SHOPIFY_ADMIN_API_TOKEN,
+        );
+
+        console.log('[ShopifySync] Customer sync complete:', customerStats);
+
+        // Then sync segments
+        const segmentStats = await syncSegmentsFromShopify(
+          c.env.DB,
+          c.env.SHOPIFY_STORE_DOMAIN,
+          c.env.SHOPIFY_ADMIN_API_TOKEN,
+        );
+
+        console.log('[ShopifySync] Segment sync complete:', segmentStats);
+        console.log('[ShopifySync] Full sync complete');
+      } catch (error) {
+        console.error('[ShopifySync] Sync failed:', error);
+        // Reset rate limit on failure so user can retry sooner
+        lastSyncTime = null;
+      }
+    })(),
+  );
+
+  return c.json({
+    success: true,
+    message: 'Sync started. This may take a few minutes to complete.',
+  });
 });
 
 export {emailRoutes};
