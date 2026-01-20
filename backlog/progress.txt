@@ -1230,3 +1230,36 @@
 - Process campaigns sequentially to avoid overwhelming Resend API
 - Log counts (found/processed/failed) for operational visibility
 
+
+### Iteration: 2026-01-20 US-041
+
+**Story:** US-041 - Create campaign detail/analytics page
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/CampaignDetail.tsx` with full campaign analytics UI
+- Shows campaign name, subject, status badge, template, segments, sent date, created date
+- Implemented 6 stats cards: Sent, Delivered, Opened, Clicked, Bounced, Unsubscribed
+- Stats show counts and percentage rates (open rate, click rate, bounce rate, delivery rate)
+- Color coding: green for good metrics, red for warnings (high bounce rate)
+- Added paginated recipients table with columns: Email, Name, Status, Sent, Opened, Clicked
+- SendStatusBadge component shows recipient status (pending/sent/delivered/opened/clicked/bounced/complained)
+- Added `GET /api/email/campaigns/:id/recipients` endpoint with pagination
+- Added `api.email.campaigns.recipients(id, page, limit)` client API method
+- Registered route `/email/campaigns/:id` in App.tsx
+
+**Files changed:**
+
+- apps/studio/client/pages/email/CampaignDetail.tsx (created - 370 lines)
+- apps/studio/server/routes/email.ts (modified - added ~60 lines for recipients endpoint)
+- apps/studio/client/lib/api.ts (modified - added recipients method)
+- apps/studio/client/App.tsx (modified - added CampaignDetail import and route)
+
+**Learnings for future iterations:**
+
+- Stats cards can use highlight (green) and warning (red) props for visual feedback
+- Recipients endpoint joins emailSends with subscribers to get subscriber details
+- Pagination component can be shared pattern: Previous/Next buttons with page/totalPages display
+- SendStatus has 7 possible states vs CampaignStatus which has 5
+- Browser verification blocked by unrelated dependency issue in different workspace

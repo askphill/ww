@@ -8,6 +8,7 @@ import {Templates} from './pages/email/Templates';
 import {Editor} from './pages/email/Editor';
 import {Campaigns} from './pages/email/Campaigns';
 import {CampaignEditor} from './pages/email/CampaignEditor';
+import {CampaignDetail} from './pages/email/CampaignDetail';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
 import {useAuth} from './hooks/useAuth';
@@ -62,6 +63,10 @@ export function App() {
                   <Route
                     path="/email/campaigns/:id/edit"
                     element={<CampaignEditor />}
+                  />
+                  <Route
+                    path="/email/campaigns/:id"
+                    element={<CampaignDetail />}
                   />
                   <Route path="/klaviyo" element={<Klaviyo />} />
                   <Route path="/meta" element={<Meta />} />

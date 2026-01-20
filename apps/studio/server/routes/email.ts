@@ -1488,6 +1488,66 @@ emailRoutes.get('/campaigns/:id', async (c) => {
   });
 });
 
+// Get campaign recipients (paginated)
+emailRoutes.get('/campaigns/:id/recipients', async (c) => {
+  const id = parseInt(c.req.param('id'));
+  const page = parseInt(c.req.query('page') || '1');
+  const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+  const offset = (page - 1) * limit;
+
+  const db = createDb(c.env.DB);
+
+  // Verify campaign exists
+  const [campaign] = await db
+    .select({id: campaigns.id})
+    .from(campaigns)
+    .where(eq(campaigns.id, id))
+    .limit(1);
+
+  if (!campaign) {
+    return c.json({error: 'Campaign not found'}, 404);
+  }
+
+  // Get total count
+  const [countResult] = await db
+    .select({count: count()})
+    .from(emailSends)
+    .where(eq(emailSends.campaignId, id));
+
+  const total = countResult?.count || 0;
+
+  // Get recipients with subscriber info
+  const recipientsResult = await db
+    .select({
+      id: emailSends.id,
+      subscriberId: emailSends.subscriberId,
+      email: subscribers.email,
+      firstName: subscribers.firstName,
+      lastName: subscribers.lastName,
+      status: emailSends.status,
+      sentAt: emailSends.sentAt,
+      deliveredAt: emailSends.deliveredAt,
+      openedAt: emailSends.openedAt,
+      clickedAt: emailSends.clickedAt,
+    })
+    .from(emailSends)
+    .innerJoin(subscribers, eq(emailSends.subscriberId, subscribers.id))
+    .where(eq(emailSends.campaignId, id))
+    .orderBy(emailSends.sentAt)
+    .limit(limit)
+    .offset(offset);
+
+  return c.json({
+    recipients: recipientsResult,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  });
+});
+
 // Create a new campaign
 emailRoutes.post(
   '/campaigns',

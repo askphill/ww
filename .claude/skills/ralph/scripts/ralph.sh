@@ -6,6 +6,8 @@ set -e
 
 # Configuration
 MAX_ITERATIONS="${1:-10}"
+MAX_RETRIES=3
+RETRY_DELAY=5
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 PROMPT_FILE="$SCRIPT_DIR/../prompt.md"
@@ -121,6 +123,42 @@ get_status_summary() {
     echo "$passed/$total stories complete"
 }
 
+# Run Claude with retry logic
+run_claude_with_retry() {
+    local prompt=$1
+    local output_file=$2
+    local retry=0
+    local delay=$RETRY_DELAY
+
+    while [ $retry -lt $MAX_RETRIES ]; do
+        # Run Claude with the prompt, piping to tee for real-time output
+        # --dangerously-skip-permissions bypasses permission prompts for autonomous operation
+        # Use set +e to prevent script exit on Claude failure
+        set +e
+        echo "$prompt" | claude --print --dangerously-skip-permissions 2>&1 | tee "$output_file"
+        local exit_code=$?
+        set -e
+
+        # Check for "No messages returned" error or other failures
+        if [ $exit_code -ne 0 ] || grep -q "No messages returned" "$output_file"; then
+            retry=$((retry + 1))
+            if [ $retry -lt $MAX_RETRIES ]; then
+                warn "Claude failed (attempt $retry/$MAX_RETRIES). Retrying in ${delay}s..."
+                sleep $delay
+                delay=$((delay * 2))  # Exponential backoff
+                > "$output_file"  # Clear output file for retry
+            else
+                error "Claude failed after $MAX_RETRIES attempts"
+                return 2  # Signal failure after all retries
+            fi
+        else
+            return 0  # Success
+        fi
+    done
+
+    return 2  # Should not reach here, but safety return
+}
+
 # Run a single iteration
 run_iteration() {
     local iteration=$1
@@ -133,20 +171,19 @@ run_iteration() {
     local output_file
     output_file=$(mktemp)
 
-    # Run Claude with the prompt, piping to tee for real-time output
-    # --dangerously-skip-permissions bypasses permission prompts for autonomous operation
-    if echo "$prompt" | claude --print --dangerously-skip-permissions 2>&1 | tee "$output_file"; then
+    if run_claude_with_retry "$prompt" "$output_file"; then
         # Check for completion signal
         if grep -q "<promise>COMPLETE</promise>" "$output_file"; then
             rm "$output_file"
             return 0  # All done
         fi
+        rm "$output_file"
+        return 1  # Continue iterating
     else
-        warn "Claude exited with non-zero status"
+        warn "Claude failed after retries, continuing to next iteration..."
+        rm -f "$output_file"
+        return 1  # Continue iterating (don't exit the loop)
     fi
-
-    rm "$output_file"
-    return 1  # Continue iterating
 }
 
 # Main loop

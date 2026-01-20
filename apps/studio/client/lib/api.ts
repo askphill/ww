@@ -631,6 +631,43 @@ export const api = {
             };
           }>,
         ),
+
+      recipients: (id: number, page = 1, limit = 20) => {
+        const params = new URLSearchParams();
+        params.set('page', page.toString());
+        params.set('limit', limit.toString());
+        return fetch(`${API_BASE}/email/campaigns/${id}/recipients?${params}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            recipients: Array<{
+              id: number;
+              subscriberId: number;
+              email: string;
+              firstName: string | null;
+              lastName: string | null;
+              status:
+                | 'pending'
+                | 'sent'
+                | 'delivered'
+                | 'opened'
+                | 'clicked'
+                | 'bounced'
+                | 'complained';
+              sentAt: string | null;
+              deliveredAt: string | null;
+              openedAt: string | null;
+              clickedAt: string | null;
+            }>;
+            pagination: {
+              page: number;
+              limit: number;
+              total: number;
+              totalPages: number;
+            };
+          }>,
+        );
+      },
     },
   },
 
