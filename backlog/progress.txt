@@ -1470,3 +1470,31 @@
 - For "delivered", count statuses: delivered, opened, clicked (email was delivered if any of these)
 - For "opened", count statuses: opened, clicked (email was opened if clicked)
 - Date range queries use ISO format timestamps: `YYYY-MM-DDTHH:MM:SS.sssZ`
+
+### Iteration: 2026-01-20 US-049
+
+**Story:** US-049 - Add analytics aggregation to daily cron
+**Status:** Complete
+
+**What was done:**
+
+- Added `0 2 * * *` cron trigger to wrangler.jsonc (2 AM UTC daily)
+- Imported `aggregateDailyMetrics` and `getPreviousDay` from analytics service in index.ts
+- Added cron handler for `0 2 * * *` that:
+  - Gets the previous day's date using `getPreviousDay()`
+  - Calls `aggregateDailyMetrics(env.DB, previousDay)`
+  - Logs aggregation completion with email metrics count and subscriber changes
+  - Handles errors gracefully with console.error
+- Uses `ctx.waitUntil()` for async execution (same pattern as other cron handlers)
+- Build and typecheck pass
+
+**Files changed:**
+
+- apps/studio/wrangler.jsonc (modified - added cron trigger)
+- apps/studio/server/index.ts (modified - added import and cron handler)
+
+**Learnings for future iterations:**
+
+- Cron handler pattern: check `event.cron === 'pattern'` then `ctx.waitUntil(async IIFE)`
+- Run analytics aggregation at 2 AM to ensure previous day's data is complete before aggregating
+- `getPreviousDay()` utility function returns Date object for previous calendar day
