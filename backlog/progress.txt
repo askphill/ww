@@ -886,3 +886,36 @@
 - Width toggle buttons: use active state styling to show current selection
 - Preview API accepts optional variables object for template interpolation
 
+### Iteration: 2026-01-20 US-030
+
+**Story:** US-030 - Implement send test modal in editor
+**Status:** Complete
+
+**What was done:**
+
+- Enhanced TestEmailModal component with full functionality
+- Added useAuth hook integration to pre-fill email with user's email address
+- Added escape key handler using useEffect with keydown event listener
+- Added backdrop click handler to close modal when clicking outside content
+- Prevent background scrolling when modal is open via document.body.style.overflow
+- Added description text explaining the modal purpose ("Send a test email to preview...")
+- Enhanced loading state with spinner animation in the button
+- Improved error display with styled alert box (red border, icon, background)
+- Added autoFocus on email input for better UX
+- Added "Close (Esc)" title to close button for accessibility
+- Fixed pre-existing TypeScript error in Login.tsx (data typed as unknown)
+
+**Files changed:**
+
+- apps/studio/client/pages/email/Editor.tsx (modified - added useAuth import, enhanced TestEmailModal ~50 lines added)
+- apps/studio/client/pages/Login.tsx (modified - fixed TypeScript error with type assertion)
+
+**Learnings for future iterations:**
+
+- useAuth hook provides user object with email property for pre-filling forms
+- Re-use modal patterns from PreviewModal: escape key, backdrop click, body scroll prevention
+- Loading spinner in buttons: use nested span with animate-spin class on a border element
+- Error display: styled alert box with icon is better UX than plain text
+- autoFocus attribute on input makes modal more accessible
+- Type assertion `as {error?: string}` fixes unknown type from JSON parsing
+
