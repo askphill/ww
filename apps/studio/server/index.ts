@@ -7,6 +7,7 @@ import {opportunitiesRoutes} from './routes/opportunities';
 import {trackingRoutes, checkAllKeywordPositions} from './routes/tracking';
 import {emailRoutes} from './routes/email';
 import {processScheduledCampaigns} from './services/scheduledCampaigns';
+import {aggregateDailyMetrics, getPreviousDay} from './services/analytics';
 import type {AuthUser} from './middleware/auth';
 
 export interface Env {
@@ -147,6 +148,27 @@ export default {
           } catch (err) {
             console.error(
               '[Cron] Unexpected error during campaign processing:',
+              err,
+            );
+          }
+        })(),
+      );
+    }
+
+    // Daily analytics aggregation at 2 AM (0 2 * * *)
+    if (event.cron === '0 2 * * *') {
+      ctx.waitUntil(
+        (async () => {
+          try {
+            console.log('[Cron] Starting daily analytics aggregation');
+            const previousDay = getPreviousDay();
+            const result = await aggregateDailyMetrics(env.DB, previousDay);
+            console.log(
+              `[Cron] Analytics aggregation complete for ${result.date}. Email metrics: ${result.emailMetrics.length} campaigns, Subscribers: new=${result.subscriberMetrics.newSubscribers}, unsubscribed=${result.subscriberMetrics.unsubscribed}`,
+            );
+          } catch (err) {
+            console.error(
+              '[Cron] Unexpected error during analytics aggregation:',
               err,
             );
           }
