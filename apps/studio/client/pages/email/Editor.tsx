@@ -831,7 +831,311 @@ function EmptyCanvasState({
   );
 }
 
-// Properties Panel (placeholder - will be expanded in US-027)
+// Component schemas - matching server-side definitions
+// These are duplicated client-side to avoid server imports
+const COMPONENT_SCHEMAS: Record<
+  string,
+  {
+    type: string;
+    name: string;
+    description: string;
+    props: Record<
+      string,
+      {
+        type: string;
+        label: string;
+        description: string;
+        required: boolean;
+        default?: unknown;
+        options?: Array<{value: string | number; label: string}>;
+        itemSchema?: Record<
+          string,
+          {
+            type: string;
+            label: string;
+            description: string;
+            required: boolean;
+            options?: Array<{value: string | number; label: string}>;
+          }
+        >;
+        maxItems?: number;
+      }
+    >;
+  }
+> = {
+  Header: {
+    type: 'Header',
+    name: 'Header',
+    description: 'Logo and branding header',
+    props: {
+      logoUrl: {
+        type: 'string',
+        label: 'Logo URL',
+        description: 'URL of your logo image',
+        required: true,
+        default: '',
+      },
+      backgroundColor: {
+        type: 'color',
+        label: 'Background Color',
+        description: 'Background color of the header',
+        required: false,
+        default: '#1a1a1a',
+      },
+    },
+  },
+  Hero: {
+    type: 'Hero',
+    name: 'Hero',
+    description: 'Hero section with headline, image, and call-to-action button',
+    props: {
+      headline: {
+        type: 'string',
+        label: 'Headline',
+        description:
+          'Main headline text. Use {{firstName}} for personalization.',
+        required: true,
+        default: 'Welcome to Wakey',
+      },
+      subheadline: {
+        type: 'string',
+        label: 'Subheadline',
+        description:
+          'Secondary text below the headline. Use {{firstName}} for personalization.',
+        required: false,
+        default: '',
+      },
+      imageUrl: {
+        type: 'string',
+        label: 'Image URL',
+        description: 'URL of the hero image',
+        required: false,
+        default: '',
+      },
+      buttonText: {
+        type: 'string',
+        label: 'Button Text',
+        description: 'Text displayed on the CTA button',
+        required: false,
+        default: 'Shop Now',
+      },
+      buttonUrl: {
+        type: 'string',
+        label: 'Button URL',
+        description: 'URL the button links to',
+        required: false,
+        default: 'https://www.wakey.care',
+      },
+      backgroundColor: {
+        type: 'color',
+        label: 'Background Color',
+        description: 'Background color of the hero section',
+        required: false,
+        default: '#1a1a1a',
+      },
+    },
+  },
+  TextBlock: {
+    type: 'TextBlock',
+    name: 'Text Block',
+    description: 'Body text content with formatting support',
+    props: {
+      content: {
+        type: 'textarea',
+        label: 'Content',
+        description:
+          'Text content. Supports basic HTML (bold, italic, links). Use {{firstName}} for personalization.',
+        required: true,
+        default: 'Enter your text here...',
+      },
+      alignment: {
+        type: 'select',
+        label: 'Alignment',
+        description: 'Text alignment',
+        required: false,
+        default: 'left',
+        options: [
+          {value: 'left', label: 'Left'},
+          {value: 'center', label: 'Center'},
+          {value: 'right', label: 'Right'},
+        ],
+      },
+      fontSize: {
+        type: 'select',
+        label: 'Font Size',
+        description: 'Text size',
+        required: false,
+        default: 'paragraph',
+        options: [
+          {value: 'paragraph', label: 'Paragraph'},
+          {value: 'small', label: 'Small'},
+        ],
+      },
+    },
+  },
+  CallToAction: {
+    type: 'CallToAction',
+    name: 'Call to Action',
+    description: 'CTA button for driving clicks',
+    props: {
+      text: {
+        type: 'string',
+        label: 'Button Text',
+        description: 'Text displayed on the button',
+        required: true,
+        default: 'Shop Now',
+      },
+      url: {
+        type: 'string',
+        label: 'Button URL',
+        description: 'URL the button links to',
+        required: true,
+        default: 'https://www.wakey.care',
+      },
+      variant: {
+        type: 'select',
+        label: 'Style',
+        description: 'Button style variant',
+        required: false,
+        default: 'primary',
+        options: [
+          {value: 'primary', label: 'Primary (Yellow)'},
+          {value: 'secondary', label: 'Secondary (Outline)'},
+        ],
+      },
+    },
+  },
+  ProductGrid: {
+    type: 'ProductGrid',
+    name: 'Product Grid',
+    description: 'Grid layout for showcasing products with images and prices',
+    props: {
+      products: {
+        type: 'array',
+        label: 'Products',
+        description: 'Array of products to display (max 6)',
+        required: true,
+        maxItems: 6,
+        itemSchema: {
+          imageUrl: {
+            type: 'string',
+            label: 'Image URL',
+            description: 'URL of the product image',
+            required: true,
+          },
+          title: {
+            type: 'string',
+            label: 'Title',
+            description: 'Product title',
+            required: true,
+          },
+          price: {
+            type: 'string',
+            label: 'Price',
+            description: 'Product price (e.g., "$29.99")',
+            required: true,
+          },
+          url: {
+            type: 'string',
+            label: 'URL',
+            description: 'Link to the product page',
+            required: true,
+          },
+        },
+        default: [],
+      },
+      columns: {
+        type: 'select',
+        label: 'Columns',
+        description:
+          'Number of columns on desktop (mobile always shows 1 column)',
+        required: false,
+        default: 2,
+        options: [
+          {value: 2, label: '2 Columns'},
+          {value: 3, label: '3 Columns'},
+        ],
+      },
+    },
+  },
+  Divider: {
+    type: 'Divider',
+    name: 'Divider',
+    description: 'Horizontal line for visual separation',
+    props: {
+      color: {
+        type: 'color',
+        label: 'Color',
+        description: 'Color of the divider line',
+        required: false,
+        default: '#e0e0e0',
+      },
+      spacing: {
+        type: 'select',
+        label: 'Spacing',
+        description: 'Vertical spacing around the divider',
+        required: false,
+        default: 'medium',
+        options: [
+          {value: 'small', label: 'Small'},
+          {value: 'medium', label: 'Medium'},
+          {value: 'large', label: 'Large'},
+        ],
+      },
+    },
+  },
+  Footer: {
+    type: 'Footer',
+    name: 'Footer',
+    description:
+      'Email footer with unsubscribe link, physical address, and social links',
+    props: {
+      unsubscribeUrl: {
+        type: 'string',
+        label: 'Unsubscribe URL',
+        description:
+          'URL for the unsubscribe page (will be auto-generated with token)',
+        required: true,
+        default: '{{unsubscribeUrl}}',
+      },
+      address: {
+        type: 'textarea',
+        label: 'Physical Address',
+        description: 'Your physical mailing address (required by CAN-SPAM)',
+        required: true,
+        default: 'Wakey Care Inc.\n123 Main Street\nLos Angeles, CA 90001',
+      },
+      socialLinks: {
+        type: 'array',
+        label: 'Social Links',
+        description: 'Social media profile links (Instagram, TikTok)',
+        required: false,
+        maxItems: 2,
+        itemSchema: {
+          platform: {
+            type: 'select',
+            label: 'Platform',
+            description: 'Social media platform',
+            required: true,
+            options: [
+              {value: 'instagram', label: 'Instagram'},
+              {value: 'tiktok', label: 'TikTok'},
+            ],
+          },
+          url: {
+            type: 'string',
+            label: 'URL',
+            description: 'Profile URL',
+            required: true,
+          },
+        },
+        default: [],
+      },
+    },
+  },
+};
+
+// Properties Panel - generates form from component schema
 function PropertiesPanel({
   component,
   onUpdate,
@@ -840,6 +1144,297 @@ function PropertiesPanel({
   onUpdate: (props: Record<string, unknown>) => void;
 }) {
   const componentInfo = COMPONENT_TYPES.find((c) => c.type === component.type);
+  const schema = COMPONENT_SCHEMAS[component.type];
+
+  // Get the current value for a prop, falling back to schema default
+  const getPropValue = (propName: string, schemaDefault: unknown) => {
+    if (component.props[propName] !== undefined) {
+      return component.props[propName];
+    }
+    return schemaDefault;
+  };
+
+  // Update a single prop
+  const updateProp = (propName: string, value: unknown) => {
+    onUpdate({[propName]: value});
+  };
+
+  // Add an item to an array prop
+  const addArrayItem = (
+    propName: string,
+    itemSchema: Record<
+      string,
+      {type: string; options?: Array<{value: string | number; label: string}>}
+    >,
+  ) => {
+    const currentArray = (getPropValue(propName, []) as unknown[]) || [];
+    // Create new item with defaults from itemSchema
+    const newItem: Record<string, unknown> = {};
+    for (const [key, fieldSchema] of Object.entries(itemSchema)) {
+      if (fieldSchema.type === 'select' && fieldSchema.options?.length) {
+        newItem[key] = fieldSchema.options[0].value;
+      } else {
+        newItem[key] = '';
+      }
+    }
+    onUpdate({[propName]: [...currentArray, newItem]});
+  };
+
+  // Update an item in an array prop
+  const updateArrayItem = (
+    propName: string,
+    index: number,
+    fieldName: string,
+    value: unknown,
+  ) => {
+    const currentArray = [...((getPropValue(propName, []) as unknown[]) || [])];
+    const item = currentArray[index] as Record<string, unknown>;
+    currentArray[index] = {...item, [fieldName]: value};
+    onUpdate({[propName]: currentArray});
+  };
+
+  // Remove an item from an array prop
+  const removeArrayItem = (propName: string, index: number) => {
+    const currentArray = [...((getPropValue(propName, []) as unknown[]) || [])];
+    currentArray.splice(index, 1);
+    onUpdate({[propName]: currentArray});
+  };
+
+  // Render a form field based on schema type
+  const renderField = (
+    propName: string,
+    propSchema: {
+      type: string;
+      label: string;
+      description: string;
+      required: boolean;
+      default?: unknown;
+      options?: Array<{value: string | number; label: string}>;
+      itemSchema?: Record<
+        string,
+        {
+          type: string;
+          label: string;
+          description: string;
+          required: boolean;
+          options?: Array<{value: string | number; label: string}>;
+        }
+      >;
+      maxItems?: number;
+    },
+  ) => {
+    const value = getPropValue(propName, propSchema.default);
+    const isTextField =
+      propSchema.type === 'string' || propSchema.type === 'textarea';
+    const showVariableHint =
+      isTextField &&
+      (propSchema.description.includes('{{') ||
+        propSchema.label.toLowerCase().includes('text') ||
+        propSchema.label.toLowerCase().includes('headline') ||
+        propSchema.label.toLowerCase().includes('content'));
+
+    return (
+      <div key={propName} className="space-y-1">
+        <label className="block text-sm font-medium text-foreground">
+          {propSchema.label}
+          {propSchema.required && <span className="text-red-500"> *</span>}
+        </label>
+
+        {propSchema.type === 'string' && (
+          <input
+            type="text"
+            value={(value as string) || ''}
+            onChange={(e) => updateProp(propName, e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            placeholder={propSchema.description}
+          />
+        )}
+
+        {propSchema.type === 'textarea' && (
+          <textarea
+            value={(value as string) || ''}
+            onChange={(e) => updateProp(propName, e.target.value)}
+            rows={4}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            placeholder={propSchema.description}
+          />
+        )}
+
+        {propSchema.type === 'color' && (
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={(value as string) || '#000000'}
+              onChange={(e) => updateProp(propName, e.target.value)}
+              className="h-9 w-12 cursor-pointer rounded border border-border bg-transparent"
+            />
+            <input
+              type="text"
+              value={(value as string) || ''}
+              onChange={(e) => updateProp(propName, e.target.value)}
+              className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder="#000000"
+            />
+          </div>
+        )}
+
+        {propSchema.type === 'select' && propSchema.options && (
+          <select
+            value={value as string | number}
+            onChange={(e) => {
+              // Try to parse as number if the option values are numbers
+              const optionValue = propSchema.options!.find(
+                (o) => String(o.value) === e.target.value,
+              );
+              updateProp(propName, optionValue?.value ?? e.target.value);
+            }}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            {propSchema.options.map((option) => (
+              <option key={String(option.value)} value={String(option.value)}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {propSchema.type === 'number' && (
+          <input
+            type="number"
+            value={(value as number) ?? ''}
+            onChange={(e) =>
+              updateProp(
+                propName,
+                e.target.value === '' ? undefined : Number(e.target.value),
+              )
+            }
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            placeholder={propSchema.description}
+          />
+        )}
+
+        {propSchema.type === 'array' && propSchema.itemSchema && (
+          <div className="space-y-3">
+            {((value as unknown[]) || []).map((item, index) => (
+              <div
+                key={index}
+                className="relative rounded-md border border-border bg-muted/30 p-3"
+              >
+                <button
+                  onClick={() => removeArrayItem(propName, index)}
+                  className="absolute right-2 top-2 rounded p-1 text-muted-foreground hover:bg-destructive hover:text-destructive-foreground"
+                  title="Remove item"
+                >
+                  <CrossIcon className="h-3 w-3" />
+                </button>
+                <div className="space-y-2 pr-6">
+                  {Object.entries(propSchema.itemSchema!).map(
+                    ([fieldName, fieldSchema]) => (
+                      <div key={fieldName}>
+                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                          {fieldSchema.label}
+                        </label>
+                        {fieldSchema.type === 'select' &&
+                        fieldSchema.options ? (
+                          <select
+                            value={
+                              (item as Record<string, unknown>)[fieldName] as
+                                | string
+                                | number
+                            }
+                            onChange={(e) =>
+                              updateArrayItem(
+                                propName,
+                                index,
+                                fieldName,
+                                e.target.value,
+                              )
+                            }
+                            className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                          >
+                            {fieldSchema.options.map((option) => (
+                              <option
+                                key={String(option.value)}
+                                value={String(option.value)}
+                              >
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={
+                              ((item as Record<string, unknown>)[
+                                fieldName
+                              ] as string) || ''
+                            }
+                            onChange={(e) =>
+                              updateArrayItem(
+                                propName,
+                                index,
+                                fieldName,
+                                e.target.value,
+                              )
+                            }
+                            className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            placeholder={fieldSchema.description}
+                          />
+                        )}
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
+            {(!propSchema.maxItems ||
+              ((value as unknown[]) || []).length < propSchema.maxItems) && (
+              <button
+                onClick={() => addArrayItem(propName, propSchema.itemSchema!)}
+                className="flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-border py-2 text-sm text-muted-foreground hover:border-primary hover:text-foreground"
+              >
+                <PlusIcon className="h-3 w-3" />
+                Add {propSchema.label.replace(/s$/, '')}
+              </button>
+            )}
+          </div>
+        )}
+
+        <p className="text-xs text-muted-foreground">
+          {propSchema.description}
+        </p>
+
+        {showVariableHint && (
+          <p className="text-xs text-primary/80">
+            Tip: Use {'{{firstName}}'} for personalization
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  if (!schema) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded bg-muted text-muted-foreground">
+            <ComponentIcon type={component.type} />
+          </div>
+          <div>
+            <p className="font-medium text-foreground">
+              {componentInfo?.name || component.type}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {componentInfo?.description}
+            </p>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          No properties available for this component.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -848,23 +1443,17 @@ function PropertiesPanel({
           <ComponentIcon type={component.type} />
         </div>
         <div>
-          <p className="font-medium text-foreground">
-            {componentInfo?.name || component.type}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {componentInfo?.description}
-          </p>
+          <p className="font-medium text-foreground">{schema.name}</p>
+          <p className="text-xs text-muted-foreground">{schema.description}</p>
         </div>
       </div>
 
       <div className="border-t border-border pt-4">
-        <p className="mb-2 text-xs text-muted-foreground">
-          Property editing will be implemented in a future update. For now, you
-          can add and arrange components.
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Tip: Use {'{{firstName}}'} for personalization in text fields.
-        </p>
+        <div className="space-y-4">
+          {Object.entries(schema.props).map(([propName, propSchema]) =>
+            renderField(propName, propSchema),
+          )}
+        </div>
       </div>
     </div>
   );
