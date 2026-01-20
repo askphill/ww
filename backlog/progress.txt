@@ -160,3 +160,39 @@
 - Webhook routes need to be defined BEFORE applying auth middleware via `emailRoutes.use('/path/*', authMiddleware)`
 - Always return 200 OK to Shopify webhooks to prevent retries, even on internal errors
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-006 - Create subscribers list page UI
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/Subscribers.tsx` with full subscriber list UI
+- Implemented table with columns: Email, Name, Status, Source, Subscribed Date
+- Added search input that filters by email or name (resets page to 1 on change)
+- Added status filter dropdown with All Statuses, Active, Unsubscribed, Bounced options
+- Implemented pagination with Previous/Next buttons (50 subscribers per page)
+- Shows total subscriber count and active count in header
+- Created StatusBadge component with color-coded badges (green/gray/red)
+- Added loading spinner while fetching data
+- Added empty state message when no subscribers match filters
+- Added email API methods to `apps/studio/client/lib/api.ts` for all subscriber CRUD operations
+- Registered `/email/subscribers` route in `apps/studio/client/App.tsx`
+- Verified UI in browser using chrome-devtools MCP
+
+**Files changed:**
+
+- `apps/studio/client/pages/email/Subscribers.tsx` (created)
+- `apps/studio/client/lib/api.ts` (modified - added email.subscribers API methods)
+- `apps/studio/client/App.tsx` (modified - added route and import)
+- `backlog/backlog.json` (updated US-006 passes status)
+
+**Learnings for future iterations:**
+
+- UI pages follow pattern from seo/Tracking.tsx: useState for filters, useQuery for data fetching
+- Table styling: rounded-lg border bg-card wrapper, bg-muted/50 header row, divide-y divide-border body
+- Status badges use bg-color/20 with text-color for consistent styling
+- API client pattern: nested objects with methods that return `fetch().then(handleResponse<Type>)`
+- Pagination resets to page 1 when filters change to avoid showing empty results
+- Dev login available at localhost for testing without auth flow
+
