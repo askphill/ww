@@ -1,6 +1,7 @@
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {Button} from '@wakey/ui';
 import {optimizeShopifyImage, imagePresets} from '~/lib/shopify-image';
+import type {TooltipProduct} from '~/lib/tooltip-product';
 
 interface FeaturedProductProps {
   backgroundImage: string;
@@ -13,6 +14,7 @@ interface FeaturedProductProps {
     right?: string;
     bottom?: string;
   };
+  tooltipProduct?: TooltipProduct | null;
   buttonText?: string;
   buttonTo?: string;
 }
@@ -23,6 +25,7 @@ export function FeaturedProduct({
   heading,
   productHandle,
   tooltipPosition,
+  tooltipProduct,
   buttonText,
   buttonTo,
 }: FeaturedProductProps) {
@@ -62,7 +65,11 @@ export function FeaturedProduct({
       </div>
 
       {productHandle && (
-        <ProductTooltip handle={productHandle} position={tooltipPosition} />
+        <ProductTooltip
+          handle={productHandle}
+          position={tooltipPosition}
+          product={tooltipProduct}
+        />
       )}
     </section>
   );

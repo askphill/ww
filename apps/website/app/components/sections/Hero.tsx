@@ -14,6 +14,7 @@
 import {WakeyLogo} from '~/components/WakeyLogo';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {optimizeShopifyImage, imagePresets} from '~/lib/shopify-image';
+import type {TooltipProduct} from '~/lib/tooltip-product';
 
 interface HeroProps {
   backgroundImage: string;
@@ -27,6 +28,7 @@ interface HeroProps {
     right?: string;
     bottom?: string;
   };
+  tooltipProduct?: TooltipProduct | null;
 }
 
 export function Hero({
@@ -36,6 +38,7 @@ export function Hero({
   logoColor = '#fad103',
   productHandle,
   tooltipPosition,
+  tooltipProduct,
 }: HeroProps) {
   // Optimize images with Shopify CDN transformations
   const optimizedDesktop = optimizeShopifyImage(
@@ -65,6 +68,7 @@ export function Hero({
           handle={productHandle}
           position={tooltipPosition}
           priority
+          product={tooltipProduct}
         />
       )}
       {showLogo && (

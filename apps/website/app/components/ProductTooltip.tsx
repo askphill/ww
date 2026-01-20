@@ -1,5 +1,6 @@
 import {useLazyFetch} from '@wakey/hooks';
 import {Tooltip} from '@wakey/ui';
+import type {TooltipProduct} from '~/lib/tooltip-product';
 
 interface ProductTooltipProps {
   handle: string;
@@ -11,6 +12,8 @@ interface ProductTooltipProps {
   };
   /** Set to true for above-the-fold tooltips to prioritize LCP */
   priority?: boolean;
+  /** Optional server-provided data to avoid client fetch */
+  product?: TooltipProduct | null;
 }
 
 interface ProductApiResponse {
@@ -29,24 +32,37 @@ export function ProductTooltip({
   handle,
   position,
   priority,
+  product,
 }: ProductTooltipProps) {
-  const fetcher = useLazyFetch<ProductApiResponse>(`/api/product/${handle}`);
+  const fetcher = useLazyFetch<ProductApiResponse>(`/api/product/${handle}`, {
+    enabled: !product,
+  });
 
-  const product = fetcher.data?.product;
+  const fetchedProduct = fetcher.data?.product
+    ? {
+        title: fetcher.data.product.title,
+        handle: fetcher.data.product.handle,
+        image: fetcher.data.product.featuredImage?.url || '',
+        subtitle: fetcher.data.product.subtitle,
+        reviewCount: fetcher.data.product.reviewCount,
+        reviewRating: fetcher.data.product.reviewRating,
+      }
+    : null;
+  const resolvedProduct = product || fetchedProduct;
 
-  if (!product) {
+  if (!resolvedProduct) {
     return null;
   }
 
   return (
     <Tooltip
       product={{
-        title: product.title,
-        url: `/products/${product.handle}`,
-        image: product.featuredImage?.url || '',
-        subtitle: product.subtitle,
-        reviewCount: product.reviewCount,
-        reviewRating: product.reviewRating,
+        title: resolvedProduct.title,
+        url: `/products/${resolvedProduct.handle}`,
+        image: resolvedProduct.image,
+        subtitle: resolvedProduct.subtitle,
+        reviewCount: resolvedProduct.reviewCount,
+        reviewRating: resolvedProduct.reviewRating,
       }}
       position={position}
       priority={priority}

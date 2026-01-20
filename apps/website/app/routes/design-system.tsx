@@ -30,6 +30,7 @@ import {
 import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
+import type {TooltipProduct} from '~/lib/tooltip-product';
 
 export function meta(_args: Route.MetaArgs) {
   return [
@@ -352,6 +353,16 @@ function ComponentCard({
 
 export default function DesignSystem({loaderData}: Route.ComponentProps) {
   const {cart, productData} = loaderData;
+  const tooltipProduct: TooltipProduct | null = productData
+    ? {
+        title: productData.title,
+        handle: productData.handle,
+        image: productData.featuredImage || '',
+        subtitle: productData.subtitle,
+        reviewCount: productData.reviewCount,
+        reviewRating: productData.reviewRating,
+      }
+    : null;
 
   const accordionItems = [
     {
@@ -821,9 +832,10 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               </p>
               <div className="relative h-72 bg-skyblue rounded-card">
                 <ProductTooltip
-                  handle="deodorant"
+                  handle={productData?.handle || 'deodorant'}
                   position={{top: '20%', left: '10%'}}
                   priority
+                  product={tooltipProduct}
                 />
               </div>
             </Section>

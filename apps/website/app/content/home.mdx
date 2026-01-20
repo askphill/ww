@@ -7,79 +7,89 @@ import {
   SocialSection,
 } from '~/components/sections';
 
-<Hero
-  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
-  backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
-  logoColor="#fad103"
-  productHandle="deodorant"
-  tooltipPosition={{top: '33%', left: '19%'}}
-/>
+export default function Home({tooltipProducts}) {
+  return (
+    <>
+      <Hero
+        backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
+        backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/0_0.jpg?v=1754330906"
+        logoColor="#fad103"
+        productHandle="deodorant"
+        tooltipPosition={{top: '33%', left: '19%'}}
+        tooltipProduct={tooltipProducts?.deodorant}
+      />
 
-<IntroSection
-  heading={
-    <h1>
-      Morning <em>essentials</em>
-      <br />
-      for your <em>feel-good</em> start
-    </h1>
-  }
-  description="Wakey: Your go-to for natural deodorant and morning routines that actually feel good. We craft upbeat, zero-fuss essentials that turn chaotic mornings into small celebrations."
-  buttonText="About our story"
-  buttonTo="/about"
-/>
+      <IntroSection
+        heading={
+          <h1>
+            Morning <em>essentials</em>
+            <br />
+            for your <em>feel-good</em> start
+          </h1>
+        }
+        description="Wakey: Your go-to for natural deodorant and morning routines that actually feel good. We craft upbeat, zero-fuss essentials that turn chaotic mornings into small celebrations."
+        buttonText="About our story"
+        buttonTo="/about"
+      />
 
-<FeaturedProduct
-  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-3.jpg?v=1684260897"
-  backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-2_0d31cfa9-859e-4507-a5da-e6e252fbd0e6.jpg?v=1684260822"
-  heading={
-    <h2>
-      Don't sweat it.
-      <br />
-      <em>Our all new deodorant</em>
-    </h2>
-  }
-  productHandle="deodorant"
-  tooltipPosition={{right: '11%', top: '47%'}}
-/>
+      <FeaturedProduct
+        backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-3.jpg?v=1684260897"
+        backgroundImageMobile="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/DSC_5561-2-2_0d31cfa9-859e-4507-a5da-e6e252fbd0e6.jpg?v=1684260822"
+        heading={
+          <h2>
+            Don't sweat it.
+            <br />
+            <em>Our all new deodorant</em>
+          </h2>
+        }
+        productHandle="deodorant"
+        tooltipPosition={{right: '11%', top: '47%'}}
+        tooltipProduct={tooltipProducts?.deodorant}
+      />
 
-<TextMedia
-  videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
-  videoAlt="Morning routine video"
-  text="At Wakey, we believe mornings should feel like celebrations, not chores. We're on a mission to make your first 5 minutes brighter with essentials that bring energy, confidence, and small moments of self-care to your daily routine."
-  buttonText="About our mission"
-  buttonUrl="/about"
-/>
+      <TextMedia
+        videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+        videoAlt="Morning routine video"
+        text="At Wakey, we believe mornings should feel like celebrations, not chores. We're on a mission to make your first 5 minutes brighter with essentials that bring energy, confidence, and small moments of self-care to your daily routine."
+        buttonText="About our mission"
+        buttonUrl="/about"
+      />
 
-<SocialSection
-  images={[
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/IMG_6129_optimized.jpg?v=1768931915',
-      alt: 'Customer photo 1',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/e9d75c6396f4a7-KR406871722.webp',
-      alt: 'Customer photo 2',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/ff6eb114bdbbc2-BW480183861_1.webp',
-      alt: 'Customer photo 3',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/6f999aab66820b-FN480183872.webp',
-      alt: 'Customer photo 4',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/IMG_7199-2.jpg',
-      alt: 'Customer photo 5',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/olivier.jpg',
-      alt: 'Customer photo 6',
-    },
-  ]}
-/>
+      <SocialSection
+        images={[
+          {
+            src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/IMG_6129_optimized.jpg?v=1768931915',
+            alt: 'Customer photo 1',
+          },
+          {
+            src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/e9d75c6396f4a7-KR406871722.webp',
+            alt: 'Customer photo 2',
+          },
+          {
+            src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/ff6eb114bdbbc2-BW480183861_1.webp',
+            alt: 'Customer photo 3',
+          },
+          {
+            src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/6f999aab66820b-FN480183872.webp',
+            alt: 'Customer photo 4',
+          },
+          {
+            src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/IMG_7199-2.jpg',
+            alt: 'Customer photo 5',
+          },
+          {
+            src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/olivier.jpg',
+            alt: 'Customer photo 6',
+          },
+        ]}
+      />
 
-<ProductReviews
-  productHandle="deodorant"
-  videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
-/>
+      <ProductReviews
+        productHandle="deodorant"
+        videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+        tooltipProduct={tooltipProducts?.deodorant}
+      />
+    </>
+
+);
+}
