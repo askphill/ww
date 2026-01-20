@@ -311,6 +311,124 @@ export const api = {
           credentials: 'include',
         }).then(handleResponse<{success: boolean}>),
     },
+
+    templates: {
+      list: () =>
+        fetch(`${API_BASE}/email/templates`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            templates: Array<{
+              id: number;
+              name: string;
+              subject: string;
+              previewText: string | null;
+              category: string | null;
+              status: 'draft' | 'active' | 'archived';
+              createdAt: string;
+              updatedAt: string | null;
+            }>;
+          }>,
+        ),
+
+      get: (id: number) =>
+        fetch(`${API_BASE}/email/templates/${id}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            template: {
+              id: number;
+              name: string;
+              subject: string;
+              previewText: string | null;
+              components: Array<{type: string; props: Record<string, unknown>}>;
+              variables: Record<string, unknown> | null;
+              category: string | null;
+              status: 'draft' | 'active' | 'archived';
+              createdAt: string;
+              updatedAt: string | null;
+            };
+          }>,
+        ),
+
+      create: (data: {name: string; subject: string; previewText?: string}) =>
+        fetch(`${API_BASE}/email/templates`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            template: {
+              id: number;
+              name: string;
+              subject: string;
+              createdAt: string;
+            };
+          }>,
+        ),
+
+      update: (
+        id: number,
+        data: {
+          name?: string;
+          subject?: string;
+          previewText?: string;
+          components?: Array<{type: string; props: Record<string, unknown>}>;
+          variables?: Record<string, unknown>;
+          status?: 'draft' | 'active' | 'archived';
+        },
+      ) =>
+        fetch(`${API_BASE}/email/templates/${id}`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            template: {
+              id: number;
+              name: string;
+              subject: string;
+              updatedAt: string;
+            };
+          }>,
+        ),
+
+      delete: (id: number) =>
+        fetch(`${API_BASE}/email/templates/${id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        }).then(handleResponse<{success: boolean}>),
+
+      preview: (id: number, variables?: Record<string, string>) =>
+        fetch(`${API_BASE}/email/templates/${id}/preview`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({variables}),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            html: string;
+            text: string;
+            variables: Record<string, string>;
+          }>,
+        ),
+
+      sendTest: (id: number, to: string) =>
+        fetch(`${API_BASE}/email/templates/${id}/test`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({to}),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            success: boolean;
+            messageId: string;
+            remainingTestEmails: number;
+          }>,
+        ),
+    },
   },
 
   // Keyword Tracking
