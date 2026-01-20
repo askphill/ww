@@ -450,8 +450,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 26,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added @dnd-kit/sortable for component reordering in canvas. Components can be dragged from library to add, or dragged within canvas to reorder. Drag handles visible on hover. Build passes. Pre-existing typecheck error in Login.tsx not related to this change."
     },
     {
       "id": "US-027",
