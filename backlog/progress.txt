@@ -827,3 +827,30 @@
 - Color picker input type="color" combined with text input provides both visual and hex editing
 - Variable hints should be contextual - show for fields where personalization makes sense (text, headlines, content)
 
+### Iteration: 2026-01-20 US-028
+
+**Story:** US-028 - Implement template save functionality
+**Status:** Complete
+
+**What was done:**
+
+- Added auto-save after 5 seconds of inactivity using debounced setTimeout
+- Added save indicator showing "Saving..." during request
+- Added save indicator showing "Saved" with timestamp on success
+- Added error toast on save failure with auto-dismiss after 5 seconds
+- Added unsaved changes warning modal when navigating away via back button
+- Added beforeunload handler for browser tab close/refresh warning
+- Used state-based navigation warning instead of useBlocker (which requires data router)
+
+**Files changed:**
+
+- apps/studio/client/pages/email/Editor.tsx
+
+**Learnings for future iterations:**
+
+- useBlocker hook requires createBrowserRouter (data router), not BrowserRouter - use state-based modal instead
+- Auto-save should use a ref for the timeout to properly clear on component unmount
+- isInitialLoadRef pattern prevents triggering auto-save on initial data load
+- beforeunload event handler is browser-native way to warn on tab close
+- For navigation warnings without data router, track pendingNavigation in state and show modal
+
