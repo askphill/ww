@@ -1,3 +1,4 @@
+import type {Storefront} from '@shopify/hydrogen';
 import {z} from 'zod';
 import {safeJsonParse} from '~/lib/parse';
 import type {TooltipProduct} from '~/lib/tooltip-product';
@@ -20,14 +21,6 @@ interface StorefrontProduct {
 
 interface StorefrontQueryResult {
   [key: string]: StorefrontProduct | null;
-}
-
-interface StorefrontClient {
-  query: <T>(
-    query: string,
-    options: {variables?: Record<string, string>; cache?: unknown},
-  ) => Promise<T>;
-  CacheLong: () => unknown;
 }
 
 const TOOLTIP_PRODUCT_FRAGMENT = `
@@ -92,7 +85,7 @@ function normalizeTooltipProduct(product: StorefrontProduct): TooltipProduct {
 }
 
 export async function getTooltipProducts(
-  storefront: StorefrontClient,
+  storefront: Storefront,
   handles: string[],
 ): Promise<Record<string, TooltipProduct | null>> {
   const uniqueHandles = Array.from(
