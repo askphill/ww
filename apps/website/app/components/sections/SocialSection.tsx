@@ -14,6 +14,50 @@ import {
   optimizeShopifyImage,
 } from '~/lib/shopify-image';
 
+// Hook for count-up animation when element is in view
+function useCountUp(target: number, duration = 1500) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element || hasAnimated) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+
+          const startTime = performance.now();
+          const animate = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease out cubic for smooth deceleration
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.round(eased * target));
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+
+          requestAnimationFrame(animate);
+        }
+      },
+      {threshold: 0.5},
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [target, duration, hasAnimated]);
+
+  return {count, elementRef};
+}
+
 interface SocialImage {
   src: string;
   alt?: string;
@@ -22,7 +66,6 @@ interface SocialImage {
 interface SocialSectionProps {
   heading?: string;
   hashtag?: string;
-  footerText?: string;
   images: SocialImage[];
   lerpFactor?: number;
 }
@@ -340,18 +383,34 @@ function MobileCarousel({
   );
 }
 
+// Image counter component with circle and count-up
+function ImageCounter({imageCount}: {imageCount: number}) {
+  const {count, elementRef} = useCountUp(imageCount);
+
+  return (
+    <div
+      ref={elementRef}
+      className="flex items-center justify-center gap-2 font-display"
+    >
+      <div className="w-8 h-8 rounded-full border border-current flex items-center justify-center">
+        <span className="text-small">{count}</span>
+      </div>
+      <span className="text-small">Post loaded from #wakeycare</span>
+    </div>
+  );
+}
+
 // Main section component
 export function SocialSection({
   heading = 'Get featured',
   hashtag = '#wakeycare',
-  footerText = 'Posts loaded from @wakey.care',
   images,
   lerpFactor = 2,
 }: SocialSectionProps) {
   return (
     <section className="bg-softorange text-black min-h-dvh relative flex flex-col justify-between overflow-hidden">
       {/* Heading */}
-      <header className="relative z-10 pt-12 text-center md:pt-20">
+      <header className="relative z-10 pt-12 text-center md:pt-20 md:pointer-events-none">
         <h2 className="text-h2 font-display">
           {heading}
           <br />
@@ -369,9 +428,9 @@ export function SocialSection({
       {/* Mobile: Carousel */}
       <MobileCarousel images={images} className="md:hidden" />
 
-      {/* Footer */}
-      <footer className="relative z-10 pb-8 text-center md:pb-12">
-        <p className="text-small">{footerText}</p>
+      {/* Footer with image counter */}
+      <footer className="relative z-10 pb-8 md:pb-12 md:pointer-events-none">
+        <ImageCounter imageCount={images.length} />
       </footer>
     </section>
   );
