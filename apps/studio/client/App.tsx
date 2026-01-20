@@ -5,6 +5,7 @@ import {Opportunities} from './pages/seo/Opportunities';
 import {Tracking} from './pages/seo/Tracking';
 import {Subscribers} from './pages/email/Subscribers';
 import {Templates} from './pages/email/Templates';
+import {Editor} from './pages/email/Editor';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
 import {useAuth} from './hooks/useAuth';
@@ -49,6 +50,8 @@ export function App() {
                   />
                   <Route path="/email/subscribers" element={<Subscribers />} />
                   <Route path="/email/templates" element={<Templates />} />
+                  <Route path="/email/templates/new" element={<Editor />} />
+                  <Route path="/email/templates/:id" element={<Editor />} />
                   <Route path="/klaviyo" element={<Klaviyo />} />
                   <Route path="/meta" element={<Meta />} />
                 </Routes>
