@@ -1,7 +1,12 @@
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {Button} from '@wakey/ui';
-import {optimizeShopifyImage, imagePresets} from '~/lib/shopify-image';
 import type {TooltipProduct} from '~/lib/tooltip-product';
+import {
+  buildShopifySrcSet,
+  imagePresets,
+  imageSrcSets,
+  optimizeShopifyImage,
+} from '~/lib/shopify-image';
 
 interface FeaturedProductProps {
   backgroundImage: string;
@@ -34,21 +39,31 @@ export function FeaturedProduct({
     backgroundImage,
     imagePresets.hero,
   );
+  const desktopSrcSet = buildShopifySrcSet(backgroundImage, imageSrcSets.hero);
   const optimizedMobile = backgroundImageMobile
     ? optimizeShopifyImage(backgroundImageMobile, imagePresets.heroMobile)
     : optimizeShopifyImage(backgroundImage, imagePresets.heroMobile);
+  const mobileSrcSet = buildShopifySrcSet(
+    backgroundImageMobile || backgroundImage,
+    imageSrcSets.heroMobile,
+  );
 
   return (
     <section className="relative w-full min-h-[max(50rem,100dvh)] flex items-center overflow-hidden">
       <picture>
-        <source media="(max-width: 48rem)" srcSet={optimizedMobile} />
+        <source
+          media="(max-width: 48rem)"
+          srcSet={mobileSrcSet || optimizedMobile}
+          sizes="100vw"
+        />
         <img
           src={optimizedDesktop}
+          srcSet={desktopSrcSet || undefined}
+          sizes="100vw"
           alt=""
           width={1920}
           height={1080}
           className="absolute inset-0 w-full h-full object-cover z-0"
-          fetchPriority="high"
           decoding="async"
         />
       </picture>

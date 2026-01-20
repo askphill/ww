@@ -1,6 +1,12 @@
 import {useLazyFetch} from '@wakey/hooks';
 import {Tooltip} from '@wakey/ui';
 import type {TooltipProduct} from '~/lib/tooltip-product';
+import {
+  buildShopifySrcSet,
+  imagePresets,
+  imageSrcSets,
+  optimizeShopifyImage,
+} from '~/lib/shopify-image';
 
 interface ProductTooltipProps {
   handle: string;
@@ -54,12 +60,22 @@ export function ProductTooltip({
     return null;
   }
 
+  const rawImage = resolvedProduct.image || '';
+  const optimizedImage = rawImage
+    ? optimizeShopifyImage(rawImage, imagePresets.tooltip)
+    : '';
+  const imageSrcSet = rawImage
+    ? buildShopifySrcSet(rawImage, imageSrcSets.tooltip)
+    : '';
+
   return (
     <Tooltip
       product={{
         title: resolvedProduct.title,
         url: `/products/${resolvedProduct.handle}`,
-        image: resolvedProduct.image,
+        image: optimizedImage || rawImage,
+        imageSrcSet,
+        imageSizes: '80px',
         subtitle: resolvedProduct.subtitle,
         reviewCount: resolvedProduct.reviewCount,
         reviewRating: resolvedProduct.reviewRating,

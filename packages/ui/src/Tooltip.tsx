@@ -5,6 +5,8 @@ interface TooltipProps {
     title: string;
     url: string;
     image: string;
+    imageSrcSet?: string;
+    imageSizes?: string;
     subtitle?: string | null;
     reviewCount?: number | null;
     reviewRating?: number | null;
@@ -41,6 +43,8 @@ export function Tooltip({
         <div className="flex items-center justify-center p-1.5 md:p-2">
           <img
             src={product.image}
+            srcSet={product.imageSrcSet}
+            sizes={product.imageSizes}
             alt={product.title}
             className="w-12 h-auto"
             fetchpriority={priority ? 'high' : undefined}
