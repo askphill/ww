@@ -1232,4 +1232,116 @@ emailRoutes.post(
   },
 );
 
+// ============ AI Template Generation ============
+
+// Rate limit for AI generation: 20 per day per user
+const AI_GENERATION_RATE_LIMIT = 20;
+const aiGenerationLimits = new Map<
+  string,
+  {count: number; windowStart: number}
+>();
+
+function isAIGenerationRateLimited(userEmail: string): {
+  limited: boolean;
+  remaining?: number;
+  retryAfterSeconds?: number;
+} {
+  const now = Date.now();
+  const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  const userLimit = aiGenerationLimits.get(userEmail);
+
+  if (!userLimit) {
+    // First request - start tracking
+    aiGenerationLimits.set(userEmail, {count: 1, windowStart: now});
+    return {limited: false, remaining: AI_GENERATION_RATE_LIMIT - 1};
+  }
+
+  // Check if window has expired
+  if (now - userLimit.windowStart > oneDay) {
+    // Reset the window
+    aiGenerationLimits.set(userEmail, {count: 1, windowStart: now});
+    return {limited: false, remaining: AI_GENERATION_RATE_LIMIT - 1};
+  }
+
+  // Within window - check count
+  if (userLimit.count >= AI_GENERATION_RATE_LIMIT) {
+    const retryAfterSeconds = Math.ceil(
+      (userLimit.windowStart + oneDay - now) / 1000,
+    );
+    return {limited: true, retryAfterSeconds};
+  }
+
+  // Increment count
+  userLimit.count++;
+  return {
+    limited: false,
+    remaining: AI_GENERATION_RATE_LIMIT - userLimit.count,
+  };
+}
+
+// Generate email template with AI
+emailRoutes.post(
+  '/templates/generate',
+  zValidator(
+    'json',
+    z.object({
+      prompt: z.string().min(10, 'Prompt must be at least 10 characters'),
+    }),
+  ),
+  async (c) => {
+    const {prompt} = c.req.valid('json');
+    const user = c.get('user');
+
+    // Rate limit check
+    const rateCheck = isAIGenerationRateLimited(user.email);
+    if (rateCheck.limited) {
+      return c.json(
+        {
+          error: 'Rate limit exceeded. Maximum 20 AI generations per day.',
+          retryAfterSeconds: rateCheck.retryAfterSeconds,
+        },
+        429,
+      );
+    }
+
+    console.log(
+      `[AI Template Generation] User ${user.email} requested: "${prompt.substring(0, 50)}..."`,
+    );
+
+    try {
+      const {generateTemplate, getDefaultBrandContext} =
+        await import('../services/email-ai');
+
+      const brandContext = getDefaultBrandContext();
+      const result = await generateTemplate(
+        c.env.GEMINI_API_KEY,
+        prompt,
+        brandContext,
+      );
+
+      console.log(
+        `[AI Template Generation] Generated template with ${result.components.length} components`,
+      );
+
+      return c.json({
+        success: true,
+        template: result,
+        remainingGenerations: rateCheck.remaining,
+      });
+    } catch (error) {
+      console.error('[AI Template Generation] Error:', error);
+      return c.json(
+        {
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to generate template',
+        },
+        500,
+      );
+    }
+  },
+);
+
 export {emailRoutes};
