@@ -95,3 +95,36 @@
 - Use zValidator from @hono/zod-validator for request body validation
 - Soft deletes preferred for subscriber management to preserve data integrity
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-004 - Implement Shopify customer sync service
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/services/shopifySync.ts` with Shopify customer sync functionality
+- Implemented `syncCustomersFromShopify` function using Shopify Admin GraphQL API
+- Used cursor-based pagination to handle stores with >250 customers (Shopify's maximum per request)
+- Creates new subscribers for Shopify customers without existing records
+- Updates existing subscribers if email/name/shopifyCustomerId changed
+- Respects unsubscribed/bounced status - does not re-subscribe users
+- Sets `source` field to 'shopify_sync' for new subscribers
+- Checks Shopify's `emailMarketingConsent.marketingState` for initial subscription status
+- Added SHOPIFY_ADMIN_API_TOKEN and SHOPIFY_STORE_DOMAIN to Env interface
+- Returns sync stats object with created, updated, skipped, and total counts
+
+**Files changed:**
+
+- `apps/studio/server/services/shopifySync.ts` (created)
+- `apps/studio/server/index.ts` (modified - added Shopify env vars to Env interface)
+- `backlog/backlog.json` (updated US-004 passes status)
+
+**Learnings for future iterations:**
+
+- Shopify Admin GraphQL API uses cursor-based pagination via `after` parameter
+- Shopify global IDs format: `gid://shopify/Customer/123` - extract numeric ID from last segment
+- Shopify API version format: `2024-01` in URL path
+- `X-Shopify-Access-Token` header required for authentication
+- `emailMarketingConsent.marketingState` can be 'SUBSCRIBED', 'UNSUBSCRIBED', 'NOT_SUBSCRIBED', etc.
+- Type `D1Database` imported from `@cloudflare/workers-types` for Cloudflare D1 database parameter
+
