@@ -8,7 +8,7 @@
     "dev:client": "vite",
     "dev:server": "wrangler dev",
     "build": "vite build && wrangler deploy --dry-run",
-    "deploy": "vite build && wrangler deploy",
+    "deploy": "pnpm db:migrate:prod && vite build && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply wakey-admin --local",
