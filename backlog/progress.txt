@@ -730,3 +730,36 @@
 - Modal pattern: fixed inset-0 z-50 with bg-black/50 backdrop
 - Form inputs use consistent styling: `rounded-md border border-border bg-card px-3 py-2`
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-025 - Implement component library panel in editor
+**Status:** Complete
+
+**What was done:**
+
+- Installed @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities for drag-and-drop functionality
+- Added DndContext wrapper with PointerSensor (8px activation distance to prevent accidental drags)
+- Created DraggableComponentItem using useDraggable hook for library components
+- Created CanvasDropZone using useDroppable hook as drop target
+- Grouped components by category (Layout: Header, Divider, Footer; Content: Hero, TextBlock, CallToAction, ProductGrid)
+- Added DragOverlay for ghost preview showing component card with primary accent colors during drag
+- Updated EmptyCanvasState to show visual feedback when dragging (dashed border, "Drop component here" message)
+- Canvas shows ring and background color change when dragging over it
+
+**Files changed:**
+
+- `apps/studio/client/pages/email/Editor.tsx` (modified - ~260 lines added/changed)
+- `apps/studio/package.json` (modified - added @dnd-kit dependencies)
+- `pnpm-lock.yaml` (updated)
+- `backlog/backlog.json` (updated US-025 passes status)
+
+**Learnings for future iterations:**
+
+- @dnd-kit/core provides DndContext, useDraggable, useDroppable, DragOverlay as core primitives
+- PointerSensor with `activationConstraint: {distance: 8}` prevents accidental drag starts
+- useDraggable returns `{attributes, listeners, setNodeRef, isDragging}` - spread attributes/listeners on element
+- useDroppable returns `{setNodeRef, isOver}` for drop target state
+- DragOverlay renders outside normal DOM flow for smooth dragging (no layout shift)
+- Track activeDragType in state to show appropriate feedback during drag operations
+- Components can be both clickable (onClick for add) and draggable (listeners for drag)
+
