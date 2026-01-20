@@ -22,6 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {api} from '../../lib/api';
+import {useAuth} from '../../hooks/useAuth';
 
 interface ComponentInstance {
   id: string;
@@ -111,6 +112,7 @@ export function Editor() {
   const {id} = useParams<{id: string}>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const {user} = useAuth();
   const isNewTemplate = id === 'new';
 
   // State for template data
@@ -654,6 +656,7 @@ export function Editor() {
         {showTestEmailModal && !isNewTemplate && (
           <TestEmailModal
             templateId={Number(id)}
+            defaultEmail={user?.email || ''}
             onClose={() => setShowTestEmailModal(false)}
           />
         )}
@@ -1843,15 +1846,18 @@ function PreviewModal({
   );
 }
 
-// Test Email Modal (placeholder - will be expanded in US-030)
+// Test Email Modal - sends a test email to verify rendering
 function TestEmailModal({
   templateId,
+  defaultEmail,
   onClose,
 }: {
   templateId: number;
+  defaultEmail: string;
   onClose: () => void;
 }) {
-  const [email, setEmail] = useState('');
+  // Pre-fill with user's email if available
+  const [email, setEmail] = useState(defaultEmail);
   const [status, setStatus] = useState<
     'idle' | 'sending' | 'success' | 'error'
   >('idle');
@@ -1872,8 +1878,36 @@ function TestEmailModal({
     }
   };
 
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, [onClose]);
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={(e) => {
+        // Close when clicking the backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="w-full max-w-md rounded-lg bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-foreground">
@@ -1882,6 +1916,7 @@ function TestEmailModal({
           <button
             onClick={onClose}
             className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            title="Close (Esc)"
           >
             <CrossIcon className="h-5 w-5" />
           </button>
@@ -1905,6 +1940,10 @@ function TestEmailModal({
           </div>
         ) : (
           <>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Send a test email to preview how your template looks in a real
+              email client.
+            </p>
             <div className="mb-4">
               <label className="mb-1 block text-sm font-medium text-foreground">
                 Email Address
@@ -1915,11 +1954,15 @@ function TestEmailModal({
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="you@example.com"
+                autoFocus
               />
             </div>
 
             {status === 'error' && (
-              <p className="mb-4 text-sm text-red-500">{errorMessage}</p>
+              <div className="mb-4 flex items-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2">
+                <CrossIcon className="h-4 w-4 flex-shrink-0 text-red-500" />
+                <p className="text-sm text-red-500">{errorMessage}</p>
+              </div>
             )}
 
             <div className="flex justify-end gap-2">
@@ -1934,7 +1977,14 @@ function TestEmailModal({
                 disabled={!email || status === 'sending'}
                 className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {status === 'sending' ? 'Sending...' : 'Send Test'}
+                {status === 'sending' ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                    Sending...
+                  </span>
+                ) : (
+                  'Send Test Email'
+                )}
               </button>
             </div>
           </>
