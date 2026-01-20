@@ -24,6 +24,7 @@ export interface ProcessResult {
 export async function processScheduledCampaigns(
   db: D1Database,
   resendApiKey: string,
+  authSecret?: string,
 ): Promise<ProcessResult> {
   const drizzleDb = drizzle(db);
   const now = new Date().toISOString();
@@ -71,6 +72,7 @@ export async function processScheduledCampaigns(
           resendApiKey,
           campaign.id,
           'Wakey <hello@wakey.care>',
+          authSecret,
         );
 
         result.processed++;

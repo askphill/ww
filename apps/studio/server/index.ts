@@ -139,6 +139,7 @@ export default {
             const result = await processScheduledCampaigns(
               env.DB,
               env.RESEND_API_KEY,
+              env.AUTH_SECRET,
             );
             console.log(
               `[Cron] Campaign processing complete. Found: ${result.found}, Processed: ${result.processed}, Failed: ${result.failed}`,

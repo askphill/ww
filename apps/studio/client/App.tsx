@@ -1,6 +1,7 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {DashboardLayout} from './components/layout/DashboardLayout';
 import {Login} from './pages/Login';
+import {Unsubscribe} from './pages/Unsubscribe';
 import {Opportunities} from './pages/seo/Opportunities';
 import {Tracking} from './pages/seo/Tracking';
 import {Subscribers} from './pages/email/Subscribers';
@@ -36,6 +37,7 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route
           path="/*"
           element={

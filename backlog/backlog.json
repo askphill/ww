@@ -802,8 +802,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 46,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created /unsubscribe page with token validation, masked email display, and confirm button. Added GET/POST /api/email/unsubscribe endpoints with token verification. Integrated unsubscribe URL generation into campaignSender. Records unsubscribe event in email_events. Works without JavaScript (noscript fallback). Build and typecheck pass."
     },
     {
       "id": "US-047",

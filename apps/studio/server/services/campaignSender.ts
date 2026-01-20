@@ -20,6 +20,7 @@ import {
 } from '../db/schema';
 import {renderTemplate} from './emailRenderer';
 import {applyEmailTracking} from './emailTracking';
+import {generateUnsubscribeUrl} from '../utils/unsubscribe';
 
 // Maximum emails per Resend batch API call
 const BATCH_SIZE = 100;
@@ -161,6 +162,7 @@ export async function sendCampaign(
   resendApiKey: string,
   campaignId: number,
   fromEmail: string = 'Wakey <hello@wakey.care>',
+  authSecret?: string,
 ): Promise<CampaignSendResult> {
   const drizzleDb = drizzle(db);
   const resend = new Resend(resendApiKey);
@@ -328,11 +330,22 @@ export async function sendCampaign(
 
       for (const record of emailSendRecords) {
         try {
+          // Generate unsubscribe URL if auth secret is provided
+          let unsubscribeUrl = '#';
+          if (authSecret) {
+            unsubscribeUrl = await generateUnsubscribeUrl(
+              trackingBaseUrl,
+              record.subscriberId,
+              authSecret,
+            );
+          }
+
           // Render template with subscriber-specific variables
           const variables = {
             firstName: record.firstName || 'Friend',
             lastName: record.lastName || '',
             email: record.email,
+            unsubscribeUrl,
           };
 
           const rendered = await renderTemplate(

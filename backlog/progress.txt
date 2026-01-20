@@ -1369,3 +1369,41 @@
 - Use URL-safe base64 (replace +/= with -/_) for tokens in URLs
 - Token format is simpler than JWT but provides same security guarantees
 - Separate signature verification from payload parsing for clear error messages
+
+### Iteration: 2026-01-20 US-046
+
+**Story:** US-046 - Create unsubscribe page and API
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/Unsubscribe.tsx` - public-facing unsubscribe page
+  - Shows loading/error/success states
+  - Displays masked email (j***@example.com)
+  - Confirm unsubscribe button
+  - noscript fallback for accessibility (works without JavaScript)
+- Added `GET /api/email/unsubscribe` endpoint - validates token, returns subscriber info
+- Added `POST /api/email/unsubscribe` endpoint - processes unsubscribe request
+- Updated `sendCampaign()` to accept `authSecret` and generate unsubscribe URLs
+- Updated `processScheduledCampaigns()` to pass `authSecret`
+- Updated cron handler and send now route to pass `AUTH_SECRET`
+- Records unsubscribe event in `email_events` table
+- Route registered at `/unsubscribe` (outside ProtectedRoute)
+
+**Files changed:**
+
+- apps/studio/client/pages/Unsubscribe.tsx (created - 210 lines)
+- apps/studio/client/App.tsx (modified - added Unsubscribe import and route)
+- apps/studio/server/routes/email.ts (modified - added unsubscribe endpoints)
+- apps/studio/server/services/campaignSender.ts (modified - added authSecret param, generate unsubscribeUrl)
+- apps/studio/server/services/scheduledCampaigns.ts (modified - added authSecret param)
+- apps/studio/server/index.ts (modified - pass AUTH_SECRET to processScheduledCampaigns)
+- backlog/backlog.json (updated US-046 passes status)
+
+**Learnings for future iterations:**
+
+- Public pages (unsubscribe) must be outside ProtectedRoute in App.tsx
+- Token can be sent via query string, JSON body, or form-urlencoded body
+- Mask email for privacy: show first char + *** + @ + domain
+- Record event with previous status for audit trail
+- noscript fallback ensures accessibility even without JS

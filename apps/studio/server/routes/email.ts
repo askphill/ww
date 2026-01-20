@@ -782,6 +782,161 @@ emailRoutes.get('/track/open', async (c) => {
   return gifResponse();
 });
 
+// ============ Unsubscribe Endpoint (No Auth - Uses Token Validation) ============
+
+import {verifyUnsubscribeToken} from '../utils/unsubscribe';
+
+/**
+ * Mask an email address for privacy
+ * e.g., "john@example.com" -> "j***@example.com"
+ */
+function maskEmail(email: string): string {
+  const [localPart, domain] = email.split('@');
+  if (!localPart || !domain) return '***@***';
+
+  if (localPart.length <= 2) {
+    return `${localPart[0]}***@${domain}`;
+  }
+
+  return `${localPart[0]}***@${domain}`;
+}
+
+/**
+ * Handle unsubscribe requests
+ * Accepts both GET (for preflight/info) and POST (for actual unsubscribe)
+ */
+emailRoutes.get('/unsubscribe', async (c) => {
+  const token = c.req.query('token');
+
+  if (!token) {
+    return c.json({error: 'Missing token'}, 400);
+  }
+
+  const db = createDb(c.env.DB);
+
+  try {
+    // Verify the token and get subscriber ID
+    const subscriberId = await verifyUnsubscribeToken(token, c.env.AUTH_SECRET);
+
+    // Get subscriber info (just email for display)
+    const [subscriber] = await db
+      .select({
+        id: subscribers.id,
+        email: subscribers.email,
+        status: subscribers.status,
+      })
+      .from(subscribers)
+      .where(eq(subscribers.id, subscriberId))
+      .limit(1);
+
+    if (!subscriber) {
+      return c.json({error: 'Subscriber not found'}, 404);
+    }
+
+    // Return masked email and current status
+    return c.json({
+      email: maskEmail(subscriber.email),
+      status: subscriber.status,
+      alreadyUnsubscribed: subscriber.status === 'unsubscribed',
+    });
+  } catch (err) {
+    const errorMessage =
+      err instanceof Error ? err.message : 'Invalid or expired token';
+    console.error('[Unsubscribe] Token verification failed:', errorMessage);
+    return c.json({error: errorMessage}, 400);
+  }
+});
+
+emailRoutes.post('/unsubscribe', async (c) => {
+  // Get token from query string (form submission) or body
+  let token = c.req.query('token');
+
+  // If not in query, try to get from body (JSON or form)
+  if (!token) {
+    try {
+      const contentType = c.req.header('Content-Type') || '';
+      if (contentType.includes('application/json')) {
+        const body = await c.req.json<{token?: string}>();
+        token = body.token;
+      } else if (contentType.includes('application/x-www-form-urlencoded')) {
+        const formData = await c.req.parseBody();
+        token = formData.token as string;
+      }
+    } catch {
+      // Ignore parse errors, token will be undefined
+    }
+  }
+
+  if (!token) {
+    return c.json({error: 'Missing token'}, 400);
+  }
+
+  const db = createDb(c.env.DB);
+
+  try {
+    // Verify the token and get subscriber ID
+    const subscriberId = await verifyUnsubscribeToken(token, c.env.AUTH_SECRET);
+
+    // Get subscriber info
+    const [subscriber] = await db
+      .select({
+        id: subscribers.id,
+        email: subscribers.email,
+        status: subscribers.status,
+      })
+      .from(subscribers)
+      .where(eq(subscribers.id, subscriberId))
+      .limit(1);
+
+    if (!subscriber) {
+      return c.json({error: 'Subscriber not found'}, 404);
+    }
+
+    // Check if already unsubscribed
+    if (subscriber.status === 'unsubscribed') {
+      return c.json({
+        success: true,
+        message: 'You are already unsubscribed',
+        email: maskEmail(subscriber.email),
+      });
+    }
+
+    // Update subscriber status to unsubscribed
+    await db
+      .update(subscribers)
+      .set({
+        status: 'unsubscribed',
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(subscribers.id, subscriberId));
+
+    console.log(
+      `[Unsubscribe] Subscriber ${subscriberId} (${subscriber.email}) unsubscribed`,
+    );
+
+    // Record unsubscribe event
+    await db.insert(emailEvents).values({
+      subscriberId: subscriberId,
+      eventType: 'unsubscribe',
+      eventData: JSON.stringify({
+        previousStatus: subscriber.status,
+        method: 'email_link',
+      }),
+    });
+
+    return c.json({
+      success: true,
+      message: 'You have been unsubscribed successfully',
+      email: maskEmail(subscriber.email),
+    });
+  } catch (err) {
+    const errorMessage =
+      err instanceof Error ? err.message : 'Invalid or expired token';
+    console.error('[Unsubscribe] Error:', errorMessage);
+    return c.json({error: errorMessage}, 400);
+  }
+});
+
 // ============ Authenticated Routes ============
 // All routes below require authentication
 emailRoutes.use('/subscribers/*', authMiddleware);
@@ -2383,6 +2538,7 @@ emailRoutes.post('/campaigns/:id/send', async (c) => {
           c.env.RESEND_API_KEY,
           id,
           'Wakey <hello@wakey.care>',
+          c.env.AUTH_SECRET,
         );
         console.log(`[Campaign] Campaign ${id} send completed`);
       } catch (err) {
