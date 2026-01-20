@@ -34,7 +34,8 @@
   // Cron triggers for scheduled tasks
   "triggers": {
     "crons": [
-      "0 6 * * *"  // Daily at 6:00 AM UTC (7:00 AM CET / 8:00 AM CEST)
+      "0 6 * * *",   // Daily at 6:00 AM UTC for keyword tracking
+      "*/5 * * * *"  // Every 5 minutes for scheduled campaign processing
     ]
   }
 }

@@ -6,6 +6,7 @@ import {gscRoutes} from './routes/gsc';
 import {opportunitiesRoutes} from './routes/opportunities';
 import {trackingRoutes, checkAllKeywordPositions} from './routes/tracking';
 import {emailRoutes} from './routes/email';
+import {processScheduledCampaigns} from './services/scheduledCampaigns';
 import type {AuthUser} from './middleware/auth';
 
 export interface Env {
@@ -105,23 +106,50 @@ export default {
     env: Env,
     ctx: ExecutionContext,
   ): Promise<void> {
-    console.log('[Cron] Keyword ranking check triggered at:', event.cron);
+    console.log('[Cron] Scheduled event triggered:', event.cron);
 
-    ctx.waitUntil(
-      (async () => {
-        try {
-          const result = await checkAllKeywordPositions(env);
-          if (result.success) {
-            console.log(
-              `[Cron] Keyword check complete. Checked: ${result.checked}, Stored: ${result.stored}`,
-            );
-          } else {
-            console.error('[Cron] Keyword check failed:', result.error);
+    // Daily keyword ranking check (0 6 * * *)
+    if (event.cron === '0 6 * * *') {
+      ctx.waitUntil(
+        (async () => {
+          try {
+            console.log('[Cron] Starting daily keyword ranking check');
+            const result = await checkAllKeywordPositions(env);
+            if (result.success) {
+              console.log(
+                `[Cron] Keyword check complete. Checked: ${result.checked}, Stored: ${result.stored}`,
+              );
+            } else {
+              console.error('[Cron] Keyword check failed:', result.error);
+            }
+          } catch (err) {
+            console.error('[Cron] Unexpected error during keyword check:', err);
           }
-        } catch (err) {
-          console.error('[Cron] Unexpected error during keyword check:', err);
-        }
-      })(),
-    );
+        })(),
+      );
+    }
+
+    // Process scheduled campaigns every 5 minutes (*/5 * * * *)
+    if (event.cron === '*/5 * * * *') {
+      ctx.waitUntil(
+        (async () => {
+          try {
+            console.log('[Cron] Processing scheduled campaigns');
+            const result = await processScheduledCampaigns(
+              env.DB,
+              env.RESEND_API_KEY,
+            );
+            console.log(
+              `[Cron] Campaign processing complete. Found: ${result.found}, Processed: ${result.processed}, Failed: ${result.failed}`,
+            );
+          } catch (err) {
+            console.error(
+              '[Cron] Unexpected error during campaign processing:',
+              err,
+            );
+          }
+        })(),
+      );
+    }
   },
 };
