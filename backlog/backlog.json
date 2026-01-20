@@ -281,8 +281,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created Footer.tsx with unsubscribeUrl, address, socialLinks props. Unsubscribe link underlined for prominence. Physical address in muted #666666 color. Inline SVG icons for Instagram/TikTok. Schema and default props exported. Build passes."
     },
     {
       "id": "US-017",

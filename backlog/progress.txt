@@ -455,3 +455,34 @@
 - Add empty Column components to fill rows that aren't complete to maintain alignment
 - Link component wraps entire product card for click-through to product URL
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-016 - Create Footer email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/Footer.tsx` for CAN-SPAM compliant email footers
+- Implemented Footer component with unsubscribeUrl, address, and socialLinks props
+- socialLinks accepts array of `{platform: 'instagram' | 'tiktok', url: string}` objects
+- Physical address displayed in muted text (#666666) for CAN-SPAM compliance
+- Unsubscribe link underlined for prominence and easy clickability
+- Created inline SVG icons for Instagram and TikTok (no external dependencies)
+- Social icons render conditionally based on socialLinks array
+- Dark background (#1a1a1a) matches Wakey brand
+- Exported FooterSchema JSON with array itemSchema for socialLinks
+- Exported FooterDefaultProps with sample Instagram/TikTok links
+
+**Files changed:**
+
+- `apps/studio/server/email-components/Footer.tsx` (created)
+- `backlog/backlog.json` (updated US-016 passes status)
+
+**Learnings for future iterations:**
+
+- Inline SVG components work well for email icons (no external library needed)
+- CAN-SPAM requires physical address in all marketing emails
+- Unsubscribe link should be underlined/prominent for legal compliance
+- Social links array schema uses `itemSchema` with nested field definitions
+- `{{unsubscribeUrl}}` placeholder will be interpolated at send time with signed token URL
+
