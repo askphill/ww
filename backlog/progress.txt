@@ -1407,3 +1407,28 @@
 - Mask email for privacy: show first char + *** + @ + domain
 - Record event with previous status for audit trail
 - noscript fallback ensures accessibility even without JS
+
+### Iteration: 2026-01-20 US-047
+
+**Story:** US-047 - Add List-Unsubscribe header to sent emails
+**Status:** Complete
+
+**What was done:**
+
+- Added `List-Unsubscribe` header to email sends in `campaignSender.ts`
+- Header includes both mailto option (`mailto:unsubscribe@wakey.care?subject=unsubscribe-{id}`) and https option (unsubscribe URL with signed token)
+- Added `List-Unsubscribe-Post: List-Unsubscribe=One-Click` header for RFC 8058 one-click unsubscribe support
+- Headers only added when authSecret is provided and unsubscribeUrl is valid
+- Footer component already includes unsubscribe link in email body (from US-016)
+- Build and typecheck pass
+
+**Files changed:**
+
+- apps/studio/server/services/campaignSender.ts (modified - added headers support to batch email type, build headers conditionally)
+
+**Learnings for future iterations:**
+
+- List-Unsubscribe header format: `<mailto:...>, <https://...>` - both angle-bracket wrapped
+- List-Unsubscribe-Post header value is exactly `List-Unsubscribe=One-Click` for RFC 8058
+- Resend batch.send() accepts `headers` property in each email object
+- Only include headers object in API call if it has properties (avoid empty object issues)

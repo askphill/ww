@@ -817,8 +817,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 47,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added List-Unsubscribe and List-Unsubscribe-Post headers to campaignSender.ts. Headers include mailto option (mailto:unsubscribe@wakey.care) and https option (unsubscribe URL with signed token). Footer component already includes unsubscribe link in email body. Build and typecheck pass."
     },
     {
       "id": "US-048",
