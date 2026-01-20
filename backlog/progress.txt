@@ -1432,3 +1432,41 @@
 - List-Unsubscribe-Post header value is exactly `List-Unsubscribe=One-Click` for RFC 8058
 - Resend batch.send() accepts `headers` property in each email object
 - Only include headers object in API call if it has properties (avoid empty object issues)
+
+### Iteration: 2026-01-20 US-048
+
+**Story:** US-048 - Create daily metrics aggregation service
+**Status:** Complete
+
+**What was done:**
+
+- Created migration `0006_add_email_analytics.sql` with two new tables:
+  - `daily_email_metrics`: stores sent, delivered, opened, clicked, bounced, unsubscribed per campaign per day
+  - `daily_subscriber_metrics`: stores new subscribers, unsubscribed, net growth, total active per day
+- Added Drizzle schema definitions for both tables in `schema.ts`
+- Added proper relations and indexes for fast queries
+- Created `apps/studio/server/services/analytics.ts` with:
+  - `aggregateDailyMetrics(d1Database, date)` - main entry point
+  - `aggregateEmailMetricsForCampaign()` - counts email send statuses
+  - `aggregateSubscriberMetrics()` - counts subscriber changes
+  - `upsertDailyEmailMetrics()` and `upsertDailySubscriberMetrics()` for idempotent updates
+  - `getCampaignsWithSendsOnDate()` - finds campaigns that sent emails on a date
+  - `getPreviousDay()` - utility for cron job usage
+- Handles re-aggregation gracefully via upserts (check existence, update if exists, insert if not)
+- Build and typecheck pass
+
+**Files changed:**
+
+- apps/studio/drizzle/migrations/0006_add_email_analytics.sql (created)
+- apps/studio/server/db/schema.ts (modified - added dailyEmailMetrics, dailySubscriberMetrics tables and types)
+- apps/studio/server/services/analytics.ts (created - 334 lines)
+
+**Learnings for future iterations:**
+
+- Use upsert pattern for aggregation: check existence first, then update or insert
+- SQLite unique index on (date, campaign_id) enables fast lookups and prevents duplicates
+- Subscriber metrics use email_events table to count unsubscribes (event_type = 'unsubscribe')
+- Email metrics count from email_sends table using status field
+- For "delivered", count statuses: delivered, opened, clicked (email was delivered if any of these)
+- For "opened", count statuses: opened, clicked (email was opened if clicked)
+- Date range queries use ISO format timestamps: `YYYY-MM-DDTHH:MM:SS.sssZ`
