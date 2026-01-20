@@ -797,3 +797,33 @@
 - When checking drag source, use String(active.id).startsWith() to identify library vs canvas drags
 - Component IDs should be generated on load if missing (for legacy data compatibility)
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-027 - Implement properties panel in editor
+**Status:** Complete
+
+**What was done:**
+
+- Added COMPONENT_SCHEMAS constant with all 7 email component schema definitions client-side
+- Implemented PropertiesPanel component that dynamically generates form fields from schema
+- Supported input types: string (text input), textarea (multiline), color (color picker + hex input), select (dropdown), number
+- Implemented array type support with add/remove item functionality (for products, socialLinks)
+- Added variable hints for text fields showing "Tip: Use {{firstName}} for personalization"
+- Real-time updates: changes to properties immediately update component state
+- Shows "Select a component to edit its properties" when no component selected
+- Schema includes label, description, required flag, default values, and options for select fields
+
+**Files changed:**
+
+- `apps/studio/client/pages/email/Editor.tsx` (modified - ~600 lines added)
+- `backlog/backlog.json` (updated US-027 passes status)
+
+**Learnings for future iterations:**
+
+- Component schemas can be duplicated client-side to avoid server imports (simpler than shared package)
+- Array type handling: use itemSchema to define fields for each array item
+- Select values may be strings or numbers - use `String(option.value)` for option key and value attr
+- For array items with select defaults, use first option value: `fieldSchema.options[0].value`
+- Color picker input type="color" combined with text input provides both visual and hex editing
+- Variable hints should be contextual - show for fields where personalization makes sense (text, headlines, content)
+
