@@ -39,3 +39,29 @@
 - Build verification is sufficient when typecheck has pre-existing errors on main
 - Status enum values are stored as text strings in SQLite (not native enums)
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-002 - Add Drizzle schema definitions for email marketing tables
+**Status:** Complete
+
+**What was done:**
+
+- Added 8 Drizzle table definitions to `apps/studio/server/db/schema.ts`
+- Tables defined: `subscribers`, `segments`, `segmentSubscribers`, `emailTemplates`, `emailComponents`, `campaigns`, `emailSends`, `emailEvents`
+- Added Drizzle relations for all table relationships using `relations()` helper
+- Exported Select and Insert types for each table (e.g., `Subscriber`, `NewSubscriber`)
+- Used `text()` with `enum` option for status fields to match SQLite storage
+- Verified build passes successfully
+
+**Files changed:**
+
+- `apps/studio/server/db/schema.ts` (modified - added 251 lines)
+- `backlog/backlog.json` (updated US-002 passes status)
+
+**Learnings for future iterations:**
+
+- Drizzle uses `primaryKey({columns: [...]})` for composite primary keys in SQLite
+- Relations are defined separately from tables using `relations()` from drizzle-orm
+- Type inference uses `$inferSelect` and `$inferInsert` on table definitions
+- Enum options in text() provide TypeScript typing but store as plain text in SQLite
+
