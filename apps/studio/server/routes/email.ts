@@ -7,9 +7,11 @@ import {
   segmentSubscribers,
   segments,
   emailTemplates,
+  campaigns,
+  emailSends,
 } from '../db/schema';
 import {authMiddleware} from '../middleware/auth';
-import {eq, desc, like, or, sql, and, inArray} from 'drizzle-orm';
+import {eq, desc, like, or, sql, and, inArray, count} from 'drizzle-orm';
 import type {AppVariables, Env} from '../index';
 import {
   syncCustomersFromShopify,
@@ -1343,5 +1345,316 @@ emailRoutes.post(
     }
   },
 );
+
+// ============ Campaigns Endpoints ============
+
+// List all campaigns with stats
+emailRoutes.get('/campaigns', async (c) => {
+  const db = createDb(c.env.DB);
+
+  const campaignsList = await db
+    .select({
+      id: campaigns.id,
+      name: campaigns.name,
+      subject: campaigns.subject,
+      templateId: campaigns.templateId,
+      segmentIds: campaigns.segmentIds,
+      status: campaigns.status,
+      scheduledAt: campaigns.scheduledAt,
+      sentAt: campaigns.sentAt,
+      createdAt: campaigns.createdAt,
+      updatedAt: campaigns.updatedAt,
+    })
+    .from(campaigns)
+    .orderBy(desc(campaigns.createdAt));
+
+  // Get send stats for each campaign
+  const campaignsWithStats = await Promise.all(
+    campaignsList.map(async (campaign) => {
+      const [stats] = await db
+        .select({
+          total: count(),
+          sent: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('sent', 'delivered', 'opened', 'clicked', 'bounced', 'complained') THEN 1 ELSE 0 END)`,
+          delivered: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('delivered', 'opened', 'clicked') THEN 1 ELSE 0 END)`,
+          opened: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('opened', 'clicked') THEN 1 ELSE 0 END)`,
+          clicked: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'clicked' THEN 1 ELSE 0 END)`,
+          bounced: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'bounced' THEN 1 ELSE 0 END)`,
+        })
+        .from(emailSends)
+        .where(eq(emailSends.campaignId, campaign.id));
+
+      return {
+        ...campaign,
+        stats: {
+          total: stats?.total || 0,
+          sent: Number(stats?.sent) || 0,
+          delivered: Number(stats?.delivered) || 0,
+          opened: Number(stats?.opened) || 0,
+          clicked: Number(stats?.clicked) || 0,
+          bounced: Number(stats?.bounced) || 0,
+        },
+      };
+    }),
+  );
+
+  return c.json({campaigns: campaignsWithStats});
+});
+
+// Get a single campaign by ID with full details
+emailRoutes.get('/campaigns/:id', async (c) => {
+  const id = parseInt(c.req.param('id'));
+  const db = createDb(c.env.DB);
+
+  const [campaign] = await db
+    .select({
+      id: campaigns.id,
+      name: campaigns.name,
+      subject: campaigns.subject,
+      templateId: campaigns.templateId,
+      segmentIds: campaigns.segmentIds,
+      status: campaigns.status,
+      scheduledAt: campaigns.scheduledAt,
+      sentAt: campaigns.sentAt,
+      createdAt: campaigns.createdAt,
+      updatedAt: campaigns.updatedAt,
+    })
+    .from(campaigns)
+    .where(eq(campaigns.id, id))
+    .limit(1);
+
+  if (!campaign) {
+    return c.json({error: 'Campaign not found'}, 404);
+  }
+
+  // Get template info if set
+  let template = null;
+  if (campaign.templateId) {
+    const [templateData] = await db
+      .select({
+        id: emailTemplates.id,
+        name: emailTemplates.name,
+        subject: emailTemplates.subject,
+      })
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, campaign.templateId))
+      .limit(1);
+    template = templateData;
+  }
+
+  // Get segments info if set (segmentIds is a JSON array)
+  let segmentsList: Array<{id: number; name: string | null}> = [];
+  if (campaign.segmentIds) {
+    const segmentIdArray = JSON.parse(campaign.segmentIds) as number[];
+    if (segmentIdArray.length > 0) {
+      segmentsList = await db
+        .select({
+          id: segments.id,
+          name: segments.name,
+        })
+        .from(segments)
+        .where(inArray(segments.id, segmentIdArray));
+    }
+  }
+
+  // Get send stats
+  const [stats] = await db
+    .select({
+      total: count(),
+      sent: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('sent', 'delivered', 'opened', 'clicked', 'bounced', 'complained') THEN 1 ELSE 0 END)`,
+      delivered: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('delivered', 'opened', 'clicked') THEN 1 ELSE 0 END)`,
+      opened: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('opened', 'clicked') THEN 1 ELSE 0 END)`,
+      clicked: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'clicked' THEN 1 ELSE 0 END)`,
+      bounced: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'bounced' THEN 1 ELSE 0 END)`,
+    })
+    .from(emailSends)
+    .where(eq(emailSends.campaignId, campaign.id));
+
+  return c.json({
+    campaign: {
+      ...campaign,
+      template,
+      segments: segmentsList,
+      stats: {
+        total: stats?.total || 0,
+        sent: Number(stats?.sent) || 0,
+        delivered: Number(stats?.delivered) || 0,
+        opened: Number(stats?.opened) || 0,
+        clicked: Number(stats?.clicked) || 0,
+        bounced: Number(stats?.bounced) || 0,
+      },
+    },
+  });
+});
+
+// Create a new campaign
+emailRoutes.post(
+  '/campaigns',
+  zValidator(
+    'json',
+    z.object({
+      name: z.string().min(1, 'Name is required'),
+      subject: z.string().min(1, 'Subject is required'),
+      templateId: z.number().int().positive('Template ID is required'),
+      segmentIds: z.array(z.number().int().positive()).optional(),
+    }),
+  ),
+  async (c) => {
+    const {name, subject, templateId, segmentIds} = c.req.valid('json');
+    const db = createDb(c.env.DB);
+
+    // Verify template exists
+    const [template] = await db
+      .select({id: emailTemplates.id})
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, templateId))
+      .limit(1);
+
+    if (!template) {
+      return c.json({error: 'Template not found'}, 404);
+    }
+
+    // Verify segments exist if provided
+    if (segmentIds && segmentIds.length > 0) {
+      const existingSegments = await db
+        .select({id: segments.id})
+        .from(segments)
+        .where(inArray(segments.id, segmentIds));
+
+      if (existingSegments.length !== segmentIds.length) {
+        return c.json({error: 'One or more segments not found'}, 404);
+      }
+    }
+
+    const [newCampaign] = await db
+      .insert(campaigns)
+      .values({
+        name,
+        subject,
+        templateId,
+        segmentIds: segmentIds ? JSON.stringify(segmentIds) : null,
+        status: 'draft',
+      })
+      .returning({
+        id: campaigns.id,
+        name: campaigns.name,
+        subject: campaigns.subject,
+        templateId: campaigns.templateId,
+        segmentIds: campaigns.segmentIds,
+        status: campaigns.status,
+        createdAt: campaigns.createdAt,
+      });
+
+    return c.json({campaign: newCampaign}, 201);
+  },
+);
+
+// Update a campaign (only if draft)
+emailRoutes.patch(
+  '/campaigns/:id',
+  zValidator(
+    'json',
+    z.object({
+      name: z.string().min(1).optional(),
+      subject: z.string().min(1).optional(),
+      templateId: z.number().int().positive().optional(),
+      segmentIds: z.array(z.number().int().positive()).nullable().optional(),
+    }),
+  ),
+  async (c) => {
+    const id = parseInt(c.req.param('id'));
+    const {segmentIds, ...otherUpdates} = c.req.valid('json');
+    const db = createDb(c.env.DB);
+
+    // Check if campaign exists and is draft
+    const [campaign] = await db
+      .select({id: campaigns.id, status: campaigns.status})
+      .from(campaigns)
+      .where(eq(campaigns.id, id))
+      .limit(1);
+
+    if (!campaign) {
+      return c.json({error: 'Campaign not found'}, 404);
+    }
+
+    if (campaign.status !== 'draft') {
+      return c.json({error: 'Only draft campaigns can be updated'}, 400);
+    }
+
+    // Verify template exists if updating
+    if (otherUpdates.templateId) {
+      const [template] = await db
+        .select({id: emailTemplates.id})
+        .from(emailTemplates)
+        .where(eq(emailTemplates.id, otherUpdates.templateId))
+        .limit(1);
+
+      if (!template) {
+        return c.json({error: 'Template not found'}, 404);
+      }
+    }
+
+    // Verify segments exist if updating
+    if (segmentIds && segmentIds.length > 0) {
+      const existingSegments = await db
+        .select({id: segments.id})
+        .from(segments)
+        .where(inArray(segments.id, segmentIds));
+
+      if (existingSegments.length !== segmentIds.length) {
+        return c.json({error: 'One or more segments not found'}, 404);
+      }
+    }
+
+    const [updatedCampaign] = await db
+      .update(campaigns)
+      .set({
+        ...otherUpdates,
+        segmentIds:
+          segmentIds !== undefined
+            ? segmentIds
+              ? JSON.stringify(segmentIds)
+              : null
+            : undefined,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(campaigns.id, id))
+      .returning({
+        id: campaigns.id,
+        name: campaigns.name,
+        subject: campaigns.subject,
+        templateId: campaigns.templateId,
+        segmentIds: campaigns.segmentIds,
+        status: campaigns.status,
+        updatedAt: campaigns.updatedAt,
+      });
+
+    return c.json({campaign: updatedCampaign});
+  },
+);
+
+// Delete a campaign (only if draft)
+emailRoutes.delete('/campaigns/:id', async (c) => {
+  const id = parseInt(c.req.param('id'));
+  const db = createDb(c.env.DB);
+
+  // Check if campaign exists and is draft
+  const [campaign] = await db
+    .select({id: campaigns.id, status: campaigns.status})
+    .from(campaigns)
+    .where(eq(campaigns.id, id))
+    .limit(1);
+
+  if (!campaign) {
+    return c.json({error: 'Campaign not found'}, 404);
+  }
+
+  if (campaign.status !== 'draft') {
+    return c.json({error: 'Only draft campaigns can be deleted'}, 400);
+  }
+
+  await db.delete(campaigns).where(eq(campaigns.id, id));
+
+  return c.json({success: true});
+});
 
 export {emailRoutes};
