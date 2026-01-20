@@ -1201,3 +1201,32 @@
 - Return campaign ID and name in response for client tracking
 - Separate /send endpoint from /schedule provides clearer API semantics
 
+### Iteration: 2026-01-20 US-040
+
+**Story:** US-040 - Implement cron job for scheduled campaigns
+**Status:** Complete
+
+**What was done:**
+
+- Added `*/5 * * * *` cron trigger to wrangler.jsonc (every 5 minutes)
+- Created `apps/studio/server/services/scheduledCampaigns.ts` with processScheduledCampaigns()
+- Query finds campaigns where status='scheduled' AND scheduledAt <= now
+- Process each campaign using existing sendCampaign service
+- Updated index.ts scheduled handler to dispatch based on event.cron pattern
+- Daily keyword check (0 6 * * *) and campaign processing (*/5 * * * *) run separately
+- Logs found, processed, and failed counts for monitoring
+
+**Files changed:**
+
+- apps/studio/wrangler.jsonc (modified - added cron trigger)
+- apps/studio/server/index.ts (modified - updated scheduled handler)
+- apps/studio/server/services/scheduledCampaigns.ts (created - 88 lines)
+
+**Learnings for future iterations:**
+
+- Cloudflare Workers cron triggers configured in wrangler.jsonc under triggers.crons
+- event.cron string matches the cron pattern for dispatching different handlers
+- lte() from drizzle-orm for "less than or equal" comparisons
+- Process campaigns sequentially to avoid overwhelming Resend API
+- Log counts (found/processed/failed) for operational visibility
+
