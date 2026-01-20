@@ -782,8 +782,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 45,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created apps/studio/server/utils/unsubscribe.ts with generateUnsubscribeToken() and verifyUnsubscribeToken() functions. Uses HMAC-SHA256 with Web Crypto API. Token format: base64(payload).base64(signature). Includes subscriberId and iat. Expires after 1 year. Added generateUnsubscribeUrl() helper. Build and typecheck pass."
     },
     {
       "id": "US-046",

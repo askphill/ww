@@ -1339,3 +1339,33 @@
 - Skip tracking for unsubscribe links, mailto:, tel:, and # hrefs
 - Use Cache-Control: no-store headers on tracking pixel to prevent caching
 - Repeat clicks/opens should still log to email_events but not update first timestamp
+
+### Iteration: 2026-01-20 US-045
+
+**Story:** US-045 - Create unsubscribe token generation utility
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/utils/unsubscribe.ts` with:
+  - `generateUnsubscribeToken(subscriberId, secret)` - creates signed token
+  - `verifyUnsubscribeToken(token, secret)` - validates and returns subscriberId
+  - `generateUnsubscribeUrl(baseUrl, subscriberId, secret)` - full URL helper
+- Token format: `base64(payload).base64(signature)` (similar to JWT but simplified)
+- Payload includes: `subscriberId`, `iat` (issued at timestamp)
+- Uses HMAC-SHA256 signing via Web Crypto API (native to CF Workers)
+- Tokens expire after 1 year (365 days)
+- URL-safe base64 encoding (replaces +/= with -/_)
+- Validates signature, payload structure, and expiration
+
+**Files changed:**
+
+- apps/studio/server/utils/unsubscribe.ts (created - 145 lines)
+- backlog/backlog.json (updated US-045 passes status)
+
+**Learnings for future iterations:**
+
+- Web Crypto API is available in Cloudflare Workers (no external JWT library needed)
+- Use URL-safe base64 (replace +/= with -/_) for tokens in URLs
+- Token format is simpler than JWT but provides same security guarantees
+- Separate signature verification from payload parsing for clear error messages
