@@ -196,3 +196,29 @@
 - Pagination resets to page 1 when filters change to avoid showing empty results
 - Dev login available at localhost for testing without auth flow
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-007 - Add navigation for email marketing section
+**Status:** Complete
+
+**What was done:**
+
+- Updated `apps/studio/client/components/layout/Sidebar.tsx` to add Email section
+- Created inline MailIcon component (SVG envelope icon)
+- Added Email section to navigation array with sub-items: Subscribers, Templates, Campaigns
+- Updated section header rendering to display icon when present (using flex layout)
+- Active state highlighting already handled by existing NavLink `isActive` prop
+- Verified in browser: Email section with icon visible, navigation works, active state highlights correctly
+
+**Files changed:**
+
+- `apps/studio/client/components/layout/Sidebar.tsx` (modified - added 29 lines)
+- `backlog/backlog.json` (updated US-007 passes status)
+
+**Learnings for future iterations:**
+
+- Sidebar sections can optionally have an `icon` property (React component)
+- Icons rendered conditionally: `{section.icon && <section.icon className="h-4 w-4" />}`
+- NavLink from react-router-dom provides `isActive` callback for active state styling
+- Inline SVG icons work well when no icon library is installed
+
