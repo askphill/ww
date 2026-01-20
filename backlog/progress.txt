@@ -976,3 +976,37 @@
 - Dynamic import `await import('../services/email-ai')` for on-demand module loading
 - Log user email and prompt snippet for monitoring (truncate to 50 chars for privacy/brevity)
 
+### Iteration: 2026-01-20 US-033
+
+**Story:** US-033 - Add AI generation UI to template editor
+**Status:** Complete
+
+**What was done:**
+
+- Added `api.email.templates.generate(prompt)` method to client api.ts
+- Added "Generate with AI" button to editor toolbar with yellow accent styling and SparklesIcon
+- Updated EmptyCanvasState to show "Generate with AI" as primary CTA instead of "Add Hero Component"
+- Created AIGenerateModal component with:
+  - Textarea for prompt input (min 10 chars)
+  - 5 example prompt buttons (Welcome, Product launch, Newsletter, Thank you, Checkout)
+  - Loading state with animated spinner
+  - Confirmation dialog when hasExistingComponents is true
+  - Escape key and backdrop click to close
+  - Body scroll prevention when open
+- Added SparklesIcon component (SVG with stars pattern)
+- Updated CanvasDropZone to accept onGenerateWithAI prop
+- Verified in browser: modal opens, example prompts fill textarea, Generate button enables
+
+**Files changed:**
+
+- apps/studio/client/lib/api.ts (modified - added generate method)
+- apps/studio/client/pages/email/Editor.tsx (modified - added ~310 lines)
+
+**Learnings for future iterations:**
+
+- Follow existing modal patterns: escape key, backdrop click, body overflow hidden
+- Example prompts as clickable buttons improve UX for AI features
+- Confirmation dialog for destructive actions (replacing existing content)
+- Yellow accent styling for AI-related buttons makes them stand out
+- SparklesIcon is a good visual indicator for AI features
+
