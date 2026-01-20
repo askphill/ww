@@ -23,6 +23,7 @@ export interface Env {
   DATAFORSEO_PASSWORD: string;
   SHOPIFY_ADMIN_API_TOKEN: string;
   SHOPIFY_STORE_DOMAIN: string;
+  SHOPIFY_WEBHOOK_SECRET: string;
 }
 
 export interface AppVariables {
