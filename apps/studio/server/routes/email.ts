@@ -1106,4 +1106,130 @@ emailRoutes.post(
   },
 );
 
+// Rate limiting for test emails (10 per hour)
+const TEST_EMAIL_RATE_LIMIT = 10;
+const TEST_EMAIL_RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const testEmailRateLimit: Map<string, {count: number; windowStart: number}> =
+  new Map();
+
+/**
+ * Check if test email rate limit exceeded for a user
+ */
+function isTestEmailRateLimited(userEmail: string): {
+  limited: boolean;
+  remaining: number;
+  retryAfterSeconds?: number;
+} {
+  const now = Date.now();
+  const userLimit = testEmailRateLimit.get(userEmail);
+
+  if (!userLimit || now - userLimit.windowStart >= TEST_EMAIL_RATE_WINDOW_MS) {
+    // New window or expired - reset
+    testEmailRateLimit.set(userEmail, {count: 1, windowStart: now});
+    return {limited: false, remaining: TEST_EMAIL_RATE_LIMIT - 1};
+  }
+
+  if (userLimit.count >= TEST_EMAIL_RATE_LIMIT) {
+    const retryAfterSeconds = Math.ceil(
+      (TEST_EMAIL_RATE_WINDOW_MS - (now - userLimit.windowStart)) / 1000,
+    );
+    return {limited: true, remaining: 0, retryAfterSeconds};
+  }
+
+  // Increment count
+  userLimit.count += 1;
+  return {limited: false, remaining: TEST_EMAIL_RATE_LIMIT - userLimit.count};
+}
+
+// Send test email via Resend
+emailRoutes.post(
+  '/templates/:id/test',
+  zValidator(
+    'json',
+    z.object({
+      to: z.string().email('Invalid email address'),
+    }),
+  ),
+  async (c) => {
+    const id = parseInt(c.req.param('id'));
+    const {to} = c.req.valid('json');
+    const user = c.get('user');
+
+    // Rate limit check using authenticated user's email
+    const rateCheck = isTestEmailRateLimited(user.email);
+    if (rateCheck.limited) {
+      return c.json(
+        {
+          error: 'Rate limit exceeded. Maximum 10 test emails per hour.',
+          retryAfterSeconds: rateCheck.retryAfterSeconds,
+        },
+        429,
+      );
+    }
+
+    // Get template with subject
+    const db = createDb(c.env.DB);
+    const [template] = await db
+      .select({
+        id: emailTemplates.id,
+        name: emailTemplates.name,
+        subject: emailTemplates.subject,
+      })
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, id))
+      .limit(1);
+
+    if (!template) {
+      return c.json({error: 'Template not found'}, 404);
+    }
+
+    try {
+      // Render the template with default sample variables
+      const variables = getDefaultVariables();
+      const result = await renderTemplate(c.env.DB, id, variables);
+
+      // Send via Resend with [TEST] prefix
+      const {Resend} = await import('resend');
+      const resend = new Resend(c.env.RESEND_API_KEY);
+
+      const sendResult = await resend.emails.send({
+        from: 'Wakey Studio <wakey@send.paul.studio>',
+        to: to,
+        subject: `[TEST] ${template.subject}`,
+        html: result.html,
+        text: result.text,
+      });
+
+      if (sendResult.error) {
+        console.error('[Test Email] Resend error:', sendResult.error);
+        return c.json(
+          {error: `Failed to send email: ${sendResult.error.message}`},
+          500,
+        );
+      }
+
+      console.log(
+        `[Test Email] Sent test email for template ${id} to ${to}. Resend ID: ${sendResult.data?.id}`,
+      );
+
+      return c.json({
+        success: true,
+        messageId: sendResult.data?.id,
+        remainingTestEmails: rateCheck.remaining,
+      });
+    } catch (error) {
+      console.error('[Test Email] Error sending test email:', error);
+      return c.json(
+        {
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to send test email',
+        },
+        500,
+      );
+    }
+  },
+);
+
 export {emailRoutes};
