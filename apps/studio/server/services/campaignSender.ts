@@ -19,6 +19,7 @@ import {
   emailTemplates,
 } from '../db/schema';
 import {renderTemplate} from './emailRenderer';
+import {applyEmailTracking} from './emailTracking';
 
 // Maximum emails per Resend batch API call
 const BATCH_SIZE = 100;
@@ -258,6 +259,9 @@ export async function sendCampaign(
       return result;
     }
 
+    // Tracking base URL for link/open tracking
+    const trackingBaseUrl = 'https://studio.wakey.care';
+
     // Process subscribers in batches
     for (let i = 0; i < subscriberList.length; i += BATCH_SIZE) {
       const batch = subscriberList.slice(i, i + BATCH_SIZE);
@@ -268,23 +272,67 @@ export async function sendCampaign(
         `[CampaignSender] Processing batch ${batchNumber}/${totalBatches} (${batch.length} emails)`,
       );
 
-      // Prepare batch emails
+      // Step 1: Create email_sends records first to get IDs for tracking
+      const emailSendRecords: Array<{
+        id: number;
+        subscriberId: number;
+        email: string;
+        firstName: string | null;
+        lastName: string | null;
+      }> = [];
+
+      for (const subscriber of batch) {
+        try {
+          const [emailSendRecord] = await drizzleDb
+            .insert(emailSends)
+            .values({
+              subscriberId: subscriber.id,
+              campaignId: campaignId,
+              status: 'pending',
+            })
+            .returning({id: emailSends.id});
+
+          emailSendRecords.push({
+            id: emailSendRecord.id,
+            subscriberId: subscriber.id,
+            email: subscriber.email,
+            firstName: subscriber.firstName,
+            lastName: subscriber.lastName,
+          });
+        } catch (err) {
+          const errorMessage =
+            err instanceof Error ? err.message : 'Unknown DB error';
+          console.error(
+            `[CampaignSender] Failed to create email_send for ${subscriber.email}: ${errorMessage}`,
+          );
+          result.failed++;
+          result.errors.push(
+            `DB insert failed for ${subscriber.email}: ${errorMessage}`,
+          );
+        }
+      }
+
+      if (emailSendRecords.length === 0) {
+        continue;
+      }
+
+      // Step 2: Render and apply tracking to each email
       const batchEmails: Array<{
         from: string;
         to: string;
         subject: string;
         html: string;
         text: string;
-        subscriberId: number;
+        emailSendId: number;
       }> = [];
 
-      for (const subscriber of batch) {
+      for (const record of emailSendRecords) {
         try {
           // Render template with subscriber-specific variables
           const variables = {
-            firstName: subscriber.firstName || 'Friend',
-            lastName: subscriber.lastName || '',
-            email: subscriber.email,
+            firstName: record.firstName || 'Friend',
+            lastName: record.lastName || '',
+            email: record.email,
           };
 
           const rendered = await renderTemplate(
@@ -293,23 +341,30 @@ export async function sendCampaign(
             variables,
           );
 
+          // Apply click and open tracking
+          const trackedHtml = applyEmailTracking(rendered.html, {
+            baseUrl: trackingBaseUrl,
+            emailSendId: record.id,
+            campaignId: campaignId,
+          });
+
           batchEmails.push({
             from: fromEmail,
-            to: subscriber.email,
+            to: record.email,
             subject: campaign.subject,
-            html: rendered.html,
-            text: rendered.text,
-            subscriberId: subscriber.id,
+            html: trackedHtml,
+            text: rendered.text, // Plain text doesn't have tracking
+            emailSendId: record.id,
           });
         } catch (err) {
           const errorMessage =
             err instanceof Error ? err.message : 'Unknown render error';
           console.error(
-            `[CampaignSender] Failed to render for ${subscriber.email}: ${errorMessage}`,
+            `[CampaignSender] Failed to render for ${record.email}: ${errorMessage}`,
           );
           result.failed++;
           result.errors.push(
-            `Render failed for ${subscriber.email}: ${errorMessage}`,
+            `Render failed for ${record.email}: ${errorMessage}`,
           );
         }
       }
@@ -318,7 +373,7 @@ export async function sendCampaign(
         continue;
       }
 
-      // Send the batch
+      // Step 3: Send the batch
       const sendResult = await sendBatchWithRetry(
         resend,
         batchEmails.map(({from, to, subject, html, text}) => ({
@@ -331,7 +386,7 @@ export async function sendCampaign(
       );
 
       if (sendResult.success && sendResult.data) {
-        // Create email_sends records for successful sends
+        // Update email_sends records with resendId and sent status
         const now = new Date().toISOString();
 
         for (let j = 0; j < batchEmails.length; j++) {
@@ -339,30 +394,31 @@ export async function sendCampaign(
           const resendData = sendResult.data[j];
 
           try {
-            await drizzleDb.insert(emailSends).values({
-              subscriberId: email.subscriberId,
-              campaignId: campaignId,
-              resendId: resendData?.id || null,
-              status: 'sent',
-              sentAt: now,
-            });
+            await drizzleDb
+              .update(emailSends)
+              .set({
+                resendId: resendData?.id || null,
+                status: 'sent',
+                sentAt: now,
+              })
+              .where(eq(emailSends.id, email.emailSendId));
             result.sent++;
           } catch (err) {
             const errorMessage =
               err instanceof Error ? err.message : 'Unknown DB error';
             console.error(
-              `[CampaignSender] Failed to record send for ${email.to}: ${errorMessage}`,
+              `[CampaignSender] Failed to update send for ${email.to}: ${errorMessage}`,
             );
             result.failed++;
             result.errors.push(
-              `DB record failed for ${email.to}: ${errorMessage}`,
+              `DB update failed for ${email.to}: ${errorMessage}`,
             );
           }
         }
 
         console.log(`[CampaignSender] Batch ${batchNumber} sent successfully`);
       } else {
-        // Batch failed
+        // Batch failed - records stay in pending status
         result.failed += batchEmails.length;
         result.errors.push(
           `Batch ${batchNumber} failed: ${sendResult.error || 'Unknown error'}`,
@@ -370,21 +426,6 @@ export async function sendCampaign(
         console.error(
           `[CampaignSender] Batch ${batchNumber} failed: ${sendResult.error}`,
         );
-
-        // Still record the failed sends with pending status
-        const now = new Date().toISOString();
-        for (const email of batchEmails) {
-          try {
-            await drizzleDb.insert(emailSends).values({
-              subscriberId: email.subscriberId,
-              campaignId: campaignId,
-              status: 'pending',
-              sentAt: now,
-            });
-          } catch {
-            // Ignore DB errors for failed sends
-          }
-        }
       }
 
       // Delay between batches to respect rate limits

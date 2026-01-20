@@ -9,6 +9,7 @@ import {
   emailTemplates,
   campaigns,
   emailSends,
+  emailEvents,
 } from '../db/schema';
 import {authMiddleware} from '../middleware/auth';
 import {eq, desc, like, or, sql, and, inArray, count} from 'drizzle-orm';
@@ -600,6 +601,185 @@ emailRoutes.post('/webhooks/resend', async (c) => {
     // Return 200 to prevent Resend from retrying
     return c.json({success: false, error: 'Internal error'}, 200);
   }
+});
+
+// ============ Tracking Endpoints (No Auth - Public for Email Clients) ============
+
+/**
+ * Click tracking endpoint
+ * Records click event and redirects to the original URL with UTM parameters
+ */
+emailRoutes.get('/track/click', async (c) => {
+  const emailSendId = c.req.query('eid');
+  const targetUrl = c.req.query('url');
+
+  // Validate required parameters
+  if (!emailSendId || !targetUrl) {
+    console.error(
+      '[Click Tracking] Missing parameters - eid:',
+      emailSendId,
+      'url:',
+      targetUrl,
+    );
+    // Redirect to homepage if URL is missing
+    return c.redirect(targetUrl || 'https://www.wakey.care');
+  }
+
+  const eid = parseInt(emailSendId, 10);
+  if (isNaN(eid)) {
+    console.error('[Click Tracking] Invalid email send ID:', emailSendId);
+    return c.redirect(targetUrl);
+  }
+
+  const db = createDb(c.env.DB);
+
+  try {
+    // Find the email send record
+    const [emailSend] = await db
+      .select({
+        id: emailSends.id,
+        subscriberId: emailSends.subscriberId,
+        campaignId: emailSends.campaignId,
+        clickedAt: emailSends.clickedAt,
+      })
+      .from(emailSends)
+      .where(eq(emailSends.id, eid))
+      .limit(1);
+
+    if (emailSend) {
+      const now = new Date().toISOString();
+
+      // Record the click event in email_events
+      await db.insert(emailEvents).values({
+        subscriberId: emailSend.subscriberId,
+        eventType: 'click',
+        eventData: JSON.stringify({
+          emailSendId: eid,
+          campaignId: emailSend.campaignId,
+          url: targetUrl,
+        }),
+      });
+
+      // Update email_sends.clickedAt if this is the first click
+      if (!emailSend.clickedAt) {
+        await db
+          .update(emailSends)
+          .set({
+            status: 'clicked',
+            clickedAt: now,
+          })
+          .where(eq(emailSends.id, eid));
+
+        console.log(
+          `[Click Tracking] First click recorded for email send ${eid}`,
+        );
+      } else {
+        console.log(
+          `[Click Tracking] Repeat click recorded for email send ${eid}`,
+        );
+      }
+    } else {
+      console.log(
+        `[Click Tracking] Email send not found for ID ${eid}, redirecting anyway`,
+      );
+    }
+  } catch (error) {
+    console.error('[Click Tracking] Error recording click:', error);
+    // Don't fail the redirect even if tracking fails
+  }
+
+  // Always redirect to the target URL
+  return c.redirect(targetUrl);
+});
+
+/**
+ * Open tracking endpoint
+ * Returns a 1x1 transparent GIF and records the open event
+ */
+emailRoutes.get('/track/open', async (c) => {
+  const emailSendId = c.req.query('eid');
+
+  // 1x1 transparent GIF (smallest valid GIF)
+  const transparentGif = new Uint8Array([
+    0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00,
+    0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x21, 0xf9, 0x04, 0x01, 0x00,
+    0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00,
+    0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3b,
+  ]);
+
+  // Return the GIF with proper headers regardless of tracking success
+  const gifResponse = () =>
+    new Response(transparentGif, {
+      headers: {
+        'Content-Type': 'image/gif',
+        'Cache-Control':
+          'no-store, no-cache, must-revalidate, proxy-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    });
+
+  if (!emailSendId) {
+    return gifResponse();
+  }
+
+  const eid = parseInt(emailSendId, 10);
+  if (isNaN(eid)) {
+    return gifResponse();
+  }
+
+  const db = createDb(c.env.DB);
+
+  try {
+    // Find the email send record
+    const [emailSend] = await db
+      .select({
+        id: emailSends.id,
+        subscriberId: emailSends.subscriberId,
+        campaignId: emailSends.campaignId,
+        openedAt: emailSends.openedAt,
+        status: emailSends.status,
+      })
+      .from(emailSends)
+      .where(eq(emailSends.id, eid))
+      .limit(1);
+
+    if (emailSend) {
+      const now = new Date().toISOString();
+
+      // Record the open event in email_events
+      await db.insert(emailEvents).values({
+        subscriberId: emailSend.subscriberId,
+        eventType: 'open',
+        eventData: JSON.stringify({
+          emailSendId: eid,
+          campaignId: emailSend.campaignId,
+        }),
+      });
+
+      // Update email_sends.openedAt if this is the first open
+      // Don't downgrade status if already clicked
+      if (!emailSend.openedAt) {
+        const newStatus = emailSend.status === 'clicked' ? 'clicked' : 'opened';
+        await db
+          .update(emailSends)
+          .set({
+            status: newStatus,
+            openedAt: now,
+          })
+          .where(eq(emailSends.id, eid));
+
+        console.log(
+          `[Open Tracking] First open recorded for email send ${eid}`,
+        );
+      }
+    }
+  } catch (error) {
+    console.error('[Open Tracking] Error recording open:', error);
+    // Don't fail the response even if tracking fails
+  }
+
+  return gifResponse();
 });
 
 // ============ Authenticated Routes ============

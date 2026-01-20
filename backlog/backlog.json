@@ -749,8 +749,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 43,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created emailTracking.ts service with addClickTracking() and wrapLinkWithTracking(). Updated campaignSender.ts to create email_sends records first, then apply tracking with emailSendId. Added GET /api/email/track/click endpoint that records click in email_events, updates clickedAt, and redirects with UTM params. Build and typecheck pass."
     },
     {
       "id": "US-044",
@@ -765,8 +765,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 44,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created addOpenTrackingPixel() function in emailTracking.ts. Added GET /api/email/track/open endpoint returning 1x1 transparent GIF. Records open in email_events and updates openedAt. Applied via applyEmailTracking() in campaignSender.ts. Build and typecheck pass."
     },
     {
       "id": "US-045",

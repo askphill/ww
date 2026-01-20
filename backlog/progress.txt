@@ -1293,3 +1293,49 @@
 - Timestamp validation prevents replay attacks (5 minute window)
 - The 'complained' status was already added to schema enum in previous iteration
 - Always check existing code before implementing - US-042 was complete but not marked
+
+### Iteration: 2026-01-20 US-043 & US-044
+
+**Story:** US-043 - Add click tracking to email links
+**Story:** US-044 - Add open tracking pixel to emails
+**Status:** Complete (Both implemented together)
+
+**What was done:**
+
+- Created `apps/studio/server/services/emailTracking.ts` with tracking functions:
+  - `addClickTracking(html, options)` - wraps all href links with tracking redirects
+  - `addOpenTrackingPixel(html, baseUrl, emailSendId)` - appends 1x1 transparent GIF
+  - `applyEmailTracking(html, options)` - applies both click and open tracking
+  - `addUtmParameters(url, campaignId)` - adds utm_source, utm_medium, utm_campaign
+- Added `GET /api/email/track/click` endpoint to email.ts:
+  - Validates emailSendId parameter
+  - Records click event in email_events table
+  - Updates email_sends.clickedAt if first click
+  - Redirects to target URL (already has UTM params from tracking service)
+- Added `GET /api/email/track/open` endpoint to email.ts:
+  - Returns 1x1 transparent GIF (42 bytes)
+  - Records open event in email_events table
+  - Updates email_sends.openedAt if first open
+  - Preserves 'clicked' status (doesn't downgrade)
+- Modified campaignSender.ts to integrate tracking:
+  - Creates email_sends records FIRST to get IDs for tracking
+  - Applies tracking after template rendering
+  - Updates records with resendId after sending
+- Tracking URLs format: `https://studio.wakey.care/api/email/track/click?eid={id}&url={encodedUrl}`
+- Open pixel format: `https://studio.wakey.care/api/email/track/open?eid={id}`
+
+**Files changed:**
+
+- apps/studio/server/services/emailTracking.ts (created - 109 lines)
+- apps/studio/server/routes/email.ts (modified - added ~140 lines for tracking endpoints)
+- apps/studio/server/services/campaignSender.ts (modified - refactored batch processing)
+- backlog/backlog.json (updated US-043 and US-044 passes status)
+
+**Learnings for future iterations:**
+
+- Tracking requires emailSendId, so must create email_sends record BEFORE sending
+- Flow: create record -> get ID -> apply tracking -> send email -> update with resendId
+- 1x1 transparent GIF is 42 bytes (smallest valid GIF)
+- Skip tracking for unsubscribe links, mailto:, tel:, and # hrefs
+- Use Cache-Control: no-store headers on tracking pixel to prevent caching
+- Repeat clicks/opens should still log to email_events but not update first timestamp
