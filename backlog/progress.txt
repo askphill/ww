@@ -919,3 +919,34 @@
 - autoFocus attribute on input makes modal more accessible
 - Type assertion `as {error?: string}` fixes unknown type from JSON parsing
 
+### Iteration: 2026-01-20 US-031
+
+**Story:** US-031 - Create AI template generation service
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/services/email-ai.ts` for AI-powered template generation
+- Implemented `generateTemplate(apiKey, prompt, brandContext)` function using Gemini AI
+- Created comprehensive system prompt enforcing Wakey brand voice:
+  - Cheeky, not childish; Warm, not soft; Real, not raw
+  - Never use emojis or exclamation marks
+  - Brand colors: #1a1a1a (black), #FFF5EB (sand), #FAD103 (softorange/yellow)
+- Implemented `formatComponentSchemas()` to include all 7 component schemas in AI prompt
+- Implemented `validateComponents()` to validate AI output against schemas
+- Auto-fixes missing component IDs and merges with default props
+- Falls back to basic template via `generateFallbackTemplate()` if AI fails
+- Returns `GeneratedTemplate` with components, suggestedSubject, suggestedPreviewText
+
+**Files changed:**
+
+- apps/studio/server/services/email-ai.ts (created - 379 lines)
+
+**Learnings for future iterations:**
+
+- Gemini response can be wrapped in markdown code blocks - extract JSON with regex
+- Component validation should be lenient: auto-fix IDs, merge with defaults
+- Always provide a fallback template when AI generation fails
+- Brand voice guidelines should be explicit in the system prompt (what NOT to do is as important as what to do)
+- Use `isValidComponentType()` type guard from component registry for validation
+
