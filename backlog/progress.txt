@@ -1606,3 +1606,61 @@
 
 - Route configuration should be verified against acceptance criteria even when pages are created incrementally
 - In this codebase, routes are in App.tsx (not a separate router.tsx file)
+
+### Iteration: 2026-01-20 US-053
+
+**Story:** US-053 - Add required environment variables documentation
+**Status:** Complete
+
+**What was done:**
+
+- Added to `apps/studio/.dev.vars.example`:
+  - SHOPIFY_ADMIN_API_TOKEN
+  - SHOPIFY_STORE_DOMAIN
+  - SHOPIFY_WEBHOOK_SECRET
+  - RESEND_WEBHOOK_SECRET
+- Updated `apps/studio/CLAUDE.md`:
+  - Added webhook setup section for Shopify and Resend
+  - Updated External Services table with Resend webhooks and Shopify Admin
+  - Updated Environment Variables section
+  - Updated API routes table with email and webhooks
+  - Updated Frontend routes table with all email pages
+- Typecheck passes
+
+**Files changed:**
+
+- apps/studio/.dev.vars.example (modified)
+- apps/studio/CLAUDE.md (modified)
+- backlog/backlog.json (updated US-053 passes status)
+
+**Learnings for future iterations:**
+
+- Webhook secrets are separate from API keys - needed for signature verification
+- CLAUDE.md should be updated when adding new services or routes
+
+### Iteration: 2026-01-20 US-054
+
+**Story:** US-054 - Install required dependencies
+**Status:** Complete
+
+**What was done:**
+
+- Installed @xyflow/react (for potential future flow/diagram features)
+- Verified other dependencies already present:
+  - @dnd-kit/core (drag and drop)
+  - @dnd-kit/sortable (sortable lists)
+  - @react-email/components (email components)
+  - @react-email/render (email rendering)
+- package.json and pnpm-lock.yaml updated
+- Typecheck passes
+
+**Files changed:**
+
+- apps/studio/package.json (modified)
+- pnpm-lock.yaml (modified)
+- backlog/backlog.json (updated US-054 passes status)
+
+**Learnings for future iterations:**
+
+- Check existing dependencies before running pnpm add
+- @xyflow/react is used for visual flow/node editors (not used in current email system yet)

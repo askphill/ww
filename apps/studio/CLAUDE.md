@@ -12,14 +12,14 @@
 
 ## Tech Stack
 
-| Layer    | Technology                             |
-| -------- | -------------------------------------- |
+| Layer    | Technology                               |
+| -------- | ---------------------------------------- |
 | Frontend | React 18, React Router 7, TanStack Query |
-| Backend  | Hono (TypeScript HTTP framework)       |
-| Database | Cloudflare D1 (SQLite) + Drizzle ORM   |
-| Runtime  | Cloudflare Workers (wrangler)          |
-| Styling  | Tailwind CSS v4                        |
-| Build    | Vite 6                                 |
+| Backend  | Hono (TypeScript HTTP framework)         |
+| Database | Cloudflare D1 (SQLite) + Drizzle ORM     |
+| Runtime  | Cloudflare Workers (wrangler)            |
+| Styling  | Tailwind CSS v4                          |
+| Build    | Vite 6                                   |
 
 ---
 
@@ -98,13 +98,15 @@ pnpm db:migrate:prod        # Apply migrations to production
 
 All API routes are prefixed with `/api/`:
 
-| Route                     | Description                    |
-| ------------------------- | ------------------------------ |
-| `/api/auth/*`             | Authentication (login, logout) |
-| `/api/gsc/*`              | Google Search Console data     |
-| `/api/opportunities/*`    | SEO opportunities analysis     |
-| `/api/tracking/*`         | Keyword tracking               |
-| `/api/health`             | Health check                   |
+| Route                  | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| `/api/auth/*`          | Authentication (login, logout)                                 |
+| `/api/gsc/*`           | Google Search Console data                                     |
+| `/api/opportunities/*` | SEO opportunities analysis                                     |
+| `/api/tracking/*`      | Keyword tracking                                               |
+| `/api/email/*`         | Email marketing (subscribers, templates, campaigns, analytics) |
+| `/api/webhooks/*`      | Webhook handlers (Shopify, Resend)                             |
+| `/api/health`          | Health check                                                   |
 
 ### Authentication
 
@@ -121,26 +123,36 @@ app.use('*', authMiddleware);
 
 ## Frontend Routes
 
-| Path                 | Page           | Description                |
-| -------------------- | -------------- | -------------------------- |
-| `/login`             | Login          | Authentication (public)    |
-| `/seo/tracking`      | Tracking       | Keyword position tracking  |
-| `/seo/opportunities` | Opportunities  | SEO improvement suggestions |
-| `/klaviyo`           | Klaviyo        | Email marketing stats      |
-| `/meta`              | Meta           | Meta ads integration       |
+| Path                        | Page           | Description                 |
+| --------------------------- | -------------- | --------------------------- |
+| `/login`                    | Login          | Authentication (public)     |
+| `/seo/tracking`             | Tracking       | Keyword position tracking   |
+| `/seo/opportunities`        | Opportunities  | SEO improvement suggestions |
+| `/email/dashboard`          | Dashboard      | Email analytics overview    |
+| `/email/subscribers`        | Subscribers    | Subscriber management       |
+| `/email/templates`          | Templates      | Email template list         |
+| `/email/templates/new`      | Editor         | Create new template         |
+| `/email/templates/:id`      | Editor         | Edit existing template      |
+| `/email/campaigns`          | Campaigns      | Campaign management         |
+| `/email/campaigns/new`      | CampaignEditor | Create new campaign         |
+| `/email/campaigns/:id`      | CampaignDetail | Campaign details/stats      |
+| `/email/campaigns/:id/edit` | CampaignEditor | Edit existing campaign      |
+| `/klaviyo`                  | Klaviyo        | Email marketing stats       |
+| `/meta`                     | Meta           | Meta ads integration        |
 
-All routes except `/login` require authentication via `ProtectedRoute`.
+All routes except `/login` and `/unsubscribe` require authentication via `ProtectedRoute`.
 
 ---
 
 ## External Services
 
-| Service          | Purpose                        | Config Key            |
-| ---------------- | ------------------------------ | --------------------- |
-| Google Search Console | Search analytics          | `GSC_*`               |
-| Gemini AI        | Content analysis               | `GEMINI_API_KEY`      |
-| DataForSEO       | Keyword research               | `DATAFORSEO_*`        |
-| Resend           | Email notifications            | `RESEND_API_KEY`      |
+| Service               | Purpose                  | Config Key                                |
+| --------------------- | ------------------------ | ----------------------------------------- |
+| Google Search Console | Search analytics         | `GSC_*`                                   |
+| Gemini AI             | Content analysis         | `GEMINI_API_KEY`                          |
+| DataForSEO            | Keyword research         | `DATAFORSEO_*`                            |
+| Resend                | Email sending & webhooks | `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET` |
+| Shopify Admin         | Customer sync & webhooks | `SHOPIFY_*`                               |
 
 ---
 
@@ -161,13 +173,38 @@ GSC_SITE_URL=
 # AI
 GEMINI_API_KEY=
 
-# Email
+# Email (Resend)
 RESEND_API_KEY=
+RESEND_WEBHOOK_SECRET=
+
+# Shopify Admin API
+SHOPIFY_ADMIN_API_TOKEN=
+SHOPIFY_STORE_DOMAIN=
+SHOPIFY_WEBHOOK_SECRET=
 
 # SEO Data
 DATAFORSEO_LOGIN=
 DATAFORSEO_PASSWORD=
 ```
+
+---
+
+## Webhook Setup
+
+### Shopify Webhooks
+
+1. Create a private app in Shopify Admin → Settings → Apps and sales channels → Develop apps
+2. Generate Admin API access token with scopes: `read_customers`, `write_customers`
+3. Configure webhooks in Shopify pointing to:
+   - `https://studio.wakey.care/api/webhooks/shopify/customers/create`
+   - `https://studio.wakey.care/api/webhooks/shopify/customers/update`
+4. Set `SHOPIFY_ADMIN_API_TOKEN`, `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_WEBHOOK_SECRET` in Cloudflare env
+
+### Resend Webhooks
+
+1. In Resend dashboard → Webhooks, add endpoint: `https://studio.wakey.care/api/webhooks/resend`
+2. Select events: email.delivered, email.opened, email.clicked, email.bounced, email.complained
+3. Copy signing secret and set `RESEND_WEBHOOK_SECRET` in Cloudflare env
 
 ---
 

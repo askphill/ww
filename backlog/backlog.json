@@ -915,8 +915,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 53,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added SHOPIFY_ADMIN_API_TOKEN, SHOPIFY_STORE_DOMAIN, SHOPIFY_WEBHOOK_SECRET, RESEND_WEBHOOK_SECRET to .dev.vars.example. Updated CLAUDE.md with webhook setup instructions for Shopify and Resend. Updated API routes and frontend routes tables. Typecheck passes."
     },
     {
       "id": "US-054",
@@ -929,8 +929,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 54,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Installed @xyflow/react. Other dependencies (@dnd-kit/core, @dnd-kit/sortable, @react-email/components, @react-email/render) were already present. package.json and pnpm-lock.yaml updated. Typecheck passes."
     }
   ]
 }
