@@ -521,8 +521,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 30,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added pre-fill with user's email from useAuth hook, escape key handler, backdrop click to close, prevent body scroll. Enhanced loading state with spinner. Improved error display. Build and typecheck pass."
     },
     {
       "id": "US-031",
