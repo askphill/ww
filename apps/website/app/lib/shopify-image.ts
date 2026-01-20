@@ -42,7 +42,7 @@ export function optimizeShopifyImage(
 export function buildShopifySrcSet(
   url: string,
   options: {
-    widths: number[];
+    widths: readonly number[];
     format?: 'webp' | 'jpg' | 'png';
     height?: number;
     crop?: 'center' | 'top' | 'bottom' | 'left' | 'right';
