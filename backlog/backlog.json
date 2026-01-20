@@ -732,8 +732,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 42,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Already implemented. Resend webhook handler at POST /api/email/webhooks/resend with SVix signature verification. Handles all email events: sent, delivered, opened, clicked, bounced, complained. Updates emailSends and subscriber status appropriately. Build and typecheck pass."
     },
     {
       "id": "US-043",

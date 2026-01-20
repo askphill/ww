@@ -1263,3 +1263,33 @@
 - Pagination component can be shared pattern: Previous/Next buttons with page/totalPages display
 - SendStatus has 7 possible states vs CampaignStatus which has 5
 - Browser verification blocked by unrelated dependency issue in different workspace
+
+### Iteration: 2026-01-20 US-042
+
+**Story:** US-042 - Add Resend webhook handler for email events
+**Status:** Complete (Already Implemented)
+
+**What was done:**
+
+- Verified that US-042 was already implemented in previous iteration
+- Resend webhook handler at `POST /api/email/webhooks/resend` (lines 310-603 in email.ts)
+- SVix signature verification implemented (RESEND_WEBHOOK_SECRET env var)
+- Handles all required events: email.sent, email.delivered, email.opened, email.clicked, email.bounced, email.complained
+- Updates `email_sends` record status and timestamps (sentAt, deliveredAt, openedAt, clickedAt)
+- For bounced: marks subscriber status as 'bounced'
+- For complained: marks subscriber status as 'complained'
+- Returns 200 OK quickly to prevent retries
+- Build and typecheck pass
+
+**Files changed:**
+
+- backlog/backlog.json (updated US-042 passes status)
+- backlog/progress.txt (updated with this entry)
+
+**Learnings for future iterations:**
+
+- Resend uses SVix for webhook signing (not a simple HMAC like Shopify)
+- SVix signature format: `v1,base64signature` - may have multiple signatures separated by space
+- Timestamp validation prevents replay attacks (5 minute window)
+- The 'complained' status was already added to schema enum in previous iteration
+- Always check existing code before implementing - US-042 was complete but not marked

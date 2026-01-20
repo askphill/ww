@@ -307,6 +307,301 @@ emailRoutes.post('/webhooks/shopify', async (c) => {
   }
 });
 
+// ============ Resend Webhook Handler ============
+
+/**
+ * Resend webhook event types we handle
+ */
+interface ResendWebhookEvent {
+  type:
+    | 'email.sent'
+    | 'email.delivered'
+    | 'email.opened'
+    | 'email.clicked'
+    | 'email.bounced'
+    | 'email.complained';
+  created_at: string;
+  data: {
+    email_id: string;
+    from: string;
+    to: string[];
+    subject: string;
+    created_at: string;
+  };
+}
+
+/**
+ * Verify Resend webhook signature using SVix
+ * Resend uses SVix for webhook signing
+ * See: https://resend.com/docs/dashboard/webhooks/verify-webhooks
+ */
+async function verifyResendWebhook(
+  body: string,
+  headers: {
+    svixId: string | undefined;
+    svixTimestamp: string | undefined;
+    svixSignature: string | undefined;
+  },
+  secret: string,
+): Promise<boolean> {
+  const {svixId, svixTimestamp, svixSignature} = headers;
+
+  // All headers are required
+  if (!svixId || !svixTimestamp || !svixSignature) {
+    console.error('[Resend Webhook] Missing SVix headers');
+    return false;
+  }
+
+  // Validate timestamp is within 5 minutes to prevent replay attacks
+  const timestamp = parseInt(svixTimestamp, 10);
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - timestamp) > 300) {
+    console.error('[Resend Webhook] Timestamp too old or in the future');
+    return false;
+  }
+
+  // The signed content is "msg_id.timestamp.body"
+  const signedContent = `${svixId}.${svixTimestamp}.${body}`;
+
+  // Extract the secret key (format: whsec_xxxxx)
+  const secretBytes = secret.startsWith('whsec_')
+    ? Uint8Array.from(atob(secret.slice(6)), (c) => c.charCodeAt(0))
+    : new TextEncoder().encode(secret);
+
+  // Create the HMAC
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    secretBytes,
+    {name: 'HMAC', hash: 'SHA-256'},
+    false,
+    ['sign'],
+  );
+
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(signedContent),
+  );
+  const computedSignature = btoa(
+    String.fromCharCode(...new Uint8Array(signature)),
+  );
+
+  // The signature header may contain multiple signatures (e.g., v1,xxx v1,yyy)
+  const signatures = svixSignature.split(' ');
+  for (const sig of signatures) {
+    const [version, expectedSig] = sig.split(',');
+    if (version === 'v1' && expectedSig === computedSignature) {
+      return true;
+    }
+  }
+
+  console.error('[Resend Webhook] Signature mismatch');
+  return false;
+}
+
+/**
+ * Handle Resend webhooks for email events
+ * Events: email.delivered, email.opened, email.clicked, email.bounced, email.complained
+ */
+emailRoutes.post('/webhooks/resend', async (c) => {
+  // Get SVix headers for verification
+  const svixId = c.req.header('svix-id');
+  const svixTimestamp = c.req.header('svix-timestamp');
+  const svixSignature = c.req.header('svix-signature');
+
+  // Get raw body for signature validation
+  const body = await c.req.text();
+
+  // Validate webhook signature
+  const isValid = await verifyResendWebhook(
+    body,
+    {svixId, svixTimestamp, svixSignature},
+    c.env.RESEND_WEBHOOK_SECRET,
+  );
+
+  if (!isValid) {
+    console.error('[Resend Webhook] Invalid webhook signature');
+    return c.json({error: 'Invalid webhook signature'}, 401);
+  }
+
+  // Parse the payload
+  let event: ResendWebhookEvent;
+  try {
+    event = JSON.parse(body);
+  } catch {
+    console.error('[Resend Webhook] Invalid JSON payload');
+    return c.json({error: 'Invalid JSON payload'}, 400);
+  }
+
+  const db = createDb(c.env.DB);
+  const emailId = event.data.email_id;
+
+  console.log(`[Resend Webhook] Received ${event.type} for email ${emailId}`);
+
+  try {
+    // Find the email send record by resendId
+    const [emailSend] = await db
+      .select({
+        id: emailSends.id,
+        subscriberId: emailSends.subscriberId,
+        status: emailSends.status,
+      })
+      .from(emailSends)
+      .where(eq(emailSends.resendId, emailId))
+      .limit(1);
+
+    if (!emailSend) {
+      // Email not found - might be a test email or one we didn't track
+      console.log(
+        `[Resend Webhook] Email send record not found for Resend ID: ${emailId}`,
+      );
+      return c.json({success: true, message: 'Email send record not found'});
+    }
+
+    const now = new Date().toISOString();
+
+    switch (event.type) {
+      case 'email.sent': {
+        // Update status to sent if currently pending
+        if (emailSend.status === 'pending') {
+          await db
+            .update(emailSends)
+            .set({status: 'sent', sentAt: now})
+            .where(eq(emailSends.id, emailSend.id));
+          console.log(
+            `[Resend Webhook] Updated email ${emailSend.id} status to sent`,
+          );
+        }
+        break;
+      }
+
+      case 'email.delivered': {
+        // Update status to delivered
+        await db
+          .update(emailSends)
+          .set({status: 'delivered', deliveredAt: now})
+          .where(eq(emailSends.id, emailSend.id));
+        console.log(
+          `[Resend Webhook] Updated email ${emailSend.id} status to delivered`,
+        );
+        break;
+      }
+
+      case 'email.opened': {
+        // Update status to opened if not already clicked
+        // (clicked is a "higher" status than opened)
+        if (emailSend.status !== 'clicked') {
+          // Get existing record to check if this is first open
+          const [existingEmail] = await db
+            .select({openedAt: emailSends.openedAt})
+            .from(emailSends)
+            .where(eq(emailSends.id, emailSend.id))
+            .limit(1);
+
+          // Only set openedAt if this is the first open
+          if (!existingEmail?.openedAt) {
+            await db
+              .update(emailSends)
+              .set({status: 'opened' as const, openedAt: now})
+              .where(eq(emailSends.id, emailSend.id));
+          } else {
+            await db
+              .update(emailSends)
+              .set({status: 'opened' as const})
+              .where(eq(emailSends.id, emailSend.id));
+          }
+
+          console.log(
+            `[Resend Webhook] Updated email ${emailSend.id} status to opened`,
+          );
+        }
+        break;
+      }
+
+      case 'email.clicked': {
+        // Get existing record to check if this is first click
+        const [existingEmail] = await db
+          .select({clickedAt: emailSends.clickedAt})
+          .from(emailSends)
+          .where(eq(emailSends.id, emailSend.id))
+          .limit(1);
+
+        // Only set clickedAt if this is the first click
+        if (!existingEmail?.clickedAt) {
+          await db
+            .update(emailSends)
+            .set({status: 'clicked' as const, clickedAt: now})
+            .where(eq(emailSends.id, emailSend.id));
+        } else {
+          await db
+            .update(emailSends)
+            .set({status: 'clicked' as const})
+            .where(eq(emailSends.id, emailSend.id));
+        }
+
+        console.log(
+          `[Resend Webhook] Updated email ${emailSend.id} status to clicked`,
+        );
+        break;
+      }
+
+      case 'email.bounced': {
+        // Update email send status to bounced
+        await db
+          .update(emailSends)
+          .set({status: 'bounced'})
+          .where(eq(emailSends.id, emailSend.id));
+
+        // Mark subscriber as bounced
+        await db
+          .update(subscribers)
+          .set({
+            status: 'bounced',
+            updatedAt: now,
+          })
+          .where(eq(subscribers.id, emailSend.subscriberId));
+
+        console.log(
+          `[Resend Webhook] Marked email ${emailSend.id} as bounced and subscriber ${emailSend.subscriberId} as bounced`,
+        );
+        break;
+      }
+
+      case 'email.complained': {
+        // Update email send status to complained
+        await db
+          .update(emailSends)
+          .set({status: 'complained'})
+          .where(eq(emailSends.id, emailSend.id));
+
+        // Mark subscriber as complained (spam complaint)
+        await db
+          .update(subscribers)
+          .set({
+            status: 'complained',
+            updatedAt: now,
+          })
+          .where(eq(subscribers.id, emailSend.subscriberId));
+
+        console.log(
+          `[Resend Webhook] Marked email ${emailSend.id} as complained and subscriber ${emailSend.subscriberId} as complained`,
+        );
+        break;
+      }
+
+      default:
+        console.log(`[Resend Webhook] Unknown event type: ${event.type}`);
+    }
+
+    return c.json({success: true});
+  } catch (error) {
+    console.error('[Resend Webhook] Error processing webhook:', error);
+    // Return 200 to prevent Resend from retrying
+    return c.json({success: false, error: 'Internal error'}, 200);
+  }
+});
+
 // ============ Authenticated Routes ============
 // All routes below require authentication
 emailRoutes.use('/subscribers/*', authMiddleware);
@@ -334,9 +629,15 @@ emailRoutes.get('/subscribers', async (c) => {
   // Build conditions array
   const conditions = [];
 
-  if (status && ['active', 'unsubscribed', 'bounced'].includes(status)) {
+  if (
+    status &&
+    ['active', 'unsubscribed', 'bounced', 'complained'].includes(status)
+  ) {
     conditions.push(
-      eq(subscribers.status, status as 'active' | 'unsubscribed' | 'bounced'),
+      eq(
+        subscribers.status,
+        status as 'active' | 'unsubscribed' | 'bounced' | 'complained',
+      ),
     );
   }
 
@@ -497,7 +798,9 @@ emailRoutes.patch(
       email: z.string().email('Invalid email format').optional(),
       firstName: z.string().optional(),
       lastName: z.string().optional(),
-      status: z.enum(['active', 'unsubscribed', 'bounced']).optional(),
+      status: z
+        .enum(['active', 'unsubscribed', 'bounced', 'complained'])
+        .optional(),
       source: z.string().optional(),
       tags: z.array(z.string()).optional(),
     }),

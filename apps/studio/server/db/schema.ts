@@ -124,7 +124,9 @@ export const subscribers = sqliteTable(
     lastName: text('last_name'),
     shopifyCustomerId: text('shopify_customer_id'),
     visitorId: text('visitor_id'),
-    status: text('status', {enum: ['active', 'unsubscribed', 'bounced']})
+    status: text('status', {
+      enum: ['active', 'unsubscribed', 'bounced', 'complained'],
+    })
       .notNull()
       .default('active'),
     source: text('source'),
