@@ -340,6 +340,57 @@ export const emailEventsRelations = relations(emailEvents, ({one}) => ({
   }),
 }));
 
+// Daily email metrics per campaign
+export const dailyEmailMetrics = sqliteTable(
+  'daily_email_metrics',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    date: text('date').notNull(),
+    campaignId: integer('campaign_id').references(() => campaigns.id, {
+      onDelete: 'cascade',
+    }),
+    sent: integer('sent').notNull().default(0),
+    delivered: integer('delivered').notNull().default(0),
+    opened: integer('opened').notNull().default(0),
+    clicked: integer('clicked').notNull().default(0),
+    bounced: integer('bounced').notNull().default(0),
+    unsubscribed: integer('unsubscribed').notNull().default(0),
+    createdAt: text('created_at').default("datetime('now')"),
+    updatedAt: text('updated_at').default("datetime('now')"),
+  },
+  (table) => [
+    index('idx_daily_email_metrics_date').on(table.date),
+    index('idx_daily_email_metrics_campaign_id').on(table.campaignId),
+  ],
+);
+
+// Daily subscriber metrics
+export const dailySubscriberMetrics = sqliteTable(
+  'daily_subscriber_metrics',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    date: text('date').notNull().unique(),
+    newSubscribers: integer('new_subscribers').notNull().default(0),
+    unsubscribed: integer('unsubscribed').notNull().default(0),
+    netGrowth: integer('net_growth').notNull().default(0),
+    totalActive: integer('total_active').notNull().default(0),
+    createdAt: text('created_at').default("datetime('now')"),
+    updatedAt: text('updated_at').default("datetime('now')"),
+  },
+  (table) => [index('idx_daily_subscriber_metrics_date').on(table.date)],
+);
+
+// Daily metrics relations
+export const dailyEmailMetricsRelations = relations(
+  dailyEmailMetrics,
+  ({one}) => ({
+    campaign: one(campaigns, {
+      fields: [dailyEmailMetrics.campaignId],
+      references: [campaigns.id],
+    }),
+  }),
+);
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -375,3 +426,8 @@ export type EmailSend = typeof emailSends.$inferSelect;
 export type NewEmailSend = typeof emailSends.$inferInsert;
 export type EmailEvent = typeof emailEvents.$inferSelect;
 export type NewEmailEvent = typeof emailEvents.$inferInsert;
+export type DailyEmailMetric = typeof dailyEmailMetrics.$inferSelect;
+export type NewDailyEmailMetric = typeof dailyEmailMetrics.$inferInsert;
+export type DailySubscriberMetric = typeof dailySubscriberMetrics.$inferSelect;
+export type NewDailySubscriberMetric =
+  typeof dailySubscriberMetrics.$inferInsert;
