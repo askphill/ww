@@ -486,3 +486,31 @@
 - Social links array schema uses `itemSchema` with nested field definitions
 - `{{unsubscribeUrl}}` placeholder will be interpolated at send time with signed token URL
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-017 - Create Divider email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/Divider.tsx` for visual separation
+- Implemented Divider component with color and spacing props
+- Uses Hr component from @react-email/components for horizontal rule
+- color prop defaults to #e0e0e0 (light gray)
+- spacing prop: 'small' (8px), 'medium' (16px), 'large' (32px)
+- Wraps Hr in Section for padding control
+- Exported DividerSchema JSON for template editor with color picker and select
+- Exported DividerDefaultProps with sensible defaults
+
+**Files changed:**
+
+- `apps/studio/server/email-components/Divider.tsx` (created)
+- `backlog/backlog.json` (updated US-017 passes status)
+
+**Learnings for future iterations:**
+
+- @react-email/components provides Hr component for horizontal rules
+- Spacing can be controlled via Section wrapper with padding styles
+- Use `as const` on SPACING_MAP for better TypeScript inference
+- Color picker schema type uses `type: 'color'`
+
