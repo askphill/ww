@@ -337,3 +337,32 @@
 - Use `as const` for schema to get better TypeScript inference
 - DefaultProps export useful for initializing component instances in the editor
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-012 - Create Hero email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/Hero.tsx` with all required props
+- Props implemented: headline, subheadline, imageUrl, buttonText, buttonUrl, backgroundColor
+- Headline styled with Founders Grotesk font fallback at 32px, weight 600
+- Subheadline styled with ITC Avant Garde Gothic font fallback at 18px
+- Button styled with Wakey yellow (#FAD103) background, 16px 32px padding, 8px border-radius
+- Image has max-width: 100% for responsive scaling
+- Text props support `{{firstName}}` style variable interpolation (rendered at template level)
+- Exported HeroSchema JSON with all prop definitions for editor
+- Exported HeroDefaultProps with sensible defaults
+
+**Files changed:**
+
+- `apps/studio/server/email-components/Hero.tsx` (created)
+- `backlog/backlog.json` (updated US-012 passes status)
+
+**Learnings for future iterations:**
+
+- @react-email/components Button component uses `href` prop (not `url`)
+- Variable interpolation `{{firstName}}` is passed through as-is; interpolation happens at render time
+- Use optional chaining in render for optional props (e.g., `{imageUrl && <Img ... />}`)
+- Text component from @react-email/components wraps content in inline styles for email compatibility
+

@@ -211,8 +211,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created Hero.tsx with headline, subheadline, imageUrl, buttonText, buttonUrl, backgroundColor props. Headline uses Founders font at 32px. Button styled with #FAD103 yellow. Schema and default props exported. Build passes."
     },
     {
       "id": "US-013",
