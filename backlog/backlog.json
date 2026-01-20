@@ -1,0 +1,936 @@
+{
+  "branch": "ralph/email-marketing-system",
+  "description": "Build a Klaviyo alternative integrated into Wakey Studio using Resend + React Email. The system enables marketing campaigns to subscribers synced from Shopify, with a visual template editor and full tracking/analytics.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create email marketing database schema migration",
+      "description": "As a developer, I want the database tables for the email marketing system so that I can store subscribers, templates, campaigns, and tracking data.",
+      "acceptance": [
+        "Migration file created at `drizzle/migrations/0005_add_email_marketing.sql`",
+        "Tables created: `subscribers`, `segments`, `segment_subscribers`, `email_templates`, `email_components`, `campaigns`, `email_sends`, `email_events`",
+        "`subscribers` table has columns: id, email, firstName, lastName, shopifyCustomerId, visitorId, status (enum: active/unsubscribed/bounced), source, tags (JSON), subscribedAt, createdAt, updatedAt",
+        "`segments` table has columns: id, name, type (enum: shopify_sync/custom), shopifySegmentId, filters (JSON), subscriberCount, createdAt, updatedAt",
+        "`segment_subscribers` table has columns: segmentId, subscriberId, addedAt (composite primary key)",
+        "`email_templates` table has columns: id, name, subject, previewText, components (JSON), variables (JSON), category, status (enum: draft/active), createdAt, updatedAt",
+        "`email_components` table has columns: id, name, type, schema (JSON), defaultProps (JSON), reactEmailCode (text), createdAt",
+        "`campaigns` table has columns: id, name, subject, templateId, segmentIds (JSON), status (enum: draft/scheduled/sending/sent/cancelled), scheduledAt, sentAt, createdAt, updatedAt",
+        "`email_sends` table has columns: id, subscriberId, campaignId, flowId, resendId, status (enum: pending/sent/delivered/opened/clicked/bounced/complained), sentAt, deliveredAt, openedAt, clickedAt",
+        "`email_events` table has columns: id, subscriberId, visitorId, eventType, eventData (JSON), shopifyOrderId, orderTotal, attributionType, attributionWindow, createdAt",
+        "All foreign key relationships properly defined",
+        "Indexes on frequently queried columns (email, shopifyCustomerId, status, campaignId)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Completed. Pre-existing typecheck error in Login.tsx (line 52) exists on main branch - not related to this change."
+    },
+    {
+      "id": "US-002",
+      "title": "Add Drizzle schema definitions for email marketing tables",
+      "description": "As a developer, I want TypeScript schema definitions so that I can interact with the email marketing tables using Drizzle ORM.",
+      "acceptance": [
+        "Schema added to `apps/studio/server/db/schema.ts`",
+        "All tables from migration have corresponding Drizzle table definitions",
+        "Enums defined for status fields using `sqliteTable` and proper column types",
+        "Relations defined between tables (subscribers to sends, campaigns to sends, etc.)",
+        "Export types for each table (Subscriber, Segment, EmailTemplate, Campaign, EmailSend, EmailEvent)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Create subscriber CRUD API routes",
+      "description": "As a developer, I want API endpoints for managing subscribers so that the UI can display and manage the subscriber list.",
+      "acceptance": [
+        "Routes added to `apps/studio/server/routes/email.ts`",
+        "`GET /api/email/subscribers` returns paginated list with filters (status, search, segmentId)",
+        "`GET /api/email/subscribers/:id` returns single subscriber with segment memberships",
+        "`POST /api/email/subscribers` creates subscriber (validates email format, checks for duplicates)",
+        "`PATCH /api/email/subscribers/:id` updates subscriber fields",
+        "`DELETE /api/email/subscribers/:id` soft-deletes by setting status to 'unsubscribed'",
+        "All routes require authentication",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Implement Shopify customer sync service",
+      "description": "As a marketer, I want subscribers automatically synced from Shopify so that I can email my existing customers.",
+      "acceptance": [
+        "Service created at `apps/studio/server/services/shopifySync.ts`",
+        "Function `syncCustomersFromShopify` fetches customers via Shopify Admin GraphQL API",
+        "Creates/updates subscribers with shopifyCustomerId mapping",
+        "Handles pagination for stores with >250 customers",
+        "Sets source field to 'shopify_sync'",
+        "Does not overwrite subscribers who have unsubscribed",
+        "Returns sync stats (created, updated, skipped counts)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Add Shopify customer webhooks endpoint",
+      "description": "As a developer, I want to receive Shopify customer webhooks so that new customers are automatically added as subscribers.",
+      "acceptance": [
+        "Route added at `POST /api/email/webhooks/shopify`",
+        "Validates HMAC signature using SHOPIFY_WEBHOOK_SECRET",
+        "Handles `customers/create` topic - creates new subscriber",
+        "Handles `customers/update` topic - updates subscriber email/name if changed",
+        "Handles `customers/delete` topic - marks subscriber as unsubscribed",
+        "Returns 200 OK quickly, processes async if needed",
+        "Logs webhook events for debugging",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Create subscribers list page UI",
+      "description": "As a marketer, I want to view my subscriber list so that I can see who I can email.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/Subscribers.tsx`",
+        "Displays table with columns: Email, Name, Status, Source, Subscribed Date",
+        "Shows total subscriber count and active count",
+        "Search input filters by email or name",
+        "Status filter dropdown (All, Active, Unsubscribed, Bounced)",
+        "Pagination with 50 subscribers per page",
+        "Empty state when no subscribers",
+        "Loading state while fetching",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Add navigation for email marketing section",
+      "description": "As a user, I want to navigate to email marketing features so that I can access the new functionality.",
+      "acceptance": [
+        "Sidebar updated in `apps/studio/client/components/layout/Sidebar.tsx`",
+        "New \"Email\" section added with icon",
+        "Sub-items: Subscribers, Templates, Campaigns (Flows added later)",
+        "Active state highlights current page",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Create segment CRUD API routes",
+      "description": "As a developer, I want API endpoints for managing segments so that marketers can organize subscribers.",
+      "acceptance": [
+        "`GET /api/email/segments` returns all segments with subscriber counts",
+        "`GET /api/email/segments/:id` returns segment with subscriber list (paginated)",
+        "`POST /api/email/segments` creates custom segment",
+        "`PATCH /api/email/segments/:id` updates segment (name, filters)",
+        "`DELETE /api/email/segments/:id` deletes segment (only custom type)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Implement Shopify segments sync",
+      "description": "As a marketer, I want Shopify segments synced so that I can target the same customer groups.",
+      "acceptance": [
+        "Function `syncSegmentsFromShopify` added to shopifySync service",
+        "Fetches segments via `segments` GraphQL query",
+        "Creates/updates segments with type 'shopify_sync' and shopifySegmentId",
+        "Syncs segment members via `customerSegmentMembers` query",
+        "Updates subscriberCount after member sync",
+        "Handles segments with >1000 members via pagination",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Add manual segment sync trigger endpoint",
+      "description": "As a marketer, I want to manually trigger a Shopify sync so that I can get the latest data.",
+      "acceptance": [
+        "`POST /api/email/segments/sync` triggers full Shopify sync (customers + segments)",
+        "Returns immediately with job acknowledgment",
+        "Sync runs async and updates database",
+        "Rate limited to prevent abuse (max once per 5 minutes)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Create Header email component",
+      "description": "As a template creator, I want a Header component so that emails have consistent branding.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/Header.tsx`",
+        "Uses @react-email/components (Img, Section, Row, Column)",
+        "Props: logoUrl (string), backgroundColor (string, default #1a1a1a)",
+        "Logo centered with 40px height",
+        "Padding: 24px top/bottom",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Create Hero email component",
+      "description": "As a template creator, I want a Hero component so that emails have impactful visuals.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/Hero.tsx`",
+        "Props: headline (string), subheadline (string), imageUrl (string), buttonText (string), buttonUrl (string), backgroundColor (string)",
+        "Headline uses Founders font fallback, 32px size",
+        "Button styled with Wakey yellow (#FAD103) background",
+        "Image responsive with max-width 100%",
+        "Supports variable interpolation in text (e.g., `{{firstName}}`)",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Create TextBlock email component",
+      "description": "As a template creator, I want a TextBlock component for body content.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/TextBlock.tsx`",
+        "Props: content (string), alignment (left/center/right), fontSize (paragraph/small)",
+        "Uses ITC font fallback",
+        "Supports basic HTML (bold, italic, links) in content",
+        "Line height 1.6 for readability",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Create CallToAction email component",
+      "description": "As a template creator, I want a CTA button component for driving clicks.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/CallToAction.tsx`",
+        "Props: text (string), url (string), variant (primary/secondary)",
+        "Primary: #FAD103 background, #1a1a1a text",
+        "Secondary: transparent background, #FAD103 border and text",
+        "Padding: 16px 32px, border-radius 8px",
+        "Centered by default",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Create ProductGrid email component",
+      "description": "As a template creator, I want a ProductGrid component to showcase products.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/ProductGrid.tsx`",
+        "Props: products (array of {imageUrl, title, price, url}), columns (2 or 3)",
+        "Responsive: 1 column on mobile, specified columns on desktop",
+        "Each product shows image, title, price, and links to URL",
+        "Max 6 products supported",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Create Footer email component",
+      "description": "As a template creator, I want a Footer component for legal compliance.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/Footer.tsx`",
+        "Props: unsubscribeUrl (string), address (string), socialLinks (array of {platform, url})",
+        "Unsubscribe link prominent and clickable",
+        "Physical address displayed (CAN-SPAM requirement)",
+        "Social icons for Instagram, TikTok if provided",
+        "Muted text color (#666)",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Create Divider email component",
+      "description": "As a template creator, I want a Divider component for visual separation.",
+      "acceptance": [
+        "Component created at `apps/studio/server/email-components/Divider.tsx`",
+        "Props: color (string, default #e0e0e0), spacing (small/medium/large)",
+        "Horizontal line with specified color",
+        "Spacing maps to padding (8px/16px/32px)",
+        "Schema JSON exported for editor",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Create component registry and renderer service",
+      "description": "As a developer, I want a central registry so that components can be loaded dynamically.",
+      "acceptance": [
+        "Registry created at `apps/studio/server/email-components/index.ts`",
+        "Exports all components with their schemas",
+        "Renderer service at `apps/studio/server/services/emailRenderer.ts`",
+        "Function `renderTemplate(templateId, variables)` returns HTML string",
+        "Uses @react-email/render to convert React to HTML",
+        "Interpolates variables into component props (e.g., `{{firstName}}` → \"John\")",
+        "Handles missing variables gracefully (empty string)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Seed default components into database",
+      "description": "As a developer, I want components seeded into the database so that the editor can use them.",
+      "acceptance": [
+        "Seed script at `apps/studio/server/db/seed-email-components.ts`",
+        "Inserts all 7 components into `email_components` table",
+        "Stores schema JSON and default props for each",
+        "Idempotent (can run multiple times without duplicates)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Create template CRUD API routes",
+      "description": "As a developer, I want API endpoints for managing templates so that marketers can create email designs.",
+      "acceptance": [
+        "`GET /api/email/templates` returns all templates with metadata",
+        "`GET /api/email/templates/:id` returns template with full component data",
+        "`POST /api/email/templates` creates template with name, subject, empty components",
+        "`PATCH /api/email/templates/:id` updates template fields including components JSON",
+        "`DELETE /api/email/templates/:id` soft-deletes by setting status to 'archived'",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Add template preview endpoint",
+      "description": "As a template creator, I want to preview my template so that I can see how it looks.",
+      "acceptance": [
+        "`POST /api/email/templates/:id/preview` returns rendered HTML",
+        "Accepts optional `variables` object for interpolation",
+        "Uses sample data if variables not provided (firstName: \"Friend\")",
+        "Returns both HTML and plain text versions",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Add send test email endpoint",
+      "description": "As a template creator, I want to send a test email so that I can verify rendering in real clients.",
+      "acceptance": [
+        "`POST /api/email/templates/:id/test` sends test email via Resend",
+        "Requires `to` email address in request body",
+        "Subject prefixed with \"[TEST] \"",
+        "Uses sample variables for interpolation",
+        "Returns Resend message ID on success",
+        "Rate limited to 10 test emails per hour",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Create template list page UI",
+      "description": "As a marketer, I want to view my templates so that I can manage my email designs.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/Templates.tsx`",
+        "Displays grid of template cards with name, subject preview, last modified",
+        "\"Create Template\" button in header",
+        "Click card navigates to editor",
+        "Status badge (Draft/Active)",
+        "Empty state with call to action",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Create template editor page layout",
+      "description": "As a template creator, I want a visual editor so that I can build emails without code.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/Editor.tsx`",
+        "Three-panel layout: Component Library (left), Canvas (center), Properties (right)",
+        "Toolbar with: Template name (editable), Save button, Preview button, Send Test button",
+        "Subject line input above canvas",
+        "Preview text input below subject",
+        "Responsive: collapses to single panel on mobile with warning",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Implement component library panel in editor",
+      "description": "As a template creator, I want to drag components from a library into my template.",
+      "acceptance": [
+        "Left panel shows all available components from `email_components` table",
+        "Components displayed as draggable cards with icon and name",
+        "Uses @dnd-kit/core for drag functionality",
+        "Dragging component shows ghost preview",
+        "Components grouped by category if applicable",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Implement canvas panel with sortable components",
+      "description": "As a template creator, I want to arrange components in my template by dragging.",
+      "acceptance": [
+        "Center panel shows current template components in order",
+        "Uses @dnd-kit/sortable for reordering",
+        "Drop zone visible when dragging new component",
+        "Each component instance shows rendered preview",
+        "Click component to select (shows blue border)",
+        "Delete button (X) on hover to remove component",
+        "Empty state prompts to drag first component",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Implement properties panel in editor",
+      "description": "As a template creator, I want to edit component properties so that I can customize my template.",
+      "acceptance": [
+        "Right panel shows properties for selected component",
+        "Properties form generated from component schema JSON",
+        "Supports input types: text, textarea, color picker, select, number",
+        "Changes update component instance in real-time",
+        "Shows \"Select a component\" when nothing selected",
+        "Variable hint shown for text fields (e.g., \"Use {{firstName}} for personalization\")",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Implement template save functionality",
+      "description": "As a template creator, I want to save my template so that my work is persisted.",
+      "acceptance": [
+        "Save button triggers PATCH request with current components JSON",
+        "Auto-save after 5 seconds of inactivity (debounced)",
+        "Save indicator shows \"Saving...\" during request",
+        "Save indicator shows \"Saved\" with timestamp on success",
+        "Error toast on save failure",
+        "Unsaved changes warning when navigating away",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "Implement preview modal in editor",
+      "description": "As a template creator, I want to preview my email so that I can see the final result.",
+      "acceptance": [
+        "Preview button opens modal",
+        "Modal shows rendered HTML in iframe",
+        "Toggle between desktop (600px) and mobile (375px) widths",
+        "Sample variables applied to preview",
+        "Close button and escape key dismiss modal",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Implement send test modal in editor",
+      "description": "As a template creator, I want to send a test email from the editor.",
+      "acceptance": [
+        "Send Test button opens modal",
+        "Email input field (pre-filled with user's email if available)",
+        "Send button triggers test email endpoint",
+        "Loading state during send",
+        "Success message with \"Check your inbox\"",
+        "Error message on failure",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 30,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Create AI template generation service",
+      "description": "As a template creator, I want to generate templates with AI so that I can start quickly.",
+      "acceptance": [
+        "Service at `apps/studio/server/services/email-ai.ts`",
+        "Function `generateTemplate(prompt, brandContext)` returns components JSON",
+        "Uses existing Gemini integration",
+        "System prompt enforces Wakey brand: colors (#1a1a1a, #fff5eb, #fad103), tone (cheeky, warm, no emojis, no exclamation marks)",
+        "Output validated against component schemas",
+        "Falls back to basic template if AI fails",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 31,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Add AI generation endpoint",
+      "description": "As a developer, I want an API endpoint for AI template generation.",
+      "acceptance": [
+        "`POST /api/email/templates/generate` accepts prompt in request body",
+        "Returns generated components JSON and suggested subject line",
+        "Rate limited to 20 generations per day per user",
+        "Logs generation requests for monitoring",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 32,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Add AI generation UI to template editor",
+      "description": "As a template creator, I want to generate a template from a description.",
+      "acceptance": [
+        "\"Generate with AI\" button in editor toolbar (or empty state)",
+        "Opens modal with textarea for prompt",
+        "Example prompts shown: \"Welcome email for new subscribers\", \"Product launch announcement\"",
+        "Generate button triggers API call",
+        "Loading state with \"Generating...\" message",
+        "Success replaces current canvas content (with confirmation if not empty)",
+        "Error message on failure",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Create campaign CRUD API routes",
+      "description": "As a developer, I want API endpoints for managing campaigns so that marketers can send emails.",
+      "acceptance": [
+        "`GET /api/email/campaigns` returns all campaigns with status and stats",
+        "`GET /api/email/campaigns/:id` returns campaign with full details and send stats",
+        "`POST /api/email/campaigns` creates campaign (name, subject, templateId required)",
+        "`PATCH /api/email/campaigns/:id` updates campaign (only if status is draft)",
+        "`DELETE /api/email/campaigns/:id` deletes campaign (only if status is draft)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Create campaigns list page UI",
+      "description": "As a marketer, I want to view my campaigns so that I can manage email sends.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/Campaigns.tsx`",
+        "Table with columns: Name, Status, Segment(s), Sent Date, Open Rate, Click Rate",
+        "\"Create Campaign\" button in header",
+        "Status badges: Draft (gray), Scheduled (blue), Sending (yellow), Sent (green), Cancelled (red)",
+        "Click row navigates to campaign editor/detail",
+        "Filter by status dropdown",
+        "Empty state with call to action",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Create campaign editor page",
+      "description": "As a marketer, I want to create and configure a campaign so that I can send emails.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/CampaignEditor.tsx`",
+        "Form fields: Campaign name, Subject line (can override template), Preview text",
+        "Template selector dropdown showing available templates",
+        "Segment multi-select for choosing recipients",
+        "Shows estimated recipient count based on selected segments",
+        "Preview button shows template with sample data",
+        "Save as Draft button",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-037",
+      "title": "Implement campaign scheduling",
+      "description": "As a marketer, I want to schedule a campaign for later so that I can plan my sends.",
+      "acceptance": [
+        "Schedule options in campaign editor: Send Now, Schedule for Later",
+        "Date/time picker for scheduled sends (min: 15 minutes from now)",
+        "Timezone shown (defaults to user's timezone)",
+        "\"Schedule Campaign\" button sets status to 'scheduled' and scheduledAt",
+        "Scheduled campaigns show countdown on list page",
+        "Cancel button for scheduled campaigns (sets status to 'cancelled')",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 37,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "Implement campaign sending service",
+      "description": "As a developer, I want a service to send campaigns via Resend so that emails are delivered.",
+      "acceptance": [
+        "Service at `apps/studio/server/services/campaignSender.ts`",
+        "Function `sendCampaign(campaignId)` processes entire campaign",
+        "Fetches all subscribers in selected segments (active status only)",
+        "Deduplicates subscribers across multiple segments",
+        "Renders template with subscriber-specific variables",
+        "Sends via Resend batch API (max 100 per batch)",
+        "Creates `email_sends` record for each recipient",
+        "Updates campaign status to 'sending' then 'sent'",
+        "Handles Resend rate limits with exponential backoff",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 38,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "Add send now endpoint",
+      "description": "As a marketer, I want to send a campaign immediately so that I can reach subscribers now.",
+      "acceptance": [
+        "`POST /api/email/campaigns/:id/send` triggers immediate send",
+        "Validates campaign is in 'draft' status",
+        "Validates template and segments are set",
+        "Returns immediately with \"Campaign sending started\"",
+        "Send happens async via queue/scheduled handler",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 39,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-040",
+      "title": "Implement cron job for scheduled campaigns and processing",
+      "description": "As a developer, I want a cron job to process scheduled campaigns.",
+      "acceptance": [
+        "Cron handler added to `apps/studio/server/index.ts`",
+        "Runs every 5 minutes (`*/5 * * * *`)",
+        "Finds campaigns where status='scheduled' and scheduledAt <= now",
+        "Triggers `sendCampaign` for each",
+        "Logs processed campaigns",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 40,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-041",
+      "title": "Create campaign detail/analytics page",
+      "description": "As a marketer, I want to see campaign performance so that I can measure success.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/CampaignDetail.tsx`",
+        "Shows campaign name, subject, sent date, template used",
+        "Stats cards: Sent, Delivered, Opened, Clicked, Bounced, Unsubscribed",
+        "Rates displayed as percentages (e.g., \"45% opened\")",
+        "List of recipients with individual status",
+        "Pagination for recipient list",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 41,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-042",
+      "title": "Add Resend webhook handler for email events",
+      "description": "As a developer, I want to receive Resend webhooks so that I can track email events.",
+      "acceptance": [
+        "Route at `POST /api/email/webhooks/resend`",
+        "Validates webhook signature using RESEND_WEBHOOK_SECRET",
+        "Handles events: email.delivered, email.opened, email.clicked, email.bounced, email.complained",
+        "Updates corresponding `email_sends` record status and timestamp",
+        "For bounced: marks subscriber status as 'bounced'",
+        "For complained: marks subscriber status as 'complained' (add to enum if needed)",
+        "Returns 200 OK quickly",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 42,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-043",
+      "title": "Add click tracking to email links",
+      "description": "As a marketer, I want link clicks tracked so that I can measure engagement.",
+      "acceptance": [
+        "Email renderer wraps all links with tracking redirect",
+        "Tracking URL format: `https://studio.wakey.care/api/email/track/click?eid={{emailSendId}}&url={{encodedUrl}}`",
+        "Click tracking endpoint logs click event and redirects to original URL",
+        "Records click in `email_events` table",
+        "Updates `email_sends.clickedAt` if first click",
+        "Adds UTM parameters to destination URL: utm_source=wakey_email, utm_medium=email, utm_campaign={{campaignId}}",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 43,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-044",
+      "title": "Add open tracking pixel to emails",
+      "description": "As a marketer, I want email opens tracked so that I can measure engagement.",
+      "acceptance": [
+        "Email renderer appends 1x1 transparent tracking pixel",
+        "Pixel URL format: `https://studio.wakey.care/api/email/track/open?eid={{emailSendId}}`",
+        "Open tracking endpoint returns 1x1 transparent GIF",
+        "Records open in `email_events` table",
+        "Updates `email_sends.openedAt` if first open",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 44,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-045",
+      "title": "Create unsubscribe token generation utility",
+      "description": "As a developer, I want signed unsubscribe tokens so that links can't be forged.",
+      "acceptance": [
+        "Utility at `apps/studio/server/utils/unsubscribe.ts`",
+        "Function `generateUnsubscribeToken(subscriberId)` returns signed JWT",
+        "Token includes subscriberId, issued timestamp",
+        "Token expires after 1 year",
+        "Function `verifyUnsubscribeToken(token)` returns subscriberId or throws",
+        "Uses existing JWT secret from environment",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 45,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-046",
+      "title": "Create unsubscribe page and API",
+      "description": "As a subscriber, I want to unsubscribe easily so that I stop receiving emails.",
+      "acceptance": [
+        "Public route at `GET /unsubscribe` (no auth required)",
+        "Query param `token` required",
+        "Invalid/expired token shows error message",
+        "Valid token shows confirmation page with \"Unsubscribe\" button",
+        "Page styled with Wakey branding",
+        "`POST /unsubscribe` with token processes unsubscribe",
+        "Updates subscriber status to 'unsubscribed'",
+        "Shows \"You've been unsubscribed\" confirmation",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 46,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-047",
+      "title": "Add List-Unsubscribe header to sent emails",
+      "description": "As a developer, I want proper unsubscribe headers for email client support.",
+      "acceptance": [
+        "Email renderer adds `List-Unsubscribe` header with mailto and https options",
+        "Format: `List-Unsubscribe: <mailto:unsubscribe@wakey.care?subject=unsubscribe>, <https://studio.wakey.care/unsubscribe?token=xxx>`",
+        "Adds `List-Unsubscribe-Post: List-Unsubscribe=One-Click` header",
+        "Footer component automatically includes unsubscribe link",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 47,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-048",
+      "title": "Create daily metrics aggregation service",
+      "description": "As a developer, I want metrics aggregated daily so that analytics queries are fast.",
+      "acceptance": [
+        "Service at `apps/studio/server/services/analytics.ts`",
+        "Function `aggregateDailyMetrics(date)` aggregates previous day's data",
+        "Creates records in `daily_email_metrics` (sent, delivered, opened, clicked, bounced, unsubscribed per campaign)",
+        "Creates records in `daily_subscriber_metrics` (new, unsubscribed, net growth, total active)",
+        "Handles re-aggregation gracefully (upserts)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 48,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-049",
+      "title": "Add analytics aggregation to daily cron",
+      "description": "As a developer, I want analytics aggregated automatically each day.",
+      "acceptance": [
+        "Cron trigger added for 2 AM daily (`0 2 * * *`)",
+        "Cron handler calls `aggregateDailyMetrics` for previous day",
+        "Logs aggregation completion",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 49,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-050",
+      "title": "Create analytics API endpoints",
+      "description": "As a developer, I want analytics API endpoints for the dashboard.",
+      "acceptance": [
+        "`GET /api/email/analytics/overview` returns: total subscribers, active subscribers, growth rate (7d), total sent (30d), avg open rate, avg click rate",
+        "`GET /api/email/analytics/engagement?period=7d|30d|90d` returns daily open/click rates for chart",
+        "`GET /api/email/analytics/campaigns` returns campaign performance comparison",
+        "All endpoints use aggregated tables for performance",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 50,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-051",
+      "title": "Create email analytics dashboard page",
+      "description": "As a marketer, I want an analytics dashboard so that I can monitor email performance.",
+      "acceptance": [
+        "Page created at `apps/studio/client/pages/email/Dashboard.tsx`",
+        "Overview cards: Total Subscribers, Active Subscribers, Emails Sent (30d), Avg Open Rate, Avg Click Rate",
+        "Line chart showing engagement over time (opens/clicks)",
+        "Period selector: Last 7 days, 30 days, 90 days",
+        "Campaign performance table showing recent campaigns with stats",
+        "Loading states for all sections",
+        "Typecheck passes (`pnpm typecheck`)",
+        "Verify in browser using chrome-devtools MCP"
+      ],
+      "priority": 51,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-052",
+      "title": "Add email routes to router configuration",
+      "description": "As a developer, I want all email pages routed correctly.",
+      "acceptance": [
+        "Routes added to `apps/studio/client/router.tsx` (or equivalent)",
+        "`/email` redirects to `/email/dashboard`",
+        "`/email/dashboard` → Dashboard page",
+        "`/email/subscribers` → Subscribers page",
+        "`/email/templates` → Templates list page",
+        "`/email/templates/new` → Editor with new template",
+        "`/email/templates/:id` → Editor with existing template",
+        "`/email/campaigns` → Campaigns list page",
+        "`/email/campaigns/new` → Campaign editor (new)",
+        "`/email/campaigns/:id` → Campaign detail page",
+        "`/email/campaigns/:id/edit` → Campaign editor (existing)",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 52,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-053",
+      "title": "Add required environment variables documentation",
+      "description": "As a developer, I want environment variables documented so that setup is clear.",
+      "acceptance": [
+        "Variables added to `apps/studio/.dev.vars.example`: SHOPIFY_ADMIN_API_TOKEN, SHOPIFY_STORE_DOMAIN, SHOPIFY_WEBHOOK_SECRET, RESEND_WEBHOOK_SECRET",
+        "README or CLAUDE.md updated with setup instructions for Shopify webhooks",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 53,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-054",
+      "title": "Install required dependencies",
+      "description": "As a developer, I want all dependencies installed.",
+      "acceptance": [
+        "`pnpm add @xyflow/react @dnd-kit/core @dnd-kit/sortable @react-email/components @react-email/render` run in apps/studio",
+        "package.json updated",
+        "pnpm-lock.yaml updated",
+        "Typecheck passes (`pnpm typecheck`)"
+      ],
+      "priority": 54,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

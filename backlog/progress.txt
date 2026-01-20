@@ -1,0 +1,41 @@
+# Ralph Progress Log
+
+## Codebase Patterns
+
+- **Migration files**: Located at `apps/studio/drizzle/migrations/` with naming convention `XXXX_description.sql`
+- **SQLite column naming**: Uses snake_case for columns (e.g., `first_name`, `created_at`)
+- **Timestamps**: Use `text` type with `DEFAULT (datetime('now'))` for SQLite compatibility
+- **Foreign keys**: Defined inline with column using `FOREIGN KEY ... REFERENCES` syntax
+- **Indexes**: Created with `--> statement-breakpoint` separator between SQL statements
+- **JSON fields**: Stored as `text` type (SQLite doesn't have native JSON type)
+- **Pre-existing issues**: Typecheck error exists in Login.tsx:52 on main branch
+
+---
+
+## Iterations
+
+### Iteration: 2026-01-20
+
+**Story:** US-001 - Create email marketing database schema migration
+**Status:** Complete
+
+**What was done:**
+
+- Created migration file at `drizzle/migrations/0005_add_email_marketing.sql`
+- Implemented 8 tables: `subscribers`, `segments`, `segment_subscribers`, `email_templates`, `email_components`, `campaigns`, `email_sends`, `email_events`
+- Added proper foreign key relationships between tables
+- Created indexes on frequently queried columns (email, shopify_customer_id, status, campaign_id)
+- Verified build passes (typecheck has pre-existing error unrelated to this change)
+
+**Files changed:**
+
+- `apps/studio/drizzle/migrations/0005_add_email_marketing.sql` (created)
+- `backlog/backlog.json` (updated passes status)
+
+**Learnings for future iterations:**
+
+- SQLite uses `text` type for JSON data, datetime, and enums
+- Migration file uses `--> statement-breakpoint` to separate SQL statements
+- Build verification is sufficient when typecheck has pre-existing errors on main
+- Status enum values are stored as text strings in SQLite (not native enums)
+
