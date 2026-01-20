@@ -59,10 +59,7 @@ export function links() {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',
     },
-    {
-      rel: 'preconnect',
-      href: 'https://shop.app',
-    },
+    // Preload critical display font (used for headings)
     {
       rel: 'preload',
       href: '/fonts/founders.woff2',
@@ -70,6 +67,7 @@ export function links() {
       type: 'font/woff2',
       crossOrigin: 'anonymous',
     },
+    // Preload body font
     {
       rel: 'preload',
       href: '/fonts/itc-std.woff2',

@@ -7,6 +7,7 @@ import {
   type RefObject,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
+import {optimizeShopifyImage, imagePresets} from '~/lib/shopify-image';
 
 interface SocialImage {
   src: string;
@@ -201,6 +202,7 @@ function TrailImage({
   onClick: () => void;
 }) {
   const rotationClass = rotationClasses[index % rotationClasses.length];
+  const optimizedSrc = optimizeShopifyImage(image.src, imagePresets.social);
 
   return (
     <div
@@ -215,10 +217,13 @@ function TrailImage({
         className={`w-full h-full overflow-hidden ${rotationClass} transition-transform duration-300 active:scale-75 active:-rotate-12`}
       >
         <img
-          src={image.src}
+          src={optimizedSrc}
           alt={image.alt || ''}
+          width={600}
+          height={800}
           className="w-full h-full object-cover pointer-events-none"
           draggable={false}
+          loading="lazy"
         />
       </div>
     </div>
@@ -287,17 +292,26 @@ function MobileCarousel({
     <div className={`relative flex-1 flex items-end pb-8 ${className || ''}`}>
       <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory">
         <div className="flex gap-4 pl-4">
-          {images.map((image, index) => (
-            <div key={index} className="flex-shrink-0 w-4/5 snap-center">
-              <div className="aspect-3/4 overflow-hidden">
-                <img
-                  src={image.src}
-                  alt={image.alt || ''}
-                  className="w-full h-full object-cover"
-                />
+          {images.map((image, index) => {
+            const optimizedSrc = optimizeShopifyImage(
+              image.src,
+              imagePresets.social,
+            );
+            return (
+              <div key={index} className="flex-shrink-0 w-4/5 snap-center">
+                <div className="aspect-3/4 overflow-hidden">
+                  <img
+                    src={optimizedSrc}
+                    alt={image.alt || ''}
+                    width={600}
+                    height={800}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {/* Spacer for end padding */}
           <div className="flex-shrink-0 w-4" aria-hidden="true" />
         </div>
