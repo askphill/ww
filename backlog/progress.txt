@@ -548,3 +548,32 @@
 - @react-email/render accepts `{plainText: true}` option for text-only output
 - D1Database type comes from `@cloudflare/workers-types`
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-019 - Seed default components into database
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/db/seed-email-components.ts` for seeding email components
+- Implemented `seedEmailComponents(db)` function that inserts all 7 components
+- Function is idempotent - checks for existing components by type before inserting
+- Stores schema and defaultProps as JSON strings in the database
+- Imports schemas and defaultProps directly from email-components module
+- Added `updateEmailComponents(db)` function for updating existing components when definitions change
+- Added `getComponentTypesToSeed()` utility function for verification
+- Build passes (pre-existing typecheck error in Login.tsx unrelated)
+
+**Files changed:**
+
+- `apps/studio/server/db/seed-email-components.ts` (created)
+- `backlog/backlog.json` (updated US-019 passes status)
+
+**Learnings for future iterations:**
+
+- D1/Drizzle update() doesn't have reliable `rowsAffected` property - check for existence first
+- Use `eq()` from drizzle-orm for where clause conditions
+- Schema and defaultProps stored as `JSON.stringify()` in text columns
+- Idempotent seed functions should check existence before insert, not rely on unique constraints
+- Import from parent index.ts (../email-components) to get all exports cleanly
+
