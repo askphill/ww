@@ -1762,6 +1762,103 @@ emailRoutes.post('/campaigns/:id/cancel', async (c) => {
   return c.json({campaign: updatedCampaign});
 });
 
+// Send a campaign immediately
+emailRoutes.post('/campaigns/:id/send', async (c) => {
+  const id = parseInt(c.req.param('id'));
+  const db = createDb(c.env.DB);
+
+  // Check if campaign exists and validate
+  const [campaign] = await db
+    .select({
+      id: campaigns.id,
+      name: campaigns.name,
+      status: campaigns.status,
+      templateId: campaigns.templateId,
+      segmentIds: campaigns.segmentIds,
+    })
+    .from(campaigns)
+    .where(eq(campaigns.id, id))
+    .limit(1);
+
+  if (!campaign) {
+    return c.json({error: 'Campaign not found'}, 404);
+  }
+
+  if (campaign.status !== 'draft') {
+    return c.json(
+      {
+        error:
+          'Only draft campaigns can be sent. Cancel the scheduled campaign first.',
+      },
+      400,
+    );
+  }
+
+  if (!campaign.templateId) {
+    return c.json({error: 'Campaign must have a template selected'}, 400);
+  }
+
+  if (!campaign.segmentIds) {
+    return c.json(
+      {error: 'Campaign must have at least one segment selected'},
+      400,
+    );
+  }
+
+  // Validate segmentIds is valid JSON array with at least one segment
+  try {
+    const segmentIds = JSON.parse(campaign.segmentIds) as number[];
+    if (!Array.isArray(segmentIds) || segmentIds.length === 0) {
+      return c.json(
+        {error: 'Campaign must have at least one segment selected'},
+        400,
+      );
+    }
+  } catch {
+    return c.json({error: 'Campaign has invalid segment configuration'}, 400);
+  }
+
+  // Update status to scheduled (will be picked up immediately by async handler)
+  await db
+    .update(campaigns)
+    .set({
+      status: 'scheduled',
+      scheduledAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(campaigns.id, id));
+
+  // Trigger async send using waitUntil
+  const {sendCampaign} = await import('../services/campaignSender');
+
+  c.executionCtx.waitUntil(
+    (async () => {
+      try {
+        console.log(`[Campaign] Starting immediate send for campaign ${id}`);
+        await sendCampaign(
+          c.env.DB,
+          c.env.RESEND_API_KEY,
+          id,
+          'Wakey <hello@wakey.care>',
+        );
+        console.log(`[Campaign] Campaign ${id} send completed`);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
+        console.error(`[Campaign] Campaign ${id} send failed: ${errorMessage}`);
+      }
+    })(),
+  );
+
+  console.log(`[Campaign] Campaign ${id} send triggered (async)`);
+
+  return c.json({
+    message: 'Campaign sending started',
+    campaignId: id,
+    campaignName: campaign.name,
+  });
+});
+
 // Delete a campaign (only if draft)
 emailRoutes.delete('/campaigns/:id', async (c) => {
   const id = parseInt(c.req.param('id'));
