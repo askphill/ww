@@ -3,10 +3,133 @@ import {zValidator} from '@hono/zod-validator';
 import {z} from 'zod';
 import {createDb} from '../db';
 import {trackedKeywords, keywordPositions, gscQueries} from '../db/schema';
-import {checkMultipleKeywordPositions} from '../services/dataforseo';
+import {
+  checkKeywordPosition,
+  checkMultipleKeywordPositions,
+} from '../services/dataforseo';
 import {authMiddleware} from '../middleware/auth';
 import {desc, eq, sql, like} from 'drizzle-orm';
 import type {AppVariables, Env} from '../index';
+
+interface CheckKeywordPositionsResult {
+  success: boolean;
+  checked: number;
+  stored: number;
+  results: Array<{
+    keyword: string | undefined;
+    position: number | null;
+    url: string | null;
+  }>;
+  error?: string;
+}
+
+/**
+ * Check positions for all tracked keywords using DataForSEO.
+ * This function is used by both the API route and the scheduled cron job.
+ */
+export async function checkAllKeywordPositions(
+  env: Env,
+): Promise<CheckKeywordPositionsResult> {
+  const db = createDb(env.DB);
+
+  // Get all tracked keywords
+  const keywords = await db.select().from(trackedKeywords);
+  console.log(
+    '[Keyword Check] Checking positions for keywords:',
+    keywords.map((k) => k.keyword),
+  );
+
+  if (keywords.length === 0) {
+    return {success: true, checked: 0, stored: 0, results: []};
+  }
+
+  const credentials = {
+    login: env.DATAFORSEO_LOGIN,
+    password: env.DATAFORSEO_PASSWORD,
+  };
+
+  // Check all keywords
+  let results;
+  try {
+    console.log('[Keyword Check] Calling DataForSEO API...');
+    results = await checkMultipleKeywordPositions(
+      credentials,
+      keywords.map((k) => k.keyword),
+    );
+    console.log('[Keyword Check] DataForSEO results:', results);
+  } catch (err) {
+    console.error('[Keyword Check] DataForSEO API error:', err);
+    return {
+      success: false,
+      checked: 0,
+      stored: 0,
+      results: [],
+      error: `Failed to check positions: ${String(err)}`,
+    };
+  }
+
+  // Store results
+  const today = new Date().toISOString().split('T')[0];
+  let stored = 0;
+
+  for (let i = 0; i < keywords.length; i++) {
+    const keyword = keywords[i];
+    const result = results[i];
+
+    if (!keyword || !result) continue;
+
+    try {
+      // Check if we already have a record for today
+      const existing = await db
+        .select()
+        .from(keywordPositions)
+        .where(
+          sql`${keywordPositions.keywordId} = ${keyword.id} AND ${keywordPositions.date} = ${today}`,
+        )
+        .limit(1);
+
+      if (existing.length > 0) {
+        // Update existing record
+        await db
+          .update(keywordPositions)
+          .set({
+            position: result.position,
+            url: result.url,
+          })
+          .where(eq(keywordPositions.id, existing[0]!.id));
+      } else {
+        // Insert new record
+        await db.insert(keywordPositions).values({
+          keywordId: keyword.id,
+          position: result.position,
+          url: result.url,
+          date: today ?? '',
+        });
+      }
+      stored++;
+    } catch (err) {
+      console.error(
+        `[Keyword Check] Failed to store position for ${keyword.keyword}:`,
+        err,
+      );
+    }
+  }
+
+  console.log(
+    `[Keyword Check] Complete. Checked: ${keywords.length}, Stored: ${stored}`,
+  );
+
+  return {
+    success: true,
+    checked: keywords.length,
+    stored,
+    results: results.map((r, i) => ({
+      keyword: keywords[i]?.keyword,
+      position: r.position,
+      url: r.url,
+    })),
+  };
+}
 
 const trackingRoutes = new Hono<{Bindings: Env; Variables: AppVariables}>();
 
@@ -77,18 +200,68 @@ trackingRoutes.post(
   async (c) => {
     const {keyword} = c.req.valid('json');
     const db = createDb(c.env.DB);
+    const normalizedKeyword = keyword.toLowerCase().trim();
 
-    try {
-      const result = await db
-        .insert(trackedKeywords)
-        .values({keyword: keyword.toLowerCase().trim()})
-        .returning();
+    // Check if keyword already exists in tracking list
+    const existing = await db
+      .select()
+      .from(trackedKeywords)
+      .where(eq(trackedKeywords.keyword, normalizedKeyword))
+      .limit(1);
 
-      return c.json({success: true, keyword: result[0]});
-    } catch {
-      // Likely duplicate keyword
-      return c.json({error: 'Keyword already being tracked'}, 400);
+    if (existing.length > 0) {
+      return c.json(
+        {
+          error: 'This keyword is already in your Keyword Ranking list',
+          existingKeyword: existing[0],
+        },
+        400,
+      );
     }
+
+    const result = await db
+      .insert(trackedKeywords)
+      .values({keyword: normalizedKeyword})
+      .returning();
+
+    const newKeyword = result[0]!;
+
+    // Check position in the background (don't block the response)
+    c.executionCtx.waitUntil(
+      (async () => {
+        try {
+          const credentials = {
+            login: c.env.DATAFORSEO_LOGIN,
+            password: c.env.DATAFORSEO_PASSWORD,
+          };
+
+          const positionResult = await checkKeywordPosition(
+            credentials,
+            normalizedKeyword,
+          );
+
+          // Store the initial position
+          const today = new Date().toISOString().split('T')[0];
+          await db.insert(keywordPositions).values({
+            keywordId: newKeyword.id,
+            position: positionResult.position,
+            url: positionResult.url,
+            date: today ?? '',
+          });
+
+          console.log(
+            `[Keyword Add] Background check complete for "${normalizedKeyword}": position ${positionResult.position}`,
+          );
+        } catch (err) {
+          console.error(
+            `[Keyword Add] Background check failed for "${normalizedKeyword}":`,
+            err,
+          );
+        }
+      })(),
+    );
+
+    return c.json({success: true, keyword: newKeyword});
   },
 );
 
@@ -125,95 +298,13 @@ trackingRoutes.get('/:id/history', async (c) => {
 
 // Check positions for all tracked keywords (calls DataForSEO)
 trackingRoutes.post('/check', async (c) => {
-  const db = createDb(c.env.DB);
+  const result = await checkAllKeywordPositions(c.env);
 
-  // Get all tracked keywords
-  const keywords = await db.select().from(trackedKeywords);
-  console.log(
-    'Checking positions for keywords:',
-    keywords.map((k) => k.keyword),
-  );
-
-  if (keywords.length === 0) {
-    return c.json({success: true, checked: 0});
+  if (!result.success) {
+    return c.json({error: result.error}, 500);
   }
 
-  const credentials = {
-    login: c.env.DATAFORSEO_LOGIN,
-    password: c.env.DATAFORSEO_PASSWORD,
-  };
-
-  // Check all keywords
-  let results;
-  try {
-    console.log('Calling DataForSEO API...');
-    results = await checkMultipleKeywordPositions(
-      credentials,
-      keywords.map((k) => k.keyword),
-    );
-    console.log('DataForSEO results:', results);
-  } catch (err) {
-    console.error('DataForSEO API error:', err);
-    return c.json(
-      {error: 'Failed to check positions', details: String(err)},
-      500,
-    );
-  }
-
-  // Store results
-  const today = new Date().toISOString().split('T')[0];
-  let stored = 0;
-
-  for (let i = 0; i < keywords.length; i++) {
-    const keyword = keywords[i];
-    const result = results[i];
-
-    if (!keyword || !result) continue;
-
-    try {
-      // Check if we already have a record for today
-      const existing = await db
-        .select()
-        .from(keywordPositions)
-        .where(
-          sql`${keywordPositions.keywordId} = ${keyword.id} AND ${keywordPositions.date} = ${today}`,
-        )
-        .limit(1);
-
-      if (existing.length > 0) {
-        // Update existing record
-        await db
-          .update(keywordPositions)
-          .set({
-            position: result.position,
-            url: result.url,
-          })
-          .where(eq(keywordPositions.id, existing[0]!.id));
-      } else {
-        // Insert new record
-        await db.insert(keywordPositions).values({
-          keywordId: keyword.id,
-          position: result.position,
-          url: result.url,
-          date: today ?? '',
-        });
-      }
-      stored++;
-    } catch (err) {
-      console.error(`Failed to store position for ${keyword.keyword}:`, err);
-    }
-  }
-
-  return c.json({
-    success: true,
-    checked: keywords.length,
-    stored,
-    results: results.map((r, i) => ({
-      keyword: keywords[i]?.keyword,
-      position: r.position,
-      url: r.url,
-    })),
-  });
+  return c.json(result);
 });
 
 // Search GSC queries for suggestions
