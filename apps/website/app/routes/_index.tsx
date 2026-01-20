@@ -1,5 +1,7 @@
 import type {Route} from './+types/_index';
+import {useLoaderData} from 'react-router';
 import Home from '~/content/home.mdx';
+import {getTooltipProducts} from '~/lib/tooltip-product.server';
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -46,6 +48,16 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
+export async function loader({context}: Route.LoaderArgs) {
+  const tooltipProducts = await getTooltipProducts(context.storefront, [
+    'deodorant',
+  ]);
+
+  return {tooltipProducts};
+}
+
 export default function Homepage() {
-  return <Home />;
+  const {tooltipProducts} = useLoaderData<typeof loader>();
+
+  return <Home tooltipProducts={tooltipProducts} />;
 }

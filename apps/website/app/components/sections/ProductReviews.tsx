@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {useLazyFetch} from '@wakey/hooks';
 import {Stars, Button} from '@wakey/ui';
 import {ProductTooltip} from '~/components/ProductTooltip';
+import type {TooltipProduct} from '~/lib/tooltip-product';
 
 interface ProductReviewsProps {
   productHandle: string;
@@ -9,6 +10,7 @@ interface ProductReviewsProps {
   videoAlt?: string;
   initialReviewCount?: number;
   loadMoreText?: string;
+  tooltipProduct?: TooltipProduct | null;
 }
 
 interface Review {
@@ -30,6 +32,7 @@ export function ProductReviews({
   videoAlt = '',
   initialReviewCount = 4,
   loadMoreText = 'More reviews',
+  tooltipProduct,
 }: ProductReviewsProps) {
   const fetcher = useLazyFetch<ReviewsApiResponse>(
     `/api/reviews/${productHandle}`,
@@ -127,6 +130,7 @@ export function ProductReviews({
           <ProductTooltip
             handle={productHandle}
             position={{right: '1rem', bottom: '1rem'}}
+            product={tooltipProduct}
           />
         </div>
       </div>
@@ -146,6 +150,7 @@ export function ProductReviews({
         <ProductTooltip
           handle={productHandle}
           position={{left: '1rem', bottom: '1rem'}}
+          product={tooltipProduct}
         />
       </div>
     </section>
