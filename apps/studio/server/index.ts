@@ -21,6 +21,8 @@ export interface Env {
   VITE_APP_URL: string;
   DATAFORSEO_LOGIN: string;
   DATAFORSEO_PASSWORD: string;
+  SHOPIFY_ADMIN_API_TOKEN: string;
+  SHOPIFY_STORE_DOMAIN: string;
 }
 
 export interface AppVariables {
