@@ -514,3 +514,37 @@
 - Use `as const` on SPACING_MAP for better TypeScript inference
 - Color picker schema type uses `type: 'color'`
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-018 - Create component registry and renderer service
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/index.ts` as central component registry
+- Registry exports all 7 components (Header, Hero, TextBlock, CallToAction, ProductGrid, Footer, Divider) with schemas and default props
+- Created `apps/studio/server/services/emailRenderer.ts` for template rendering
+- Implemented `renderTemplate(db, templateId, variables)` - fetches template from DB and renders to HTML/text
+- Implemented `renderComponents(components, variables, previewText)` - renders components directly for previews
+- Implemented `interpolateProps()` for recursive variable interpolation in string props
+- Handles `{{variableName}}` syntax and replaces with variable values
+- Missing variables replaced with empty string (graceful fallback)
+- Uses @react-email/render to convert React components to HTML string
+- Uses Html, Body, Container, Head, Preview components from @react-email for email structure
+- Build passes (pre-existing typecheck error in Login.tsx not related)
+
+**Files changed:**
+
+- `apps/studio/server/email-components/index.ts` (created)
+- `apps/studio/server/services/emailRenderer.ts` (created)
+- `backlog/backlog.json` (updated US-018 passes status)
+
+**Learnings for future iterations:**
+
+- Component registry uses `AnyComponent = React.ComponentType<any>` to avoid strict type conflicts
+- Schema types need `as unknown as ComponentSchema` cast from const assertions
+- React.createElement requires `any` cast for props when using dynamic component types
+- Variable interpolation should be recursive to handle nested objects and arrays
+- @react-email/render accepts `{plainText: true}` option for text-only output
+- D1Database type comes from `@cloudflare/workers-types`
+
