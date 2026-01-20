@@ -950,3 +950,29 @@
 - Brand voice guidelines should be explicit in the system prompt (what NOT to do is as important as what to do)
 - Use `isValidComponentType()` type guard from component registry for validation
 
+### Iteration: 2026-01-20 US-032
+
+**Story:** US-032 - Add AI generation endpoint
+**Status:** Complete
+
+**What was done:**
+
+- Added `POST /api/email/templates/generate` endpoint to apps/studio/server/routes/email.ts
+- Accepts `prompt` in request body (validated with Zod, min 10 chars)
+- Implemented rate limiting at 20 generations per day per user
+- Uses in-memory Map tracking userEmail -> {count, windowStart}
+- Logs all generation requests for monitoring
+- Returns generated template with components, suggestedSubject, suggestedPreviewText
+- Returns remainingGenerations in response to help users track quota
+
+**Files changed:**
+
+- apps/studio/server/routes/email.ts (modified - added ~112 lines)
+
+**Learnings for future iterations:**
+
+- Reuse rate limiting pattern from test email endpoint (Map with sliding window)
+- Daily rate limit uses 24 * 60 * 60 * 1000 for oneDay constant
+- Dynamic import `await import('../services/email-ai')` for on-demand module loading
+- Log user email and prompt snippet for monitoring (truncate to 50 chars for privacy/brevity)
+

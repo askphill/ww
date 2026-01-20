@@ -553,8 +553,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 32,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added POST /api/email/templates/generate endpoint with rate limiting (20/day). Logs generation requests. Returns components, subject, preview text, and remaining quota. Build and typecheck pass."
     },
     {
       "id": "US-033",
