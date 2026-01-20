@@ -1576,3 +1576,33 @@
 - Path generation: map data points to `M x y L x y L x y...` format
 - For protected routes, verify loading state displays while auth check happens
 - Use `useQuery` with different `queryKey` arrays to cache period-specific data
+
+### Iteration: 2026-01-20 US-052
+
+**Story:** US-052 - Add email routes to router configuration
+**Status:** Complete
+
+**What was done:**
+
+- Verified all required routes are present in `apps/studio/client/App.tsx`:
+  - `/email` → redirects to `/email/dashboard`
+  - `/email/dashboard` → Dashboard page
+  - `/email/subscribers` → Subscribers page
+  - `/email/templates` → Templates list page
+  - `/email/templates/new` → Editor (new template)
+  - `/email/templates/:id` → Editor (existing template)
+  - `/email/campaigns` → Campaigns list page
+  - `/email/campaigns/new` → CampaignEditor (new)
+  - `/email/campaigns/:id` → CampaignDetail page
+  - `/email/campaigns/:id/edit` → CampaignEditor (existing)
+- All routes were implemented in previous stories (US-040 through US-051)
+- Typecheck passes
+
+**Files changed:**
+
+- backlog/backlog.json (updated US-052 passes status)
+
+**Learnings for future iterations:**
+
+- Route configuration should be verified against acceptance criteria even when pages are created incrementally
+- In this codebase, routes are in App.tsx (not a separate router.tsx file)
