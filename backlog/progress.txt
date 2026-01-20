@@ -696,3 +696,37 @@
 - StatusBadge component can be shared between Templates and Campaigns pages (similar pattern)
 - API types should match backend response structure exactly for TypeScript inference
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-024 - Create template editor page layout
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/Editor.tsx` with three-panel layout
+- Left panel: Component Library showing all 7 email component types with icons and descriptions
+- Center panel: Canvas with empty state and component display (click-to-add functionality)
+- Right panel: Properties panel placeholder for selected component editing
+- Toolbar: Back arrow, editable template name input, Preview, Send Test, and Save buttons
+- Subject line and preview text inputs above the canvas area
+- Mobile responsive warning banner shown on screens < md breakpoint
+- Preview modal with desktop/mobile width toggle
+- Test email modal with email input and success/error states
+- Registered routes for `/email/templates/new` and `/email/templates/:id`
+
+**Files changed:**
+
+- `apps/studio/client/pages/email/Editor.tsx` (created)
+- `apps/studio/client/App.tsx` (modified - added routes and import)
+- `backlog/backlog.json` (updated US-024 passes status)
+
+**Learnings for future iterations:**
+
+- Three-panel layout pattern: `hidden md:block` for side panels, `flex-1` for center panel
+- Mobile warning uses yellow theme: `bg-yellow-500/10` with `text-yellow-800 dark:text-yellow-200`
+- Component instances need unique IDs - use `${type}-${Date.now()}` pattern
+- useQuery with `enabled: false` prevents fetching when condition not met (e.g., new template)
+- Editor state management: separate state for each editable field, track `hasUnsavedChanges`
+- Modal pattern: fixed inset-0 z-50 with bg-black/50 backdrop
+- Form inputs use consistent styling: `rounded-md border border-border bg-card px-3 py-2`
+
