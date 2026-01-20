@@ -314,27 +314,6 @@ const {product} = await storefront.query(PRODUCT_QUERY, {
 
 ---
 
-## Source Theme Reference
-
-The original Shopify Liquid theme is used as reference for styling and structure.
-
-**Location**: `/Users/bd/Documents/GitHub/wakey-source`
-
-If not found, clone it:
-
-```bash
-git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wakey-source
-```
-
-**Useful reference files:**
-
-- `snippets/` - Reusable Liquid components (tooltip, stars, icons)
-- `blocks/` - Section blocks with positioning logic
-- `assets/base.css` - CSS styling reference
-- `templates/index.json` - Homepage structure and tooltip positions
-
----
-
 ## Content Architecture (MDX)
 
 This project uses MDX for content-as-code (inspired by Lee Robinson's approach).
@@ -685,9 +664,4 @@ After cloning this repo:
 
    ```bash
    pnpm dev:website
-   ```
-
-5. **Clone source theme** (if needed for reference):
-   ```bash
-   git clone https://github.com/askphill/wakey-site /Users/bd/Documents/GitHub/wakey-source
    ```
