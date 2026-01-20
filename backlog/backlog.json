@@ -644,8 +644,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 37,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added Send Now / Schedule for Later options with date/time picker. Added schedule and cancel endpoints. Verified in browser. Build and typecheck pass."
     },
     {
       "id": "US-038",

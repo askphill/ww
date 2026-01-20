@@ -1111,3 +1111,36 @@
 - Non-editable campaigns (status !== 'draft') should redirect to detail view
 - Campaign GET response includes segmentIds as JSON string - need JSON.parse() to convert to array
 
+### Iteration: 2026-01-20 US-037
+
+**Story:** US-037 - Implement campaign scheduling
+**Status:** Complete
+
+**What was done:**
+
+- Added schedule UI to CampaignEditor with Send Now / Schedule for Later radio buttons
+- Implemented date/time picker that appears when Schedule for Later is selected
+- Added 15-minute minimum constraint for scheduled time validation
+- Display user's timezone using Intl.DateTimeFormat().resolvedOptions().timeZone
+- Added POST /api/email/campaigns/:id/schedule endpoint to schedule or send immediately
+- Added POST /api/email/campaigns/:id/cancel endpoint to cancel scheduled campaigns
+- Updated non-editable campaign view to show cancel button for scheduled campaigns
+- Added schedule and cancel API methods to client api.ts
+- "Send Now" sets campaign to scheduled status with current time (cron will pick up)
+- "Schedule for Later" validates and sets scheduledAt timestamp
+
+**Files changed:**
+
+- apps/studio/client/pages/email/CampaignEditor.tsx (modified - added ~250 lines)
+- apps/studio/client/lib/api.ts (modified - added schedule and cancel methods)
+- apps/studio/server/routes/email.ts (modified - added schedule and cancel endpoints)
+
+**Learnings for future iterations:**
+
+- Intl.DateTimeFormat().resolvedOptions().timeZone provides user's local timezone
+- Date validation: compare Date objects directly using >= operator
+- For "Send Now" functionality, set scheduledAt to current time and let cron job process
+- Cancel endpoint should only work on scheduled campaigns, returning them to draft status
+- getMinDate() and getMinTime() need to handle date boundaries (min time only applies for today)
+- Use confirm() dialog for destructive actions like cancelling a scheduled campaign
+
