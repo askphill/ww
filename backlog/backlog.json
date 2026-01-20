@@ -626,8 +626,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 36,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created CampaignEditor.tsx with form fields (name, subject, preview text), template selector, segment multi-select, estimated recipients counter, preview modal, and save as draft. Added segments list API to api.ts. Registered routes. Build and typecheck pass. Verified in browser."
     },
     {
       "id": "US-037",

@@ -1078,3 +1078,36 @@
 - formatScheduledTime helper useful for showing relative time for scheduled campaigns
 - Table rows can be clickable with cursor-pointer and onClick handlers
 
+### Iteration: 2026-01-20 US-036
+
+**Story:** US-036 - Create campaign editor page
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/CampaignEditor.tsx` for campaign creation/editing
+- Implemented form fields: Campaign Name, Subject Line, Preview Text (optional)
+- Added template selector dropdown showing active/draft templates
+- Added "Create a template" link when no templates available
+- Implemented segment multi-select with checkbox UI for recipient targeting
+- Shows estimated recipient count based on selected segments
+- Added preview modal to view template with sample data (desktop/mobile toggle)
+- Implemented Save as Draft functionality with create/update mutations
+- Handle non-editable campaigns (sent/scheduled) with redirect to details page
+- Added segments list API method to `apps/studio/client/lib/api.ts`
+- Registered `/email/campaigns/new` and `/email/campaigns/:id/edit` routes in App.tsx
+
+**Files changed:**
+
+- apps/studio/client/pages/email/CampaignEditor.tsx (created)
+- apps/studio/client/lib/api.ts (modified - added segments.list API method)
+- apps/studio/client/App.tsx (modified - added CampaignEditor routes)
+
+**Learnings for future iterations:**
+
+- Reuse PreviewModal pattern from template Editor for consistent preview experience
+- Segment selection uses checkbox UI with label wrapper for better click target
+- Estimated recipients calculation is approximate - actual count requires server-side deduplication
+- Non-editable campaigns (status !== 'draft') should redirect to detail view
+- Campaign GET response includes segmentIds as JSON string - need JSON.parse() to convert to array
+
