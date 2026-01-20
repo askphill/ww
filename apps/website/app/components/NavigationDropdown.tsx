@@ -36,7 +36,7 @@ export function NavigationDropdown({isOpen, onClose}: NavigationDropdownProps) {
 
   useEffect(() => {
     if (fetcher.state === 'idle' && !fetcher.data) {
-      fetcher.load('/api/nav-products');
+      void fetcher.load('/api/nav-products');
     }
   }, [fetcher]);
 

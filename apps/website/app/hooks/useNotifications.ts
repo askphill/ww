@@ -58,7 +58,7 @@ export function useNotifications() {
   // Fetch notifications on mount
   useEffect(() => {
     if (fetcher.state === 'idle' && !fetcher.data) {
-      fetcher.load('/api/notifications');
+      void fetcher.load('/api/notifications');
     }
   }, [fetcher]);
 

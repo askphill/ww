@@ -39,14 +39,14 @@ export function optimizeShopifyImage(
   }
 }
 
-/** Preset configurations for common image use cases */
+/** Preset configurations for common image use cases (2x for Retina displays) */
 export const imagePresets = {
-  /** Full-width hero images (desktop) */
-  hero: {width: 1920, format: 'webp'} as const,
-  /** Hero images for mobile */
-  heroMobile: {width: 768, format: 'webp'} as const,
-  /** Product thumbnails */
-  thumbnail: {width: 400, format: 'webp'} as const,
-  /** Social/gallery images */
-  social: {width: 600, format: 'webp'} as const,
+  /** Full-width hero images (desktop) - 3840px for 4K/Retina displays */
+  hero: {width: 3840, format: 'webp'} as const,
+  /** Hero images for mobile - 1536px for Retina mobile (768 * 2) */
+  heroMobile: {width: 1536, format: 'webp'} as const,
+  /** Product thumbnails - 800px for Retina (400 * 2) */
+  thumbnail: {width: 800, format: 'webp'} as const,
+  /** Social/gallery images - 1200px for Retina (600 * 2) */
+  social: {width: 1200, format: 'webp'} as const,
 } as const;

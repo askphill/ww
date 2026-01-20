@@ -212,6 +212,15 @@ function TrailImage({
         zIndex,
       }}
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      aria-label="Cycle images"
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
       <div
         className={`w-full h-full overflow-hidden ${rotationClass} transition-transform duration-300 active:scale-75 active:-rotate-12`}
