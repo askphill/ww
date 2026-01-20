@@ -3,6 +3,7 @@ import {DashboardLayout} from './components/layout/DashboardLayout';
 import {Login} from './pages/Login';
 import {Opportunities} from './pages/seo/Opportunities';
 import {Tracking} from './pages/seo/Tracking';
+import {Subscribers} from './pages/email/Subscribers';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
 import {useAuth} from './hooks/useAuth';
@@ -45,6 +46,7 @@ export function App() {
                     path="/seo/opportunities"
                     element={<Opportunities />}
                   />
+                  <Route path="/email/subscribers" element={<Subscribers />} />
                   <Route path="/klaviyo" element={<Klaviyo />} />
                   <Route path="/meta" element={<Meta />} />
                 </Routes>

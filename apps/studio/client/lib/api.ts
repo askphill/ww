@@ -185,6 +185,134 @@ export const api = {
       }).then(handleResponse<{success: boolean}>),
   },
 
+  // Email Marketing
+  email: {
+    subscribers: {
+      list: (page = 1, limit = 50, search?: string, status?: string) => {
+        const params = new URLSearchParams();
+        params.set('page', page.toString());
+        params.set('limit', limit.toString());
+        if (search) params.set('search', search);
+        if (status) params.set('status', status);
+        return fetch(`${API_BASE}/email/subscribers?${params}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            subscribers: Array<{
+              id: number;
+              email: string;
+              firstName: string | null;
+              lastName: string | null;
+              shopifyCustomerId: string | null;
+              visitorId: string | null;
+              status: 'active' | 'unsubscribed' | 'bounced';
+              source: string | null;
+              tags: string | null;
+              subscribedAt: string | null;
+              createdAt: string;
+              updatedAt: string | null;
+            }>;
+            pagination: {
+              page: number;
+              limit: number;
+              total: number;
+              totalPages: number;
+            };
+          }>,
+        );
+      },
+
+      get: (id: number) =>
+        fetch(`${API_BASE}/email/subscribers/${id}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            subscriber: {
+              id: number;
+              email: string;
+              firstName: string | null;
+              lastName: string | null;
+              shopifyCustomerId: string | null;
+              visitorId: string | null;
+              status: 'active' | 'unsubscribed' | 'bounced';
+              source: string | null;
+              tags: string | null;
+              subscribedAt: string | null;
+              createdAt: string;
+              updatedAt: string | null;
+            };
+            segments: Array<{
+              segmentId: number;
+              segmentName: string;
+              addedAt: string;
+            }>;
+          }>,
+        ),
+
+      create: (data: {
+        email: string;
+        firstName?: string;
+        lastName?: string;
+        source?: string;
+        tags?: string[];
+      }) =>
+        fetch(`${API_BASE}/email/subscribers`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            subscriber: {
+              id: number;
+              email: string;
+              firstName: string | null;
+              lastName: string | null;
+              status: 'active' | 'unsubscribed' | 'bounced';
+              source: string | null;
+              createdAt: string;
+            };
+          }>,
+        ),
+
+      update: (
+        id: number,
+        data: {
+          email?: string;
+          firstName?: string;
+          lastName?: string;
+          status?: 'active' | 'unsubscribed' | 'bounced';
+          source?: string;
+          tags?: string[];
+        },
+      ) =>
+        fetch(`${API_BASE}/email/subscribers/${id}`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            subscriber: {
+              id: number;
+              email: string;
+              firstName: string | null;
+              lastName: string | null;
+              status: 'active' | 'unsubscribed' | 'bounced';
+              source: string | null;
+              updatedAt: string;
+            };
+          }>,
+        ),
+
+      delete: (id: number) =>
+        fetch(`${API_BASE}/email/subscribers/${id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        }).then(handleResponse<{success: boolean}>),
+    },
+  },
+
   // Keyword Tracking
   tracking: {
     list: () =>
