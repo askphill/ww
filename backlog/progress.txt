@@ -222,3 +222,30 @@
 - NavLink from react-router-dom provides `isActive` callback for active state styling
 - Inline SVG icons work well when no icon library is installed
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-008 - Create segment CRUD API routes
+**Status:** Complete
+
+**What was done:**
+
+- Added 5 segment CRUD endpoints to `apps/studio/server/routes/email.ts`
+- `GET /api/email/segments` returns all segments ordered by createdAt (desc)
+- `GET /api/email/segments/:id` returns segment with paginated subscriber list (includes subscriber details via join)
+- `POST /api/email/segments` creates custom segment with name and optional filters JSON
+- `PATCH /api/email/segments/:id` updates segment name and/or filters
+- `DELETE /api/email/segments/:id` deletes segment (only custom type allowed - Shopify synced segments return 403)
+- All segment routes require authentication via existing `emailRoutes.use('/segments/*', authMiddleware)`
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (modified - added 182 lines for segment CRUD)
+- `backlog/backlog.json` (updated US-008 passes status)
+
+**Learnings for future iterations:**
+
+- Segment DELETE endpoint should not allow deleting Shopify-synced segments to prevent data inconsistency
+- JOIN with subscribers table in GET /segments/:id allows returning subscriber details in segment member list
+- Pagination pattern reused from subscribers endpoint: count query + data query with limit/offset
+- Filters stored as JSON string using `JSON.stringify(data.filters)`
+
