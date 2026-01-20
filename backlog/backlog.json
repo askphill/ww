@@ -361,8 +361,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 21,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added POST /api/email/templates/:id/preview endpoint. Accepts optional variables object for interpolation. Uses sample data (firstName: 'Friend') if not provided. Returns html, text, and merged variables. Build passes."
     },
     {
       "id": "US-022",

@@ -607,3 +607,29 @@
 - JSON fields stored as text need `JSON.parse()` when returning to client, `JSON.stringify()` when saving
 - Use `or()` helper to filter for multiple status values in where clause
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-021 - Add template preview endpoint
+**Status:** Complete
+
+**What was done:**
+
+- Added POST /api/email/templates/:id/preview endpoint to apps/studio/server/routes/email.ts
+- Accepts optional `variables` object in request body for interpolation
+- Uses existing `renderTemplate` and `getDefaultVariables` from emailRenderer service
+- Returns JSON response with html, text, and merged variables (defaults + provided)
+- Handles errors gracefully with appropriate error messages
+- Build passes successfully
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (modified - added ~55 lines for preview endpoint)
+- `backlog/backlog.json` (updated US-021 passes status)
+
+**Learnings for future iterations:**
+
+- Zod schema can be made optional by wrapping in `.optional()` to allow empty request bodies
+- `renderTemplate` function from emailRenderer already handles all rendering logic including variable interpolation
+- `getDefaultVariables` export useful for returning the full variable context to clients
+- Preview endpoints should return both rendered output AND the variables used for transparency
+
