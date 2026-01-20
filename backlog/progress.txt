@@ -366,3 +366,31 @@
 - Use optional chaining in render for optional props (e.g., `{imageUrl && <Img ... />}`)
 - Text component from @react-email/components wraps content in inline styles for email compatibility
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-013 - Create TextBlock email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/TextBlock.tsx` for body text content
+- Implemented TextBlock component with content, alignment, and fontSize props
+- alignment options: 'left', 'center', 'right' (default: left)
+- fontSize options: 'paragraph' (16px), 'small' (14px) (default: paragraph)
+- Uses ITC Avant Garde Gothic font fallback with line-height 1.6 for readability
+- Supports basic HTML (bold, italic, links) via dangerouslySetInnerHTML
+- Exported TextBlockSchema JSON with textarea for content, select for alignment/fontSize
+- Exported TextBlockDefaultProps with sensible defaults
+
+**Files changed:**
+
+- `apps/studio/server/email-components/TextBlock.tsx` (created)
+- `backlog/backlog.json` (updated US-013 passes status)
+
+**Learnings for future iterations:**
+
+- Use `dangerouslySetInnerHTML` for components that accept HTML content (bold, italic, links)
+- Select schema fields need `options` array with `{value, label}` objects
+- Keep font size options simple (paragraph/small) rather than arbitrary pixel values
+- Text component styling uses inline `style` prop for email client compatibility
+

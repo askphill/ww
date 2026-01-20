@@ -228,8 +228,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Created TextBlock.tsx with content, alignment, fontSize props. Uses ITC Avant Garde font, line-height 1.6. Supports HTML via dangerouslySetInnerHTML. Schema and default props exported. Build passes."
     },
     {
       "id": "US-014",
