@@ -1655,7 +1655,7 @@ function PropertiesPanel({
   );
 }
 
-// Preview Modal (placeholder - will be expanded in US-029)
+// Preview Modal - shows rendered email preview in desktop/mobile widths
 function PreviewModal({
   templateId,
   components,
@@ -1668,62 +1668,175 @@ function PreviewModal({
   const [previewWidth, setPreviewWidth] = useState<'desktop' | 'mobile'>(
     'desktop',
   );
-  const {data: previewData, isLoading} = useQuery({
+
+  // Fetch preview with sample variables applied
+  const {
+    data: previewData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['email', 'template', 'preview', templateId],
     queryFn: () =>
-      templateId ? api.email.templates.preview(templateId) : null,
+      templateId
+        ? api.email.templates.preview(templateId, {
+            // Sample variables for preview
+            firstName: 'Friend',
+            lastName: 'Customer',
+            email: 'friend@example.com',
+          })
+        : null,
     enabled: !!templateId,
   });
 
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, [onClose]);
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={(e) => {
+        // Close when clicking the backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="flex h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-lg bg-card">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h3 className="text-lg font-medium text-foreground">Preview</h3>
+          <div className="flex items-center gap-4">
+            <h3 className="text-lg font-medium text-foreground">
+              Email Preview
+            </h3>
+            {previewData?.variables && (
+              <span className="text-xs text-muted-foreground">
+                Preview with sample data
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPreviewWidth('desktop')}
-              className={`rounded-md px-3 py-1 text-sm ${
-                previewWidth === 'desktop'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              Desktop
-            </button>
-            <button
-              onClick={() => setPreviewWidth('mobile')}
-              className={`rounded-md px-3 py-1 text-sm ${
-                previewWidth === 'mobile'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              Mobile
-            </button>
+            {/* Desktop/Mobile toggle */}
+            <div className="flex rounded-md border border-border">
+              <button
+                onClick={() => setPreviewWidth('desktop')}
+                className={`flex items-center gap-1 rounded-l-md px-3 py-1.5 text-sm transition-colors ${
+                  previewWidth === 'desktop'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+                title="Desktop view (600px)"
+              >
+                <DesktopIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Desktop</span>
+              </button>
+              <button
+                onClick={() => setPreviewWidth('mobile')}
+                className={`flex items-center gap-1 rounded-r-md px-3 py-1.5 text-sm transition-colors ${
+                  previewWidth === 'mobile'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+                title="Mobile view (375px)"
+              >
+                <MobileIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Mobile</span>
+              </button>
+            </div>
             <button
               onClick={onClose}
-              className="ml-4 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="ml-2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+              title="Close (Esc)"
             >
               <CrossIcon className="h-5 w-5" />
             </button>
           </div>
         </div>
         <div className="flex flex-1 items-center justify-center overflow-auto bg-muted/30 p-4">
-          {isLoading ? (
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          {!templateId ? (
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/20">
+                <WarningIcon className="h-8 w-8 text-yellow-500" />
+              </div>
+              <h4 className="mb-2 text-lg font-medium text-foreground">
+                Save template first
+              </h4>
+              <p className="max-w-sm text-sm text-muted-foreground">
+                Save your template to generate a preview. New templates need to
+                be saved before they can be previewed.
+              </p>
+            </div>
+          ) : isLoading ? (
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <p className="text-sm text-muted-foreground">
+                Generating preview...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/20">
+                <CrossIcon className="h-8 w-8 text-red-500" />
+              </div>
+              <h4 className="mb-2 text-lg font-medium text-foreground">
+                Preview failed
+              </h4>
+              <p className="max-w-sm text-sm text-muted-foreground">
+                {error instanceof Error
+                  ? error.message
+                  : 'Failed to generate preview. Try saving the template again.'}
+              </p>
+            </div>
           ) : previewData?.html ? (
-            <iframe
-              srcDoc={previewData.html}
-              className="h-full rounded-lg border border-border bg-white"
-              style={{width: previewWidth === 'desktop' ? '600px' : '375px'}}
-              title="Email preview"
-            />
+            <div
+              className="flex h-full justify-center transition-all duration-300"
+              style={{width: '100%'}}
+            >
+              <iframe
+                srcDoc={previewData.html}
+                className="h-full rounded-lg border border-border bg-white shadow-sm transition-all duration-300"
+                style={{
+                  width: previewWidth === 'desktop' ? '600px' : '375px',
+                  maxWidth: '100%',
+                }}
+                title="Email preview"
+              />
+            </div>
           ) : (
-            <p className="text-muted-foreground">
-              Save the template to see a preview
-            </p>
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <LayoutIcon className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h4 className="mb-2 text-lg font-medium text-foreground">
+                No content to preview
+              </h4>
+              <p className="max-w-sm text-sm text-muted-foreground">
+                Add some components to your template and save to see a preview.
+              </p>
+            </div>
           )}
+        </div>
+        {/* Footer with width indicator */}
+        <div className="border-t border-border bg-card px-4 py-2">
+          <p className="text-center text-xs text-muted-foreground">
+            {previewWidth === 'desktop' ? '600px width' : '375px width'} •
+            Sample variables applied (firstName: &quot;Friend&quot;)
+          </p>
         </div>
       </div>
     </div>
@@ -2086,6 +2199,42 @@ function GripVerticalIcon({className}: {className?: string}) {
         strokeLinejoin="round"
         strokeWidth={2}
         d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"
+      />
+    </svg>
+  );
+}
+
+function DesktopIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    </svg>
+  );
+}
+
+function MobileIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
       />
     </svg>
   );
