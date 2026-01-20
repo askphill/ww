@@ -15,7 +15,7 @@ Read these files to understand current state:
 
 - `backlog/backlog.json` - User stories with completion status
 - `backlog/progress.txt` - Learnings from previous iterations
-- `AGENTS.md` - Codebase patterns and conventions
+- `CLAUDE.md` - Codebase patterns and conventions
 
 ## Step 2: Branch Management
 
@@ -39,7 +39,7 @@ Work on ONE story per iteration. Pick the lowest priority number that hasn't pas
 
 Implement the story following:
 
-- Existing codebase patterns (check AGENTS.md)
+- Existing codebase patterns (check CLAUDE.md)
 - Acceptance criteria from the story
 - Project conventions from CLAUDE.md
 
@@ -107,9 +107,9 @@ APPEND to `backlog/progress.txt` (never replace, always append):
 - [Gotcha encountered]
 ```
 
-## Step 9: Update AGENTS.md
+## Step 9: Update CLAUDE.md
 
-If you discovered important patterns, add them to `AGENTS.md`:
+If you discovered important patterns, add them to `CLAUDE.md`:
 
 - Architecture conventions
 - Common gotchas
