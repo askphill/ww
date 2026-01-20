@@ -423,3 +423,35 @@
 - Email buttons need explicit `display: 'inline-block'` for proper rendering
 - Secondary button variant uses transparent background with border for outline effect
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-015 - Create ProductGrid email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/ProductGrid.tsx` for showcasing products
+- Implemented ProductGrid component with products array and columns (2 or 3) props
+- Product interface: `{imageUrl, title, price, url}`
+- Uses Row and Column from @react-email/components for grid layout
+- Products limited to max 6 using `.slice(0, 6)`
+- Each product wrapped in Link, shows image (with border-radius), title, and price
+- Title uses Founders Grotesk font, price uses muted color (#666666)
+- Empty columns added to maintain grid alignment when row is not full
+- Exported ProductGridSchema with array type and itemSchema for editor
+- Exported ProductGridDefaultProps with 2 sample products
+- Build passes (pre-existing typecheck error in Login.tsx unrelated)
+
+**Files changed:**
+
+- `apps/studio/server/email-components/ProductGrid.tsx` (created)
+- `backlog/backlog.json` (updated US-015 passes status)
+
+**Learnings for future iterations:**
+
+- Array props in schema use `type: 'array'` with `itemSchema` object defining item fields
+- Row/Column components from @react-email work for email-compatible grid layouts
+- Use percentage widths for columns (50% for 2-col, 33.33% for 3-col)
+- Add empty Column components to fill rows that aren't complete to maintain alignment
+- Link component wraps entire product card for click-through to product URL
+
