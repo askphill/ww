@@ -307,3 +307,33 @@
 - Rate limit should be reset on failure to allow retry
 - Return 429 status with `retryAfterSeconds` for rate-limited requests
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-011 - Create Header email component
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/email-components/Header.tsx` using @react-email/components
+- Implemented Header component with Img and Section from @react-email/components
+- Props: `logoUrl` (string, required) and `backgroundColor` (string, default #1a1a1a)
+- Logo centered with 40px height, 24px top/bottom padding
+- Exported `HeaderSchema` JSON for template editor integration
+- Exported `HeaderDefaultProps` with sensible defaults
+- Installed @react-email/components and @react-email/render dependencies
+
+**Files changed:**
+
+- `apps/studio/server/email-components/Header.tsx` (created)
+- `apps/studio/package.json` (modified - added @react-email dependencies)
+- `pnpm-lock.yaml` (updated)
+- `backlog/backlog.json` (updated US-011 passes status)
+
+**Learnings for future iterations:**
+
+- @react-email/components provides email-safe React components (Img, Section, Row, Column, etc.)
+- Email components should export both the component and a schema JSON for the editor
+- Schema JSON should define prop types, labels, descriptions, defaults, and required fields
+- Use `as const` for schema to get better TypeScript inference
+- DefaultProps export useful for initializing component instances in the editor
+
