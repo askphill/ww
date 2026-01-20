@@ -325,6 +325,7 @@ export async function sendCampaign(
         subject: string;
         html: string;
         text: string;
+        headers: Record<string, string>;
         emailSendId: number;
       }> = [];
 
@@ -361,12 +362,24 @@ export async function sendCampaign(
             campaignId: campaignId,
           });
 
+          // Build List-Unsubscribe headers for one-click unsubscribe support
+          const headers: Record<string, string> = {};
+          if (authSecret && unsubscribeUrl !== '#') {
+            // List-Unsubscribe header with both mailto and https options
+            // Format: <mailto:...>, <https://...>
+            headers['List-Unsubscribe'] =
+              `<mailto:unsubscribe@wakey.care?subject=unsubscribe-${record.subscriberId}>, <${unsubscribeUrl}>`;
+            // List-Unsubscribe-Post header for RFC 8058 one-click unsubscribe
+            headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+          }
+
           batchEmails.push({
             from: fromEmail,
             to: record.email,
             subject: campaign.subject,
             html: trackedHtml,
             text: rendered.text, // Plain text doesn't have tracking
+            headers,
             emailSendId: record.id,
           });
         } catch (err) {
@@ -389,12 +402,13 @@ export async function sendCampaign(
       // Step 3: Send the batch
       const sendResult = await sendBatchWithRetry(
         resend,
-        batchEmails.map(({from, to, subject, html, text}) => ({
+        batchEmails.map(({from, to, subject, html, text, headers}) => ({
           from,
           to,
           subject,
           html,
           text,
+          headers: Object.keys(headers).length > 0 ? headers : undefined,
         })),
       );
 
