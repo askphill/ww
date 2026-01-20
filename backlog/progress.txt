@@ -763,3 +763,37 @@
 - Track activeDragType in state to show appropriate feedback during drag operations
 - Components can be both clickable (onClick for add) and draggable (listeners for drag)
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-026 - Implement canvas panel with sortable components
+**Status:** Complete
+
+**What was done:**
+
+- Added @dnd-kit/sortable integration for component reordering in canvas
+- Created SortableCanvasComponent using useSortable hook from @dnd-kit/sortable
+- Added drag handle (GripVerticalIcon) visible on hover for each canvas component
+- Implemented dual drag modes: library drag (add new) and canvas drag (reorder)
+- Used SortableContext with verticalListSortingStrategy for smooth reordering
+- Used arrayMove from @dnd-kit/sortable for state updates after reorder
+- Added CSS.Transform for smooth drag animations
+- Updated API types in api.ts to include component `id` field
+- Handle legacy components without IDs when loading templates (generate IDs on load)
+- Visual feedback during drag: opacity change, border highlight
+
+**Files changed:**
+
+- `apps/studio/client/pages/email/Editor.tsx` (modified - ~180 lines added/changed)
+- `apps/studio/client/lib/api.ts` (modified - updated template component type)
+- `backlog/backlog.json` (updated US-026 passes status)
+
+**Learnings for future iterations:**
+
+- @dnd-kit/sortable provides SortableContext, useSortable, and arrayMove for sortable lists
+- useSortable returns `{attributes, listeners, setNodeRef, transform, transition, isDragging}`
+- CSS.Transform.toString() converts transform to CSS string for smooth animations
+- Track `isDraggingFromLibrary` to differentiate between adding new components and reordering
+- Drag handles should use separate listeners from the container (onClick for select, listeners for drag)
+- When checking drag source, use String(active.id).startsWith() to identify library vs canvas drags
+- Component IDs should be generated on load if missing (for legacy data compatibility)
+
