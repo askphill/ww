@@ -5,6 +5,7 @@ import {authRoutes} from './routes/auth';
 import {gscRoutes} from './routes/gsc';
 import {opportunitiesRoutes} from './routes/opportunities';
 import {trackingRoutes, checkAllKeywordPositions} from './routes/tracking';
+import {emailRoutes} from './routes/email';
 import type {AuthUser} from './middleware/auth';
 
 export interface Env {
@@ -61,6 +62,7 @@ app.route('/api/auth', authRoutes);
 app.route('/api/gsc', gscRoutes);
 app.route('/api/opportunities', opportunitiesRoutes);
 app.route('/api/tracking', trackingRoutes);
+app.route('/api/email', emailRoutes);
 
 // Health check
 app.get('/api/health', (c) => {

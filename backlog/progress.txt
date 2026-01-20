@@ -65,3 +65,33 @@
 - Type inference uses `$inferSelect` and `$inferInsert` on table definitions
 - Enum options in text() provide TypeScript typing but store as plain text in SQLite
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-003 - Create subscriber CRUD API routes
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/server/routes/email.ts` with subscriber CRUD endpoints
+- Implemented `GET /api/email/subscribers` with pagination and filters (status, search, segmentId)
+- Implemented `GET /api/email/subscribers/:id` returning subscriber with segment memberships
+- Implemented `POST /api/email/subscribers` with email validation and duplicate checking
+- Implemented `PATCH /api/email/subscribers/:id` for updating subscriber fields
+- Implemented `DELETE /api/email/subscribers/:id` as soft-delete (sets status to 'unsubscribed')
+- Registered email routes in `apps/studio/server/index.ts`
+- All routes require authentication via authMiddleware
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (created)
+- `apps/studio/server/index.ts` (modified - added email routes)
+- `backlog/backlog.json` (updated US-003 passes status)
+
+**Learnings for future iterations:**
+
+- Hono routes follow pattern: create Hono instance, apply middleware, define routes, export
+- Status enum fields need explicit type assertion when comparing with query params (string → enum type)
+- Drizzle `inArray` operator useful for filtering by segment membership
+- Use zValidator from @hono/zod-validator for request body validation
+- Soft deletes preferred for subscriber management to preserve data integrity
+
