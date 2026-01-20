@@ -128,3 +128,35 @@
 - `emailMarketingConsent.marketingState` can be 'SUBSCRIBED', 'UNSUBSCRIBED', 'NOT_SUBSCRIBED', etc.
 - Type `D1Database` imported from `@cloudflare/workers-types` for Cloudflare D1 database parameter
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-005 - Add Shopify customer webhooks endpoint
+**Status:** Complete
+
+**What was done:**
+
+- Added `POST /api/email/webhooks/shopify` endpoint to `apps/studio/server/routes/email.ts`
+- Implemented HMAC signature validation using Web Crypto API (`crypto.subtle`)
+- Handled `customers/create` topic - creates new subscriber or updates existing with Shopify ID
+- Handled `customers/update` topic - updates subscriber email/name if changed
+- Handled `customers/delete` topic - marks subscriber as unsubscribed (soft delete)
+- Added SHOPIFY_WEBHOOK_SECRET to Env interface
+- Webhook endpoint does NOT require auth middleware - uses HMAC validation instead
+- Returns 200 OK quickly to prevent Shopify retries on errors
+- Logs all webhook events for debugging
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (modified - added ~250 lines for webhook handler)
+- `apps/studio/server/index.ts` (modified - added SHOPIFY_WEBHOOK_SECRET to Env interface)
+- `backlog/backlog.json` (updated US-005 passes status)
+
+**Learnings for future iterations:**
+
+- Shopify webhook headers: `X-Shopify-Topic` for event type, `X-Shopify-Hmac-Sha256` for signature
+- HMAC validation uses Web Crypto API: `crypto.subtle.importKey` + `crypto.subtle.sign`
+- Shopify webhook payload uses snake_case (e.g., `first_name`, `email_marketing_consent`)
+- Shopify webhook `email_marketing_consent.state` values: `subscribed`, `not_subscribed`, `unsubscribed`
+- Webhook routes need to be defined BEFORE applying auth middleware via `emailRoutes.use('/path/*', authMiddleware)`
+- Always return 200 OK to Shopify webhooks to prevent retries, even on internal errors
+
