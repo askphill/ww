@@ -12,7 +12,7 @@ Generate detailed Product Requirements Documents for features. Output is structu
 
 ### Step 1: Gather Requirements
 
-Ask 3-5 clarifying questions to understand:
+Use the `AskUserQuestion` tool to gather requirements through a selection-based interface. Ask 1-4 questions at a time to understand:
 
 - What problem does this solve?
 - Who is the target user?
@@ -20,15 +20,37 @@ Ask 3-5 clarifying questions to understand:
 - What are the success criteria?
 - Any technical constraints or preferences?
 
-Format questions with lettered options (A-D) for quick responses:
+Example usage:
 
 ```
-1. What's the primary use case?
-   A) Admin dashboard feature
-   B) Customer-facing feature
-   C) Developer tooling
-   D) Other (please specify)
+AskUserQuestion({
+  questions: [
+    {
+      question: "What's the primary use case for this feature?",
+      header: "Use case",
+      options: [
+        { label: "Admin dashboard", description: "Internal admin or management feature" },
+        { label: "Customer-facing", description: "Feature visible to end customers" },
+        { label: "Developer tooling", description: "Tools for developers or integrations" },
+        { label: "Background service", description: "Backend processing or automation" }
+      ],
+      multiSelect: false
+    },
+    {
+      question: "Who is the primary target user?",
+      header: "Target user",
+      options: [
+        { label: "Store admin", description: "Shopify store administrators" },
+        { label: "Customer", description: "End customers shopping on the site" },
+        { label: "Developer", description: "Developers working on the codebase" }
+      ],
+      multiSelect: false
+    }
+  ]
+})
 ```
+
+Users can always select "Other" to provide custom input if the options don't fit.
 
 ### Step 2: Generate PRD
 
