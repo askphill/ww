@@ -83,7 +83,7 @@ export function Tracking() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Keyword Tracking
+            Keyword Ranking
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Track your Google ranking positions for specific keywords
