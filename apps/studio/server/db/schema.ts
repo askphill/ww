@@ -1,4 +1,12 @@
-import {sqliteTable, text, integer, real, index} from 'drizzle-orm/sqlite-core';
+import {
+  sqliteTable,
+  text,
+  integer,
+  real,
+  index,
+  primaryKey,
+} from 'drizzle-orm/sqlite-core';
+import {relations} from 'drizzle-orm';
 
 // Auth tables
 export const users = sqliteTable('users', {
@@ -106,6 +114,230 @@ export const keywordPositions = sqliteTable(
   ],
 );
 
+// Email marketing tables
+export const subscribers = sqliteTable(
+  'subscribers',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    email: text('email').notNull().unique(),
+    firstName: text('first_name'),
+    lastName: text('last_name'),
+    shopifyCustomerId: text('shopify_customer_id'),
+    visitorId: text('visitor_id'),
+    status: text('status', {enum: ['active', 'unsubscribed', 'bounced']})
+      .notNull()
+      .default('active'),
+    source: text('source'),
+    tags: text('tags'), // JSON array
+    subscribedAt: text('subscribed_at').default("datetime('now')"),
+    createdAt: text('created_at').default("datetime('now')"),
+    updatedAt: text('updated_at').default("datetime('now')"),
+  },
+  (table) => [
+    index('idx_subscribers_email').on(table.email),
+    index('idx_subscribers_shopify_customer_id').on(table.shopifyCustomerId),
+    index('idx_subscribers_status').on(table.status),
+  ],
+);
+
+export const segments = sqliteTable(
+  'segments',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    name: text('name').notNull(),
+    type: text('type', {enum: ['shopify_sync', 'custom']})
+      .notNull()
+      .default('custom'),
+    shopifySegmentId: text('shopify_segment_id'),
+    filters: text('filters'), // JSON
+    subscriberCount: integer('subscriber_count').default(0),
+    createdAt: text('created_at').default("datetime('now')"),
+    updatedAt: text('updated_at').default("datetime('now')"),
+  },
+  (table) => [index('idx_segments_type').on(table.type)],
+);
+
+export const segmentSubscribers = sqliteTable(
+  'segment_subscribers',
+  {
+    segmentId: integer('segment_id')
+      .notNull()
+      .references(() => segments.id, {onDelete: 'cascade'}),
+    subscriberId: integer('subscriber_id')
+      .notNull()
+      .references(() => subscribers.id, {onDelete: 'cascade'}),
+    addedAt: text('added_at').default("datetime('now')"),
+  },
+  (table) => [primaryKey({columns: [table.segmentId, table.subscriberId]})],
+);
+
+export const emailTemplates = sqliteTable(
+  'email_templates',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    name: text('name').notNull(),
+    subject: text('subject').notNull(),
+    previewText: text('preview_text'),
+    components: text('components'), // JSON
+    variables: text('variables'), // JSON
+    category: text('category'),
+    status: text('status', {enum: ['draft', 'active']})
+      .notNull()
+      .default('draft'),
+    createdAt: text('created_at').default("datetime('now')"),
+    updatedAt: text('updated_at').default("datetime('now')"),
+  },
+  (table) => [index('idx_email_templates_status').on(table.status)],
+);
+
+export const emailComponents = sqliteTable('email_components', {
+  id: integer('id').primaryKey({autoIncrement: true}),
+  name: text('name').notNull(),
+  type: text('type').notNull(),
+  schema: text('schema'), // JSON
+  defaultProps: text('default_props'), // JSON
+  reactEmailCode: text('react_email_code'),
+  createdAt: text('created_at').default("datetime('now')"),
+});
+
+export const campaigns = sqliteTable(
+  'campaigns',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    name: text('name').notNull(),
+    subject: text('subject').notNull(),
+    templateId: integer('template_id').references(() => emailTemplates.id, {
+      onDelete: 'set null',
+    }),
+    segmentIds: text('segment_ids'), // JSON array
+    status: text('status', {
+      enum: ['draft', 'scheduled', 'sending', 'sent', 'cancelled'],
+    })
+      .notNull()
+      .default('draft'),
+    scheduledAt: text('scheduled_at'),
+    sentAt: text('sent_at'),
+    createdAt: text('created_at').default("datetime('now')"),
+    updatedAt: text('updated_at').default("datetime('now')"),
+  },
+  (table) => [index('idx_campaigns_status').on(table.status)],
+);
+
+export const emailSends = sqliteTable(
+  'email_sends',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    subscriberId: integer('subscriber_id')
+      .notNull()
+      .references(() => subscribers.id, {onDelete: 'cascade'}),
+    campaignId: integer('campaign_id').references(() => campaigns.id, {
+      onDelete: 'cascade',
+    }),
+    flowId: integer('flow_id'),
+    resendId: text('resend_id'),
+    status: text('status', {
+      enum: [
+        'pending',
+        'sent',
+        'delivered',
+        'opened',
+        'clicked',
+        'bounced',
+        'complained',
+      ],
+    })
+      .notNull()
+      .default('pending'),
+    sentAt: text('sent_at'),
+    deliveredAt: text('delivered_at'),
+    openedAt: text('opened_at'),
+    clickedAt: text('clicked_at'),
+  },
+  (table) => [
+    index('idx_email_sends_subscriber_id').on(table.subscriberId),
+    index('idx_email_sends_campaign_id').on(table.campaignId),
+    index('idx_email_sends_status').on(table.status),
+  ],
+);
+
+export const emailEvents = sqliteTable(
+  'email_events',
+  {
+    id: integer('id').primaryKey({autoIncrement: true}),
+    subscriberId: integer('subscriber_id').references(() => subscribers.id, {
+      onDelete: 'set null',
+    }),
+    visitorId: text('visitor_id'),
+    eventType: text('event_type').notNull(),
+    eventData: text('event_data'), // JSON
+    shopifyOrderId: text('shopify_order_id'),
+    orderTotal: real('order_total'),
+    attributionType: text('attribution_type'),
+    attributionWindow: text('attribution_window'),
+    createdAt: text('created_at').default("datetime('now')"),
+  },
+  (table) => [
+    index('idx_email_events_subscriber_id').on(table.subscriberId),
+    index('idx_email_events_event_type').on(table.eventType),
+    index('idx_email_events_created_at').on(table.createdAt),
+  ],
+);
+
+// Email marketing relations
+export const subscribersRelations = relations(subscribers, ({many}) => ({
+  segmentSubscribers: many(segmentSubscribers),
+  emailSends: many(emailSends),
+  emailEvents: many(emailEvents),
+}));
+
+export const segmentsRelations = relations(segments, ({many}) => ({
+  segmentSubscribers: many(segmentSubscribers),
+}));
+
+export const segmentSubscribersRelations = relations(
+  segmentSubscribers,
+  ({one}) => ({
+    segment: one(segments, {
+      fields: [segmentSubscribers.segmentId],
+      references: [segments.id],
+    }),
+    subscriber: one(subscribers, {
+      fields: [segmentSubscribers.subscriberId],
+      references: [subscribers.id],
+    }),
+  }),
+);
+
+export const emailTemplatesRelations = relations(emailTemplates, ({many}) => ({
+  campaigns: many(campaigns),
+}));
+
+export const campaignsRelations = relations(campaigns, ({one, many}) => ({
+  template: one(emailTemplates, {
+    fields: [campaigns.templateId],
+    references: [emailTemplates.id],
+  }),
+  emailSends: many(emailSends),
+}));
+
+export const emailSendsRelations = relations(emailSends, ({one}) => ({
+  subscriber: one(subscribers, {
+    fields: [emailSends.subscriberId],
+    references: [subscribers.id],
+  }),
+  campaign: one(campaigns, {
+    fields: [emailSends.campaignId],
+    references: [campaigns.id],
+  }),
+}));
+
+export const emailEventsRelations = relations(emailEvents, ({one}) => ({
+  subscriber: one(subscribers, {
+    fields: [emailEvents.subscriberId],
+    references: [subscribers.id],
+  }),
+}));
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -123,3 +355,21 @@ export type TrackedKeyword = typeof trackedKeywords.$inferSelect;
 export type NewTrackedKeyword = typeof trackedKeywords.$inferInsert;
 export type KeywordPosition = typeof keywordPositions.$inferSelect;
 export type NewKeywordPosition = typeof keywordPositions.$inferInsert;
+
+// Email marketing types
+export type Subscriber = typeof subscribers.$inferSelect;
+export type NewSubscriber = typeof subscribers.$inferInsert;
+export type Segment = typeof segments.$inferSelect;
+export type NewSegment = typeof segments.$inferInsert;
+export type SegmentSubscriber = typeof segmentSubscribers.$inferSelect;
+export type NewSegmentSubscriber = typeof segmentSubscribers.$inferInsert;
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type NewEmailTemplate = typeof emailTemplates.$inferInsert;
+export type EmailComponent = typeof emailComponents.$inferSelect;
+export type NewEmailComponent = typeof emailComponents.$inferInsert;
+export type Campaign = typeof campaigns.$inferSelect;
+export type NewCampaign = typeof campaigns.$inferInsert;
+export type EmailSend = typeof emailSends.$inferSelect;
+export type NewEmailSend = typeof emailSends.$inferInsert;
+export type EmailEvent = typeof emailEvents.$inferSelect;
+export type NewEmailEvent = typeof emailEvents.$inferInsert;
