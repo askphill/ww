@@ -280,3 +280,30 @@
 - Use Set for efficient membership comparison when syncing (O(1) lookup vs O(n) array includes)
 - `drizzle-orm` delete with compound where clause uses `and()` helper: `and(eq(a, x), eq(b, y))`
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-010 - Add manual segment sync trigger endpoint
+**Status:** Complete
+
+**What was done:**
+
+- Added `POST /api/email/segments/sync` endpoint to `apps/studio/server/routes/email.ts`
+- Implemented rate limiting (5 minutes between syncs) using in-memory tracking
+- Uses `c.executionCtx.waitUntil()` for async execution - returns immediately with acknowledgment
+- Syncs both customers and segments from Shopify in sequence
+- Resets rate limit on failure so user can retry sooner
+- Validates required environment variables (SHOPIFY_ADMIN_API_TOKEN, SHOPIFY_STORE_DOMAIN)
+- Returns 429 Too Many Requests if rate limited, with retryAfterSeconds
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (modified - added ~78 lines)
+- `backlog/backlog.json` (updated US-010 passes status)
+
+**Learnings for future iterations:**
+
+- Cloudflare Workers use `c.executionCtx.waitUntil()` for async background tasks
+- In-memory rate limiting works per-isolate; for production may need KV/durable objects
+- Rate limit should be reset on failure to allow retry
+- Return 429 status with `retryAfterSeconds` for rate-limited requests
+
