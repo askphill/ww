@@ -4,6 +4,7 @@ import {Login} from './pages/Login';
 import {Unsubscribe} from './pages/Unsubscribe';
 import {Opportunities} from './pages/seo/Opportunities';
 import {Tracking} from './pages/seo/Tracking';
+import {Dashboard} from './pages/email/Dashboard';
 import {Subscribers} from './pages/email/Subscribers';
 import {Templates} from './pages/email/Templates';
 import {Editor} from './pages/email/Editor';
@@ -53,6 +54,11 @@ export function App() {
                     path="/seo/opportunities"
                     element={<Opportunities />}
                   />
+                  <Route
+                    path="/email"
+                    element={<Navigate to="/email/dashboard" replace />}
+                  />
+                  <Route path="/email/dashboard" element={<Dashboard />} />
                   <Route path="/email/subscribers" element={<Subscribers />} />
                   <Route path="/email/templates" element={<Templates />} />
                   <Route path="/email/templates/new" element={<Editor />} />

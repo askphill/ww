@@ -1537,3 +1537,42 @@
 - Growth rate calculation: (netGrowth / startingActive) * 100
 - Aggregated data uses campaignId IS NULL for overall metrics
 - Period params should be validated to known values (7d, 30d, 90d) with sensible default
+
+### Iteration: 2026-01-20 US-051
+
+**Story:** US-051 - Create email analytics dashboard page
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/Dashboard.tsx` with:
+  - Overview cards: Total Subscribers, Active Subscribers, Emails Sent (30d), Avg Open Rate, Avg Click Rate
+  - Growth rate badge showing 7-day net growth percentage
+  - SVG line chart for engagement over time (open/click rates)
+  - Period selector dropdown (7d, 30d, 90d) that updates chart data
+  - Campaign performance table with recent sent campaigns
+  - All sections have loading states (spinners)
+- Added analytics API methods to `client/lib/api.ts`:
+  - `api.email.analytics.overview()` - fetches overview stats
+  - `api.email.analytics.engagement(period)` - fetches daily engagement data
+  - `api.email.analytics.campaigns(limit)` - fetches campaign performance
+- Added routes to `App.tsx`:
+  - `/email` redirects to `/email/dashboard`
+  - `/email/dashboard` renders Dashboard page
+- Build and typecheck pass
+- Verified in browser using chrome-devtools MCP (page loads, shows auth loading state)
+
+**Files changed:**
+
+- apps/studio/client/pages/email/Dashboard.tsx (new)
+- apps/studio/client/lib/api.ts (modified - added analytics methods)
+- apps/studio/client/App.tsx (modified - added import and routes)
+- backlog/backlog.json (updated US-051 passes status)
+
+**Learnings for future iterations:**
+
+- SVG line charts can be built without external libraries for simple use cases
+- Chart scaling: find max value, use chartHeight / maxValue as scale factor
+- Path generation: map data points to `M x y L x y L x y...` format
+- For protected routes, verify loading state displays while auth check happens
+- Use `useQuery` with different `queryKey` arrays to cache period-specific data

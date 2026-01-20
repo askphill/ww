@@ -669,6 +669,71 @@ export const api = {
         );
       },
     },
+
+    analytics: {
+      overview: () =>
+        fetch(`${API_BASE}/email/analytics/overview`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            overview: {
+              totalSubscribers: number;
+              activeSubscribers: number;
+              growthRate7d: number;
+              netGrowth7d: number;
+              totalSent30d: number;
+              avgOpenRate: number;
+              avgClickRate: number;
+            };
+          }>,
+        ),
+
+      engagement: (period: '7d' | '30d' | '90d' = '30d') =>
+        fetch(`${API_BASE}/email/analytics/engagement?period=${period}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            engagement: Array<{
+              date: string;
+              sent: number;
+              delivered: number;
+              opened: number;
+              clicked: number;
+              bounced: number;
+              unsubscribed: number;
+              openRate: number;
+              clickRate: number;
+            }>;
+            period: string;
+          }>,
+        ),
+
+      campaigns: (limit = 10) =>
+        fetch(`${API_BASE}/email/analytics/campaigns?limit=${limit}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaigns: Array<{
+              id: number;
+              name: string;
+              subject: string;
+              status: string;
+              sentAt: string | null;
+              stats: {
+                sent: number;
+                delivered: number;
+                opened: number;
+                clicked: number;
+                bounced: number;
+                unsubscribed: number;
+                openRate: number;
+                clickRate: number;
+                bounceRate: number;
+              };
+            }>;
+          }>,
+        ),
+    },
   },
 
   // Keyword Tracking
