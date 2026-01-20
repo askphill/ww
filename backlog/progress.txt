@@ -1010,3 +1010,31 @@
 - Yellow accent styling for AI-related buttons makes them stand out
 - SparklesIcon is a good visual indicator for AI features
 
+### Iteration: 2026-01-20 US-034
+
+**Story:** US-034 - Create campaign CRUD API routes
+**Status:** Complete
+
+**What was done:**
+
+- Added GET /api/email/campaigns - list all campaigns with send stats
+- Added GET /api/email/campaigns/:id - get single campaign with template, segments, stats
+- Added POST /api/email/campaigns - create campaign (validates template/segments exist)
+- Added PATCH /api/email/campaigns/:id - update draft campaigns only
+- Added DELETE /api/email/campaigns/:id - delete draft campaigns only
+- Used segmentIds as JSON array field (campaigns.segmentIds stores JSON string)
+- Calculate send stats using SQL aggregation: total, sent, delivered, opened, clicked, bounced
+
+**Files changed:**
+
+- apps/studio/server/routes/email.ts (modified - added ~314 lines)
+
+**Learnings for future iterations:**
+
+- Check schema carefully: field was `segmentIds` (plural) as JSON array, not `segmentId` (singular)
+- templateId can be null, need to handle with if check before querying
+- Use `inArray()` from drizzle-orm for validating multiple IDs exist
+- JSON.stringify/JSON.parse for converting between JS array and text column
+- For PATCH with JSON array fields, handle undefined vs null: undefined = don't change, null = clear it
+- SQL aggregation with CASE WHEN for counting statuses is more efficient than multiple queries
+

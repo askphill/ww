@@ -588,8 +588,8 @@
         "Typecheck passes (`pnpm typecheck`)"
       ],
       "priority": 34,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added all campaign CRUD endpoints with send stats, template/segment validation, and draft-only restrictions for updates/deletes. Uses segmentIds JSON array field. Build and typecheck pass."
     },
     {
       "id": "US-035",
