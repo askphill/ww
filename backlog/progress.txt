@@ -663,3 +663,36 @@
 - Resend `emails.send()` returns `{data: {id}, error}` - check error first before accessing data
 - Authenticated user available via `c.get('user')` in Hono routes with auth middleware
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-023 - Create template list page UI
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/Templates.tsx` with full template list UI
+- Implemented responsive grid layout for template cards (1/2/3 columns based on breakpoint)
+- Added TemplateCard component showing name, subject preview, last modified date
+- Implemented StatusBadge component with Draft (gray), Active (green), Archived (red) states
+- Created EmptyState component with email icon and call-to-action button
+- Added template API methods to `apps/studio/client/lib/api.ts`:
+  - list, get, create, update, delete, preview, sendTest
+- Registered `/email/templates` route in `apps/studio/client/App.tsx`
+- Click on template card navigates to editor (using react-router-dom useNavigate)
+- Verified in browser using chrome-devtools MCP
+
+**Files changed:**
+
+- `apps/studio/client/pages/email/Templates.tsx` (created)
+- `apps/studio/client/lib/api.ts` (modified - added template API methods)
+- `apps/studio/client/App.tsx` (modified - added route and import)
+- `backlog/backlog.json` (updated US-023 passes status)
+
+**Learnings for future iterations:**
+
+- Template list uses grid layout pattern: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`
+- Button components can use `onClick` with `navigate()` from useNavigate hook
+- Empty states should have both descriptive text and call-to-action button
+- StatusBadge component can be shared between Templates and Campaigns pages (similar pattern)
+- API types should match backend response structure exactly for TypeScript inference
+
