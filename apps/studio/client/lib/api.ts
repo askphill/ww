@@ -455,6 +455,132 @@ export const api = {
           }>,
         ),
     },
+
+    campaigns: {
+      list: (status?: string) => {
+        const params = new URLSearchParams();
+        if (status) params.set('status', status);
+        const query = params.toString();
+        return fetch(`${API_BASE}/email/campaigns${query ? `?${query}` : ''}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaigns: Array<{
+              id: number;
+              name: string;
+              subject: string;
+              templateId: number | null;
+              segmentIds: string | null;
+              status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled';
+              scheduledAt: string | null;
+              sentAt: string | null;
+              createdAt: string;
+              updatedAt: string | null;
+              stats: {
+                total: number;
+                sent: number;
+                delivered: number;
+                opened: number;
+                clicked: number;
+                bounced: number;
+              };
+            }>;
+          }>,
+        );
+      },
+
+      get: (id: number) =>
+        fetch(`${API_BASE}/email/campaigns/${id}`, {
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaign: {
+              id: number;
+              name: string;
+              subject: string;
+              templateId: number | null;
+              segmentIds: string | null;
+              status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled';
+              scheduledAt: string | null;
+              sentAt: string | null;
+              createdAt: string;
+              updatedAt: string | null;
+            };
+            template: {
+              id: number;
+              name: string;
+              subject: string;
+            } | null;
+            segments: Array<{
+              id: number;
+              name: string;
+              subscriberCount: number;
+            }>;
+            stats: {
+              total: number;
+              sent: number;
+              delivered: number;
+              opened: number;
+              clicked: number;
+              bounced: number;
+            };
+          }>,
+        ),
+
+      create: (data: {
+        name: string;
+        subject: string;
+        templateId: number;
+        segmentIds?: number[];
+      }) =>
+        fetch(`${API_BASE}/email/campaigns`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaign: {
+              id: number;
+              name: string;
+              subject: string;
+              status: string;
+              createdAt: string;
+            };
+          }>,
+        ),
+
+      update: (
+        id: number,
+        data: {
+          name?: string;
+          subject?: string;
+          templateId?: number;
+          segmentIds?: number[] | null;
+        },
+      ) =>
+        fetch(`${API_BASE}/email/campaigns/${id}`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            campaign: {
+              id: number;
+              name: string;
+              subject: string;
+              updatedAt: string;
+            };
+          }>,
+        ),
+
+      delete: (id: number) =>
+        fetch(`${API_BASE}/email/campaigns/${id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        }).then(handleResponse<{success: boolean}>),
+    },
   },
 
   // Keyword Tracking

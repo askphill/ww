@@ -1038,3 +1038,43 @@
 - For PATCH with JSON array fields, handle undefined vs null: undefined = don't change, null = clear it
 - SQL aggregation with CASE WHEN for counting statuses is more efficient than multiple queries
 
+### Iteration: 2026-01-20 US-035
+
+**Story:** US-035 - Create campaigns list page UI
+**Status:** Complete
+
+**What was done:**
+
+- Created `apps/studio/client/pages/email/Campaigns.tsx` with full campaign list UI
+- Implemented table with columns: Name (with subject), Status, Sent Date, Open Rate, Click Rate
+- Added status filter dropdown (All, Draft, Scheduled, Sending, Sent, Cancelled)
+- Implemented StatusBadge component with color-coded badges:
+  - Draft: gray (bg-muted)
+  - Scheduled: blue (bg-blue-500/20) with countdown display
+  - Sending: yellow (bg-yellow-500/20)
+  - Sent: green (bg-green-500/20)
+  - Cancelled: red (bg-red-500/20)
+- Added "Create Campaign" button in header
+- Clickable rows navigate to campaign detail/editor (/email/campaigns/:id)
+- Empty state with call-to-action button
+- Added campaign API methods to `apps/studio/client/lib/api.ts`:
+  - list, get, create, update, delete
+- Registered `/email/campaigns` route in `apps/studio/client/App.tsx`
+- Added auth middleware for campaign routes in `apps/studio/server/routes/email.ts`
+- Open rate and click rate calculated from stats (delivered as denominator)
+
+**Files changed:**
+
+- apps/studio/client/pages/email/Campaigns.tsx (created)
+- apps/studio/client/lib/api.ts (modified - added campaigns API methods)
+- apps/studio/client/App.tsx (modified - added route and import)
+- apps/studio/server/routes/email.ts (modified - added campaigns auth middleware)
+
+**Learnings for future iterations:**
+
+- Campaign routes need explicit auth middleware like other email routes: `emailRoutes.use('/campaigns/*', authMiddleware)` and `emailRoutes.use('/campaigns', authMiddleware)`
+- StatusBadge can show additional context (like scheduled time countdown) for specific statuses
+- Open/click rates should use delivered count as denominator, not total sent
+- formatScheduledTime helper useful for showing relative time for scheduled campaigns
+- Table rows can be clickable with cursor-pointer and onClick handlers
+

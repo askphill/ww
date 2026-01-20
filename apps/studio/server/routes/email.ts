@@ -313,6 +313,8 @@ emailRoutes.use('/subscribers/*', authMiddleware);
 emailRoutes.use('/segments/*', authMiddleware);
 emailRoutes.use('/templates/*', authMiddleware);
 emailRoutes.use('/templates', authMiddleware);
+emailRoutes.use('/campaigns/*', authMiddleware);
+emailRoutes.use('/campaigns', authMiddleware);
 
 // ============ Subscribers Endpoints ============
 
