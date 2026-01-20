@@ -31,7 +31,7 @@ import {Header} from '~/components/Header';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [
     {title: 'Design System | Wakey'},
     {name: 'robots', content: 'noindex'},
@@ -383,7 +383,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
         <header className="pt-24 md:pt-28 px-4 md:px-8 pb-6">
           <h1 className="text-h1 font-display mb-3">Design System</h1>
           <p className="text-paragraph font-body text-text/70 max-w-prose">
-            A comprehensive overview of Wakey's design tokens, typography,
+            A comprehensive overview of Wakey&apos;s design tokens, typography,
             colors, and UI components.
           </p>
         </header>
