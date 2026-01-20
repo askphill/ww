@@ -12,14 +12,14 @@
 
 ## Tech Stack
 
-| Layer    | Technology                             |
-| -------- | -------------------------------------- |
+| Layer    | Technology                               |
+| -------- | ---------------------------------------- |
 | Frontend | React 18, React Router 7, TanStack Query |
-| Backend  | Hono (TypeScript HTTP framework)       |
-| Database | Cloudflare D1 (SQLite) + Drizzle ORM   |
-| Runtime  | Cloudflare Workers (wrangler)          |
-| Styling  | Tailwind CSS v4                        |
-| Build    | Vite 6                                 |
+| Backend  | Hono (TypeScript HTTP framework)         |
+| Database | Cloudflare D1 (SQLite) + Drizzle ORM     |
+| Runtime  | Cloudflare Workers (wrangler)            |
+| Styling  | Tailwind CSS v4                          |
+| Build    | Vite 6                                   |
 
 ---
 
@@ -98,13 +98,13 @@ pnpm db:migrate:prod        # Apply migrations to production
 
 All API routes are prefixed with `/api/`:
 
-| Route                     | Description                    |
-| ------------------------- | ------------------------------ |
-| `/api/auth/*`             | Authentication (login, logout) |
-| `/api/gsc/*`              | Google Search Console data     |
-| `/api/opportunities/*`    | SEO opportunities analysis     |
-| `/api/tracking/*`         | Keyword tracking               |
-| `/api/health`             | Health check                   |
+| Route                  | Description                    |
+| ---------------------- | ------------------------------ |
+| `/api/auth/*`          | Authentication (login, logout) |
+| `/api/gsc/*`           | Google Search Console data     |
+| `/api/opportunities/*` | SEO opportunities analysis     |
+| `/api/tracking/*`      | Keyword tracking               |
+| `/api/health`          | Health check                   |
 
 ### Authentication
 
@@ -121,13 +121,13 @@ app.use('*', authMiddleware);
 
 ## Frontend Routes
 
-| Path                 | Page           | Description                |
-| -------------------- | -------------- | -------------------------- |
-| `/login`             | Login          | Authentication (public)    |
-| `/seo/tracking`      | Tracking       | Keyword position tracking  |
-| `/seo/opportunities` | Opportunities  | SEO improvement suggestions |
-| `/klaviyo`           | Klaviyo        | Email marketing stats      |
-| `/meta`              | Meta           | Meta ads integration       |
+| Path                 | Page          | Description                 |
+| -------------------- | ------------- | --------------------------- |
+| `/login`             | Login         | Authentication (public)     |
+| `/seo/tracking`      | Tracking      | Keyword position tracking   |
+| `/seo/opportunities` | Opportunities | SEO improvement suggestions |
+| `/klaviyo`           | Klaviyo       | Email marketing stats       |
+| `/meta`              | Meta          | Meta ads integration        |
 
 All routes except `/login` require authentication via `ProtectedRoute`.
 
@@ -135,12 +135,12 @@ All routes except `/login` require authentication via `ProtectedRoute`.
 
 ## External Services
 
-| Service          | Purpose                        | Config Key            |
-| ---------------- | ------------------------------ | --------------------- |
-| Google Search Console | Search analytics          | `GSC_*`               |
-| Gemini AI        | Content analysis               | `GEMINI_API_KEY`      |
-| DataForSEO       | Keyword research               | `DATAFORSEO_*`        |
-| Resend           | Email notifications            | `RESEND_API_KEY`      |
+| Service               | Purpose             | Config Key       |
+| --------------------- | ------------------- | ---------------- |
+| Google Search Console | Search analytics    | `GSC_*`          |
+| Gemini AI             | Content analysis    | `GEMINI_API_KEY` |
+| DataForSEO            | Keyword research    | `DATAFORSEO_*`   |
+| Resend                | Email notifications | `RESEND_API_KEY` |
 
 ---
 
@@ -243,7 +243,9 @@ const {isDark, toggle} = useDarkMode();
 ## Deployment
 
 ```bash
-pnpm deploy  # Builds client + deploys to Cloudflare Workers
+pnpm deploy  # Runs migrations, builds client, deploys to Cloudflare Workers
 ```
+
+The deploy script automatically runs `db:migrate:prod` before building and deploying, so database schema changes are always applied.
 
 Deployed to `studio.wakey.care` via custom domain in `wrangler.jsonc`.
