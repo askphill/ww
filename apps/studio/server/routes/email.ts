@@ -585,4 +585,186 @@ emailRoutes.delete('/subscribers/:id', async (c) => {
   return c.json({success: true});
 });
 
+// ============ Segments Endpoints ============
+
+// Get all segments with subscriber counts
+emailRoutes.get('/segments', async (c) => {
+  const db = createDb(c.env.DB);
+
+  const data = await db
+    .select()
+    .from(segments)
+    .orderBy(desc(segments.createdAt));
+
+  return c.json({segments: data});
+});
+
+// Get single segment with subscriber list (paginated)
+emailRoutes.get('/segments/:id', async (c) => {
+  const db = createDb(c.env.DB);
+  const id = parseInt(c.req.param('id'));
+
+  // Query parameters for pagination
+  const page = parseInt(c.req.query('page') || '1');
+  const limit = parseInt(c.req.query('limit') || '50');
+  const offset = (page - 1) * limit;
+
+  // Get segment
+  const [segment] = await db
+    .select()
+    .from(segments)
+    .where(eq(segments.id, id))
+    .limit(1);
+
+  if (!segment) {
+    return c.json({error: 'Segment not found'}, 404);
+  }
+
+  // Get total subscriber count for this segment
+  const [countResult] = await db
+    .select({count: sql<number>`count(*)`})
+    .from(segmentSubscribers)
+    .where(eq(segmentSubscribers.segmentId, id));
+
+  const total = countResult?.count || 0;
+
+  // Get paginated subscriber list
+  const segmentMembers = await db
+    .select({
+      subscriberId: segmentSubscribers.subscriberId,
+      addedAt: segmentSubscribers.addedAt,
+      email: subscribers.email,
+      firstName: subscribers.firstName,
+      lastName: subscribers.lastName,
+      status: subscribers.status,
+    })
+    .from(segmentSubscribers)
+    .innerJoin(subscribers, eq(segmentSubscribers.subscriberId, subscribers.id))
+    .where(eq(segmentSubscribers.segmentId, id))
+    .orderBy(desc(segmentSubscribers.addedAt))
+    .limit(limit)
+    .offset(offset);
+
+  return c.json({
+    segment,
+    subscribers: segmentMembers,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  });
+});
+
+// Create custom segment
+emailRoutes.post(
+  '/segments',
+  zValidator(
+    'json',
+    z.object({
+      name: z.string().min(1, 'Name is required'),
+      filters: z.record(z.unknown()).optional(),
+    }),
+  ),
+  async (c) => {
+    const db = createDb(c.env.DB);
+    const data = c.req.valid('json');
+
+    // Insert new segment
+    const [segment] = await db
+      .insert(segments)
+      .values({
+        name: data.name,
+        type: 'custom',
+        filters: data.filters ? JSON.stringify(data.filters) : null,
+        subscriberCount: 0,
+      })
+      .returning();
+
+    return c.json({segment}, 201);
+  },
+);
+
+// Update segment (name, filters)
+emailRoutes.patch(
+  '/segments/:id',
+  zValidator(
+    'json',
+    z.object({
+      name: z.string().min(1, 'Name is required').optional(),
+      filters: z.record(z.unknown()).optional(),
+    }),
+  ),
+  async (c) => {
+    const db = createDb(c.env.DB);
+    const id = parseInt(c.req.param('id'));
+    const data = c.req.valid('json');
+
+    // Check segment exists
+    const [existing] = await db
+      .select()
+      .from(segments)
+      .where(eq(segments.id, id))
+      .limit(1);
+
+    if (!existing) {
+      return c.json({error: 'Segment not found'}, 404);
+    }
+
+    // Build update object
+    const updateData: Record<string, unknown> = {
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (data.name !== undefined) {
+      updateData.name = data.name;
+    }
+    if (data.filters !== undefined) {
+      updateData.filters = JSON.stringify(data.filters);
+    }
+
+    const [segment] = await db
+      .update(segments)
+      .set(updateData)
+      .where(eq(segments.id, id))
+      .returning();
+
+    return c.json({segment});
+  },
+);
+
+// Delete segment (only custom type)
+emailRoutes.delete('/segments/:id', async (c) => {
+  const db = createDb(c.env.DB);
+  const id = parseInt(c.req.param('id'));
+
+  // Check segment exists
+  const [existing] = await db
+    .select()
+    .from(segments)
+    .where(eq(segments.id, id))
+    .limit(1);
+
+  if (!existing) {
+    return c.json({error: 'Segment not found'}, 404);
+  }
+
+  // Only allow deleting custom segments
+  if (existing.type !== 'custom') {
+    return c.json(
+      {
+        error:
+          'Cannot delete Shopify-synced segments. Remove the segment from Shopify instead.',
+      },
+      403,
+    );
+  }
+
+  // Delete segment (cascade will remove segment_subscribers entries)
+  await db.delete(segments).where(eq(segments.id, id));
+
+  return c.json({success: true});
+});
+
 export {emailRoutes};
