@@ -10,6 +10,8 @@ import {
   campaigns,
   emailSends,
   emailEvents,
+  dailyEmailMetrics,
+  dailySubscriberMetrics,
 } from '../db/schema';
 import {authMiddleware} from '../middleware/auth';
 import {eq, desc, like, or, sql, and, inArray, count} from 'drizzle-orm';
@@ -945,6 +947,8 @@ emailRoutes.use('/templates/*', authMiddleware);
 emailRoutes.use('/templates', authMiddleware);
 emailRoutes.use('/campaigns/*', authMiddleware);
 emailRoutes.use('/campaigns', authMiddleware);
+emailRoutes.use('/analytics/*', authMiddleware);
+emailRoutes.use('/analytics', authMiddleware);
 
 // ============ Subscribers Endpoints ============
 
@@ -2581,6 +2585,368 @@ emailRoutes.delete('/campaigns/:id', async (c) => {
   await db.delete(campaigns).where(eq(campaigns.id, id));
 
   return c.json({success: true});
+});
+
+// ============ Analytics Endpoints ============
+
+/**
+ * Get overview analytics
+ * Returns: total subscribers, active subscribers, growth rate (7d), total sent (30d), avg open rate, avg click rate
+ */
+emailRoutes.get('/analytics/overview', async (c) => {
+  const db = createDb(c.env.DB);
+
+  // Get total and active subscriber counts
+  const [subscriberCounts] = await db
+    .select({
+      total: count(),
+      active: sql<number>`SUM(CASE WHEN ${subscribers.status} = 'active' THEN 1 ELSE 0 END)`,
+    })
+    .from(subscribers);
+
+  const totalSubscribers = subscriberCounts?.total ?? 0;
+  const activeSubscribers = Number(subscriberCounts?.active) ?? 0;
+
+  // Calculate 7-day growth rate from daily_subscriber_metrics
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+
+  const growthMetrics = await db
+    .select({
+      netGrowth: sql<number>`SUM(${dailySubscriberMetrics.netGrowth})`,
+    })
+    .from(dailySubscriberMetrics)
+    .where(sql`${dailySubscriberMetrics.date} >= ${sevenDaysAgoStr}`);
+
+  const netGrowth7d = Number(growthMetrics[0]?.netGrowth) || 0;
+
+  // Calculate growth rate as percentage
+  const startingActive = activeSubscribers - netGrowth7d;
+  const growthRate7d =
+    startingActive > 0
+      ? Math.round((netGrowth7d / startingActive) * 100 * 100) / 100
+      : 0;
+
+  // Get 30-day email metrics (use aggregated table if available, else fallback to raw data)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+
+  // Try to get from aggregated table first
+  const aggregatedMetrics = await db
+    .select({
+      totalSent: sql<number>`SUM(${dailyEmailMetrics.sent})`,
+      totalDelivered: sql<number>`SUM(${dailyEmailMetrics.delivered})`,
+      totalOpened: sql<number>`SUM(${dailyEmailMetrics.opened})`,
+      totalClicked: sql<number>`SUM(${dailyEmailMetrics.clicked})`,
+    })
+    .from(dailyEmailMetrics)
+    .where(
+      and(
+        sql`${dailyEmailMetrics.date} >= ${thirtyDaysAgoStr}`,
+        sql`${dailyEmailMetrics.campaignId} IS NULL`, // Overall metrics (not campaign-specific)
+      ),
+    );
+
+  let totalSent30d = Number(aggregatedMetrics[0]?.totalSent) || 0;
+  let totalDelivered30d = Number(aggregatedMetrics[0]?.totalDelivered) || 0;
+  let totalOpened30d = Number(aggregatedMetrics[0]?.totalOpened) || 0;
+  let totalClicked30d = Number(aggregatedMetrics[0]?.totalClicked) || 0;
+
+  // If no aggregated data, fall back to raw email_sends table
+  if (totalSent30d === 0) {
+    const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
+    const rawMetrics = await db
+      .select({
+        total: count(),
+        delivered: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('delivered', 'opened', 'clicked') THEN 1 ELSE 0 END)`,
+        opened: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('opened', 'clicked') THEN 1 ELSE 0 END)`,
+        clicked: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'clicked' THEN 1 ELSE 0 END)`,
+      })
+      .from(emailSends)
+      .where(sql`${emailSends.sentAt} >= ${thirtyDaysAgoIso}`);
+
+    totalSent30d = rawMetrics[0]?.total ?? 0;
+    totalDelivered30d = Number(rawMetrics[0]?.delivered) ?? 0;
+    totalOpened30d = Number(rawMetrics[0]?.opened) ?? 0;
+    totalClicked30d = Number(rawMetrics[0]?.clicked) ?? 0;
+  }
+
+  // Calculate rates (use delivered as denominator)
+  const avgOpenRate =
+    totalDelivered30d > 0
+      ? Math.round((totalOpened30d / totalDelivered30d) * 100 * 100) / 100
+      : 0;
+  const avgClickRate =
+    totalDelivered30d > 0
+      ? Math.round((totalClicked30d / totalDelivered30d) * 100 * 100) / 100
+      : 0;
+
+  return c.json({
+    overview: {
+      totalSubscribers,
+      activeSubscribers,
+      growthRate7d,
+      netGrowth7d,
+      totalSent30d,
+      avgOpenRate,
+      avgClickRate,
+    },
+  });
+});
+
+/**
+ * Get engagement data over time for charts
+ * Query params: period=7d|30d|90d
+ */
+emailRoutes.get('/analytics/engagement', async (c) => {
+  const db = createDb(c.env.DB);
+  const period = c.req.query('period') || '30d';
+
+  // Parse period to number of days
+  let days: number;
+  switch (period) {
+    case '7d':
+      days = 7;
+      break;
+    case '90d':
+      days = 90;
+      break;
+    case '30d':
+    default:
+      days = 30;
+      break;
+  }
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  const startDateStr = startDate.toISOString().split('T')[0];
+
+  // Get daily metrics from aggregated table (overall, campaignId IS NULL)
+  const dailyData = await db
+    .select({
+      date: dailyEmailMetrics.date,
+      sent: dailyEmailMetrics.sent,
+      delivered: dailyEmailMetrics.delivered,
+      opened: dailyEmailMetrics.opened,
+      clicked: dailyEmailMetrics.clicked,
+      bounced: dailyEmailMetrics.bounced,
+      unsubscribed: dailyEmailMetrics.unsubscribed,
+    })
+    .from(dailyEmailMetrics)
+    .where(
+      and(
+        sql`${dailyEmailMetrics.date} >= ${startDateStr}`,
+        sql`${dailyEmailMetrics.campaignId} IS NULL`,
+      ),
+    )
+    .orderBy(dailyEmailMetrics.date);
+
+  // Format with calculated rates
+  const engagement = dailyData.map((day) => {
+    const delivered = day.delivered || 0;
+    return {
+      date: day.date,
+      sent: day.sent || 0,
+      delivered,
+      opened: day.opened || 0,
+      clicked: day.clicked || 0,
+      bounced: day.bounced || 0,
+      unsubscribed: day.unsubscribed || 0,
+      openRate:
+        delivered > 0
+          ? Math.round(((day.opened || 0) / delivered) * 100 * 100) / 100
+          : 0,
+      clickRate:
+        delivered > 0
+          ? Math.round(((day.clicked || 0) / delivered) * 100 * 100) / 100
+          : 0,
+    };
+  });
+
+  // If no aggregated data, fall back to generating from raw data
+  if (engagement.length === 0) {
+    const startDateIso = startDate.toISOString();
+
+    // Get all sends in the period, grouped by date
+    const rawSends = await db
+      .select({
+        sentAt: emailSends.sentAt,
+        status: emailSends.status,
+      })
+      .from(emailSends)
+      .where(sql`${emailSends.sentAt} >= ${startDateIso}`);
+
+    // Group by date and calculate metrics
+    const dailyMap = new Map<
+      string,
+      {
+        sent: number;
+        delivered: number;
+        opened: number;
+        clicked: number;
+        bounced: number;
+      }
+    >();
+
+    for (const send of rawSends) {
+      if (!send.sentAt) continue;
+      const dateStr = send.sentAt.split('T')[0];
+      if (!dailyMap.has(dateStr)) {
+        dailyMap.set(dateStr, {
+          sent: 0,
+          delivered: 0,
+          opened: 0,
+          clicked: 0,
+          bounced: 0,
+        });
+      }
+      const day = dailyMap.get(dateStr);
+      if (!day) continue;
+
+      day.sent++;
+      if (['delivered', 'opened', 'clicked'].includes(send.status)) {
+        day.delivered++;
+      }
+      if (['opened', 'clicked'].includes(send.status)) {
+        day.opened++;
+      }
+      if (send.status === 'clicked') {
+        day.clicked++;
+      }
+      if (send.status === 'bounced') {
+        day.bounced++;
+      }
+    }
+
+    // Convert to array and sort
+    const fallbackEngagement = Array.from(dailyMap.entries())
+      .map(([date, metrics]) => ({
+        date,
+        ...metrics,
+        unsubscribed: 0, // Would need to query email_events for this
+        openRate:
+          metrics.delivered > 0
+            ? Math.round((metrics.opened / metrics.delivered) * 100 * 100) / 100
+            : 0,
+        clickRate:
+          metrics.delivered > 0
+            ? Math.round((metrics.clicked / metrics.delivered) * 100 * 100) /
+              100
+            : 0,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    return c.json({engagement: fallbackEngagement, period});
+  }
+
+  return c.json({engagement, period});
+});
+
+/**
+ * Get campaign performance comparison
+ * Returns recent campaigns with their performance metrics
+ */
+emailRoutes.get('/analytics/campaigns', async (c) => {
+  const db = createDb(c.env.DB);
+  const limit = parseInt(c.req.query('limit') || '10');
+
+  // Get recent sent campaigns with their stats
+  const recentCampaigns = await db
+    .select({
+      id: campaigns.id,
+      name: campaigns.name,
+      subject: campaigns.subject,
+      status: campaigns.status,
+      sentAt: campaigns.sentAt,
+      createdAt: campaigns.createdAt,
+    })
+    .from(campaigns)
+    .where(or(eq(campaigns.status, 'sent'), eq(campaigns.status, 'sending')))
+    .orderBy(desc(campaigns.sentAt))
+    .limit(limit);
+
+  // Get stats for each campaign
+  const campaignsWithStats = await Promise.all(
+    recentCampaigns.map(async (campaign) => {
+      // Try to get from aggregated daily metrics first
+      const aggregated = await db
+        .select({
+          sent: sql<number>`SUM(${dailyEmailMetrics.sent})`,
+          delivered: sql<number>`SUM(${dailyEmailMetrics.delivered})`,
+          opened: sql<number>`SUM(${dailyEmailMetrics.opened})`,
+          clicked: sql<number>`SUM(${dailyEmailMetrics.clicked})`,
+          bounced: sql<number>`SUM(${dailyEmailMetrics.bounced})`,
+          unsubscribed: sql<number>`SUM(${dailyEmailMetrics.unsubscribed})`,
+        })
+        .from(dailyEmailMetrics)
+        .where(eq(dailyEmailMetrics.campaignId, campaign.id));
+
+      let stats = {
+        sent: Number(aggregated[0]?.sent) || 0,
+        delivered: Number(aggregated[0]?.delivered) || 0,
+        opened: Number(aggregated[0]?.opened) || 0,
+        clicked: Number(aggregated[0]?.clicked) || 0,
+        bounced: Number(aggregated[0]?.bounced) || 0,
+        unsubscribed: Number(aggregated[0]?.unsubscribed) || 0,
+      };
+
+      // If no aggregated data, fall back to raw email_sends
+      if (stats.sent === 0) {
+        const [rawStats] = await db
+          .select({
+            total: count(),
+            sent: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('sent', 'delivered', 'opened', 'clicked', 'bounced', 'complained') THEN 1 ELSE 0 END)`,
+            delivered: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('delivered', 'opened', 'clicked') THEN 1 ELSE 0 END)`,
+            opened: sql<number>`SUM(CASE WHEN ${emailSends.status} IN ('opened', 'clicked') THEN 1 ELSE 0 END)`,
+            clicked: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'clicked' THEN 1 ELSE 0 END)`,
+            bounced: sql<number>`SUM(CASE WHEN ${emailSends.status} = 'bounced' THEN 1 ELSE 0 END)`,
+          })
+          .from(emailSends)
+          .where(eq(emailSends.campaignId, campaign.id));
+
+        stats = {
+          sent: rawStats?.total ?? 0,
+          delivered: Number(rawStats?.delivered) ?? 0,
+          opened: Number(rawStats?.opened) ?? 0,
+          clicked: Number(rawStats?.clicked) ?? 0,
+          bounced: Number(rawStats?.bounced) ?? 0,
+          unsubscribed: 0,
+        };
+      }
+
+      // Calculate rates
+      const openRate =
+        stats.delivered > 0
+          ? Math.round((stats.opened / stats.delivered) * 100 * 100) / 100
+          : 0;
+      const clickRate =
+        stats.delivered > 0
+          ? Math.round((stats.clicked / stats.delivered) * 100 * 100) / 100
+          : 0;
+      const bounceRate =
+        stats.sent > 0
+          ? Math.round((stats.bounced / stats.sent) * 100 * 100) / 100
+          : 0;
+
+      return {
+        id: campaign.id,
+        name: campaign.name,
+        subject: campaign.subject,
+        status: campaign.status,
+        sentAt: campaign.sentAt,
+        stats: {
+          ...stats,
+          openRate,
+          clickRate,
+          bounceRate,
+        },
+      };
+    }),
+  );
+
+  return c.json({campaigns: campaignsWithStats});
 });
 
 export {emailRoutes};

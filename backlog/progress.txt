@@ -1498,3 +1498,42 @@
 - Cron handler pattern: check `event.cron === 'pattern'` then `ctx.waitUntil(async IIFE)`
 - Run analytics aggregation at 2 AM to ensure previous day's data is complete before aggregating
 - `getPreviousDay()` utility function returns Date object for previous calendar day
+
+### Iteration: 2026-01-20 US-050
+
+**Story:** US-050 - Create analytics API endpoints
+**Status:** Complete
+
+**What was done:**
+
+- Added `GET /api/email/analytics/overview` endpoint:
+  - Returns total subscribers, active subscribers from subscribers table
+  - Calculates 7-day growth rate from daily_subscriber_metrics
+  - Gets 30-day email totals (sent, delivered, opened, clicked) from daily_email_metrics or raw data
+  - Calculates avg open rate and click rate using delivered as denominator
+- Added `GET /api/email/analytics/engagement` endpoint:
+  - Accepts `period` query param: 7d, 30d (default), or 90d
+  - Returns daily metrics from aggregated table (campaignId IS NULL for overall)
+  - Calculates open/click rates per day
+  - Falls back to raw email_sends data if no aggregated data
+- Added `GET /api/email/analytics/campaigns` endpoint:
+  - Returns recent sent/sending campaigns (configurable limit)
+  - Gets metrics from aggregated table or raw email_sends
+  - Calculates open rate, click rate, bounce rate for each campaign
+- All endpoints use aggregated tables for performance with fallback to raw data
+- Added auth middleware for analytics routes
+- Build and typecheck pass
+
+**Files changed:**
+
+- apps/studio/server/routes/email.ts (modified - added ~310 lines for 3 analytics endpoints)
+- backlog/backlog.json (updated US-050 passes status)
+
+**Learnings for future iterations:**
+
+- Analytics endpoints should use aggregated tables for performance (daily_email_metrics, daily_subscriber_metrics)
+- Always provide fallback to raw data in case aggregation hasn't run yet
+- Use delivered count as denominator for open/click rates (not sent)
+- Growth rate calculation: (netGrowth / startingActive) * 100
+- Aggregated data uses campaignId IS NULL for overall metrics
+- Period params should be validated to known values (7d, 30d, 90d) with sensible default
