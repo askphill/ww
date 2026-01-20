@@ -2,7 +2,12 @@ import {Hono} from 'hono';
 import {zValidator} from '@hono/zod-validator';
 import {z} from 'zod';
 import {createDb} from '../db';
-import {subscribers, segmentSubscribers, segments} from '../db/schema';
+import {
+  subscribers,
+  segmentSubscribers,
+  segments,
+  emailTemplates,
+} from '../db/schema';
 import {authMiddleware} from '../middleware/auth';
 import {eq, desc, like, or, sql, and, inArray} from 'drizzle-orm';
 import type {AppVariables, Env} from '../index';
@@ -303,6 +308,8 @@ emailRoutes.post('/webhooks/shopify', async (c) => {
 // All routes below require authentication
 emailRoutes.use('/subscribers/*', authMiddleware);
 emailRoutes.use('/segments/*', authMiddleware);
+emailRoutes.use('/templates/*', authMiddleware);
+emailRoutes.use('/templates', authMiddleware);
 
 // ============ Subscribers Endpoints ============
 
@@ -843,6 +850,204 @@ emailRoutes.post('/segments/sync', async (c) => {
     success: true,
     message: 'Sync started. This may take a few minutes to complete.',
   });
+});
+
+// ============ Templates Endpoints ============
+
+// Get all templates with metadata
+emailRoutes.get('/templates', async (c) => {
+  const db = createDb(c.env.DB);
+
+  // Optional query param to include archived templates
+  const includeArchived = c.req.query('includeArchived') === 'true';
+
+  // Build query - exclude archived templates by default
+  let query = db
+    .select({
+      id: emailTemplates.id,
+      name: emailTemplates.name,
+      subject: emailTemplates.subject,
+      previewText: emailTemplates.previewText,
+      category: emailTemplates.category,
+      status: emailTemplates.status,
+      createdAt: emailTemplates.createdAt,
+      updatedAt: emailTemplates.updatedAt,
+    })
+    .from(emailTemplates);
+
+  if (!includeArchived) {
+    query = query.where(
+      or(
+        eq(emailTemplates.status, 'draft'),
+        eq(emailTemplates.status, 'active'),
+      ),
+    ) as typeof query;
+  }
+
+  const data = await query.orderBy(desc(emailTemplates.updatedAt));
+
+  return c.json({templates: data});
+});
+
+// Get single template with full component data
+emailRoutes.get('/templates/:id', async (c) => {
+  const db = createDb(c.env.DB);
+  const id = parseInt(c.req.param('id'));
+
+  const [template] = await db
+    .select()
+    .from(emailTemplates)
+    .where(eq(emailTemplates.id, id))
+    .limit(1);
+
+  if (!template) {
+    return c.json({error: 'Template not found'}, 404);
+  }
+
+  // Parse JSON fields for response
+  return c.json({
+    template: {
+      ...template,
+      components: template.components ? JSON.parse(template.components) : [],
+      variables: template.variables ? JSON.parse(template.variables) : [],
+    },
+  });
+});
+
+// Create template
+emailRoutes.post(
+  '/templates',
+  zValidator(
+    'json',
+    z.object({
+      name: z.string().min(1, 'Name is required'),
+      subject: z.string().min(1, 'Subject is required'),
+      previewText: z.string().optional(),
+      category: z.string().optional(),
+    }),
+  ),
+  async (c) => {
+    const db = createDb(c.env.DB);
+    const data = c.req.valid('json');
+
+    // Insert new template with empty components
+    const [template] = await db
+      .insert(emailTemplates)
+      .values({
+        name: data.name,
+        subject: data.subject,
+        previewText: data.previewText || null,
+        components: JSON.stringify([]),
+        variables: JSON.stringify([]),
+        category: data.category || null,
+        status: 'draft',
+      })
+      .returning();
+
+    return c.json({template}, 201);
+  },
+);
+
+// Update template
+emailRoutes.patch(
+  '/templates/:id',
+  zValidator(
+    'json',
+    z.object({
+      name: z.string().min(1, 'Name is required').optional(),
+      subject: z.string().min(1, 'Subject is required').optional(),
+      previewText: z.string().optional(),
+      components: z.array(z.record(z.unknown())).optional(),
+      variables: z.array(z.string()).optional(),
+      category: z.string().optional(),
+      status: z.enum(['draft', 'active', 'archived']).optional(),
+    }),
+  ),
+  async (c) => {
+    const db = createDb(c.env.DB);
+    const id = parseInt(c.req.param('id'));
+    const data = c.req.valid('json');
+
+    // Check template exists
+    const [existing] = await db
+      .select({id: emailTemplates.id})
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, id))
+      .limit(1);
+
+    if (!existing) {
+      return c.json({error: 'Template not found'}, 404);
+    }
+
+    // Build update object
+    const updateData: Record<string, unknown> = {
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (data.name !== undefined) {
+      updateData.name = data.name;
+    }
+    if (data.subject !== undefined) {
+      updateData.subject = data.subject;
+    }
+    if (data.previewText !== undefined) {
+      updateData.previewText = data.previewText;
+    }
+    if (data.components !== undefined) {
+      updateData.components = JSON.stringify(data.components);
+    }
+    if (data.variables !== undefined) {
+      updateData.variables = JSON.stringify(data.variables);
+    }
+    if (data.category !== undefined) {
+      updateData.category = data.category;
+    }
+    if (data.status !== undefined) {
+      updateData.status = data.status;
+    }
+
+    const [template] = await db
+      .update(emailTemplates)
+      .set(updateData)
+      .where(eq(emailTemplates.id, id))
+      .returning();
+
+    return c.json({
+      template: {
+        ...template,
+        components: template.components ? JSON.parse(template.components) : [],
+        variables: template.variables ? JSON.parse(template.variables) : [],
+      },
+    });
+  },
+);
+
+// Delete template (soft-delete by setting status to 'archived')
+emailRoutes.delete('/templates/:id', async (c) => {
+  const db = createDb(c.env.DB);
+  const id = parseInt(c.req.param('id'));
+
+  // Check template exists
+  const [existing] = await db
+    .select({id: emailTemplates.id})
+    .from(emailTemplates)
+    .where(eq(emailTemplates.id, id))
+    .limit(1);
+
+  if (!existing) {
+    return c.json({error: 'Template not found'}, 404);
+  }
+
+  // Soft delete by setting status to 'archived'
+  await db
+    .update(emailTemplates)
+    .set({
+      status: 'archived',
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(emailTemplates.id, id));
+
+  return c.json({success: true});
 });
 
 export {emailRoutes};

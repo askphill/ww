@@ -181,7 +181,7 @@ export const emailTemplates = sqliteTable(
     components: text('components'), // JSON
     variables: text('variables'), // JSON
     category: text('category'),
-    status: text('status', {enum: ['draft', 'active']})
+    status: text('status', {enum: ['draft', 'active', 'archived']})
       .notNull()
       .default('draft'),
     createdAt: text('created_at').default("datetime('now')"),

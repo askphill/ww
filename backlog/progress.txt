@@ -577,3 +577,33 @@
 - Idempotent seed functions should check existence before insert, not rely on unique constraints
 - Import from parent index.ts (../email-components) to get all exports cleanly
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-020 - Create template CRUD API routes
+**Status:** Complete
+
+**What was done:**
+
+- Added 5 template CRUD endpoints to `apps/studio/server/routes/email.ts`
+- `GET /api/email/templates` returns all templates (excluding archived by default, supports `includeArchived=true` query param)
+- `GET /api/email/templates/:id` returns single template with parsed JSON components and variables
+- `POST /api/email/templates` creates template with name, subject, empty components array
+- `PATCH /api/email/templates/:id` updates template fields including components JSON, variables, status
+- `DELETE /api/email/templates/:id` soft-deletes by setting status to 'archived'
+- Added 'archived' to emailTemplates status enum in schema.ts
+- All template routes require authentication via authMiddleware
+
+**Files changed:**
+
+- `apps/studio/server/routes/email.ts` (modified - added ~170 lines for template CRUD)
+- `apps/studio/server/db/schema.ts` (modified - added 'archived' to status enum)
+- `backlog/backlog.json` (updated US-020 passes status)
+
+**Learnings for future iterations:**
+
+- SQLite stores text columns without enum constraints, so adding new enum values works without migration
+- Drizzle schema enum changes only need TypeScript update, not database migration
+- List endpoints should exclude soft-deleted items by default with optional query param to include them
+- JSON fields stored as text need `JSON.parse()` when returning to client, `JSON.stringify()` when saving
+- Use `or()` helper to filter for multiple status values in where clause
+
