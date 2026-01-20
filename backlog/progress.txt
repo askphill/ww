@@ -854,3 +854,35 @@
 - beforeunload event handler is browser-native way to warn on tab close
 - For navigation warnings without data router, track pendingNavigation in state and show modal
 
+### Iteration: 2026-01-20 US-029
+
+**Story:** US-029 - Implement preview modal in editor
+**Status:** Complete
+
+**What was done:**
+
+- Enhanced PreviewModal component with full functionality
+- Added escape key handler using useEffect with keydown event listener
+- Added backdrop click handler to close modal when clicking outside
+- Prevent background scrolling when modal is open via document.body.style.overflow
+- Pass sample variables (firstName: "Friend") to preview API for interpolation
+- Added desktop/mobile toggle with icons (DesktopIcon, MobileIcon)
+- Added proper error states when preview fails
+- Added loading state with spinner during preview generation
+- Display "Save template first" message for unsaved templates (templateId null)
+- Show width indicator (600px/375px) and sample variable info in modal footer
+
+**Files changed:**
+
+- apps/studio/client/pages/email/Editor.tsx (modified - ~150 lines added, PreviewModal enhanced, added DesktopIcon and MobileIcon)
+
+**Learnings for future iterations:**
+
+- useEffect for keyboard events: add listener in effect, cleanup in return function
+- Escape key detection: check event.key === 'Escape'
+- Backdrop click: check e.target === e.currentTarget on the overlay div
+- Prevent body scroll: set document.body.style.overflow = 'hidden', restore to '' in cleanup
+- Modal accessibility: close on escape is expected UX behavior
+- Width toggle buttons: use active state styling to show current selection
+- Preview API accepts optional variables object for template interpolation
+
