@@ -93,7 +93,9 @@ export function Opportunities() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">SEO Overview</h1>
+        <h1 className="text-2xl font-bold text-foreground">
+          Google Search Console
+        </h1>
         <button
           onClick={() => syncMutation.mutate()}
           disabled={syncMutation.isPending}
@@ -125,133 +127,6 @@ export function Opportunities() {
           value={formatNumber(queriesData?.queries.length ?? 0)}
           description="Unique queries"
         />
-      </div>
-
-      {/* AI Insights Section */}
-      <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <div>
-            <h2 className="text-lg font-medium text-foreground">AI Insights</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              AI-powered opportunities based on GSC data and website content
-            </p>
-          </div>
-          <button
-            onClick={() => generateInsightsMutation.mutate()}
-            disabled={generateInsightsMutation.isPending}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {generateInsightsMutation.isPending
-              ? 'Generating...'
-              : 'Generate Insights'}
-          </button>
-        </div>
-        <div className="divide-y divide-border">
-          {insightsData?.insights.map((insight) => (
-            <div key={insight.id} className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <InsightTypeBadge type={insight.insightType} />
-                    <ImpactBadge impact={insight.potentialImpact} />
-                  </div>
-                  <h3 className="mt-2 font-medium text-foreground">
-                    {insight.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {insight.description}
-                  </p>
-                  {insight.relatedQueries.length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-xs font-medium uppercase text-muted-foreground">
-                        Related Queries
-                      </p>
-                      <div className="mt-1 flex flex-wrap gap-2">
-                        {insight.relatedQueries.map((query, i) => (
-                          <span
-                            key={i}
-                            className="inline-block rounded bg-muted px-2 py-1 text-xs text-muted-foreground"
-                          >
-                            {query}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {insight.matchingExistingContent &&
-                    insight.matchingExistingContent.length > 0 && (
-                      <div className="warning-box mt-3 rounded border p-3">
-                        <p className="warning-box-title text-xs font-medium uppercase">
-                          Existing Content That May Cover This Topic
-                        </p>
-                        <ul className="warning-box-content mt-1 list-inside list-disc text-sm">
-                          {insight.matchingExistingContent.map((content, i) => (
-                            <li key={i}>{content}</li>
-                          ))}
-                        </ul>
-                        <p className="warning-box-hint mt-2 text-xs">
-                          Consider optimizing existing content before creating
-                          new.
-                        </p>
-                      </div>
-                    )}
-                  {insight.recommendedAction && !insight.plan && (
-                    <div className="mt-3 rounded bg-muted/50 p-3">
-                      <p className="text-xs font-medium uppercase text-muted-foreground">
-                        Recommended Action
-                      </p>
-                      <p className="mt-1 text-sm text-foreground">
-                        {insight.recommendedAction}
-                      </p>
-                    </div>
-                  )}
-                  {insight.plan && <ActionPlanCard plan={insight.plan} />}
-                  {insight.blogPost && (
-                    <BlogPostCard blogPost={insight.blogPost} />
-                  )}
-                </div>
-                <div className="flex shrink-0 flex-col gap-2">
-                  <button
-                    onClick={() => {
-                      setGeneratingPlanId(insight.id);
-                      generatePlanMutation.mutate(insight.id);
-                    }}
-                    disabled={generatingPlanId === insight.id}
-                    className="rounded-md border border-primary bg-transparent px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 disabled:opacity-50"
-                  >
-                    {generatingPlanId === insight.id
-                      ? 'Generating...'
-                      : insight.plan
-                        ? 'Regenerate Plan'
-                        : 'Generate Plan'}
-                  </button>
-                  {insight.insightType === 'content_gap' && (
-                    <button
-                      onClick={() => {
-                        setGeneratingBlogPostId(insight.id);
-                        generateBlogPostMutation.mutate(insight.id);
-                      }}
-                      disabled={generatingBlogPostId === insight.id}
-                      className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-                    >
-                      {generatingBlogPostId === insight.id
-                        ? 'Writing...'
-                        : insight.blogPost
-                          ? 'Regenerate Blog Post'
-                          : 'Generate Blog Post'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-          {(!insightsData?.insights || insightsData.insights.length === 0) && (
-            <div className="px-6 py-8 text-center text-muted-foreground">
-              No AI insights yet. Sync GSC data first, then click "Generate
-              Insights" to get AI-powered recommendations.
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Top Queries Table */}
@@ -400,6 +275,133 @@ export function Opportunities() {
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* AI Insights Section */}
+      <div className="rounded-lg border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div>
+            <h2 className="text-lg font-medium text-foreground">AI Insights</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              AI-powered opportunities based on GSC data and website content
+            </p>
+          </div>
+          <button
+            onClick={() => generateInsightsMutation.mutate()}
+            disabled={generateInsightsMutation.isPending}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            {generateInsightsMutation.isPending
+              ? 'Generating...'
+              : 'Generate Insights'}
+          </button>
+        </div>
+        <div className="divide-y divide-border">
+          {insightsData?.insights.map((insight) => (
+            <div key={insight.id} className="p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <InsightTypeBadge type={insight.insightType} />
+                    <ImpactBadge impact={insight.potentialImpact} />
+                  </div>
+                  <h3 className="mt-2 font-medium text-foreground">
+                    {insight.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {insight.description}
+                  </p>
+                  {insight.relatedQueries.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs font-medium uppercase text-muted-foreground">
+                        Related Queries
+                      </p>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {insight.relatedQueries.map((query, i) => (
+                          <span
+                            key={i}
+                            className="inline-block rounded bg-muted px-2 py-1 text-xs text-muted-foreground"
+                          >
+                            {query}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {insight.matchingExistingContent &&
+                    insight.matchingExistingContent.length > 0 && (
+                      <div className="warning-box mt-3 rounded border p-3">
+                        <p className="warning-box-title text-xs font-medium uppercase">
+                          Existing Content That May Cover This Topic
+                        </p>
+                        <ul className="warning-box-content mt-1 list-inside list-disc text-sm">
+                          {insight.matchingExistingContent.map((content, i) => (
+                            <li key={i}>{content}</li>
+                          ))}
+                        </ul>
+                        <p className="warning-box-hint mt-2 text-xs">
+                          Consider optimizing existing content before creating
+                          new.
+                        </p>
+                      </div>
+                    )}
+                  {insight.recommendedAction && !insight.plan && (
+                    <div className="mt-3 rounded bg-muted/50 p-3">
+                      <p className="text-xs font-medium uppercase text-muted-foreground">
+                        Recommended Action
+                      </p>
+                      <p className="mt-1 text-sm text-foreground">
+                        {insight.recommendedAction}
+                      </p>
+                    </div>
+                  )}
+                  {insight.plan && <ActionPlanCard plan={insight.plan} />}
+                  {insight.blogPost && (
+                    <BlogPostCard blogPost={insight.blogPost} />
+                  )}
+                </div>
+                <div className="flex shrink-0 flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      setGeneratingPlanId(insight.id);
+                      generatePlanMutation.mutate(insight.id);
+                    }}
+                    disabled={generatingPlanId === insight.id}
+                    className="rounded-md border border-primary bg-transparent px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 disabled:opacity-50"
+                  >
+                    {generatingPlanId === insight.id
+                      ? 'Generating...'
+                      : insight.plan
+                        ? 'Regenerate Plan'
+                        : 'Generate Plan'}
+                  </button>
+                  {insight.insightType === 'content_gap' && (
+                    <button
+                      onClick={() => {
+                        setGeneratingBlogPostId(insight.id);
+                        generateBlogPostMutation.mutate(insight.id);
+                      }}
+                      disabled={generatingBlogPostId === insight.id}
+                      className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    >
+                      {generatingBlogPostId === insight.id
+                        ? 'Writing...'
+                        : insight.blogPost
+                          ? 'Regenerate Blog Post'
+                          : 'Generate Blog Post'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          {(!insightsData?.insights || insightsData.insights.length === 0) && (
+            <div className="px-6 py-8 text-center text-muted-foreground">
+              No AI insights yet. Sync GSC data first, then click "Generate
+              Insights" to get AI-powered recommendations.
+            </div>
+          )}
         </div>
       </div>
     </div>

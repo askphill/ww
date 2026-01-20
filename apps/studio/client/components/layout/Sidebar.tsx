@@ -5,8 +5,8 @@ const navigation = [
   {
     name: 'SEO',
     items: [
-      {name: 'Tracking', href: '/seo/tracking'},
-      {name: 'Opportunities', href: '/seo/opportunities'},
+      {name: 'Keyword Ranking', href: '/seo/tracking'},
+      {name: 'Google Search Console', href: '/seo/opportunities'},
     ],
   },
   {

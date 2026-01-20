@@ -10,6 +10,7 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [devLoading, setDevLoading] = useState(false);
+  const [devError, setDevError] = useState<string | null>(null);
   const {user, isLoading, sendMagicLink} = useAuth();
   const [searchParams] = useSearchParams();
   const error = searchParams.get('error');
@@ -38,6 +39,7 @@ export function Login() {
 
   const handleDevLogin = async () => {
     setDevLoading(true);
+    setDevError(null);
     try {
       const res = await fetch('/api/auth/dev-login', {
         method: 'POST',
@@ -45,7 +47,12 @@ export function Login() {
       });
       if (res.ok) {
         window.location.href = '/seo';
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setDevError(data.error || `Login failed (${res.status})`);
       }
+    } catch (e) {
+      setDevError(e instanceof Error ? e.message : 'Network error');
     } finally {
       setDevLoading(false);
     }
@@ -118,14 +125,19 @@ export function Login() {
             </button>
 
             {isLocalhost && (
-              <button
-                type="button"
-                onClick={handleDevLogin}
-                disabled={devLoading}
-                className="w-full rounded-md border border-input bg-background px-4 py-2 font-medium text-foreground shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
-              >
-                {devLoading ? 'Logging in...' : 'Dev Login (localhost only)'}
-              </button>
+              <>
+                {devError && (
+                  <p className="text-sm text-destructive">{devError}</p>
+                )}
+                <button
+                  type="button"
+                  onClick={handleDevLogin}
+                  disabled={devLoading}
+                  className="w-full rounded-md border border-input bg-background px-4 py-2 font-medium text-foreground shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {devLoading ? 'Logging in...' : 'Dev Login (localhost only)'}
+                </button>
+              </>
             )}
           </form>
         )}
