@@ -1,64 +1,29 @@
-# Codebase Patterns for AI Agents
+# Agents
 
-This file is maintained by Ralph and contains patterns discovered during autonomous development iterations. It helps future iterations understand codebase conventions.
+This file provides guidance for AI agents working on this codebase.
 
-> **Note**: See `CLAUDE.md` for project-specific instructions and setup details.
+## Documentation
 
-## Architecture
+For codebase patterns, conventions, and project structure, see:
 
-### Monorepo Structure
+- **[CLAUDE.md](./CLAUDE.md)** - Main project documentation and coding standards
 
-- `apps/website/` - Shopify Hydrogen storefront
-- `packages/ui/` - Shared React components (@wakey/ui)
-- `packages/hooks/` - Shared React hooks (@wakey/hooks)
-- `packages/tailwind-config/` - Shared Tailwind theme
+## Skills
 
-### Key Conventions
+Custom skills are available in `.claude/skills/`:
 
-- Use `@wakey/ui` components instead of creating new ones
-- Follow existing patterns in `apps/website/app/components/`
-- MDX content lives in `apps/website/app/content/`
+| Skill | Description | Invocation |
+|-------|-------------|------------|
+| `ralph` | Convert PRDs to backlog and run autonomous agent loop | `/ralph [path-to-prd.md]` |
+| `prd` | Create product requirement documents | `/prd` |
+| `shopify-admin` | Fetch data from Shopify Admin API | `/shopify-admin` |
+| `tone-of-voice` | Write copy following Wakey brand guidelines | `/tone-of-voice` |
 
-## Common Gotchas
+See each skill's `SKILL.md` for detailed usage instructions.
 
-### Tailwind v4
+## Backlog
 
-- No `tailwind.config.js` - use CSS `@theme` directive
-- Use type scale utilities (`text-h1`, `text-paragraph`) not standard Tailwind sizes
-- Check `packages/tailwind-config/theme.css` for available tokens
+Active work items are tracked in:
 
-### React Router 7 (Not Remix)
-
-- Import from `react-router` not `@remix-run/react`
-- Use `data()` not `json()` for loader responses
-- Route types come from `./+types/[route-name]`
-
-### Storefront API
-
-- Always run `pnpm codegen` after changing GraphQL queries
-- Metafields need Storefront API access enabled in Shopify Admin
-
-## Testing Patterns
-
-### Quality Checks
-
-```bash
-pnpm typecheck  # TypeScript validation
-pnpm build      # Production build
-```
-
-### Browser Verification
-
-Use chrome-devtools MCP for UI testing:
-
-- `mcp__chrome-devtools__take_snapshot` - Get page state
-- `mcp__chrome-devtools__click` - Interact with elements
-- `mcp__chrome-devtools__take_screenshot` - Visual verification
-
-## Patterns Discovered by Ralph
-
-<!-- Ralph will add patterns here during iterations -->
-
----
-
-_Last updated by Ralph: Never_
+- `backlog/backlog.json` - User stories with completion status
+- `backlog/progress.txt` - Learnings from previous iterations

@@ -1,6 +1,6 @@
 # Ralph PRD Converter Skill
 
-Convert a markdown PRD into `prd.json` format for the Ralph autonomous agent loop.
+Convert a markdown PRD into `backlog/backlog.json` format for the Ralph autonomous agent loop.
 
 ## Invocation
 
@@ -22,14 +22,14 @@ Read the specified markdown PRD file and extract all user stories.
 
 ### Step 2: Check for Existing Work
 
-If `prd.json` exists and has a different branch name:
+If `backlog/backlog.json` exists and has a different branch name:
 
 1. Archive the previous run to `archive/YYYY-MM-DD-[branch-name]/`
-2. Move `prd.json`, `progress.txt` to the archive
+2. Move `backlog/backlog.json`, `backlog/progress.txt` to the archive
 
-### Step 3: Generate prd.json
+### Step 3: Generate backlog.json
 
-Create `prd.json` at the project root with this structure:
+Create `backlog/backlog.json` with this structure:
 
 ```json
 {
@@ -106,8 +106,8 @@ UI stories need:
 
 ## Output Location
 
-- `prd.json` - Created at project root
-- `progress.txt` - Created when ralph.sh runs (append-only log)
+- `backlog/backlog.json` - Created in backlog folder
+- `backlog/progress.txt` - Created when ralph.sh runs (append-only log)
 
 ## Example Conversion
 

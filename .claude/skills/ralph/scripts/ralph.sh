@@ -9,8 +9,9 @@ MAX_ITERATIONS="${1:-10}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 PROMPT_FILE="$SCRIPT_DIR/../prompt.md"
-PRD_FILE="$PROJECT_ROOT/prd.json"
-PROGRESS_FILE="$PROJECT_ROOT/progress.txt"
+BACKLOG_DIR="$PROJECT_ROOT/backlog"
+BACKLOG_FILE="$BACKLOG_DIR/backlog.json"
+PROGRESS_FILE="$BACKLOG_DIR/progress.txt"
 BRANCH_FILE="$PROJECT_ROOT/.last-ralph-branch"
 ARCHIVE_DIR="$PROJECT_ROOT/archive"
 
@@ -49,8 +50,8 @@ check_prerequisites() {
         exit 1
     fi
 
-    if [ ! -f "$PRD_FILE" ]; then
-        error "prd.json not found at $PRD_FILE"
+    if [ ! -f "$BACKLOG_FILE" ]; then
+        error "backlog.json not found at $BACKLOG_FILE"
         error "Generate one with: claude \"/ralph tasks/prd-[feature].md\""
         exit 1
     fi
@@ -64,7 +65,7 @@ check_prerequisites() {
 # Archive previous run if branch changed
 archive_if_needed() {
     local current_branch
-    current_branch=$(jq -r '.branch' "$PRD_FILE")
+    current_branch=$(jq -r '.branch' "$BACKLOG_FILE")
 
     if [ -f "$BRANCH_FILE" ]; then
         local last_branch
@@ -78,7 +79,7 @@ archive_if_needed() {
             log "Archiving previous run to $archive_path"
             mkdir -p "$archive_path"
 
-            [ -f "$PRD_FILE" ] && cp "$PRD_FILE" "$archive_path/"
+            [ -f "$BACKLOG_FILE" ] && cp "$BACKLOG_FILE" "$archive_path/"
             [ -f "$PROGRESS_FILE" ] && mv "$PROGRESS_FILE" "$archive_path/"
         fi
     fi
@@ -88,8 +89,9 @@ archive_if_needed() {
 
 # Initialize progress file
 init_progress() {
+    mkdir -p "$BACKLOG_DIR"
     if [ ! -f "$PROGRESS_FILE" ]; then
-        log "Creating progress.txt"
+        log "Creating backlog/progress.txt"
         cat > "$PROGRESS_FILE" << 'EOF'
 # Ralph Progress Log
 
@@ -107,15 +109,15 @@ EOF
 # Check if all stories are complete
 all_stories_complete() {
     local incomplete
-    incomplete=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE")
+    incomplete=$(jq '[.userStories[] | select(.passes == false)] | length' "$BACKLOG_FILE")
     [ "$incomplete" -eq 0 ]
 }
 
 # Get summary of story status
 get_status_summary() {
     local total passed
-    total=$(jq '.userStories | length' "$PRD_FILE")
-    passed=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE")
+    total=$(jq '.userStories | length' "$BACKLOG_FILE")
+    passed=$(jq '[.userStories[] | select(.passes == true)] | length' "$BACKLOG_FILE")
     echo "$passed/$total stories complete"
 }
 
