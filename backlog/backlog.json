@@ -431,8 +431,8 @@
         "Verify in browser using chrome-devtools MCP"
       ],
       "priority": 25,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed. Added @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities dependencies. Updated Editor.tsx with DraggableComponentItem using useDraggable hook and CanvasDropZone using useDroppable. Components grouped by category (Layout, Content). Ghost preview shown during drag via DragOverlay. Build passes. Verified in browser."
     },
     {
       "id": "US-026",

@@ -1,6 +1,17 @@
 import {useState, useEffect} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {useParams, useNavigate} from 'react-router-dom';
+import {
+  DndContext,
+  DragOverlay,
+  useDraggable,
+  useDroppable,
+  DragStartEvent,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import {api} from '../../lib/api';
 
 interface ComponentInstance {
@@ -22,49 +33,68 @@ interface Template {
   updatedAt: string | null;
 }
 
-// Available component types for the library
+// Available component types for the library, grouped by category
 const COMPONENT_TYPES = [
   {
     type: 'Header',
     name: 'Header',
     description: 'Logo and branding header',
     icon: 'layout-top',
+    category: 'Layout',
   },
   {
     type: 'Hero',
     name: 'Hero',
     description: 'Large image with headline and CTA',
     icon: 'image',
+    category: 'Content',
   },
   {
     type: 'TextBlock',
     name: 'Text Block',
     description: 'Body text content',
     icon: 'text',
+    category: 'Content',
   },
   {
     type: 'CallToAction',
     name: 'Call to Action',
     description: 'Button for driving clicks',
     icon: 'pointer',
+    category: 'Content',
   },
   {
     type: 'ProductGrid',
     name: 'Product Grid',
     description: 'Showcase products in a grid',
     icon: 'grid',
+    category: 'Content',
   },
   {
     type: 'Divider',
     name: 'Divider',
     description: 'Visual separator',
-    icon: 'minus',
+    icon: 'misc',
+    category: 'Layout',
   },
   {
     type: 'Footer',
     name: 'Footer',
     description: 'Unsubscribe link and legal info',
     icon: 'layout-bottom',
+    category: 'Layout',
+  },
+];
+
+// Group components by category
+const COMPONENT_CATEGORIES = [
+  {
+    name: 'Layout',
+    components: COMPONENT_TYPES.filter((c) => c.category === 'Layout'),
+  },
+  {
+    name: 'Content',
+    components: COMPONENT_TYPES.filter((c) => c.category === 'Content'),
   },
 ];
 
@@ -91,6 +121,45 @@ export function Editor() {
   // Modal states
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showTestEmailModal, setShowTestEmailModal] = useState(false);
+
+  // Drag and drop state
+  const [activeDragType, setActiveDragType] = useState<string | null>(null);
+
+  // Configure sensors for drag detection
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Minimum distance before drag starts
+      },
+    }),
+  );
+
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    const {active} = event;
+    if (active.data.current?.type) {
+      setActiveDragType(active.data.current.type);
+    }
+  };
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const {active, over} = event;
+    setActiveDragType(null);
+
+    // Check if dropped on canvas
+    if (over?.id === 'canvas-drop-zone' && active.data.current?.type) {
+      const componentType = active.data.current.type;
+      const newComponent: ComponentInstance = {
+        id: `${componentType}-${Date.now()}`,
+        type: componentType,
+        props: {},
+      };
+      setComponents([...components, newComponent]);
+      setSelectedComponentId(newComponent.id);
+      setHasUnsavedChanges(true);
+    }
+  };
 
   // Fetch existing template if editing
   const {data: templateData, isLoading} = useQuery({
@@ -179,240 +248,253 @@ export function Editor() {
     );
   }
 
+  // Get active component info for drag overlay
+  const activeComponentInfo = activeDragType
+    ? COMPONENT_TYPES.find((c) => c.type === activeDragType)
+    : null;
+
   return (
-    <div className="flex h-full flex-col">
-      {/* Mobile Warning */}
-      <div className="flex items-center gap-2 border-b border-border bg-yellow-500/10 p-3 md:hidden">
-        <WarningIcon className="h-5 w-5 flex-shrink-0 text-yellow-600" />
-        <p className="text-sm text-yellow-800 dark:text-yellow-200">
-          The email editor works best on larger screens. Consider using a
-          desktop device for the best experience.
-        </p>
-      </div>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="flex h-full flex-col">
+        {/* Mobile Warning */}
+        <div className="flex items-center gap-2 border-b border-border bg-yellow-500/10 p-3 md:hidden">
+          <WarningIcon className="h-5 w-5 flex-shrink-0 text-yellow-600" />
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+            The email editor works best on larger screens. Consider using a
+            desktop device for the best experience.
+          </p>
+        </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/email/templates')}
-            className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <ArrowLeftIcon className="h-5 w-5" />
-          </button>
-          <input
-            type="text"
-            value={templateName}
-            onChange={(e) => setTemplateName(e.target.value)}
-            className="bg-transparent text-lg font-medium text-foreground focus:outline-none focus:ring-0"
-            placeholder="Template name"
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate('/email/templates')}
+              className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
+            <input
+              type="text"
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              className="bg-transparent text-lg font-medium text-foreground focus:outline-none focus:ring-0"
+              placeholder="Template name"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Save Status */}
+            <span className="text-sm text-muted-foreground">
+              {saveStatus === 'saving' && 'Saving...'}
+              {saveStatus === 'saved' &&
+                lastSaved &&
+                `Saved at ${lastSaved.toLocaleTimeString()}`}
+              {saveStatus === 'error' && (
+                <span className="text-red-500">Error saving</span>
+              )}
+            </span>
+
+            <button
+              onClick={() => setShowPreviewModal(true)}
+              disabled={components.length === 0}
+              className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Preview
+            </button>
+            <button
+              onClick={() => setShowTestEmailModal(true)}
+              disabled={components.length === 0}
+              className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Send Test
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={
+                createMutation.isPending ||
+                updateMutation.isPending ||
+                (!hasUnsavedChanges && !isNewTemplate)
+              }
+              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : 'Save'}
+            </button>
+          </div>
+        </div>
+
+        {/* Subject & Preview Text Inputs */}
+        <div className="border-b border-border bg-background px-4 py-3">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">
+                Subject Line
+              </label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Enter email subject line"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">
+                Preview Text
+              </label>
+              <input
+                type="text"
+                value={previewText}
+                onChange={(e) => setPreviewText(e.target.value)}
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Preview text shown in inbox"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Three Panel Layout */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Left Panel - Component Library */}
+          <div className="hidden w-64 flex-shrink-0 overflow-y-auto border-r border-border bg-card p-4 md:block">
+            <h2 className="mb-4 text-sm font-semibold text-foreground">
+              Components
+            </h2>
+            <p className="mb-4 text-xs text-muted-foreground">
+              Drag components to the canvas or click to add
+            </p>
+            <div className="space-y-4">
+              {COMPONENT_CATEGORIES.map((category) => (
+                <div key={category.name}>
+                  <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {category.name}
+                  </h3>
+                  <div className="space-y-2">
+                    {category.components.map((componentType) => (
+                      <DraggableComponentItem
+                        key={componentType.type}
+                        type={componentType.type}
+                        name={componentType.name}
+                        description={componentType.description}
+                        onAdd={() => {
+                          const newComponent: ComponentInstance = {
+                            id: `${componentType.type}-${Date.now()}`,
+                            type: componentType.type,
+                            props: {},
+                          };
+                          setComponents([...components, newComponent]);
+                          setSelectedComponentId(newComponent.id);
+                          setHasUnsavedChanges(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Center Panel - Canvas */}
+          <CanvasDropZone
+            components={components}
+            selectedComponentId={selectedComponentId}
+            isDragging={!!activeDragType}
+            onSelectComponent={setSelectedComponentId}
+            onDeleteComponent={(id) => {
+              setComponents(components.filter((c) => c.id !== id));
+              if (selectedComponentId === id) {
+                setSelectedComponentId(null);
+              }
+              setHasUnsavedChanges(true);
+            }}
+            onAddComponent={(type) => {
+              const newComponent: ComponentInstance = {
+                id: `${type}-${Date.now()}`,
+                type,
+                props: {},
+              };
+              setComponents([...components, newComponent]);
+              setSelectedComponentId(newComponent.id);
+              setHasUnsavedChanges(true);
+            }}
           />
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Save Status */}
-          <span className="text-sm text-muted-foreground">
-            {saveStatus === 'saving' && 'Saving...'}
-            {saveStatus === 'saved' &&
-              lastSaved &&
-              `Saved at ${lastSaved.toLocaleTimeString()}`}
-            {saveStatus === 'error' && (
-              <span className="text-red-500">Error saving</span>
-            )}
-          </span>
 
-          <button
-            onClick={() => setShowPreviewModal(true)}
-            disabled={components.length === 0}
-            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Preview
-          </button>
-          <button
-            onClick={() => setShowTestEmailModal(true)}
-            disabled={components.length === 0}
-            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Send Test
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={
-              createMutation.isPending ||
-              updateMutation.isPending ||
-              (!hasUnsavedChanges && !isNewTemplate)
-            }
-            className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {createMutation.isPending || updateMutation.isPending
-              ? 'Saving...'
-              : 'Save'}
-          </button>
-        </div>
-      </div>
-
-      {/* Subject & Preview Text Inputs */}
-      <div className="border-b border-border bg-background px-4 py-3">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">
-              Subject Line
-            </label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Enter email subject line"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">
-              Preview Text
-            </label>
-            <input
-              type="text"
-              value={previewText}
-              onChange={(e) => setPreviewText(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Preview text shown in inbox"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Three Panel Layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel - Component Library */}
-        <div className="hidden w-64 flex-shrink-0 overflow-y-auto border-r border-border bg-card p-4 md:block">
-          <h2 className="mb-4 text-sm font-semibold text-foreground">
-            Components
-          </h2>
-          <div className="space-y-2">
-            {COMPONENT_TYPES.map((componentType) => (
-              <ComponentLibraryItem
-                key={componentType.type}
-                type={componentType.type}
-                name={componentType.name}
-                description={componentType.description}
-                onAdd={() => {
-                  const newComponent: ComponentInstance = {
-                    id: `${componentType.type}-${Date.now()}`,
-                    type: componentType.type,
-                    props: {},
-                  };
-                  setComponents([...components, newComponent]);
-                  setSelectedComponentId(newComponent.id);
+          {/* Right Panel - Properties */}
+          <div className="hidden w-72 flex-shrink-0 overflow-y-auto border-l border-border bg-card p-4 md:block">
+            <h2 className="mb-4 text-sm font-semibold text-foreground">
+              Properties
+            </h2>
+            {selectedComponent ? (
+              <PropertiesPanel
+                component={selectedComponent}
+                onUpdate={(updatedProps) => {
+                  setComponents(
+                    components.map((c) =>
+                      c.id === selectedComponent.id
+                        ? {...c, props: {...c.props, ...updatedProps}}
+                        : c,
+                    ),
+                  );
                   setHasUnsavedChanges(true);
                 }}
               />
-            ))}
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Select a component to edit its properties
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Center Panel - Canvas */}
-        <div className="flex flex-1 flex-col overflow-y-auto bg-muted/30 p-4">
-          {components.length === 0 ? (
-            <EmptyCanvasState
-              onAddComponent={(type) => {
-                const newComponent: ComponentInstance = {
-                  id: `${type}-${Date.now()}`,
-                  type,
-                  props: {},
-                };
-                setComponents([newComponent]);
-                setSelectedComponentId(newComponent.id);
-                setHasUnsavedChanges(true);
-              }}
-            />
-          ) : (
-            <div className="mx-auto w-full max-w-[600px] space-y-2">
-              {components.map((component) => (
-                <CanvasComponent
-                  key={component.id}
-                  component={component}
-                  isSelected={component.id === selectedComponentId}
-                  onSelect={() => setSelectedComponentId(component.id)}
-                  onDelete={() => {
-                    setComponents(
-                      components.filter((c) => c.id !== component.id),
-                    );
-                    if (selectedComponentId === component.id) {
-                      setSelectedComponentId(null);
-                    }
-                    setHasUnsavedChanges(true);
-                  }}
-                />
-              ))}
-              {/* Add Component Button at bottom */}
-              <button
-                onClick={() => {
-                  // For now, show a simple dropdown or just add a TextBlock
-                  const newComponent: ComponentInstance = {
-                    id: `TextBlock-${Date.now()}`,
-                    type: 'TextBlock',
-                    props: {},
-                  };
-                  setComponents([...components, newComponent]);
-                  setSelectedComponentId(newComponent.id);
-                  setHasUnsavedChanges(true);
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-border py-4 text-sm text-muted-foreground hover:border-primary hover:text-foreground"
-              >
-                <PlusIcon className="h-4 w-4" />
-                Add Component
-              </button>
+        {/* Preview Modal */}
+        {showPreviewModal && (
+          <PreviewModal
+            templateId={isNewTemplate ? null : Number(id)}
+            components={components}
+            onClose={() => setShowPreviewModal(false)}
+          />
+        )}
+
+        {/* Test Email Modal */}
+        {showTestEmailModal && !isNewTemplate && (
+          <TestEmailModal
+            templateId={Number(id)}
+            onClose={() => setShowTestEmailModal(false)}
+          />
+        )}
+
+        {/* Drag Overlay - shows ghost preview when dragging */}
+        <DragOverlay>
+          {activeComponentInfo ? (
+            <div className="w-56 rounded-md border border-primary bg-card p-3 shadow-lg opacity-80">
+              <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/20 text-primary">
+                  <ComponentIcon type={activeComponentInfo.type} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {activeComponentInfo.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {activeComponentInfo.description}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-
-        {/* Right Panel - Properties */}
-        <div className="hidden w-72 flex-shrink-0 overflow-y-auto border-l border-border bg-card p-4 md:block">
-          <h2 className="mb-4 text-sm font-semibold text-foreground">
-            Properties
-          </h2>
-          {selectedComponent ? (
-            <PropertiesPanel
-              component={selectedComponent}
-              onUpdate={(updatedProps) => {
-                setComponents(
-                  components.map((c) =>
-                    c.id === selectedComponent.id
-                      ? {...c, props: {...c.props, ...updatedProps}}
-                      : c,
-                  ),
-                );
-                setHasUnsavedChanges(true);
-              }}
-            />
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Select a component to edit its properties
-            </p>
-          )}
-        </div>
+          ) : null}
+        </DragOverlay>
       </div>
-
-      {/* Preview Modal */}
-      {showPreviewModal && (
-        <PreviewModal
-          templateId={isNewTemplate ? null : Number(id)}
-          components={components}
-          onClose={() => setShowPreviewModal(false)}
-        />
-      )}
-
-      {/* Test Email Modal */}
-      {showTestEmailModal && !isNewTemplate && (
-        <TestEmailModal
-          templateId={Number(id)}
-          onClose={() => setShowTestEmailModal(false)}
-        />
-      )}
-    </div>
+    </DndContext>
   );
 }
 
-// Component Library Item
-function ComponentLibraryItem({
+// Draggable Component Library Item
+function DraggableComponentItem({
   type,
   name,
   description,
@@ -423,10 +505,20 @@ function ComponentLibraryItem({
   description: string;
   onAdd: () => void;
 }) {
+  const {attributes, listeners, setNodeRef, isDragging} = useDraggable({
+    id: `library-${type}`,
+    data: {type},
+  });
+
   return (
     <button
+      ref={setNodeRef}
       onClick={onAdd}
-      className="w-full rounded-md border border-border bg-background p-3 text-left transition-colors hover:border-primary hover:bg-muted"
+      className={`w-full cursor-grab rounded-md border border-border bg-background p-3 text-left transition-colors hover:border-primary hover:bg-muted active:cursor-grabbing ${
+        isDragging ? 'opacity-50' : ''
+      }`}
+      {...listeners}
+      {...attributes}
     >
       <div className="flex items-start gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded bg-muted text-muted-foreground">
@@ -438,6 +530,79 @@ function ComponentLibraryItem({
         </div>
       </div>
     </button>
+  );
+}
+
+// Canvas Drop Zone
+function CanvasDropZone({
+  components,
+  selectedComponentId,
+  isDragging,
+  onSelectComponent,
+  onDeleteComponent,
+  onAddComponent,
+}: {
+  components: ComponentInstance[];
+  selectedComponentId: string | null;
+  isDragging: boolean;
+  onSelectComponent: (id: string) => void;
+  onDeleteComponent: (id: string) => void;
+  onAddComponent: (type: string) => void;
+}) {
+  const {setNodeRef, isOver} = useDroppable({
+    id: 'canvas-drop-zone',
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex flex-1 flex-col overflow-y-auto bg-muted/30 p-4 transition-colors ${
+        isDragging && isOver ? 'bg-primary/10' : ''
+      } ${isDragging ? 'ring-2 ring-inset ring-primary/30' : ''}`}
+    >
+      {components.length === 0 ? (
+        <EmptyCanvasState
+          onAddComponent={onAddComponent}
+          isDragging={isDragging}
+          isOver={isOver}
+        />
+      ) : (
+        <div className="mx-auto w-full max-w-[600px] space-y-2">
+          {components.map((component) => (
+            <CanvasComponent
+              key={component.id}
+              component={component}
+              isSelected={component.id === selectedComponentId}
+              onSelect={() => onSelectComponent(component.id)}
+              onDelete={() => onDeleteComponent(component.id)}
+            />
+          ))}
+          {/* Drop zone indicator when dragging */}
+          {isDragging && (
+            <div
+              className={`flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed py-8 text-sm transition-colors ${
+                isOver
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border text-muted-foreground'
+              }`}
+            >
+              <PlusIcon className="h-4 w-4" />
+              Drop component here
+            </div>
+          )}
+          {/* Add Component Button when not dragging */}
+          {!isDragging && (
+            <button
+              onClick={() => onAddComponent('TextBlock')}
+              className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-border py-4 text-sm text-muted-foreground hover:border-primary hover:text-foreground"
+            >
+              <PlusIcon className="h-4 w-4" />
+              Add Component
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -498,27 +663,61 @@ function CanvasComponent({
 // Empty Canvas State
 function EmptyCanvasState({
   onAddComponent,
+  isDragging,
+  isOver,
 }: {
   onAddComponent: (type: string) => void;
+  isDragging?: boolean;
+  isOver?: boolean;
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-        <LayoutIcon className="h-8 w-8 text-muted-foreground" />
-      </div>
-      <h3 className="mb-2 text-lg font-medium text-foreground">
-        Start building your email
-      </h3>
-      <p className="mb-6 max-w-md text-sm text-muted-foreground">
-        Drag components from the left panel or click the button below to add
-        your first component.
-      </p>
-      <button
-        onClick={() => onAddComponent('Hero')}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-      >
-        Add Hero Component
-      </button>
+    <div
+      className={`flex flex-1 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center transition-colors ${
+        isDragging
+          ? isOver
+            ? 'border-primary bg-primary/10'
+            : 'border-primary/50'
+          : 'border-transparent'
+      }`}
+    >
+      {isDragging ? (
+        <>
+          <div
+            className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-colors ${
+              isOver ? 'bg-primary/20' : 'bg-muted'
+            }`}
+          >
+            <PlusIcon
+              className={`h-8 w-8 ${isOver ? 'text-primary' : 'text-muted-foreground'}`}
+            />
+          </div>
+          <h3 className="mb-2 text-lg font-medium text-foreground">
+            {isOver ? 'Release to add component' : 'Drop component here'}
+          </h3>
+          <p className="max-w-md text-sm text-muted-foreground">
+            Drop the component to add it to your email template
+          </p>
+        </>
+      ) : (
+        <>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <LayoutIcon className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="mb-2 text-lg font-medium text-foreground">
+            Start building your email
+          </h3>
+          <p className="mb-6 max-w-md text-sm text-muted-foreground">
+            Drag components from the left panel or click the button below to add
+            your first component.
+          </p>
+          <button
+            onClick={() => onAddComponent('Hero')}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Add Hero Component
+          </button>
+        </>
+      )}
     </div>
   );
 }
