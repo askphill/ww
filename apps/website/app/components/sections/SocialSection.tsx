@@ -7,7 +7,12 @@ import {
   type RefObject,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import {optimizeShopifyImage, imagePresets} from '~/lib/shopify-image';
+import {
+  buildShopifySrcSet,
+  imagePresets,
+  imageSrcSets,
+  optimizeShopifyImage,
+} from '~/lib/shopify-image';
 
 interface SocialImage {
   src: string;
@@ -203,6 +208,7 @@ function TrailImage({
 }) {
   const rotationClass = rotationClasses[index % rotationClasses.length];
   const optimizedSrc = optimizeShopifyImage(image.src, imagePresets.social);
+  const srcSet = buildShopifySrcSet(image.src, imageSrcSets.social);
 
   return (
     <div
@@ -227,6 +233,8 @@ function TrailImage({
       >
         <img
           src={optimizedSrc}
+          srcSet={srcSet || undefined}
+          sizes="20vw"
           alt={image.alt || ''}
           width={600}
           height={800}
@@ -306,11 +314,14 @@ function MobileCarousel({
               image.src,
               imagePresets.social,
             );
+            const srcSet = buildShopifySrcSet(image.src, imageSrcSets.social);
             return (
               <div key={index} className="flex-shrink-0 w-4/5 snap-center">
                 <div className="aspect-3/4 overflow-hidden">
                   <img
                     src={optimizedSrc}
+                    srcSet={srcSet || undefined}
+                    sizes="80vw"
                     alt={image.alt || ''}
                     width={600}
                     height={800}
