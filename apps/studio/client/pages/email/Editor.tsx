@@ -132,6 +132,7 @@ export function Editor() {
   // Modal states
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showTestEmailModal, setShowTestEmailModal] = useState(false);
+  const [showAIGenerateModal, setShowAIGenerateModal] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   // Auto-save timer ref
@@ -489,6 +490,13 @@ export function Editor() {
             </span>
 
             <button
+              onClick={() => setShowAIGenerateModal(true)}
+              className="flex items-center gap-1.5 rounded-md border border-primary/50 bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20"
+            >
+              <SparklesIcon className="h-4 w-4" />
+              Generate with AI
+            </button>
+            <button
               onClick={() => setShowPreviewModal(true)}
               disabled={components.length === 0}
               className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
@@ -614,6 +622,7 @@ export function Editor() {
               setSelectedComponentId(newComponent.id);
               setHasUnsavedChanges(true);
             }}
+            onGenerateWithAI={() => setShowAIGenerateModal(true)}
           />
 
           {/* Right Panel - Properties */}
@@ -658,6 +667,26 @@ export function Editor() {
             templateId={Number(id)}
             defaultEmail={user?.email || ''}
             onClose={() => setShowTestEmailModal(false)}
+          />
+        )}
+
+        {/* AI Generate Modal */}
+        {showAIGenerateModal && (
+          <AIGenerateModal
+            hasExistingComponents={components.length > 0}
+            onGenerate={(result) => {
+              // Replace components with generated ones
+              setComponents(result.components);
+              if (result.suggestedSubject && !subject) {
+                setSubject(result.suggestedSubject);
+              }
+              if (result.suggestedPreviewText && !previewText) {
+                setPreviewText(result.suggestedPreviewText);
+              }
+              setHasUnsavedChanges(true);
+              setShowAIGenerateModal(false);
+            }}
+            onClose={() => setShowAIGenerateModal(false)}
           />
         )}
 
@@ -815,6 +844,7 @@ function CanvasDropZone({
   onSelectComponent,
   onDeleteComponent,
   onAddComponent,
+  onGenerateWithAI,
 }: {
   components: ComponentInstance[];
   selectedComponentId: string | null;
@@ -824,6 +854,7 @@ function CanvasDropZone({
   onSelectComponent: (id: string) => void;
   onDeleteComponent: (id: string) => void;
   onAddComponent: (type: string) => void;
+  onGenerateWithAI: () => void;
 }) {
   const {setNodeRef, isOver} = useDroppable({
     id: 'canvas-drop-zone',
@@ -841,6 +872,7 @@ function CanvasDropZone({
       {components.length === 0 ? (
         <EmptyCanvasState
           onAddComponent={onAddComponent}
+          onGenerateWithAI={onGenerateWithAI}
           isDragging={isDragging}
           isOver={isOver}
         />
@@ -971,10 +1003,12 @@ function SortableCanvasComponent({
 // Empty Canvas State
 function EmptyCanvasState({
   onAddComponent,
+  onGenerateWithAI,
   isDragging,
   isOver,
 }: {
   onAddComponent: (type: string) => void;
+  onGenerateWithAI: () => void;
   isDragging?: boolean;
   isOver?: boolean;
 }) {
@@ -1015,15 +1049,24 @@ function EmptyCanvasState({
             Start building your email
           </h3>
           <p className="mb-6 max-w-md text-sm text-muted-foreground">
-            Drag components from the left panel or click the button below to add
-            your first component.
+            Drag components from the left panel, or generate a complete email
+            with AI.
           </p>
-          <button
-            onClick={() => onAddComponent('Hero')}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Add Hero Component
-          </button>
+          <div className="flex flex-col items-center gap-3">
+            <button
+              onClick={onGenerateWithAI}
+              className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              <SparklesIcon className="h-4 w-4" />
+              Generate with AI
+            </button>
+            <button
+              onClick={() => onAddComponent('Hero')}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              or start from scratch
+            </button>
+          </div>
         </>
       )}
     </div>
@@ -2287,5 +2330,249 @@ function MobileIcon({className}: {className?: string}) {
         d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
       />
     </svg>
+  );
+}
+
+function SparklesIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+      />
+    </svg>
+  );
+}
+
+// AI Generate Modal Component
+function AIGenerateModal({
+  hasExistingComponents,
+  onGenerate,
+  onClose,
+}: {
+  hasExistingComponents: boolean;
+  onGenerate: (result: {
+    components: ComponentInstance[];
+    suggestedSubject: string;
+    suggestedPreviewText: string;
+  }) => void;
+  onClose: () => void;
+}) {
+  const [prompt, setPrompt] = useState('');
+  const [status, setStatus] = useState<
+    'idle' | 'generating' | 'confirm' | 'error'
+  >('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [generatedResult, setGeneratedResult] = useState<{
+    components: ComponentInstance[];
+    suggestedSubject: string;
+    suggestedPreviewText: string;
+  } | null>(null);
+
+  const examplePrompts = [
+    'Welcome email for new subscribers',
+    'Product launch announcement',
+    'Weekly newsletter with featured products',
+    'Thank you email after purchase',
+    'Reminder to complete checkout',
+  ];
+
+  const handleGenerate = async () => {
+    if (!prompt.trim() || prompt.length < 10) {
+      setErrorMessage(
+        'Please enter a more detailed description (at least 10 characters)',
+      );
+      setStatus('error');
+      return;
+    }
+
+    setStatus('generating');
+    setErrorMessage('');
+
+    try {
+      const result = await api.email.templates.generate(prompt);
+      setGeneratedResult(result.template);
+
+      // If there are existing components, ask for confirmation
+      if (hasExistingComponents) {
+        setStatus('confirm');
+      } else {
+        // No existing components, apply directly
+        onGenerate(result.template);
+      }
+    } catch (err) {
+      setStatus('error');
+      setErrorMessage(
+        err instanceof Error ? err.message : 'Failed to generate template',
+      );
+    }
+  };
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, [onClose]);
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="w-full max-w-lg rounded-lg bg-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <SparklesIcon className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-medium text-foreground">
+              Generate with AI
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            title="Close (Esc)"
+          >
+            <CrossIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        {status === 'confirm' && generatedResult ? (
+          <div>
+            <div className="mb-4 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-3">
+              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                This will replace your existing template content. Are you sure?
+              </p>
+            </div>
+            <div className="mb-4 rounded-md bg-muted p-3">
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Generated template
+              </p>
+              <p className="text-sm text-foreground">
+                {generatedResult.components.length} components including:{' '}
+                {generatedResult.components.map((c) => c.type).join(', ')}
+              </p>
+              {generatedResult.suggestedSubject && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Subject: {generatedResult.suggestedSubject}
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setStatus('idle');
+                  setGeneratedResult(null);
+                }}
+                className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => onGenerate(generatedResult)}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Replace Content
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Describe the email you want to create and AI will generate a
+              complete template following Wakey brand guidelines.
+            </p>
+
+            <div className="mb-4">
+              <label className="mb-1 block text-sm font-medium text-foreground">
+                What kind of email do you want to create?
+              </label>
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Describe your email..."
+                rows={3}
+                autoFocus
+              />
+            </div>
+
+            <div className="mb-4">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
+                Example prompts:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {examplePrompts.map((example) => (
+                  <button
+                    key={example}
+                    onClick={() => setPrompt(example)}
+                    className="rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {status === 'error' && (
+              <div className="mb-4 flex items-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2">
+                <CrossIcon className="h-4 w-4 flex-shrink-0 text-red-500" />
+                <p className="text-sm text-red-500">{errorMessage}</p>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={onClose}
+                className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleGenerate}
+                disabled={status === 'generating' || !prompt.trim()}
+                className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {status === 'generating' ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <SparklesIcon className="h-4 w-4" />
+                    Generate
+                  </>
+                )}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }

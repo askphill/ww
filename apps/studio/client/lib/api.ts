@@ -432,6 +432,28 @@ export const api = {
             remainingTestEmails: number;
           }>,
         ),
+
+      generate: (prompt: string) =>
+        fetch(`${API_BASE}/email/templates/generate`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({prompt}),
+          credentials: 'include',
+        }).then(
+          handleResponse<{
+            success: boolean;
+            template: {
+              components: Array<{
+                id: string;
+                type: string;
+                props: Record<string, unknown>;
+              }>;
+              suggestedSubject: string;
+              suggestedPreviewText: string;
+            };
+            remainingGenerations: number;
+          }>,
+        ),
     },
   },
 
