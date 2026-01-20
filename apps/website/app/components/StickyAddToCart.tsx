@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, Suspense} from 'react';
 import {
   CartForm,
   Money,
@@ -9,7 +9,11 @@ import type {
   ProductVariantFragment,
   CartApiQueryFragment,
 } from 'storefrontapi.generated';
-import {type FetcherWithComponents, Await} from 'react-router';
+import {
+  type FetcherWithComponents,
+  Await,
+  useRouteLoaderData,
+} from 'react-router';
 
 /** Response type from cart action */
 type CartActionResponse = {
@@ -19,8 +23,6 @@ type CartActionResponse = {
   analytics?: {cartId?: string};
 };
 import {SmileyIcon, Button, AddedToBagPopup, AddBagIcon} from '@wakey/ui';
-import {Suspense} from 'react';
-import {useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
 
 interface StickyAddToCartProps {
@@ -78,7 +80,13 @@ export function StickyAddToCart({
 
   // Cart lines for submission
   const lines: OptimisticCartLineInput[] = selectedVariant?.id
-    ? [{merchandiseId: selectedVariant.id, quantity: 1}]
+    ? [
+        {
+          merchandiseId: selectedVariant.id,
+          quantity: 1,
+          selectedVariant,
+        },
+      ]
     : [];
 
   const isAvailable = selectedVariant?.availableForSale;
@@ -143,70 +151,14 @@ export function StickyAddToCart({
           action={CartForm.ACTIONS.LinesAdd}
         >
           {(fetcher: FetcherWithComponents<CartActionResponse>) => {
-            const isLoading = fetcher.state !== 'idle';
-
-            // Open popup on successful add
-            useEffect(() => {
-              if (fetcher.state === 'idle' && fetcher.data) {
-                setIsPopupOpen(true);
-              }
-            }, [fetcher.state, fetcher.data]);
-
             return (
-              <>
-                <input
-                  name="analytics"
-                  type="hidden"
-                  value={JSON.stringify(analytics)}
-                />
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={!isAvailable || isLoading}
-                  className="shrink-0 relative overflow-hidden whitespace-nowrap"
-                >
-                  {/* Text - slides up when loading */}
-                  <span
-                    className={`
-                      flex items-center justify-center gap-2
-                      transition-all duration-300
-                      ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
-                    `}
-                  >
-                    {isAvailable && <AddBagIcon className="w-5 h-5" />}
-                    {isAvailable ? (
-                      <>
-                        {/* Mobile: Add + price */}
-                        <span className="md:hidden inline-flex items-center gap-1">
-                          Add
-                          {selectedVariant?.price && (
-                            <Money
-                              data={selectedVariant.price}
-                              withoutTrailingZeros
-                            />
-                          )}
-                        </span>
-                        {/* Desktop: Add to Bag */}
-                        <span className="hidden md:inline">Add to Bag</span>
-                      </>
-                    ) : (
-                      'Sold Out'
-                    )}
-                  </span>
-                  {/* Smiley - slides in when loading */}
-                  <span
-                    className={`
-                      absolute inset-0 flex items-center justify-center
-                      transition-all duration-300
-                      ${isLoading ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
-                    `}
-                  >
-                    <SmileyIcon
-                      className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
-                    />
-                  </span>
-                </Button>
-              </>
+              <StickyAddToCartForm
+                fetcher={fetcher}
+                analytics={analytics}
+                isAvailable={isAvailable}
+                selectedVariant={selectedVariant}
+                setIsPopupOpen={setIsPopupOpen}
+              />
             );
           }}
         </CartForm>
@@ -231,6 +183,81 @@ export function StickyAddToCart({
         </Suspense>
       )}
     </div>
+  );
+}
+
+interface StickyAddToCartFormProps {
+  fetcher: FetcherWithComponents<CartActionResponse>;
+  analytics?: unknown;
+  isAvailable?: boolean;
+  selectedVariant: ProductVariantFragment;
+  setIsPopupOpen: (isOpen: boolean) => void;
+}
+
+function StickyAddToCartForm({
+  fetcher,
+  analytics,
+  isAvailable,
+  selectedVariant,
+  setIsPopupOpen,
+}: StickyAddToCartFormProps) {
+  const isLoading = fetcher.state !== 'idle';
+
+  // Open popup on successful add
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data) {
+      setIsPopupOpen(true);
+    }
+  }, [fetcher.state, fetcher.data, setIsPopupOpen]);
+
+  return (
+    <>
+      <input name="analytics" type="hidden" value={JSON.stringify(analytics)} />
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={!isAvailable || isLoading}
+        className="shrink-0 relative overflow-hidden whitespace-nowrap"
+      >
+        {/* Text - slides up when loading */}
+        <span
+          className={`
+            flex items-center justify-center gap-2
+            transition-all duration-300
+            ${isLoading ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}
+          `}
+        >
+          {isAvailable && <AddBagIcon className="w-5 h-5" />}
+          {isAvailable ? (
+            <>
+              {/* Mobile: Add + price */}
+              <span className="md:hidden inline-flex items-center gap-1">
+                Add
+                {selectedVariant?.price && (
+                  <Money data={selectedVariant.price} withoutTrailingZeros />
+                )}
+              </span>
+              {/* Desktop: Add to Bag */}
+              <span className="hidden md:inline">Add to Bag</span>
+            </>
+          ) : (
+            'Sold Out'
+          )}
+        </span>
+        {/* Smiley - slides in when loading */}
+        <span
+          className={`
+            absolute inset-0 flex items-center justify-center
+            transition-all duration-300
+            ${isLoading ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+          `}
+        >
+          <SmileyIcon
+            className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
+          />
+        </span>
+      </Button>
+    </>
   );
 }
 

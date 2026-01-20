@@ -1,5 +1,6 @@
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {Button} from '@wakey/ui';
+import {optimizeShopifyImage, imagePresets} from '~/lib/shopify-image';
 
 interface FeaturedProductProps {
   backgroundImage: string;
@@ -25,15 +26,24 @@ export function FeaturedProduct({
   buttonText,
   buttonTo,
 }: FeaturedProductProps) {
+  // Optimize images with Shopify CDN transformations
+  const optimizedDesktop = optimizeShopifyImage(
+    backgroundImage,
+    imagePresets.hero,
+  );
+  const optimizedMobile = backgroundImageMobile
+    ? optimizeShopifyImage(backgroundImageMobile, imagePresets.heroMobile)
+    : optimizeShopifyImage(backgroundImage, imagePresets.heroMobile);
+
   return (
     <section className="relative w-full min-h-[max(50rem,100dvh)] flex items-center overflow-hidden">
       <picture>
-        {backgroundImageMobile && (
-          <source media="(max-width: 48rem)" srcSet={backgroundImageMobile} />
-        )}
+        <source media="(max-width: 48rem)" srcSet={optimizedMobile} />
         <img
-          src={backgroundImage}
+          src={optimizedDesktop}
           alt=""
+          width={1920}
+          height={1080}
           className="absolute inset-0 w-full h-full object-cover z-0"
           fetchPriority="high"
           decoding="async"

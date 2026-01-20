@@ -48,7 +48,9 @@ export function Login() {
       if (res.ok) {
         window.location.href = '/seo';
       } else {
-        const data = await res.json().catch(() => ({}));
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
         setDevError(data.error || `Login failed (${res.status})`);
       }
     } catch (e) {
