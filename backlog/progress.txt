@@ -249,3 +249,34 @@
 - Pagination pattern reused from subscribers endpoint: count query + data query with limit/offset
 - Filters stored as JSON string using `JSON.stringify(data.filters)`
 
+### Iteration: 2026-01-20 (continued)
+
+**Story:** US-009 - Implement Shopify segments sync
+**Status:** Complete
+
+**What was done:**
+
+- Added `syncSegmentsFromShopify` function to `apps/studio/server/services/shopifySync.ts`
+- Implemented `SEGMENTS_QUERY` GraphQL query to fetch all segments from Shopify
+- Implemented `SEGMENT_MEMBERS_QUERY` GraphQL query with `customerSegmentMembers` to fetch segment members
+- Added `fetchShopifySegments` and `fetchShopifySegmentMembers` helper functions with pagination support
+- Function creates/updates segments with `type: 'shopify_sync'` and stores `shopifySegmentId`
+- `syncSegmentMembers` helper syncs members by comparing Shopify member IDs with local segment memberships
+- Adds new members to `segmentSubscribers` table, removes members no longer in Shopify segment
+- Updates `subscriberCount` on segment after member sync
+- Handles pagination for segments with >1000 members (uses cursor-based pagination)
+- Added `SegmentSyncStats` interface for return type
+
+**Files changed:**
+
+- `apps/studio/server/services/shopifySync.ts` (modified - added ~270 lines)
+- `backlog/backlog.json` (updated US-009 passes status)
+
+**Learnings for future iterations:**
+
+- Shopify `segments` query returns segments with `id`, `name`, `creationDate`, `lastEditDate`
+- Shopify `customerSegmentMembers` query requires segment GID (not numeric ID) as `segmentId` parameter
+- Segment member sync requires joining `segmentSubscribers` with `subscribers` to get `shopifyCustomerId` for comparison
+- Use Set for efficient membership comparison when syncing (O(1) lookup vs O(n) array includes)
+- `drizzle-orm` delete with compound where clause uses `and()` helper: `and(eq(a, x), eq(b, y))`
+
