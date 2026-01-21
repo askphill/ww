@@ -47,7 +47,7 @@ export function Tooltip({
             sizes={product.imageSizes}
             alt={product.title}
             className="w-12 h-auto"
-            fetchpriority={priority ? 'high' : undefined}
+            fetchPriority={priority ? 'high' : undefined}
           />
         </div>
 

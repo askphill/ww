@@ -114,7 +114,9 @@ export function Footer() {
         </ul>
 
         {/* Legal text - desktop only */}
-        <div className="hidden md:block">2025 Wakey. All rights reserved.</div>
+        <div className="hidden md:block">
+          {new Date().getFullYear()} Wakey. All rights reserved.
+        </div>
       </div>
 
       {/* Logo - mobile only at bottom */}
@@ -138,7 +140,7 @@ export function Footer() {
 
       {/* Legal text - mobile only */}
       <div className="block md:hidden pt-4 text-small font-display">
-        2025 Wakey. All rights reserved.
+        {new Date().getFullYear()} Wakey. All rights reserved.
       </div>
     </footer>
   );
