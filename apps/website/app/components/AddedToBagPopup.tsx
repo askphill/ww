@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
-import {CrossIcon, CheckoutIcon} from './icons';
-import {Button} from './Button';
+import {CrossIcon, CheckoutIcon, Button} from '@wakey/ui';
 
 interface AddedToBagPopupProduct {
   image: string | null;
