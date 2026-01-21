@@ -106,6 +106,16 @@ export const keywordPositions = sqliteTable(
   ],
 );
 
+// Email templates
+export const emailTemplates = sqliteTable('email_templates', {
+  id: integer('id').primaryKey({autoIncrement: true}),
+  name: text('name').notNull(),
+  description: text('description'),
+  sections: text('sections').notNull(), // JSON array of section configs
+  createdAt: text('created_at').default("datetime('now')"),
+  updatedAt: text('updated_at'),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -123,3 +133,5 @@ export type TrackedKeyword = typeof trackedKeywords.$inferSelect;
 export type NewTrackedKeyword = typeof trackedKeywords.$inferInsert;
 export type KeywordPosition = typeof keywordPositions.$inferSelect;
 export type NewKeywordPosition = typeof keywordPositions.$inferInsert;
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type NewEmailTemplate = typeof emailTemplates.$inferInsert;

@@ -5,6 +5,8 @@ import {Opportunities} from './pages/seo/Opportunities';
 import {Tracking} from './pages/seo/Tracking';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
+import {Builder} from './pages/email/Builder';
+import {Templates} from './pages/email/Templates';
 import {useAuth} from './hooks/useAuth';
 
 function ProtectedRoute({children}: {children: React.ReactNode}) {
@@ -47,6 +49,9 @@ export function App() {
                   />
                   <Route path="/klaviyo" element={<Klaviyo />} />
                   <Route path="/meta" element={<Meta />} />
+                  <Route path="/email/builder" element={<Builder />} />
+                  <Route path="/email/builder/:id" element={<Builder />} />
+                  <Route path="/email/templates" element={<Templates />} />
                 </Routes>
               </DashboardLayout>
             </ProtectedRoute>

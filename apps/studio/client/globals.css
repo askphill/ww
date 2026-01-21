@@ -1,4 +1,49 @@
 @import 'tailwindcss';
+@import '@wakey/tailwind-config/theme.css';
+
+/* Tell Tailwind to scan shared packages for classes */
+@source "../../../packages/ui/src";
+@source "../../../packages/email/src";
+
+/* Wakey brand fonts for email builder */
+@font-face {
+  font-family: 'Founders';
+  src: url('/fonts/founders.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ITC';
+  src: url('/fonts/itc-std.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ITC';
+  src: url('/fonts/itc-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Email builder: em elements use ITC italic */
+.email-canvas em {
+  font-family: 'ITC', Georgia, serif;
+  font-style: italic;
+}
+
+/* Ensure outline button border renders in email canvas */
+.email-canvas .border {
+  border-style: solid;
+  border-width: 1px;
+}
+.email-canvas .border-black {
+  border-color: #1a1a1a;
+}
 
 @theme {
   --radius: 0.65rem;
