@@ -69,18 +69,23 @@ pnpm typecheck
 ### `@wakey/ui` - Component Library
 
 ```tsx
-import {Button, Stars, Accordion, Tooltip, AddedToBagPopup} from '@wakey/ui';
-import {BagIcon, AddBagIcon, CheckoutIcon, HamburgerIcon, CrossIcon} from '@wakey/ui';
+import {Button, Stars, Accordion, Tooltip} from '@wakey/ui';
+import {
+  BagIcon,
+  AddBagIcon,
+  CheckoutIcon,
+  HamburgerIcon,
+  CrossIcon,
+} from '@wakey/ui';
 ```
 
-| Component         | Description                                    |
-| ----------------- | ---------------------------------------------- |
-| `Button`          | Primary/secondary/outline variants, icon prop  |
-| `Stars`           | Rating display with half-star support          |
-| `Accordion`       | Expandable sections                            |
-| `Tooltip`         | Positioned tooltips                            |
-| `AddedToBagPopup` | Cart notification popup                        |
-| Icons             | SVG icons from [Centralicons](https://centralicons.com/) |
+| Component   | Description                                              |
+| ----------- | -------------------------------------------------------- |
+| `Button`    | Primary/secondary/outline variants, icon prop            |
+| `Stars`     | Rating display with half-star support                    |
+| `Accordion` | Expandable sections                                      |
+| `Tooltip`   | Positioned tooltips                                      |
+| Icons       | SVG icons from [Centralicons](https://centralicons.com/) |
 
 ### `@wakey/hooks` - React Hooks
 
@@ -88,10 +93,10 @@ import {BagIcon, AddBagIcon, CheckoutIcon, HamburgerIcon, CrossIcon} from '@wake
 import {useContinuousCarousel, useLazyFetch} from '@wakey/hooks';
 ```
 
-| Hook                    | Description                       |
-| ----------------------- | --------------------------------- |
-| `useContinuousCarousel` | Physics-based carousel scrolling  |
-| `useLazyFetch`          | Lazy data fetching utility        |
+| Hook                    | Description                      |
+| ----------------------- | -------------------------------- |
+| `useContinuousCarousel` | Physics-based carousel scrolling |
+| `useLazyFetch`          | Lazy data fetching utility       |
 
 ### `@wakey/tailwind-config` - Design System
 
@@ -147,18 +152,18 @@ Always use design system utilities:
 
 ### Type Scale (ONLY Use These)
 
-| Utility           | Mobile  | Desktop  | Use for              |
-| ----------------- | ------- | -------- | -------------------- |
-| `text-display`    | 2.56rem | 8.75rem  | Hero headlines       |
-| `text-h1`         | 2.5rem  | 5rem     | Page titles          |
-| `text-h2`         | 1.88rem | 3.75rem  | Section headings     |
-| `text-h3`         | 1.63rem | 2.5rem   | Subsection headings  |
-| `text-s1`         | 1.5rem  | 1.88rem  | Large UI text        |
-| `text-s2`         | 1.13rem | 1.44rem  | Medium UI text       |
-| `text-paragraph`  | 1rem    | 1.25rem  | Body text            |
-| `text-body-small` | 0.81rem | 1.06rem  | Secondary body text  |
-| `text-small`      | 0.75rem | 0.88rem  | Captions, fine print |
-| `text-label`      | 0.88rem | 0.94rem  | Form labels, buttons |
+| Utility           | Mobile  | Desktop | Use for              |
+| ----------------- | ------- | ------- | -------------------- |
+| `text-display`    | 2.56rem | 8.75rem | Hero headlines       |
+| `text-h1`         | 2.5rem  | 5rem    | Page titles          |
+| `text-h2`         | 1.88rem | 3.75rem | Section headings     |
+| `text-h3`         | 1.63rem | 2.5rem  | Subsection headings  |
+| `text-s1`         | 1.5rem  | 1.88rem | Large UI text        |
+| `text-s2`         | 1.13rem | 1.44rem | Medium UI text       |
+| `text-paragraph`  | 1rem    | 1.25rem | Body text            |
+| `text-body-small` | 0.81rem | 1.06rem | Secondary body text  |
+| `text-small`      | 0.75rem | 0.88rem | Captions, fine print |
+| `text-label`      | 0.88rem | 0.94rem | Form labels, buttons |
 
 **Never use `text-sm`, `text-lg`, `text-xl`, etc.**
 
@@ -174,10 +179,10 @@ Always use design system utilities:
 
 ### Fonts
 
-| Class          | Font     | Usage               |
-| -------------- | -------- | ------------------- |
-| `font-display` | Founders | Headings, UI        |
-| `font-body`    | ITC      | Body text, prose    |
+| Class          | Font     | Usage            |
+| -------------- | -------- | ---------------- |
+| `font-display` | Founders | Headings, UI     |
+| `font-body`    | ITC      | Body text, prose |
 
 ### Border Radius
 
@@ -185,10 +190,10 @@ Use `rounded-card` for cards and panels. Never use arbitrary rounded values.
 
 ### Grid System
 
-| Breakpoint | Columns | Padding      |
-| ---------- | ------- | ------------ |
-| Mobile     | 1       | `px-4`       |
-| Desktop    | 24      | `md:px-8`    |
+| Breakpoint | Columns | Padding   |
+| ---------- | ------- | --------- |
+| Mobile     | 1       | `px-4`    |
+| Desktop    | 24      | `md:px-8` |
 
 ```tsx
 <div className="grid grid-cols-1 md:grid-cols-24 gap-6 md:gap-8">
@@ -288,11 +293,13 @@ Supported formats: jpg, png, gif, webp, svg, mp4, mov, webm, pdf
 ## Setup
 
 1. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 2. For website - link Shopify store:
+
    ```bash
    cd apps/website
    npx shopify hydrogen link

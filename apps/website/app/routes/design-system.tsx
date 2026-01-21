@@ -1,6 +1,7 @@
 import type {Route} from './+types/design-system';
 import {useState} from 'react';
-import {Button, Stars, Accordion, AddedToBagPopup} from '@wakey/ui';
+import {Button, Stars, Accordion} from '@wakey/ui';
+import {AddedToBagPopup} from '~/components/AddedToBagPopup';
 import {
   LogoBig,
   LogoSmall,

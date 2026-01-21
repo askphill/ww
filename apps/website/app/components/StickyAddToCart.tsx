@@ -22,7 +22,8 @@ type CartActionResponse = {
   warnings?: unknown;
   analytics?: {cartId?: string};
 };
-import {SmileyIcon, Button, AddedToBagPopup, AddBagIcon} from '@wakey/ui';
+import {SmileyIcon, Button, AddBagIcon} from '@wakey/ui';
+import {AddedToBagPopup} from './AddedToBagPopup';
 import type {RootLoader} from '~/root';
 
 interface StickyAddToCartProps {
