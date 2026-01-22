@@ -1,0 +1,38 @@
+import {ContactSection, PageHeader} from '~/components/sections';
+
+<PageHeader
+  title="Contact"
+  subtitle="Questions, feedback, or just want to say hi? We'd love to hear from you."
+/>
+
+<ContactSection
+  title="How can we help?"
+  description={
+    <p>
+      If you have questions about an order, our products, or our website, you
+      can send us an email or check the{' '}
+      <a href="/faq" className="underline hover:opacity-70">
+        FAQ section
+      </a>{' '}
+      for answers.
+    </p>
+  }
+  items={[
+    {
+      title: 'Address',
+      address: ['Wakey Care', 'Reestraat 17', '1016DM Amsterdam'],
+    },
+    {
+      title: 'Customer Service',
+      email: 'hi@wakey.care',
+    },
+    {
+      title: 'Press and Media Inquiries',
+      email: 'press@wakey.care',
+    },
+    {
+      title: 'Wholesale Inquiries',
+      email: 'wholesale@wakey.care',
+    },
+  ]}
+/>

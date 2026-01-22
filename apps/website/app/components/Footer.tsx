@@ -17,7 +17,7 @@ const FOOTER_MENU = [
   {title: 'About', url: '/about'},
   {title: 'FAQ', url: '/faq'},
   {title: 'Blog', url: '/blog'},
-  {title: 'Contact', url: '/pages/contact'},
+  {title: 'Contact', url: '/contact'},
 ];
 
 const SOCIAL_LINKS = [
