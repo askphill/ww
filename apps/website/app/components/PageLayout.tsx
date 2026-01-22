@@ -2,7 +2,6 @@ import type {CartApiQueryFragment, HeaderQuery} from 'storefrontapi.generated';
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
-import {Newsletter} from '~/components/Newsletter';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -21,7 +20,6 @@ export function PageLayout({
     <Aside.Provider>
       {header && <Header cart={cart} />}
       <main id="main-content">{children}</main>
-      <Newsletter />
       <Footer />
     </Aside.Provider>
   );

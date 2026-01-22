@@ -180,6 +180,7 @@ Always use design system utilities:
 | `sand`       | `#FFF5EB` | Light background, text on dark |
 | `skyblue`    | `#99BDFF` | Links, highlights              |
 | `blue`       | `#D4E8FF` | Light blue accents             |
+| `red`        | `#DC2626` | Error states                   |
 
 ### Fonts
 

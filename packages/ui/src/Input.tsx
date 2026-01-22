@@ -8,7 +8,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({className = '', variant = 'outline', icon, ...props}, ref) => {
     const baseStyles =
-      'w-full px-6 h-14 font-display text-label rounded-full transition-colors outline-none';
+      'w-full px-6 h-14 font-display text-label rounded-full transition-colors outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
       outline:

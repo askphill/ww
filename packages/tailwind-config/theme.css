@@ -15,6 +15,7 @@
   --color-sand: #fff5eb;
   --color-skyblue: #99bdff;
   --color-blue: #d4e8ff;
+  --color-red: #dc2626;
 
   /* Fonts - apps must define @font-face for these */
   --font-display: 'Founders', system-ui, sans-serif;
