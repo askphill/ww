@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {
   DndContext,
   DragOverlay,
@@ -14,6 +14,61 @@ import {useEmailBuilder} from './hooks/useEmailBuilder';
 import {BuilderCanvas} from './BuilderCanvas';
 import {PropertyPanel} from './PropertyPanel';
 import {ExportModal} from './ExportModal';
+
+// Icons
+function ArrowLeftIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 15 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6.85355 3.14645C7.04882 3.34171 7.04882 3.65829 6.85355 3.85355L3.70711 7H12.5C12.7761 7 13 7.22386 13 7.5C13 7.77614 12.7761 8 12.5 8H3.70711L6.85355 11.1464C7.04882 11.3417 7.04882 11.6583 6.85355 11.8536C6.65829 12.0488 6.34171 12.0488 6.14645 11.8536L2.14645 7.85355C1.95118 7.65829 1.95118 7.34171 2.14645 7.14645L6.14645 3.14645C6.34171 2.95118 6.65829 2.95118 6.85355 3.14645Z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function DownloadIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 15 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7.50005 1.04999C7.74858 1.04999 7.95005 1.25146 7.95005 1.49999V8.41359L10.1819 6.18179C10.3576 6.00605 10.6425 6.00605 10.8182 6.18179C10.994 6.35753 10.994 6.64245 10.8182 6.81819L7.81825 9.81819C7.64251 9.99392 7.35759 9.99392 7.18185 9.81819L4.18185 6.81819C4.00611 6.64245 4.00611 6.35753 4.18185 6.18179C4.35759 6.00605 4.64251 6.00605 4.81825 6.18179L7.05005 8.41359V1.49999C7.05005 1.25146 7.25152 1.04999 7.50005 1.04999ZM2.5 10C2.77614 10 3 10.2239 3 10.5V12C3 12.5539 3.44565 13 3.99635 13H11.0012C11.5529 13 12 12.5528 12 12V10.5C12 10.2239 12.2239 10 12.5 10C12.7761 10 13 10.2239 13 10.5V12C13 13.1041 12.1062 14 11.0012 14H3.99635C2.89019 14 2 13.103 2 12V10.5C2 10.2239 2.22386 10 2.5 10Z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function CheckIcon({className}: {className?: string}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 15 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
 
 interface EmailBuilderProps {
   templateId?: number;
@@ -105,9 +160,15 @@ export function EmailBuilder({templateId}: EmailBuilderProps) {
         if (!templateId) {
           navigate(`/email/builder/${data.id}`, {replace: true});
         }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        const message =
+          (errorData as {error?: string}).error || 'Failed to save template';
+        alert(message);
       }
     } catch (error) {
       console.error('Failed to save template:', error);
+      alert('Failed to save template. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -137,39 +198,42 @@ export function EmailBuilder({templateId}: EmailBuilderProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/email/templates"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <ArrowLeftIcon className="h-4 w-4" />
+          </Link>
+          <div>
             <input
               type="text"
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
-              className="border-0 bg-transparent text-2xl font-bold text-foreground focus:outline-none focus:ring-0"
+              className="border-0 bg-transparent text-xl font-bold text-foreground focus:outline-none focus:ring-0"
               placeholder="Untitled Template"
             />
-            {isDirty && (
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                Unsaved
-              </span>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Click + to add sections to your email template
+            </p>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Click + to add sections to your email template
-          </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setIsExportOpen(true)}
             disabled={sections.length === 0}
-            className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
           >
-            Export HTML
+            <DownloadIcon className="h-4 w-4" />
+            Export
           </button>
           <button
             onClick={handleSave}
-            disabled={isSaving || sections.length === 0}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            disabled={isSaving || sections.length === 0 || !isDirty}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-50"
           >
-            {isSaving ? 'Saving...' : 'Save'}
+            {!isDirty && <CheckIcon className="h-4 w-4" />}
+            {isSaving ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
           </button>
         </div>
       </div>

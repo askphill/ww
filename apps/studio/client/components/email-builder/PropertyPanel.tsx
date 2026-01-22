@@ -29,11 +29,11 @@ const sectionLabels: Record<EmailSection['type'], string> = {
 export function PropertyPanel({section, onUpdate}: PropertyPanelProps) {
   if (!section) {
     return (
-      <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border px-6 py-4">
+      <div className="flex max-h-[calc(100vh-12rem)] flex-col rounded-lg border border-border bg-card">
+        <div className="shrink-0 border-b border-border px-6 py-4">
           <h2 className="text-lg font-medium text-foreground">Properties</h2>
         </div>
-        <div className="flex min-h-48 items-center justify-center p-6 text-center">
+        <div className="flex min-h-48 flex-1 items-center justify-center p-6 text-center">
           <p className="text-sm text-muted-foreground">
             Select a section to edit its properties
           </p>
@@ -43,13 +43,13 @@ export function PropertyPanel({section, onUpdate}: PropertyPanelProps) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card">
-      <div className="border-b border-border px-6 py-4">
+    <div className="flex max-h-[calc(100vh-12rem)] flex-col rounded-lg border border-border bg-card">
+      <div className="shrink-0 border-b border-border px-6 py-4">
         <h2 className="text-lg font-medium text-foreground">
           {sectionLabels[section.type]} Properties
         </h2>
       </div>
-      <div className="max-h-[600px] overflow-y-auto p-6">
+      <div className="min-h-0 flex-1 overflow-y-auto p-6">
         {section.type === 'header' && (
           <HeaderProperties config={section.config} onChange={onUpdate} />
         )}

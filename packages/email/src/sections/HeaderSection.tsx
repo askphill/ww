@@ -13,7 +13,14 @@ export function HeaderSection({config}: Props) {
   return (
     <header className="w-full" style={{backgroundColor: bgColor}}>
       <div className="px-8 py-6 text-center" style={{color: logoColor}}>
-        <LogoSmall className="inline-block h-8 w-auto" />
+        <a
+          href="https://www.wakey.care"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block"
+        >
+          <LogoSmall className="h-8 w-auto" />
+        </a>
       </div>
     </header>
   );

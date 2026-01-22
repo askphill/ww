@@ -29,6 +29,9 @@ export function HeroProperties({config, onChange}: HeroPropertiesProps) {
           value={config.headline}
           onChange={(e) => onChange({headline: e.target.value})}
         />
+        <p className="text-xs text-muted-foreground">
+          Use *italic* or **bold** for formatting
+        </p>
       </div>
       <TypographyPicker
         label="Headline Style"
@@ -42,6 +45,9 @@ export function HeroProperties({config, onChange}: HeroPropertiesProps) {
           value={config.subheadline || ''}
           onChange={(e) => onChange({subheadline: e.target.value})}
         />
+        <p className="text-xs text-muted-foreground">
+          Use *italic* or **bold** for formatting
+        </p>
       </div>
       <TypographyPicker
         label="Subheadline Style"

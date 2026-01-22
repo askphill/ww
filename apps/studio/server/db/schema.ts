@@ -70,8 +70,6 @@ export const opportunityInsights = sqliteTable(
     potentialImpact: real('potential_impact'), // Score 0-100
     recommendedAction: text('recommended_action'),
     matchingExistingContent: text('matching_existing_content'), // JSON array of existing content titles
-    plan: text('plan'), // AI-generated detailed action plan
-    blogPost: text('blog_post'), // AI-generated blog post content
     createdAt: text('created_at').default("datetime('now')"),
     updatedAt: text('updated_at'),
   },

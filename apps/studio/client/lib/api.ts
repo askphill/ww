@@ -145,8 +145,6 @@ export const api = {
             potentialImpact: number;
             recommendedAction: string;
             matchingExistingContent: string[];
-            plan: string | null;
-            blogPost: string | null;
             createdAt: string;
             updatedAt: string | null;
           }>;
@@ -165,18 +163,6 @@ export const api = {
           totalGenerated: number;
         }>,
       ),
-
-    generatePlan: (id: number) =>
-      fetch(`${API_BASE}/opportunities/insights/${id}/plan`, {
-        method: 'POST',
-        credentials: 'include',
-      }).then(handleResponse<{success: boolean; plan: string}>),
-
-    generateBlogPost: (id: number) =>
-      fetch(`${API_BASE}/opportunities/insights/${id}/blog-post`, {
-        method: 'POST',
-        credentials: 'include',
-      }).then(handleResponse<{success: boolean; blogPost: string}>),
 
     deleteInsight: (id: number) =>
       fetch(`${API_BASE}/opportunities/insights/${id}`, {
