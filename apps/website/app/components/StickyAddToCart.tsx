@@ -92,13 +92,19 @@ export function StickyAddToCart({
 
   const isAvailable = selectedVariant?.availableForSale;
 
+  const isHidden = !inline && (!isReady || isOutOfView);
+
   return (
     <div
+      id="sticky-add-to-cart"
+      role="region"
+      aria-label="Add to cart"
       className={
         inline
           ? 'w-full flex justify-center'
           : `fixed bottom-0 left-0 right-0 z-40 p-4 transition-transform duration-[400ms] [transition-timing-function:var(--ease-out-back)] flex justify-center ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}`
       }
+      aria-hidden={isHidden || undefined}
     >
       {/* Unified Layout (same for mobile and desktop) */}
       <div className="flex items-center justify-between w-full max-w-[600px] md:h-[90px] bg-yellow rounded-card p-4 md:py-2 md:px-4 border border-black/10">
@@ -159,6 +165,7 @@ export function StickyAddToCart({
                 isAvailable={isAvailable}
                 selectedVariant={selectedVariant}
                 setIsPopupOpen={setIsPopupOpen}
+                isHidden={isHidden}
               />
             );
           }}
@@ -193,6 +200,7 @@ interface StickyAddToCartFormProps {
   isAvailable?: boolean;
   selectedVariant: ProductVariantFragment;
   setIsPopupOpen: (isOpen: boolean) => void;
+  isHidden?: boolean;
 }
 
 function StickyAddToCartForm({
@@ -201,6 +209,7 @@ function StickyAddToCartForm({
   isAvailable,
   selectedVariant,
   setIsPopupOpen,
+  isHidden = false,
 }: StickyAddToCartFormProps) {
   const isLoading = fetcher.state !== 'idle';
 
@@ -219,6 +228,7 @@ function StickyAddToCartForm({
         variant="primary"
         disabled={!isAvailable || isLoading}
         className="shrink-0 relative overflow-hidden whitespace-nowrap"
+        tabIndex={isHidden ? -1 : undefined}
       >
         {/* Text - slides up when loading */}
         <span
