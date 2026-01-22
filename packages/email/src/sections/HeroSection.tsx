@@ -1,5 +1,6 @@
 import {Button, BagIcon, AddBagIcon, CheckoutIcon} from '@wakey/ui';
 import type {HeroSection as HeroSectionType, ButtonIcon} from '../types';
+import {parseMarkdown} from '../utils/parseMarkdown';
 
 interface Props {
   config: HeroSectionType['config'];
@@ -35,15 +36,15 @@ export function HeroSection({config}: Props) {
       <div className="px-8 py-10 text-center">
         <h1
           className={`${config.headlineStyle} font-display text-${config.textColor}`}
-        >
-          {config.headline}
-        </h1>
+          dangerouslySetInnerHTML={{__html: parseMarkdown(config.headline)}}
+        />
         {config.subheadline && (
           <p
             className={`mt-4 ${config.subheadlineStyle} font-display text-${config.textColor}`}
-          >
-            {config.subheadline}
-          </p>
+            dangerouslySetInnerHTML={{
+              __html: parseMarkdown(config.subheadline),
+            }}
+          />
         )}
         {config.ctaText && config.ctaUrl && (
           <div className="mt-6">

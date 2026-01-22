@@ -3,22 +3,15 @@ import {useAuth} from '../../hooks/useAuth';
 import {cn} from '../../lib/utils';
 import {useState, useRef, useEffect} from 'react';
 
-const navigation = [
-  {
-    name: 'Email',
-    items: [
-      {name: 'Builder', href: '/email/builder'},
-      {name: 'Templates', href: '/email/templates'},
-    ],
-  },
-  {
-    name: 'SEO',
-    items: [
-      {name: 'Keyword Ranking', href: '/seo/tracking'},
-      {name: 'Google Search Console', href: '/seo/opportunities'},
-    ],
-  },
+const directLinks = [
+  {name: 'Email', href: '/email/templates'},
+  {name: 'SEO', href: '/seo/opportunities'},
 ];
+
+const dropdownNavigation: {
+  name: string;
+  items: {name: string; href: string}[];
+}[] = [];
 
 function NavDropdown({
   section,
@@ -108,7 +101,23 @@ export function Header() {
           Wakey Studio
         </span>
         <nav className="flex items-center">
-          {navigation.map((section) => (
+          {directLinks.map((link) => (
+            <NavLink
+              key={link.href}
+              to={link.href}
+              className={({isActive}) =>
+                cn(
+                  'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
+                )
+              }
+            >
+              {link.name}
+            </NavLink>
+          ))}
+          {dropdownNavigation.map((section) => (
             <NavDropdown key={section.name} section={section} />
           ))}
         </nav>

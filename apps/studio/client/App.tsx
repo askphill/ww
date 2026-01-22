@@ -2,7 +2,6 @@ import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {DashboardLayout} from './components/layout/DashboardLayout';
 import {Login} from './pages/Login';
 import {Opportunities} from './pages/seo/Opportunities';
-import {Tracking} from './pages/seo/Tracking';
 import {Klaviyo} from './pages/Klaviyo';
 import {Meta} from './pages/Meta';
 import {Builder} from './pages/email/Builder';
@@ -40,9 +39,12 @@ export function App() {
                 <Routes>
                   <Route
                     path="/"
-                    element={<Navigate to="/seo/tracking" replace />}
+                    element={<Navigate to="/seo/opportunities" replace />}
                   />
-                  <Route path="/seo/tracking" element={<Tracking />} />
+                  <Route
+                    path="/seo/tracking"
+                    element={<Navigate to="/seo/opportunities" replace />}
+                  />
                   <Route
                     path="/seo/opportunities"
                     element={<Opportunities />}

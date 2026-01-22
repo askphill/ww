@@ -10,8 +10,6 @@ import type {AppVariables, Env} from '../index';
 import {fetchWebsiteContent} from '../services/website';
 import {
   analyzeOpportunitiesWithAI,
-  generatePlanForInsight,
-  generateBlogPostForInsight,
   type GscQueryData,
 } from '../services/gemini';
 
@@ -132,127 +130,6 @@ opportunitiesRoutes.post('/insights/generate', async (c) => {
     console.error('Error generating insights:', error);
     const message =
       error instanceof Error ? error.message : 'Failed to generate insights';
-    return c.json({error: message}, 500);
-  }
-});
-
-// Generate plan for a specific insight
-opportunitiesRoutes.post('/insights/:id/plan', async (c) => {
-  const db = createDb(c.env.DB);
-  const id = parseInt(c.req.param('id'));
-
-  // Get the insight
-  const [insight] = await db
-    .select()
-    .from(opportunityInsights)
-    .where(eq(opportunityInsights.id, id))
-    .limit(1);
-
-  if (!insight) {
-    return c.json({error: 'Insight not found'}, 404);
-  }
-
-  // Fetch website content
-  const websiteContent = await fetchWebsiteContent();
-
-  const contentSummary = {
-    products: websiteContent.products.map((p) => ({
-      title: p.title,
-      handle: p.handle,
-      description: p.description,
-    })),
-    pages: websiteContent.pages.map((p) => ({
-      title: p.title,
-      type: p.type,
-      content: p.textContent.slice(0, 500),
-    })),
-  };
-
-  try {
-    const plan = await generatePlanForInsight(
-      c.env.GEMINI_API_KEY,
-      {
-        insightType: insight.insightType,
-        title: insight.title,
-        description: insight.description,
-        relatedQueries: insight.relatedQueries
-          ? JSON.parse(insight.relatedQueries)
-          : [],
-        potentialImpact: insight.potentialImpact || 0,
-      },
-      contentSummary,
-    );
-
-    // Save the plan
-    await db
-      .update(opportunityInsights)
-      .set({
-        plan,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(opportunityInsights.id, id));
-
-    return c.json({success: true, plan});
-  } catch (error) {
-    console.error('Error generating plan:', error);
-    const message =
-      error instanceof Error ? error.message : 'Failed to generate plan';
-    return c.json({error: message}, 500);
-  }
-});
-
-// Generate blog post for a specific insight
-opportunitiesRoutes.post('/insights/:id/blog-post', async (c) => {
-  const db = createDb(c.env.DB);
-  const id = parseInt(c.req.param('id'));
-
-  // Get the insight
-  const [insight] = await db
-    .select()
-    .from(opportunityInsights)
-    .where(eq(opportunityInsights.id, id))
-    .limit(1);
-
-  if (!insight) {
-    return c.json({error: 'Insight not found'}, 404);
-  }
-
-  // Fetch website content for product references
-  const websiteContent = await fetchWebsiteContent();
-
-  const products = websiteContent.products.map((p) => ({
-    title: p.title,
-    handle: p.handle,
-    description: p.description,
-  }));
-
-  try {
-    const blogPost = await generateBlogPostForInsight(
-      c.env.GEMINI_API_KEY,
-      {
-        title: insight.title,
-        description: insight.description,
-        relatedQueries: insight.relatedQueries
-          ? JSON.parse(insight.relatedQueries)
-          : [],
-      },
-      products,
-    );
-
-    // Save the blog post
-    await db
-      .update(opportunityInsights)
-      .set({
-        blogPost,
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(opportunityInsights.id, id));
-
-    return c.json({success: true, blogPost});
-  } catch (error) {
-    console.error('Error generating blog post:', error);
-    const message =
-      error instanceof Error ? error.message : 'Failed to generate blog post';
     return c.json({error: message}, 500);
   }
 });
