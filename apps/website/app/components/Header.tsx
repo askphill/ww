@@ -31,6 +31,25 @@ export function Header({cart, inline = false}: HeaderProps) {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const {notifications, hasUnread, markAsRead, readIds} = useNotifications();
 
+  // Track whether the skip link target exists (only on product pages)
+  const [hasSkipTarget, setHasSkipTarget] = useState(false);
+
+  useEffect(() => {
+    const checkTarget = () => {
+      const target = document.getElementById('sticky-add-to-cart');
+      setHasSkipTarget(!!target);
+    };
+
+    // Check initially
+    checkTarget();
+
+    // Watch for DOM changes (StickyAddToCart mounting/unmounting)
+    const observer = new MutationObserver(checkTarget);
+    observer.observe(document.body, {childList: true, subtree: true});
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleMenuToggle = () => {
     setIsMenuOpen((prev) => {
       const next = !prev;
@@ -81,8 +100,21 @@ export function Header({cart, inline = false}: HeaderProps) {
     }
   }, [isAnyDropdownOpen]);
 
+  const skipLinkClasses =
+    'sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:z-[60] focus:bg-yellow focus:text-black focus:px-4 focus:py-2 focus:rounded-card-s focus:font-display focus:text-label';
+
   return (
     <>
+      {/* Skip links for keyboard navigation - visible on focus */}
+      <a href="#main-content" className={skipLinkClasses}>
+        Skip to main content
+      </a>
+      {hasSkipTarget && (
+        <a href="#sticky-add-to-cart" className={skipLinkClasses}>
+          Skip to Add to Cart
+        </a>
+      )}
+
       {/* Backdrop overlay when menu/notifications are open - rendered outside header for correct z-stacking */}
       {!inline && (
         <div

@@ -19,7 +19,7 @@ export function PageLayout({
   return (
     <Aside.Provider>
       {header && <Header cart={cart} />}
-      <main>{children}</main>
+      <main id="main-content">{children}</main>
       <Footer />
     </Aside.Provider>
   );
