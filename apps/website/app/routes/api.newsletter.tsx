@@ -39,11 +39,13 @@ export async function action({request, context}: Route.ActionArgs) {
   }
 
   try {
+    const password = `newsletter-${crypto.randomUUID()}`;
     const {customerCreate} = await storefront.mutate(CUSTOMER_CREATE_MUTATION, {
       variables: {
         input: {
           email,
           acceptsMarketing: true,
+          password,
         },
       },
     });
@@ -52,9 +54,7 @@ export async function action({request, context}: Route.ActionArgs) {
 
     if (errors && errors.length > 0) {
       // Check if customer already exists (they may already be subscribed)
-      const alreadyExists = errors.some(
-        (error: {code: string}) => error.code === 'TAKEN',
-      );
+      const alreadyExists = errors.some((error) => error.code === 'TAKEN');
 
       if (alreadyExists) {
         // Return success even if email exists - they're already subscribed
