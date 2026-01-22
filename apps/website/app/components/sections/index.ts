@@ -14,3 +14,4 @@ export {USPSection} from './USPSection';
 export {BlogArticle} from './BlogArticle';
 export type {BlogArticleFrontmatter} from './BlogArticle';
 export {PageHeader} from './PageHeader';
+export {ContactSection} from './ContactSection';
