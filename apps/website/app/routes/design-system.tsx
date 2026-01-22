@@ -1,6 +1,6 @@
 import type {Route} from './+types/design-system';
 import {useState} from 'react';
-import {Button, Stars, Accordion} from '@wakey/ui';
+import {Button, Stars, Accordion, Input, CheckCircleIcon} from '@wakey/ui';
 import {AddedToBagPopup} from '~/components/AddedToBagPopup';
 import {
   LogoBig,
@@ -139,6 +139,7 @@ const NAV_ITEMS = [
     label: 'Components',
     sections: [
       {id: 'buttons', label: 'Buttons'},
+      {id: 'inputs', label: 'Inputs'},
       {id: 'stars', label: 'Stars'},
       {id: 'accordion', label: 'Accordion'},
       {id: 'tooltip', label: 'Tooltip'},
@@ -780,6 +781,42 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     <Button variant="outline" disabled>
                       Outline
                     </Button>
+                  </div>
+                </div>
+              </div>
+            </Section>
+
+            {/* Inputs */}
+            <Section id="inputs" title="Inputs">
+              <div className="space-y-8">
+                <div>
+                  <p className="text-small font-body opacity-60 mb-3">
+                    Variants
+                  </p>
+                  <div className="flex flex-col gap-4 max-w-md">
+                    <Input placeholder="Outline (default)" />
+                    <Input variant="filled" placeholder="Filled" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-small font-body opacity-60 mb-3">
+                    With icon (success state)
+                  </p>
+                  <div className="flex flex-col gap-4 max-w-md">
+                    <Input
+                      placeholder="Email"
+                      value="example@wakey.care"
+                      icon={<CheckCircleIcon />}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-small font-body opacity-60 mb-3">
+                    Disabled
+                  </p>
+                  <div className="flex flex-col gap-4 max-w-md">
+                    <Input placeholder="Disabled input" disabled />
                   </div>
                 </div>
               </div>

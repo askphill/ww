@@ -171,11 +171,15 @@ Always use design system utilities:
 
 | Name         | Hex       | Usage                          |
 | ------------ | --------- | ------------------------------ |
-| `sand`       | `#FFF5EB` | Light background, text on dark |
+| `black`      | `#1A1A1A` | Body background                |
+| `white`      | `#FFFFFF` | Pure white                     |
+| `text`       | `#383838` | Body text color                |
+| `yellow`     | `#FFFF00` | Success states, highlights     |
 | `softorange` | `#FAD103` | Logo, accents                  |
 | `ocher`      | `#E3B012` | Secondary accent               |
+| `sand`       | `#FFF5EB` | Light background, text on dark |
 | `skyblue`    | `#99BDFF` | Links, highlights              |
-| `black`      | `#1A1A1A` | Body background                |
+| `blue`       | `#D4E8FF` | Light blue accents             |
 
 ### Fonts
 
