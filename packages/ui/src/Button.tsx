@@ -12,6 +12,7 @@ interface ButtonProps {
   icon?: React.ReactNode;
   'aria-label'?: string;
   prefetch?: 'intent' | 'render' | 'none' | 'viewport';
+  tabIndex?: number;
 }
 
 export function Button({
@@ -26,6 +27,7 @@ export function Button({
   icon,
   'aria-label': ariaLabel,
   prefetch,
+  tabIndex,
 }: ButtonProps) {
   const baseStyles =
     'inline-flex items-center justify-center gap-2 px-6 h-14 font-display text-label rounded-full transition-colors cursor-pointer';
@@ -55,6 +57,7 @@ export function Button({
         onClick={onClick}
         aria-label={ariaLabel}
         prefetch={prefetch}
+        tabIndex={tabIndex}
       >
         {content}
       </Link>
@@ -68,6 +71,7 @@ export function Button({
         className={combinedClassName}
         onClick={onClick}
         aria-label={ariaLabel}
+        tabIndex={tabIndex}
       >
         {content}
       </a>
@@ -81,6 +85,7 @@ export function Button({
       disabled={disabled}
       className={combinedClassName}
       aria-label={ariaLabel}
+      tabIndex={tabIndex}
     >
       {content}
     </button>
