@@ -1,5 +1,5 @@
-import {useState} from 'react';
-import {useLazyFetch} from '@wakey/hooks';
+import {useState, useEffect} from 'react';
+import {useLazyFetch, useIsDesktop} from '@wakey/hooks';
 import {Stars, Button} from '@wakey/ui';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import type {TooltipProduct} from '~/lib/tooltip-product';
@@ -37,7 +37,20 @@ export function ProductReviews({
   const fetcher = useLazyFetch<ReviewsApiResponse>(
     `/api/reviews/${productHandle}`,
   );
+  const isDesktop = useIsDesktop();
+  const baseCount = isDesktop ? initialReviewCount * 2 : initialReviewCount;
   const [visibleCount, setVisibleCount] = useState(initialReviewCount);
+
+  // Update visible count when switching between mobile and desktop
+  useEffect(() => {
+    setVisibleCount((prev) => {
+      // If user hasn't loaded more, sync with base count
+      if (prev <= initialReviewCount * 2) {
+        return baseCount;
+      }
+      return prev;
+    });
+  }, [baseCount, initialReviewCount]);
 
   const reviews: Review[] = fetcher.data?.reviews || [];
   const averageRating = fetcher.data?.averageRating;
