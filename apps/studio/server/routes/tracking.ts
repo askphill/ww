@@ -34,10 +34,6 @@ export async function checkAllKeywordPositions(
 
   // Get all tracked keywords
   const keywords = await db.select().from(trackedKeywords);
-  console.log(
-    '[Keyword Check] Checking positions for keywords:',
-    keywords.map((k) => k.keyword),
-  );
 
   if (keywords.length === 0) {
     return {success: true, checked: 0, stored: 0, results: []};
@@ -51,12 +47,10 @@ export async function checkAllKeywordPositions(
   // Check all keywords
   let results;
   try {
-    console.log('[Keyword Check] Calling DataForSEO API...');
     results = await checkMultipleKeywordPositions(
       credentials,
       keywords.map((k) => k.keyword),
     );
-    console.log('[Keyword Check] DataForSEO results:', results);
   } catch (err) {
     console.error('[Keyword Check] DataForSEO API error:', err);
     return {
@@ -114,10 +108,6 @@ export async function checkAllKeywordPositions(
       );
     }
   }
-
-  console.log(
-    `[Keyword Check] Complete. Checked: ${keywords.length}, Stored: ${stored}`,
-  );
 
   return {
     success: true,
@@ -248,10 +238,6 @@ trackingRoutes.post(
             url: positionResult.url,
             date: today ?? '',
           });
-
-          console.log(
-            `[Keyword Add] Background check complete for "${normalizedKeyword}": position ${positionResult.position}`,
-          );
         } catch (err) {
           console.error(
             `[Keyword Add] Background check failed for "${normalizedKeyword}":`,

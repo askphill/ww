@@ -84,24 +84,9 @@ export async function checkKeywordPosition(
 
   const items = task.result?.[0]?.items || [];
 
-  // Log first 10 organic results for debugging
-  const organicItems = items
-    .filter((item: SerpItem) => item.type === 'organic')
-    .slice(0, 10);
-  console.log(
-    `Top 10 organic results for "${keyword}":`,
-    organicItems.map((item: SerpItem) => ({
-      domain: item.domain,
-      pos: item.rank_group,
-    })),
-  );
-
   // Look for organic results containing our domain
   for (const item of items) {
     if (item.type === 'organic' && item.domain?.includes(targetDomain)) {
-      console.log(
-        `Found ${targetDomain} at position ${item.rank_group} for "${keyword}"`,
-      );
       return {
         keyword,
         position: item.rank_group,
@@ -112,7 +97,6 @@ export async function checkKeywordPosition(
   }
 
   // Not found in top 100
-  console.log(`${targetDomain} not found in top 100 for "${keyword}"`);
   return {
     keyword,
     position: null,

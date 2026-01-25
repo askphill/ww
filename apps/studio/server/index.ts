@@ -102,17 +102,11 @@ export default {
     env: Env,
     ctx: ExecutionContext,
   ): Promise<void> {
-    console.log('[Cron] Keyword ranking check triggered at:', event.cron);
-
     ctx.waitUntil(
       (async () => {
         try {
           const result = await checkAllKeywordPositions(env);
-          if (result.success) {
-            console.log(
-              `[Cron] Keyword check complete. Checked: ${result.checked}, Stored: ${result.stored}`,
-            );
-          } else {
+          if (!result.success) {
             console.error('[Cron] Keyword check failed:', result.error);
           }
         } catch (err) {
