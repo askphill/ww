@@ -36,7 +36,8 @@ apps/studio/
 │   │       ├── Tracking.tsx
 │   │       └── Opportunities.tsx
 │   ├── components/
-│   │   └── layout/         # DashboardLayout, Header, Sidebar
+│   │   ├── layout/         # DashboardLayout, Header, Sidebar
+│   │   └── ui/             # ShadCN-style components (Button, Badge, Card, Table, etc.)
 │   ├── hooks/              # useAuth, useDarkMode
 │   ├── lib/                # api.ts, utils.ts
 │   ├── App.tsx             # Client router
@@ -193,6 +194,102 @@ import {users} from '../db/schema';
 
 const allUsers = await db(c.env.DB).select().from(users);
 ```
+
+---
+
+## UI Components (ShadCN/Radix)
+
+Studio uses ShadCN-style components in `client/components/ui/`. Always use these instead of raw HTML elements.
+
+### Available Components
+
+```tsx
+import {Button} from '../components/ui/button';
+import {Badge} from '../components/ui/badge';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '../components/ui/card';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '../components/ui/table';
+import {Input} from '../components/ui/input';
+import {Checkbox} from '../components/ui/checkbox';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '../components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '../components/ui/alert-dialog';
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '../components/ui/collapsible';
+```
+
+### Button Variants
+
+```tsx
+<Button>Default</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+<Button size="sm">Small</Button>
+<Button size="lg">Large</Button>
+<Button isLoading>Loading...</Button>
+```
+
+### Badge Variants
+
+```tsx
+<Badge>Default</Badge>
+<Badge variant="red">Error</Badge>
+<Badge variant="amber">Warning</Badge>
+<Badge variant="blue">Info</Badge>
+<Badge variant="green">Success</Badge>
+<Badge variant="orange">Caution</Badge>
+<Badge variant="chart-2">Chart 2</Badge>
+<Badge variant="chart-3">Chart 3</Badge>
+<Badge variant="chart-4">Chart 4</Badge>
+```
+
+Badge colors are defined in `globals.css` as `.badge-red`, `.badge-amber`, etc. with dark mode variants.
+
+### Adding New UI Components
+
+1. Create component in `client/components/ui/`
+2. Use the `cn()` utility from `lib/utils` for class merging
+3. Use `React.forwardRef` for ref forwarding
+4. Follow the variants pattern (see `button.tsx` for example)
 
 ---
 
