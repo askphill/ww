@@ -2,6 +2,23 @@ import {useState, useRef, useEffect, Fragment} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {api} from '../../lib/api';
 import {formatNumber, formatPosition} from '../../lib/utils';
+import {Button} from '../../components/ui/button';
+import {Badge} from '../../components/ui/badge';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../../components/ui/card';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '../../components/ui/table';
+import {Input} from '../../components/ui/input';
 
 export function Opportunities() {
   const queryClient = useQueryClient();
@@ -135,178 +152,169 @@ export function Opportunities() {
             Track your Google ranking positions for specific keywords
           </p>
         </div>
-        <button
+        <Button
           onClick={() => checkMutation.mutate()}
-          disabled={checkMutation.isPending || !trackingData?.keywords.length}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          disabled={!trackingData?.keywords.length}
+          isLoading={checkMutation.isPending}
         >
           {checkMutation.isPending ? 'Checking...' : 'Check Positions'}
-        </button>
+        </Button>
       </div>
 
       {/* Add Keyword Section */}
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="text-lg font-medium text-foreground">Add Keyword</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Enter a keyword or search from your GSC data
-        </p>
-        <div className="relative mt-4" ref={searchRef}>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSuggestions(true);
-              }}
-              onFocus={() => setShowSuggestions(true)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a keyword to track..."
-              className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <button
-              onClick={() => handleAddKeyword(searchQuery)}
-              disabled={!searchQuery.trim() || addMutation.isPending}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-            >
-              {addMutation.isPending ? 'Adding...' : 'Add'}
-            </button>
-          </div>
+      <Card>
+        <div className="p-6">
+          <CardTitle>Add Keyword</CardTitle>
+          <CardDescription>
+            Enter a keyword or search from your GSC data
+          </CardDescription>
+          <div className="relative mt-4" ref={searchRef}>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a keyword to track..."
+                className="flex-1"
+              />
+              <Button
+                onClick={() => handleAddKeyword(searchQuery)}
+                disabled={!searchQuery.trim()}
+                isLoading={addMutation.isPending}
+              >
+                {addMutation.isPending ? 'Adding...' : 'Add'}
+              </Button>
+            </div>
 
-          {/* Suggestions Dropdown */}
-          {showSuggestions &&
-            suggestionsData?.suggestions &&
-            suggestionsData.suggestions.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full rounded-md border border-border bg-card shadow-lg">
-                <ul className="max-h-60 overflow-auto py-1">
-                  {suggestionsData.suggestions.map((suggestion) => (
-                    <li key={suggestion.query}>
-                      <button
-                        onClick={() => handleAddKeyword(suggestion.query)}
-                        className="flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted"
-                      >
-                        <span className="text-foreground">
-                          {suggestion.query}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {suggestion.totalImpressions.toLocaleString()} imp ·
-                          pos {formatPosition(suggestion.avgPosition)}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {/* Suggestions Dropdown */}
+            {showSuggestions &&
+              suggestionsData?.suggestions &&
+              suggestionsData.suggestions.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full rounded-md border border-border bg-card shadow-lg">
+                  <ul className="max-h-60 overflow-auto py-1">
+                    {suggestionsData.suggestions.map((suggestion) => (
+                      <li key={suggestion.query}>
+                        <button
+                          onClick={() => handleAddKeyword(suggestion.query)}
+                          className="flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted"
+                        >
+                          <span className="text-foreground">
+                            {suggestion.query}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {suggestion.totalImpressions.toLocaleString()} imp ·
+                            pos {formatPosition(suggestion.avgPosition)}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+          </div>
+          {addMutation.isError && (
+            <p className="mt-2 text-sm text-destructive">
+              {addMutation.error?.message || 'Failed to add keyword'}
+            </p>
+          )}
         </div>
-        {addMutation.isError && (
-          <p className="mt-2 text-sm text-destructive">
-            {addMutation.error?.message || 'Failed to add keyword'}
-          </p>
-        )}
-      </div>
+      </Card>
 
       {/* Tracked Keywords Table */}
-      <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border px-6 py-4">
-          <h2 className="text-lg font-medium text-foreground">
+      <Card>
+        <CardHeader>
+          <CardTitle>
             Tracked Keywords ({trackingData?.keywords.length || 0})
-          </h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Keyword
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Position
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Change (7d)
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Last Checked
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {trackingData?.keywords.map((kw) => (
-                <Fragment key={kw.id}>
-                  <tr
-                    className="cursor-pointer hover:bg-muted/30"
-                    onClick={() =>
-                      setExpandedKeyword(
-                        expandedKeyword === kw.id ? null : kw.id,
-                      )
-                    }
-                  >
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground">
-                      {kw.keyword}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <PositionBadge position={kw.currentPosition} />
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <ChangeBadge change={kw.change} />
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
-                      {kw.lastChecked || 'Never'}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeMutation.mutate(kw.id);
-                        }}
-                        className="text-sm text-destructive hover:underline"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                  {expandedKeyword === kw.id && (
-                    <tr>
-                      <td colSpan={5} className="bg-muted/20 px-6 py-4">
+          </CardTitle>
+        </CardHeader>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Keyword</TableHead>
+              <TableHead className="text-right">Position</TableHead>
+              <TableHead className="text-right">Change (7d)</TableHead>
+              <TableHead>Last Checked</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {trackingData?.keywords.map((kw) => (
+              <Fragment key={kw.id}>
+                <TableRow
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setExpandedKeyword(expandedKeyword === kw.id ? null : kw.id)
+                  }
+                >
+                  <TableCell className="font-medium text-foreground">
+                    {kw.keyword}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <PositionBadge position={kw.currentPosition} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ChangeBadge change={kw.change} />
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {kw.lastChecked || 'Never'}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeMutation.mutate(kw.id);
+                      }}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      Remove
+                    </Button>
+                  </TableCell>
+                </TableRow>
+                {expandedKeyword === kw.id && (
+                  <tr>
+                    <TableCell colSpan={5} className="bg-muted/20 p-0">
+                      <div className="px-6 py-4">
                         <PositionHistory keywordId={kw.id} />
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              ))}
-              {(!trackingData?.keywords ||
-                trackingData.keywords.length === 0) && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-8 text-center text-muted-foreground"
-                  >
-                    No keywords being tracked yet. Add a keyword above to get
-                    started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                      </div>
+                    </TableCell>
+                  </tr>
+                )}
+              </Fragment>
+            ))}
+            {(!trackingData?.keywords ||
+              trackingData.keywords.length === 0) && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-8 text-center text-muted-foreground"
+                >
+                  No keywords being tracked yet. Add a keyword above to get
+                  started.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
 
       {/* Google Search Console Section */}
       <div className="flex items-center justify-between pt-8">
         <h1 className="text-2xl font-bold text-foreground">
           Google Search Console
         </h1>
-        <button
+        <Button
           onClick={() => syncMutation.mutate()}
-          disabled={syncMutation.isPending}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          isLoading={syncMutation.isPending}
         >
           {syncMutation.isPending ? 'Syncing...' : 'Sync GSC Data'}
-        </button>
+        </Button>
       </div>
 
       {/* Metrics Cards */}
@@ -334,153 +342,125 @@ export function Opportunities() {
       </div>
 
       {/* Top Queries Table */}
-      <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border px-6 py-4">
-          <h2 className="text-lg font-medium text-foreground">Top Queries</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Query
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Clicks
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Impressions
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Position
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {queriesData?.queries.map((query, i) => (
-                <tr key={i} className="hover:bg-muted/30">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-foreground">
-                    {query.query}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-foreground">
-                    {formatNumber(query.totalClicks)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-foreground">
-                    {formatNumber(query.totalImpressions)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-foreground">
-                    {formatPosition(query.avgPosition)}
-                  </td>
-                </tr>
-              ))}
-              {(!queriesData?.queries || queriesData.queries.length === 0) && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-8 text-center text-muted-foreground"
-                  >
-                    No data yet. Click "Sync GSC Data" to fetch data.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Top Queries</CardTitle>
+        </CardHeader>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Query</TableHead>
+              <TableHead className="text-right">Clicks</TableHead>
+              <TableHead className="text-right">Impressions</TableHead>
+              <TableHead className="text-right">Position</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {queriesData?.queries.map((query, i) => (
+              <TableRow key={i}>
+                <TableCell className="text-foreground">{query.query}</TableCell>
+                <TableCell className="text-right text-foreground">
+                  {formatNumber(query.totalClicks)}
+                </TableCell>
+                <TableCell className="text-right text-foreground">
+                  {formatNumber(query.totalImpressions)}
+                </TableCell>
+                <TableCell className="text-right text-foreground">
+                  {formatPosition(query.avgPosition)}
+                </TableCell>
+              </TableRow>
+            ))}
+            {(!queriesData?.queries || queriesData.queries.length === 0) && (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="py-8 text-center text-muted-foreground"
+                >
+                  No data yet. Click "Sync GSC Data" to fetch data.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
 
       {/* Content Opportunities */}
-      <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <h2 className="text-lg font-medium text-foreground">
-            Content Opportunities
-          </h2>
-          <button
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Content Opportunities</CardTitle>
+          <Button
             onClick={() => analyzeMutation.mutate()}
-            disabled={analyzeMutation.isPending}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            isLoading={analyzeMutation.isPending}
           >
             {analyzeMutation.isPending
               ? 'Analyzing...'
               : 'Analyze Opportunities'}
-          </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Keyword
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Score
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Impressions
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Clicks
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Position
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {opportunitiesData?.opportunities.map((opp) => (
-                <tr key={opp.id} className="hover:bg-muted/30">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground">
-                    {opp.keyword}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right">
-                    <ScoreBadge score={opp.opportunityScore} />
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-foreground">
-                    {formatNumber(opp.impressions30d || 0)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-foreground">
-                    {formatNumber(opp.clicks30d || 0)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-foreground">
-                    {formatPosition(opp.currentPosition || 0)}
-                  </td>
-                </tr>
-              ))}
-              {(!opportunitiesData?.opportunities ||
-                opportunitiesData.opportunities.length === 0) && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-8 text-center text-muted-foreground"
-                  >
-                    No opportunities found. Sync GSC data first, then click
-                    "Analyze Opportunities".
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+          </Button>
+        </CardHeader>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Keyword</TableHead>
+              <TableHead className="text-right">Score</TableHead>
+              <TableHead className="text-right">Impressions</TableHead>
+              <TableHead className="text-right">Clicks</TableHead>
+              <TableHead className="text-right">Position</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {opportunitiesData?.opportunities.map((opp) => (
+              <TableRow key={opp.id}>
+                <TableCell className="font-medium text-foreground">
+                  {opp.keyword}
+                </TableCell>
+                <TableCell className="text-right">
+                  <ScoreBadge score={opp.opportunityScore} />
+                </TableCell>
+                <TableCell className="text-right text-foreground">
+                  {formatNumber(opp.impressions30d || 0)}
+                </TableCell>
+                <TableCell className="text-right text-foreground">
+                  {formatNumber(opp.clicks30d || 0)}
+                </TableCell>
+                <TableCell className="text-right text-foreground">
+                  {formatPosition(opp.currentPosition || 0)}
+                </TableCell>
+              </TableRow>
+            ))}
+            {(!opportunitiesData?.opportunities ||
+              opportunitiesData.opportunities.length === 0) && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-8 text-center text-muted-foreground"
+                >
+                  No opportunities found. Sync GSC data first, then click
+                  "Analyze Opportunities".
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
 
       {/* AI Insights Section */}
-      <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-foreground">AI Insights</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <CardTitle>AI Insights</CardTitle>
+            <CardDescription>
               AI-powered opportunities based on GSC data and website content
-            </p>
+            </CardDescription>
           </div>
-          <button
+          <Button
             onClick={() => generateInsightsMutation.mutate()}
-            disabled={generateInsightsMutation.isPending}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            isLoading={generateInsightsMutation.isPending}
           >
             {generateInsightsMutation.isPending
               ? 'Generating...'
               : 'Generate Insights'}
-          </button>
-        </div>
+          </Button>
+        </CardHeader>
         <div className="divide-y divide-border">
           {insightsData?.insights.map((insight) => (
             <div key={insight.id} className="p-6">
@@ -503,12 +483,9 @@ export function Opportunities() {
                       </p>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {insight.relatedQueries.map((query, i) => (
-                          <span
-                            key={i}
-                            className="inline-block rounded bg-muted px-2 py-1 text-xs text-muted-foreground"
-                          >
+                          <Badge key={i} variant="default">
                             {query}
-                          </span>
+                          </Badge>
                         ))}
                       </div>
                     </div>
@@ -551,7 +528,7 @@ export function Opportunities() {
             </div>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
@@ -566,107 +543,79 @@ function MetricCard({
   description: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
-      <p className="text-sm font-medium text-muted-foreground">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-foreground">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{description}</p>
-    </div>
+    <Card>
+      <div className="p-6">
+        <p className="text-sm font-medium text-muted-foreground">{label}</p>
+        <p className="mt-2 text-3xl font-bold text-foreground">{value}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      </div>
+    </Card>
   );
 }
 
 function ScoreBadge({score}: {score: number}) {
-  let color = 'bg-muted text-muted-foreground';
+  let variant: 'default' | 'chart-2' | 'chart-3' | 'chart-4' = 'default';
   if (score >= 70) {
-    color = 'bg-chart-3/20 text-chart-3';
+    variant = 'chart-3';
   } else if (score >= 50) {
-    color = 'bg-chart-2/20 text-chart-2';
+    variant = 'chart-2';
   } else if (score >= 30) {
-    color = 'bg-chart-4/20 text-chart-4';
+    variant = 'chart-4';
   }
 
-  return (
-    <span
-      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${color}`}
-    >
-      {Math.round(score)}
-    </span>
-  );
+  return <Badge variant={variant}>{Math.round(score)}</Badge>;
 }
 
 function InsightTypeBadge({type}: {type: string}) {
-  const labels: Record<string, {label: string; color: string}> = {
-    content_gap: {
-      label: 'Content Gap',
-      color: 'badge-red',
-    },
-    position_opportunity: {
-      label: 'Position Opportunity',
-      color: 'badge-amber',
-    },
-    ctr_improvement: {
-      label: 'CTR Improvement',
-      color: 'badge-blue',
-    },
+  const config: Record<
+    string,
+    {label: string; variant: 'red' | 'amber' | 'blue'}
+  > = {
+    content_gap: {label: 'Content Gap', variant: 'red'},
+    position_opportunity: {label: 'Position Opportunity', variant: 'amber'},
+    ctr_improvement: {label: 'CTR Improvement', variant: 'blue'},
   };
 
-  const config = labels[type] || {
+  const {label, variant} = config[type] || {
     label: type,
-    color: 'bg-muted text-muted-foreground',
+    variant: 'default' as const,
   };
 
-  return (
-    <span
-      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${config.color}`}
-    >
-      {config.label}
-    </span>
-  );
+  return <Badge variant={variant as 'red' | 'amber' | 'blue'}>{label}</Badge>;
 }
 
 function ImpactBadge({impact}: {impact: number}) {
-  let color = 'bg-muted text-muted-foreground';
+  let variant: 'default' | 'green' | 'amber' | 'orange' = 'default';
   if (impact >= 70) {
-    color = 'badge-green';
+    variant = 'green';
   } else if (impact >= 50) {
-    color = 'badge-amber';
+    variant = 'amber';
   } else if (impact >= 30) {
-    color = 'badge-orange';
+    variant = 'orange';
   }
 
-  return (
-    <span
-      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${color}`}
-    >
-      Impact: {Math.round(impact)}
-    </span>
-  );
+  return <Badge variant={variant}>Impact: {Math.round(impact)}</Badge>;
 }
 
 function PositionBadge({position}: {position: number | null}) {
   if (position === null) {
-    return (
-      <span className="inline-flex rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-        Not ranked
-      </span>
-    );
+    return <Badge variant="default">Not ranked</Badge>;
   }
 
-  let color = 'bg-muted text-muted-foreground';
+  let variant:
+    | 'default'
+    | 'position-top'
+    | 'position-good'
+    | 'position-moderate' = 'default';
   if (position <= 3) {
-    color = 'bg-green-500/20 text-green-600 dark:text-green-400';
+    variant = 'position-top';
   } else if (position <= 10) {
-    color = 'bg-blue-500/20 text-blue-600 dark:text-blue-400';
+    variant = 'position-good';
   } else if (position <= 20) {
-    color = 'bg-amber-500/20 text-amber-600 dark:text-amber-400';
+    variant = 'position-moderate';
   }
 
-  return (
-    <span
-      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${color}`}
-    >
-      #{position}
-    </span>
-  );
+  return <Badge variant={variant}>#{position}</Badge>;
 }
 
 function ChangeBadge({change}: {change: number | null}) {
@@ -747,15 +696,12 @@ function PositionHistory({keywordId}: {keywordId: number}) {
       </h4>
       <div className="flex flex-wrap gap-2">
         {data.history.map((entry, i) => (
-          <div
-            key={i}
-            className="flex flex-col items-center rounded border border-border bg-card px-3 py-2"
-          >
+          <Card key={i} className="px-3 py-2">
             <span className="text-xs text-muted-foreground">{entry.date}</span>
-            <span className="text-sm font-medium text-foreground">
+            <span className="block text-sm font-medium text-foreground">
               {entry.position ? `#${entry.position}` : '—'}
             </span>
-          </div>
+          </Card>
         ))}
       </div>
       {data.history[0]?.url && (
