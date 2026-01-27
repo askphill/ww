@@ -1,0 +1,10 @@
+{
+  "setup": [
+    "pnpm install",
+    "cp \"$SUPERSET_ROOT_PATH/apps/website/.env\" apps/website/.env",
+    "cp \"$SUPERSET_ROOT_PATH/.env\" .env",
+    "cp \"$SUPERSET_ROOT_PATH/apps/studio/.dev.vars\" apps/studio/.dev.vars 2>/dev/null || true"
+  ],
+  "run": ["pnpm dev"],
+  "teardown": ["pkill -9 -f 'turbo dev' 2>/dev/null || true"]
+}
