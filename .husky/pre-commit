@@ -1,2 +1,2 @@
-export PATH="$HOME/Library/pnpm:/opt/homebrew/bin:$PATH"
+export PATH="$HOME/local/node/bin:$HOME/Library/pnpm:/opt/homebrew/bin:$PATH"
 pnpm exec lint-staged
