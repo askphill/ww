@@ -47,47 +47,54 @@ export function Footer() {
     <footer role="contentinfo" className={`${bgColor} overflow-hidden`}>
       {/* Newsletter Section */}
       <section className={bgColor}>
-        <div className="px-4 md:px-8 pt-4 pb-8 md:py-8 md:grid md:grid-cols-12">
-          {/* Heading - top left */}
-          <h2 className="text-h2 md:text-h3 font-display md:col-span-6">
+        <div className="px-4 md:pl-8 md:pr-0 pt-4 pb-8 md:py-8 flex flex-col md:w-1/2">
+          {/* Heading */}
+          <h2 className="text-h2 md:text-h3 font-display">
             Join the good morning
             <br />
             <em className="font-body">movement</em>
           </h2>
 
-          {/* Form - bottom right */}
+          {/* Form */}
           <fetcher.Form
             method="post"
             action="/api/newsletter"
-            className="flex flex-col gap-2 pt-12 md:pt-32 md:pl-0 md:col-span-6 w-full"
+            className="flex flex-col gap-2 pt-8 md:pt-12 w-full"
           >
-            <Input
-              type="email"
-              name="email"
-              placeholder="Email"
-              required
-              aria-label="Email address"
-              disabled={isSuccess}
-              icon={
-                isSuccess ? <CheckCircleIcon className="w-4 h-4" /> : undefined
-              }
-            />
+            <div className="flex flex-col md:flex-row gap-2">
+              <div className="md:flex-1">
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  required
+                  aria-label="Email address"
+                  disabled={isSuccess}
+                  icon={
+                    isSuccess ? (
+                      <CheckCircleIcon className="w-4 h-4" />
+                    ) : undefined
+                  }
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="outline"
+                disabled={isSubmitting || isSuccess}
+                className="min-w-36"
+              >
+                {isSubmitting
+                  ? 'Subscribing...'
+                  : isSuccess
+                    ? 'Thank you'
+                    : 'Subscribe'}
+              </Button>
+            </div>
             {error && (
               <p className="text-small text-red" role="alert">
                 {error}
               </p>
             )}
-            <Button
-              type="submit"
-              variant="outline"
-              disabled={isSubmitting || isSuccess}
-            >
-              {isSubmitting
-                ? 'Subscribing...'
-                : isSuccess
-                  ? 'Thank you'
-                  : 'Subscribe'}
-            </Button>
           </fetcher.Form>
         </div>
         <div className="border-b border-text/20 mx-4 md:mx-8" />
