@@ -1,5 +1,5 @@
 import type {Route} from './+types/design-system';
-import {useState} from 'react';
+import favicon from '~/assets/favicon.svg';
 import {
   Button,
   Stars,
@@ -8,6 +8,7 @@ import {
   CheckCircleIcon,
   ProductCard,
   BlogCard,
+  Tooltip,
 } from '@wakey/ui';
 import {AddedToBagPopup} from '~/components/AddedToBagPopup';
 import {
@@ -37,6 +38,7 @@ import {
   AiIcon,
 } from '@wakey/ui';
 import {Header} from '~/components/Header';
+import {Footer} from '~/components/Footer';
 import {ProductTooltip} from '~/components/ProductTooltip';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
 import type {TooltipProduct} from '~/lib/tooltip-product';
@@ -65,6 +67,11 @@ export function meta(_args: Route.MetaArgs) {
     {name: 'robots', content: 'noindex'},
   ];
 }
+
+export const handle = {
+  hideFooter: true,
+  hideHeader: true,
+};
 
 const PRODUCT_QUERY = `#graphql
   query DesignSystemProduct($handle: String!) {
@@ -146,12 +153,17 @@ export async function loader({context}: Route.LoaderArgs) {
   return {cart, productData};
 }
 
-// Navigation structure
-const NAV_ITEMS = [
+// Sidebar navigation structure
+const SIDEBAR_NAV = [
+  {
+    id: 'introduction',
+    label: 'Introduction',
+    items: [],
+  },
   {
     id: 'foundations',
-    label: 'Foundations',
-    sections: [
+    label: 'Tokens',
+    items: [
       {id: 'typography', label: 'Typography'},
       {id: 'colors', label: 'Colors'},
       {id: 'spacing', label: 'Spacing'},
@@ -162,99 +174,85 @@ const NAV_ITEMS = [
   },
   {
     id: 'components',
-    label: 'Components',
-    sections: [
-      {id: 'buttons', label: 'Buttons'},
-      {id: 'inputs', label: 'Inputs'},
+    label: 'Blocks',
+    items: [
+      {id: 'buttons', label: 'Button'},
+      {id: 'inputs', label: 'Input'},
       {id: 'stars', label: 'Stars'},
       {id: 'accordion', label: 'Accordion'},
       {id: 'icons', label: 'Icons'},
+      {id: 'product-card', label: 'ProductCard'},
+      {id: 'blog-card', label: 'BlogCard'},
+      {id: 'tooltip', label: 'Tooltip'},
+      {id: 'sticky-atc', label: 'Sticky ATC'},
+      {id: 'added-to-bag', label: 'Added to Bag'},
     ],
   },
   {
-    id: 'patterns',
-    label: 'Patterns',
-    sections: [
-      {id: 'layout', label: 'Layout'},
-      {id: 'cards', label: 'Cards'},
-      {id: 'cart', label: 'Cart'},
-      {id: 'sections', label: 'Sections'},
+    id: 'sections',
+    label: 'Sections',
+    items: [
+      {id: 'header', label: 'Header'},
+      {id: 'footer', label: 'Footer'},
+      {id: 'page-header', label: 'PageHeader'},
+      {id: 'intro-section', label: 'IntroSection'},
+      {id: 'usp-section', label: 'USPSection'},
+      {id: 'faq', label: 'FAQ'},
+      {id: 'contact-section', label: 'ContactSection'},
+      {id: 'product-description', label: 'ProductDescription'},
+      {id: 'ingredients-section', label: 'IngredientsSection'},
+      {id: 'text-section', label: 'TextSection'},
+      {id: 'blog-article', label: 'BlogArticle'},
+      {id: 'hero', label: 'Hero'},
+      {id: 'featured-product', label: 'FeaturedProduct'},
+      {id: 'image-banner', label: 'ImageBanner'},
+      {id: 'founder', label: 'Founder'},
+      {id: 'social-section', label: 'SocialSection'},
+      {id: 'cloud-section', label: 'CloudSection'},
+      {id: 'text-media', label: 'TextMedia'},
+      {id: 'product-reviews', label: 'ProductReviews'},
     ],
   },
 ];
 
-// Desktop Sidebar Navigation
 function DesignSystemSidebar() {
-  const scrollToSection = (id: string) => {
+  const handleNavClick = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({behavior: 'auto', block: 'start'});
-      window.history.pushState(null, '', `#${id}`);
+      element.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
   };
 
   return (
-    <aside className="hidden lg:block fixed left-0 top-24 w-56 h-[calc(100vh-6rem)] overflow-y-auto p-6 border-r border-black/10 bg-white z-10">
-      <nav className="space-y-6">
-        {NAV_ITEMS.map((category) => (
-          <div key={category.id}>
+    <aside className="hidden lg:block fixed top-0 left-8 w-56 h-svh overflow-y-auto scrollbar-hide">
+      <img src={favicon} alt="Wakey" className="w-12 h-12 mb-6 mt-8" />
+      <nav className="space-y-6 pb-12">
+        {SIDEBAR_NAV.map((section) => (
+          <div key={section.id}>
             <button
-              type="button"
-              onClick={() => scrollToSection(category.id)}
-              className="text-s2 font-display text-black hover:text-softorange transition-colors text-left"
+              onClick={() => handleNavClick(section.id)}
+              className="text-small font-display text-text/50 hover:text-text transition-colors uppercase tracking-wide cursor-pointer"
             >
-              {category.label}
+              {section.label}
             </button>
-            <ul className="mt-2 space-y-1">
-              {category.sections.map((section) => (
-                <li key={section.id}>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection(section.id)}
-                    className="text-body-small font-body text-text/70 hover:text-black transition-colors block py-1 text-left"
-                  >
-                    {section.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {section.items.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {section.items.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      onClick={() => handleNavClick(item.id)}
+                      className="text-body-small font-display text-text hover:text-black transition-colors cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </nav>
     </aside>
-  );
-}
-
-// Mobile Tabs Navigation
-function DesignSystemTabs() {
-  const [activeTab, setActiveTab] = useState('foundations');
-
-  const handleTabClick = (categoryId: string) => {
-    setActiveTab(categoryId);
-    const element = document.getElementById(categoryId);
-    if (element) {
-      element.scrollIntoView({behavior: 'auto', block: 'start'});
-    }
-  };
-
-  return (
-    <div className="lg:hidden sticky top-20 z-40 bg-white border-b border-black/10">
-      <div className="flex">
-        {NAV_ITEMS.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => handleTabClick(category.id)}
-            className={`flex-1 py-3 text-label font-display text-center transition-colors ${
-              activeTab === category.id
-                ? 'text-black border-b-2 border-softorange'
-                : 'text-text/60 hover:text-black'
-            }`}
-          >
-            {category.label}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -271,7 +269,7 @@ function CategoryCard({
   children: React.ReactNode;
 }) {
   return (
-    <div id={id} className="bg-sand rounded-card p-6 md:p-10 scroll-mt-28">
+    <div id={id} className="bg-sand rounded-card p-6 md:p-10 scroll-mt-8">
       <div className="mb-8 md:mb-12">
         <h2 className="text-h2 font-display mb-2">{title}</h2>
         {description && (
@@ -294,7 +292,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-32">
+    <section id={id} className="scroll-mt-12">
       <h3 className="text-h3 font-display mb-6 pb-3 border-b border-black/10">
         {title}
       </h3>
@@ -383,7 +381,9 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
     ? {
         title: productData.title,
         handle: productData.handle,
-        image: productData.featuredImage || '',
+        image:
+          productData.featuredImage ||
+          'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
         subtitle: productData.subtitle,
         reviewCount: productData.reviewCount,
         reviewRating: productData.reviewRating,
@@ -415,24 +415,58 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
     <div className="min-h-screen bg-white">
       <DesignSystemSidebar />
 
-      <div className="lg:ml-56">
-        {/* Page Header */}
-        <header className="pt-24 md:pt-28 px-4 md:px-8 pb-6">
-          <h1 className="text-h1 font-display mb-3">Design System</h1>
-          <p className="text-paragraph font-body text-text/70 max-w-prose">
-            A comprehensive overview of Wakey&apos;s design tokens, typography,
-            colors, and UI components.
-          </p>
-        </header>
-
-        <DesignSystemTabs />
-
+      <div className="lg:ml-64">
         {/* Main Content */}
-        <main className="px-4 md:px-8 py-8 space-y-8">
-          {/* FOUNDATIONS */}
+        <main className="px-4 md:px-8 pt-8 md:pt-12 pb-24 space-y-8">
+          {/* INTRODUCTION */}
+          <section id="introduction" className="scroll-mt-8 mb-8">
+            <div className="max-w-3xl">
+              <h1 className="text-h1 font-display mb-4">Design System</h1>
+              <p className="text-s1 font-display text-text/80 mb-6">
+                The building blocks of the Wakey brand experience.
+              </p>
+              <div className="prose prose-lg font-display text-text/70 space-y-4">
+                <p>
+                  This design system documents the visual language, components,
+                  and patterns that make up the Wakey brand. It serves as a
+                  single source of truth for designers and developers working on
+                  Wakey products.
+                </p>
+                <p>
+                  Built on Tailwind CSS v4 with a custom theme, every element is
+                  designed to feel warm, playful, and approachable — just like
+                  waking up to a fresh morning.
+                </p>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <div className="border border-black/10 rounded-card p-4 flex-1 min-w-48">
+                  <p className="text-s2 font-display text-black mb-1">Tokens</p>
+                  <p className="text-body-small font-display text-text/60">
+                    Typography, colors, spacing, and motion
+                  </p>
+                </div>
+                <div className="border border-black/10 rounded-card p-4 flex-1 min-w-48">
+                  <p className="text-s2 font-display text-black mb-1">Blocks</p>
+                  <p className="text-body-small font-display text-text/60">
+                    Reusable UI components from @wakey/ui
+                  </p>
+                </div>
+                <div className="border border-black/10 rounded-card p-4 flex-1 min-w-48">
+                  <p className="text-s2 font-display text-black mb-1">
+                    Sections
+                  </p>
+                  <p className="text-body-small font-display text-text/60">
+                    Page-level layouts and patterns
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* TOKENS */}
           <CategoryCard
             id="foundations"
-            title="Foundations"
+            title="Tokens"
             description="The building blocks of the Wakey design system."
           >
             {/* Typography */}
@@ -756,10 +790,10 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
             </Section>
           </CategoryCard>
 
-          {/* COMPONENTS */}
+          {/* BLOCKS */}
           <CategoryCard
             id="components"
-            title="Components"
+            title="Blocks"
             description="Reusable UI elements from @wakey/ui."
           >
             {/* Buttons */}
@@ -976,690 +1010,576 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                 </div>
               </div>
             </Section>
+
+            {/* ProductCard */}
+            <Section id="product-card" title="ProductCard">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Generic product card from @wakey/ui. Accepts primitive props for
+                Shopify-agnostic usage.
+              </p>
+              <div className="max-w-xs">
+                <ProductCard
+                  to="/products/deodorant"
+                  image={{
+                    src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    alt: 'Wakey Deodorant',
+                  }}
+                  title="Natural Deodorant"
+                  price="$12.00"
+                  loading="eager"
+                />
+              </div>
+            </Section>
+
+            {/* BlogCard */}
+            <Section id="blog-card" title="BlogCard">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Generic blog card from @wakey/ui. Accepts primitive props for
+                displaying article previews.
+              </p>
+              <div className="max-w-sm">
+                <BlogCard
+                  to="/blog/morning-routine"
+                  image={{
+                    src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    alt: 'Morning routine',
+                  }}
+                  title="The Perfect Morning Routine"
+                  description="Start your day with confidence using these simple tips for a fresh, energized morning."
+                  date="January 15, 2024"
+                  loading="eager"
+                />
+              </div>
+            </Section>
+
+            {/* Tooltip */}
+            <Section id="tooltip" title="Tooltip">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Product tooltip with hover interaction. Available in dark and
+                light variants.
+              </p>
+              <div className="flex flex-wrap gap-8 items-start py-8">
+                <div
+                  className="flex flex-col gap-2"
+                  style={{minWidth: '275px'}}
+                >
+                  <span className="text-small opacity-60">
+                    Dark (for dark backgrounds)
+                  </span>
+                  <div className="relative bg-black rounded-card p-4 h-24">
+                    <Tooltip
+                      product={{
+                        title: 'Natural Deodorant',
+                        url: '/products/deodorant',
+                        image:
+                          'https://cdn.shopify.com/s/files/1/0609/8747/4152/products/wakey-shot.png?v=1701280929',
+                        subtitle: 'Mighty Citrus',
+                        reviewCount: 121,
+                        reviewRating: 4.8,
+                      }}
+                      position={{top: '16px', left: '16px'}}
+                      variant="dark"
+                    />
+                  </div>
+                </div>
+                <div
+                  className="flex flex-col gap-2"
+                  style={{minWidth: '275px'}}
+                >
+                  <span className="text-small opacity-60">
+                    Light (for light backgrounds)
+                  </span>
+                  <div className="relative bg-white rounded-card p-4 h-24">
+                    <Tooltip
+                      product={{
+                        title: 'Natural Deodorant',
+                        url: '/products/deodorant',
+                        image:
+                          'https://cdn.shopify.com/s/files/1/0609/8747/4152/products/wakey-shot.png?v=1701280929',
+                        subtitle: 'Mighty Citrus',
+                        reviewCount: 121,
+                        reviewRating: 4.8,
+                      }}
+                      position={{top: '16px', left: '16px'}}
+                      variant="light"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Section>
+
+            {/* Sticky Add to Cart */}
+            <Section id="sticky-atc" title="Sticky Add to Cart">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Sticky bottom bar for product pages.
+              </p>
+              {productData && productData.selectedVariant && (
+                <StickyAddToCart
+                  product={{
+                    id: productData.id,
+                    title: productData.title,
+                    handle: productData.handle,
+                  }}
+                  selectedVariant={productData.selectedVariant}
+                  subtitle={productData.subtitle}
+                  productImage={productData.featuredImage}
+                  inline
+                />
+              )}
+            </Section>
+
+            {/* Added to Bag Popup */}
+            <Section id="added-to-bag" title="Added to Bag Popup">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Confirmation popup after adding items to cart.
+              </p>
+              <div className="relative">
+                <AddedToBagPopup
+                  isOpen={true}
+                  onClose={() => {}}
+                  product={
+                    productData
+                      ? {
+                          image: productData.featuredImage,
+                          title: productData.title,
+                          variantTitle: productData.subtitle,
+                          price: (
+                            <>
+                              {productData.selectedVariant?.price?.amount}{' '}
+                              {productData.selectedVariant?.price?.currencyCode}
+                            </>
+                          ),
+                        }
+                      : null
+                  }
+                  cartCount={2}
+                  checkoutUrl="/cart"
+                  relative
+                />
+              </div>
+            </Section>
           </CategoryCard>
 
-          {/* PATTERNS */}
+          {/* SECTIONS */}
           <CategoryCard
-            id="patterns"
-            title="Patterns"
-            description="Assembled solutions and page-level components."
+            id="sections"
+            title="Sections"
+            description="Page-level components and assembled solutions."
           >
-            {/* Layout */}
-            <Section id="layout" title="Layout">
-              <div className="space-y-10">
-                {/* Header */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    Header
-                  </h4>
-                  <p className="text-paragraph font-body mb-4 opacity-80">
-                    Floating pill header with menu, logo, search, and cart.
-                  </p>
-                  <Header cart={cart} inline />
-                </div>
-
-                {/* Footer */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    Footer
-                  </h4>
-                  <p className="text-paragraph font-body mb-4 opacity-80">
-                    Site footer with navigation, social links, and payment
-                    icons.
-                  </p>
-                  <div className="bg-white p-4 rounded-card">
-                    <p className="text-s2 font-display mb-3">Features</p>
-                    <ul className="text-body-small font-body space-y-1 opacity-70">
-                      <li>
-                        Dynamic background (blue default, yellow on /about)
-                      </li>
-                      <li>Responsive layout</li>
-                      <li>Social media links (Instagram, TikTok)</li>
-                      <li>Payment method icons</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </Section>
-
-            {/* Cards */}
-            <Section id="cards" title="Cards">
-              <div className="space-y-10">
-                {/* ProductCard */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    ProductCard
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Generic product card from @wakey/ui. Accepts primitive props
-                    for Shopify-agnostic usage.
-                  </p>
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <ProductCard
-                      to="/products/deodorant"
-                      image={{
-                        src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        alt: 'Wakey Deodorant',
-                      }}
-                      title="Natural Deodorant"
-                      price="$12.00"
-                      loading="eager"
-                    />
-                    <ProductCard
-                      to="/products/deodorant"
-                      image={{
-                        src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        alt: 'Wakey Deodorant',
-                      }}
-                      title="Morning Bundle"
-                      price="$24.00"
-                      loading="eager"
-                    />
-                    <ProductCard
-                      to="/products/deodorant"
-                      image={{
-                        src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        alt: 'Wakey Deodorant',
-                      }}
-                      title="Gift Set"
-                      price="$36.00"
-                      loading="eager"
-                    />
-                  </div>
-                </div>
-
-                {/* BlogCard */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    BlogCard
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Generic blog card from @wakey/ui. Accepts primitive props
-                    for displaying article previews.
-                  </p>
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <BlogCard
-                      to="/blog/morning-routine"
-                      image={{
-                        src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        alt: 'Morning routine',
-                      }}
-                      title="The Perfect Morning Routine"
-                      description="Start your day with confidence using these simple tips for a fresh, energized morning."
-                      date="January 15, 2024"
-                      loading="eager"
-                    />
-                    <BlogCard
-                      to="/blog/natural-ingredients"
-                      image={{
-                        src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        alt: 'Natural ingredients',
-                      }}
-                      title="Why Natural Ingredients Matter"
-                      description="Learn about the benefits of choosing natural personal care products."
-                      date="January 10, 2024"
-                      loading="eager"
-                    />
-                    <BlogCard
-                      to="/blog/sustainability"
-                      image={{
-                        src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        alt: 'Sustainability',
-                      }}
-                      title="Our Sustainability Journey"
-                      description="How we're working to reduce our environmental footprint."
-                      date="January 5, 2024"
-                      loading="eager"
-                    />
-                  </div>
-                </div>
-
-                {/* ProductTooltip */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    ProductTooltip
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Product tooltip with hover interaction. Uses real Shopify
-                    data.
-                  </p>
-                  <div className="relative h-72 bg-skyblue rounded-card">
-                    <ProductTooltip
-                      handle={productData?.handle || 'deodorant'}
-                      position={{top: '20%', left: '10%'}}
-                      priority
-                      product={tooltipProduct}
-                    />
-                  </div>
-                </div>
-              </div>
-            </Section>
-
-            {/* Cart */}
-            <Section id="cart" title="Cart">
-              <div className="space-y-10">
-                {/* Sticky Add to Cart */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    StickyAddToCart
-                  </h4>
-                  <p className="text-paragraph font-body mb-4 opacity-80">
-                    Sticky bottom bar for product pages.
-                  </p>
-                  {productData && productData.selectedVariant && (
-                    <StickyAddToCart
-                      product={{
-                        id: productData.id,
-                        title: productData.title,
-                        handle: productData.handle,
-                      }}
-                      selectedVariant={productData.selectedVariant}
-                      subtitle={productData.subtitle}
-                      productImage={productData.featuredImage}
-                      inline
-                    />
-                  )}
-                </div>
-
-                {/* Added to Bag Popup */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    AddedToBagPopup
-                  </h4>
-                  <p className="text-paragraph font-body mb-4 opacity-80">
-                    Confirmation popup after adding items to cart.
-                  </p>
-                  <div className="relative">
-                    <AddedToBagPopup
-                      isOpen={true}
-                      onClose={() => {}}
-                      product={
-                        productData
-                          ? {
-                              image: productData.featuredImage,
-                              title: productData.title,
-                              variantTitle: productData.subtitle,
-                              price: (
-                                <>
-                                  {productData.selectedVariant?.price?.amount}{' '}
-                                  {
-                                    productData.selectedVariant?.price
-                                      ?.currencyCode
-                                  }
-                                </>
-                              ),
-                            }
-                          : null
-                      }
-                      cartCount={2}
-                      checkoutUrl="/cart"
-                      relative
-                    />
-                  </div>
-                </div>
-              </div>
-            </Section>
-
-            {/* Sections */}
-            <Section id="sections" title="Sections">
-              <p className="text-paragraph font-body mb-6 opacity-80">
-                Page section components from{' '}
-                <code className="bg-white px-2 py-1 rounded text-small">
-                  ~/components/sections
-                </code>
+            {/* Header */}
+            <Section id="header" title="Header">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Floating pill header with menu, logo, search, and cart.
               </p>
+              <Header cart={cart} inline />
+            </Section>
 
-              <div className="space-y-12">
-                {/* PageHeader */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    PageHeader
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Page title header with optional subtitle.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <PageHeader
-                      title="Example Page Title"
-                      subtitle="An optional subtitle that provides more context"
-                    />
-                  </div>
-                </div>
+            {/* Footer */}
+            <Section id="footer" title="Footer">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Site footer with navigation, social links, and payment icons.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <Footer />
+              </div>
+            </Section>
 
-                {/* IntroSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    IntroSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Simple text intro with heading, description, and CTA button.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <IntroSection
-                      heading={
-                        <>
-                          We believe in <em>better</em> mornings
-                        </>
-                      }
-                      description="Our mission is to help you start every day feeling fresh, confident, and ready to take on the world."
-                      buttonText="Our story"
-                      buttonTo="/about"
-                    />
-                  </div>
-                </div>
+            {/* PageHeader */}
+            <Section id="page-header" title="PageHeader">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Page title header with optional subtitle.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <PageHeader
+                  title="Example Page Title"
+                  subtitle="An optional subtitle that provides more context"
+                />
+              </div>
+            </Section>
 
-                {/* USPSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    USPSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Carousel of unique selling points with icons.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <USPSection
-                      items={[
-                        {
-                          title: '100% Natural',
-                          body: 'Made with only the finest natural ingredients.',
-                        },
-                        {
-                          title: '24h Protection',
-                          body: 'Long-lasting freshness throughout your day.',
-                        },
-                        {
-                          title: 'Eco-Friendly',
-                          body: 'Sustainable packaging that cares for our planet.',
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
+            {/* IntroSection */}
+            <Section id="intro-section" title="IntroSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Simple text intro with heading, description, and CTA button.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <IntroSection
+                  heading={
+                    <>
+                      We believe in <em>better</em> mornings
+                    </>
+                  }
+                  description="Our mission is to help you start every day feeling fresh, confident, and ready to take on the world."
+                  buttonText="Our story"
+                  buttonTo="/about"
+                />
+              </div>
+            </Section>
 
-                {/* FAQ */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">FAQ</h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Accordion FAQ section with title and description.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <FAQ
-                      title="Frequently Asked Questions"
-                      description={
-                        <>
-                          Got questions? We&apos;ve got answers. If you
-                          can&apos;t find what you&apos;re looking for, reach
-                          out to our team.
-                        </>
-                      }
-                      items={[
-                        {
-                          id: 'faq-1',
-                          title: 'How long does shipping take?',
-                          content:
-                            'Standard shipping takes 3-5 business days within the EU. Express shipping is available for next-day delivery.',
-                        },
-                        {
-                          id: 'faq-2',
-                          title: 'What is your return policy?',
-                          content:
-                            "We offer a 30-day money-back guarantee. If you're not satisfied, simply return the product for a full refund.",
-                        },
-                        {
-                          id: 'faq-3',
-                          title: 'Is the product suitable for sensitive skin?',
-                          content:
-                            'Yes! Our formula is dermatologically tested and designed to be gentle on all skin types, including sensitive skin.',
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
+            {/* USPSection */}
+            <Section id="usp-section" title="USPSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Carousel of unique selling points with icons.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <USPSection
+                  items={[
+                    {
+                      title: '100% Natural',
+                      body: 'Made with only the finest natural ingredients.',
+                    },
+                    {
+                      title: '24h Protection',
+                      body: 'Long-lasting freshness throughout your day.',
+                    },
+                    {
+                      title: 'Eco-Friendly',
+                      body: 'Sustainable packaging that cares for our planet.',
+                    },
+                  ]}
+                />
+              </div>
+            </Section>
 
-                {/* ContactSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    ContactSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Contact details layout with email and address.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <ContactSection
-                      title="Get in Touch"
-                      description={
-                        <>
-                          We&apos;d love to hear from you. Reach out for
-                          questions, feedback, or just to say hi.
-                        </>
-                      }
-                      items={[
-                        {
-                          title: 'General Inquiries',
-                          email: 'hello@wakey.care',
-                        },
-                        {
-                          title: 'Press',
-                          email: 'press@wakey.care',
-                        },
-                        {
-                          title: 'Headquarters',
-                          address: [
-                            'Wakey Care B.V.',
-                            'Keizersgracht 123',
-                            '1015 CJ Amsterdam',
-                            'The Netherlands',
-                          ],
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
+            {/* FAQ */}
+            <Section id="faq" title="FAQ">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Accordion FAQ section with title and description.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <FAQ
+                  title="Frequently Asked Questions"
+                  description={
+                    <>
+                      Got questions? We&apos;ve got answers. If you can&apos;t
+                      find what you&apos;re looking for, reach out to our team.
+                    </>
+                  }
+                  items={[
+                    {
+                      id: 'faq-1',
+                      title: 'How long does shipping take?',
+                      content:
+                        'Standard shipping takes 3-5 business days within the EU. Express shipping is available for next-day delivery.',
+                    },
+                    {
+                      id: 'faq-2',
+                      title: 'What is your return policy?',
+                      content:
+                        "We offer a 30-day money-back guarantee. If you're not satisfied, simply return the product for a full refund.",
+                    },
+                    {
+                      id: 'faq-3',
+                      title: 'Is the product suitable for sensitive skin?',
+                      content:
+                        'Yes! Our formula is dermatologically tested and designed to be gentle on all skin types, including sensitive skin.',
+                    },
+                  ]}
+                />
+              </div>
+            </Section>
 
-                {/* ProductDescription */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    ProductDescription
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Product description with title and USP list.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <ProductDescription
-                      title="Why you love it"
-                      descriptionHtml="Our deodorant is crafted with care using only the <em>finest natural ingredients</em>. No aluminum, no parabens, just pure freshness that lasts all day."
-                      usps={[
-                        '100% Natural ingredients',
-                        '24-hour protection',
-                        'Dermatologically tested',
-                        'Vegan & cruelty-free',
-                      ]}
-                    />
-                  </div>
-                </div>
+            {/* ContactSection */}
+            <Section id="contact-section" title="ContactSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Contact details layout with email and address.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ContactSection
+                  title="Get in Touch"
+                  description={
+                    <>
+                      We&apos;d love to hear from you. Reach out for questions,
+                      feedback, or just to say hi.
+                    </>
+                  }
+                  items={[
+                    {
+                      title: 'General Inquiries',
+                      email: 'hello@wakey.care',
+                    },
+                    {
+                      title: 'Press',
+                      email: 'press@wakey.care',
+                    },
+                    {
+                      title: 'Headquarters',
+                      address: [
+                        'Wakey Care B.V.',
+                        'Keizersgracht 123',
+                        '1015 CJ Amsterdam',
+                        'The Netherlands',
+                      ],
+                    },
+                  ]}
+                />
+              </div>
+            </Section>
 
-                {/* IngredientsSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    IngredientsSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Ingredient showcase with image carousel.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <IngredientsSection
-                      title="Ingredients"
-                      ingredientsList="<strong>Coconut Oil</strong> · <strong>Shea Butter</strong> · <strong>Aloe Vera</strong> · <strong>Essential Oils</strong>"
-                      items={[
-                        {
-                          id: 'coconut',
-                          name: 'Coconut<br/>Oil',
-                          image:
-                            'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        },
-                        {
-                          id: 'shea',
-                          name: 'Shea<br/>Butter',
-                          image:
-                            'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        },
-                        {
-                          id: 'aloe',
-                          name: 'Aloe<br/>Vera',
-                          image:
-                            'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
+            {/* ProductDescription */}
+            <Section id="product-description" title="ProductDescription">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Product description with title and USP list.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ProductDescription
+                  title="Why you love it"
+                  descriptionHtml="Our deodorant is crafted with care using only the <em>finest natural ingredients</em>. No aluminum, no parabens, just pure freshness that lasts all day."
+                  usps={[
+                    '100% Natural ingredients',
+                    '24-hour protection',
+                    'Dermatologically tested',
+                    'Vegan & cruelty-free',
+                  ]}
+                />
+              </div>
+            </Section>
 
-                {/* TextSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    TextSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Simple prose section for MDX content.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <TextSection>
-                      <h2>Morning essentials</h2>
-                      <p>
-                        Start your day right with products designed to make you
-                        feel confident and fresh. Our natural formulas work with
-                        your body, not against it.
-                      </p>
-                    </TextSection>
-                  </div>
-                </div>
+            {/* IngredientsSection */}
+            <Section id="ingredients-section" title="IngredientsSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Ingredient showcase with image carousel.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <IngredientsSection
+                  title="Ingredients"
+                  ingredientsList="<strong>Coconut Oil</strong> · <strong>Shea Butter</strong> · <strong>Aloe Vera</strong> · <strong>Essential Oils</strong>"
+                  items={[
+                    {
+                      id: 'coconut',
+                      name: 'Coconut<br/>Oil',
+                      image:
+                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    },
+                    {
+                      id: 'shea',
+                      name: 'Shea<br/>Butter',
+                      image:
+                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    },
+                    {
+                      id: 'aloe',
+                      name: 'Aloe<br/>Vera',
+                      image:
+                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    },
+                  ]}
+                />
+              </div>
+            </Section>
 
-                {/* BlogArticle */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    BlogArticle
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Blog post layout with header, featured image, and content.
+            {/* TextSection */}
+            <Section id="text-section" title="TextSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Simple prose section for MDX content.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <TextSection>
+                  <h2>Morning essentials</h2>
+                  <p>
+                    Start your day right with products designed to make you feel
+                    confident and fresh. Our natural formulas work with your
+                    body, not against it.
                   </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <BlogArticle
-                      frontmatter={{
-                        title: 'The Science Behind Natural Deodorants',
-                        slug: 'science-natural-deodorants',
-                        description:
-                          'Learn how natural deodorants work and why they are better for your skin.',
-                        publishedAt: '2024-01-15',
-                        author: 'Wakey Team',
-                        tags: ['Science', 'Ingredients', 'Natural'],
-                        featuredImage: {
-                          url: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Natural ingredients',
-                        },
-                      }}
-                    >
-                      <p>
-                        Natural deodorants work differently than traditional
-                        antiperspirants. Instead of blocking your sweat glands,
-                        they neutralize odor-causing bacteria while allowing
-                        your body to function naturally.
-                      </p>
-                      <p>
-                        Our formula uses a combination of coconut oil, shea
-                        butter, and essential oils to keep you fresh throughout
-                        the day.
-                      </p>
-                    </BlogArticle>
-                  </div>
-                </div>
+                </TextSection>
+              </div>
+            </Section>
 
-                {/* Hero */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">Hero</h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Full-bleed hero with Wakey logo and optional product
-                    tooltip.
+            {/* BlogArticle */}
+            <Section id="blog-article" title="BlogArticle">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Blog post layout with header, featured image, and content.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <BlogArticle
+                  frontmatter={{
+                    title: 'The Science Behind Natural Deodorants',
+                    slug: 'science-natural-deodorants',
+                    description:
+                      'Learn how natural deodorants work and why they are better for your skin.',
+                    publishedAt: '2024-01-15',
+                    author: 'Wakey Team',
+                    tags: ['Science', 'Ingredients', 'Natural'],
+                    featuredImage: {
+                      url: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Natural ingredients',
+                    },
+                  }}
+                >
+                  <p>
+                    Natural deodorants work differently than traditional
+                    antiperspirants. Instead of blocking your sweat glands, they
+                    neutralize odor-causing bacteria while allowing your body to
+                    function naturally.
                   </p>
-                  <div className="rounded-card overflow-hidden border border-black/10 h-[80vh]">
-                    <Hero
-                      backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                      showLogo={true}
-                      logoColor="#fad103"
-                    />
-                  </div>
-                </div>
+                  <p>
+                    Our formula uses a combination of coconut oil, shea butter,
+                    and essential oils to keep you fresh throughout the day.
+                  </p>
+                </BlogArticle>
+              </div>
+            </Section>
 
-                {/* FeaturedProduct */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    FeaturedProduct
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Product showcase with heading, CTA, and optional tooltip.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10 h-[80vh]">
-                    <FeaturedProduct
-                      backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                      heading={
-                        <>
-                          Fresh starts
-                          <br />
-                          <em>every morning</em>
-                        </>
-                      }
-                      buttonText="Shop now"
-                      buttonTo="/products/deodorant"
-                    />
-                  </div>
-                </div>
+            {/* Hero */}
+            <Section id="hero" title="Hero">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Full-bleed hero with Wakey logo and optional product tooltip.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <Hero
+                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  showLogo={true}
+                  logoColor="#fad103"
+                />
+              </div>
+            </Section>
 
-                {/* ImageBanner */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    ImageBanner
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Full-width banner with background image/video and text
-                    overlay.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10 h-[80vh]">
-                    <ImageBanner
-                      backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                      text="Start your day with <em>confidence</em> and fresh energy"
-                      label="New arrival"
-                      textColor="#ffffff"
-                      overlayColor="#000000"
-                      overlayOpacity={40}
-                      alignment="center"
-                    />
-                  </div>
-                </div>
+            {/* FeaturedProduct */}
+            <Section id="featured-product" title="FeaturedProduct">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Product showcase with heading, CTA, and optional tooltip.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <FeaturedProduct
+                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  heading={
+                    <>
+                      Fresh starts
+                      <br />
+                      <em>every morning</em>
+                    </>
+                  }
+                  buttonText="Shop now"
+                  buttonTo="/products/deodorant"
+                />
+              </div>
+            </Section>
 
-                {/* Founder */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    Founder
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Team member profile with image, quote, and signature.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <Founder
-                      image="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                      imageAlt="Founder portrait"
-                      heading="We started Wakey because we believed there had to be a better way."
-                      signature="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                      name="— The Wakey Team"
-                    >
-                      <p>
-                        After years of using products filled with chemicals we
-                        couldn&apos;t pronounce, we decided to create something
-                        different.
-                      </p>
-                      <p>
-                        Something natural. Something that works. Something
-                        we&apos;d be proud to share with our friends and family.
-                      </p>
-                    </Founder>
-                  </div>
-                </div>
+            {/* ImageBanner */}
+            <Section id="image-banner" title="ImageBanner">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Full-width banner with background image/video and text overlay.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ImageBanner
+                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  text="Start your day with <em>confidence</em> and fresh energy"
+                  label="New arrival"
+                  textColor="#ffffff"
+                  overlayColor="#000000"
+                  overlayOpacity={40}
+                  alignment="center"
+                />
+              </div>
+            </Section>
 
-                {/* SocialSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    SocialSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Interactive social media gallery with mouse trail effect
-                    (desktop) or carousel (mobile).
+            {/* Founder */}
+            <Section id="founder" title="Founder">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Team member profile with image, quote, and signature.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <Founder
+                  image="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  imageAlt="Founder portrait"
+                  heading="We started Wakey because we believed there had to be a better way."
+                  signature="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  name="— The Wakey Team"
+                >
+                  <p>
+                    After years of using products filled with chemicals we
+                    couldn&apos;t pronounce, we decided to create something
+                    different.
                   </p>
-                  <div className="rounded-card overflow-hidden border border-black/10 h-[80vh]">
-                    <SocialSection
-                      heading="Get featured"
-                      hashtag="#wakeycare"
-                      images={[
-                        {
-                          src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Customer photo 1',
-                        },
-                        {
-                          src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Customer photo 2',
-                        },
-                        {
-                          src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Customer photo 3',
-                        },
-                        {
-                          src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Customer photo 4',
-                        },
-                        {
-                          src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Customer photo 5',
-                        },
-                        {
-                          src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                          alt: 'Customer photo 6',
-                        },
-                      ]}
-                      lerpFactor={2}
-                    />
-                  </div>
-                </div>
+                  <p>
+                    Something natural. Something that works. Something we&apos;d
+                    be proud to share with our friends and family.
+                  </p>
+                </Founder>
+              </div>
+            </Section>
 
-                {/* CloudSection */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    CloudSection
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Animated section with floating images and text reveal
-                    animation.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10 h-[80vh]">
-                    <CloudSection />
-                  </div>
-                </div>
+            {/* SocialSection */}
+            <Section id="social-section" title="SocialSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Interactive social media gallery with mouse trail effect
+                (desktop) or carousel (mobile).
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <SocialSection
+                  heading="Get featured"
+                  hashtag="#wakeycare"
+                  images={[
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 1',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 2',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 3',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 4',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 5',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 6',
+                    },
+                  ]}
+                  lerpFactor={2}
+                />
+              </div>
+            </Section>
 
-                {/* TextMedia */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    TextMedia
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Two-column layout with video on one side and text + CTA on
-                    the other.
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <TextMedia
-                      videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
-                      videoAlt="Wakey deodorant in use"
-                      text="Start your day <em>the right way</em> with natural ingredients that care for your skin."
-                      buttonText="Shop now"
-                      buttonUrl="/products/deodorant"
-                    />
-                  </div>
-                </div>
+            {/* CloudSection */}
+            <Section id="cloud-section" title="CloudSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Animated section with floating images and text reveal animation.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <CloudSection />
+              </div>
+            </Section>
 
-                {/* ProductReviews */}
-                <div>
-                  <h4 className="text-s2 font-display mb-4 opacity-60">
-                    ProductReviews
-                  </h4>
-                  <p className="text-body-small font-body mb-4 opacity-70">
-                    Reviews section with rating display, review list, and video
-                    testimonial. Fetches data from /api/reviews/[handle].
-                  </p>
-                  <div className="rounded-card overflow-hidden border border-black/10">
-                    <ProductReviews
-                      productHandle="deodorant"
-                      videoUrl="https://cdn.shopify.com/videos/c/vp/4d9fde73a12b42bfb9ad89d733cd91e9/4d9fde73a12b42bfb9ad89d733cd91e9.HD-1080p-7.2Mbps-59362307.mp4?v=0"
-                      videoAlt="Customer testimonial"
-                      tooltipProduct={tooltipProduct}
-                    />
-                  </div>
-                </div>
+            {/* TextMedia */}
+            <Section id="text-media" title="TextMedia">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Two-column layout with video on one side and text + CTA on the
+                other.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <TextMedia
+                  videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+                  videoAlt="Wakey deodorant in use"
+                  text="Start your day <em>the right way</em> with natural ingredients that care for your skin."
+                  buttonText="Shop now"
+                  buttonUrl="/products/deodorant"
+                />
+              </div>
+            </Section>
+
+            {/* ProductReviews */}
+            <Section id="product-reviews" title="ProductReviews">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Reviews section with rating display, review list, and video
+                testimonial. Fetches data from /api/reviews/[handle].
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ProductReviews
+                  productHandle="deodorant"
+                  videoUrl="https://cdn.shopify.com/videos/c/vp/4d9fde73a12b42bfb9ad89d733cd91e9/4d9fde73a12b42bfb9ad89d733cd91e9.HD-1080p-7.2Mbps-59362307.mp4?v=0"
+                  videoAlt="Customer testimonial"
+                  tooltipProduct={tooltipProduct}
+                />
               </div>
             </Section>
           </CategoryCard>

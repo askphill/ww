@@ -121,7 +121,7 @@ export function AddedToBagPopup({
     <div
       className={
         relative
-          ? 'p-4 flex justify-center w-full'
+          ? 'p-4 flex justify-start w-full'
           : 'fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center'
       }
     >

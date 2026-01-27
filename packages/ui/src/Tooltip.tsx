@@ -20,6 +20,8 @@ interface TooltipProps {
   className?: string;
   /** Set to true for above-the-fold tooltips to prioritize LCP */
   priority?: boolean;
+  /** Visual variant: 'dark' for dark backgrounds, 'light' for light backgrounds */
+  variant?: 'dark' | 'light';
 }
 
 export function Tooltip({
@@ -27,17 +29,31 @@ export function Tooltip({
   position,
   className = '',
   priority = false,
+  variant = 'dark',
 }: TooltipProps) {
   const positionStyle = position || {top: '33%', left: '19%'};
 
   const hasReviews = product.reviewCount && product.reviewRating;
   const hasSubtitle = product.subtitle;
 
+  const variantStyles = {
+    dark: {
+      container: 'blur-bg',
+      text: 'text-sand',
+    },
+    light: {
+      container: 'bg-white/80 backdrop-blur-md',
+      text: 'text-text',
+    },
+  };
+
+  const styles = variantStyles[variant];
+
   return (
     <div className={`absolute z-[7] ${className}`} style={positionStyle}>
       <a
         href={product.url}
-        className="flex items-stretch blur-bg rounded-card hover:scale-105 active:scale-95 transition-transform"
+        className={`flex items-stretch ${styles.container} rounded-card hover:scale-105 active:scale-95 transition-transform`}
       >
         {/* Image container */}
         <div className="flex items-center justify-center p-1.5 md:p-2">
@@ -46,13 +62,16 @@ export function Tooltip({
             srcSet={product.imageSrcSet}
             sizes={product.imageSizes}
             alt={product.title}
-            className="w-12 h-auto"
+            className="h-auto shrink-0"
+            style={{width: '48px'}}
             fetchPriority={priority ? 'high' : undefined}
           />
         </div>
 
         {/* Info - hidden on mobile */}
-        <div className="hidden md:flex flex-col justify-center pr-5 py-2 text-sand gap-1">
+        <div
+          className={`hidden md:flex flex-col justify-center pr-5 py-2 ${styles.text} gap-1`}
+        >
           <div className="text-base uppercase font-display tracking-tight leading-none">
             {product.title}
           </div>
@@ -65,7 +84,10 @@ export function Tooltip({
               )}
               {hasReviews && (
                 <div className="flex items-center font-display">
-                  <Stars rating={product.reviewRating!} />
+                  <Stars
+                    rating={product.reviewRating!}
+                    color={variant === 'dark' ? 'sand' : 'black'}
+                  />
                   <span className="text-xs ml-1">({product.reviewCount})</span>
                 </div>
               )}

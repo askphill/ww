@@ -4,7 +4,7 @@ interface ButtonProps {
   children: React.ReactNode;
   to?: string;
   href?: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'outline-light';
   className?: string;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
@@ -36,6 +36,8 @@ export function Button({
     primary: 'bg-black text-sand hover:bg-black/90',
     secondary: 'bg-sand text-black hover:bg-sand/90',
     outline: 'bg-transparent text-text border border-black hover:bg-black/5',
+    'outline-light':
+      'bg-transparent text-sand border border-sand hover:bg-sand/10',
   };
 
   const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : '';

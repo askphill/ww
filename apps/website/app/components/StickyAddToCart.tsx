@@ -101,7 +101,7 @@ export function StickyAddToCart({
       aria-label="Add to cart"
       className={
         inline
-          ? 'w-full flex justify-center'
+          ? 'w-full flex justify-start'
           : `fixed bottom-0 left-0 right-0 z-40 p-4 transition-transform duration-[400ms] [transition-timing-function:var(--ease-out-back)] flex justify-center ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}`
       }
       aria-hidden={isHidden || undefined}

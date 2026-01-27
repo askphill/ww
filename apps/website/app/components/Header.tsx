@@ -132,7 +132,7 @@ export function Header({cart, inline = false}: HeaderProps) {
       <header
         className={
           inline
-            ? 'w-full flex flex-col items-center'
+            ? 'w-full flex flex-col items-start'
             : 'fixed z-50 w-full flex flex-col items-center md:px-6 md:pt-6 pointer-events-none'
         }
         role="banner"

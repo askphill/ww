@@ -72,7 +72,7 @@ export function FeaturedProduct({
         <div className="text-h2 text-sand">{heading}</div>
         {buttonText && buttonTo && (
           <div className="mt-4">
-            <Button variant="outline" to={buttonTo} prefetch="intent">
+            <Button variant="outline-light" to={buttonTo} prefetch="intent">
               {buttonText}
             </Button>
           </div>

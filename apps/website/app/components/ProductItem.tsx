@@ -15,16 +15,6 @@ export function ProductItem({
 }) {
   const variantUrl = useVariantUrl(product.handle);
   const image = product.featuredImage;
-  const priceData = product.priceRange.minVariantPrice;
-
-  // Format price string (Money component handles formatting but we need a string for generic ProductCard)
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: priceData.currencyCode,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(parseFloat(priceData.amount));
-
   return (
     <ProductCard
       to={variantUrl}
@@ -32,7 +22,9 @@ export function ProductItem({
         image ? {src: image.url, alt: image.altText || undefined} : undefined
       }
       title={product.title}
-      price={formattedPrice}
+      price={
+        <Money data={product.priceRange.minVariantPrice} withoutTrailingZeros />
+      }
       loading={loading}
     />
   );

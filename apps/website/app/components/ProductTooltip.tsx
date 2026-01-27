@@ -20,6 +20,8 @@ interface ProductTooltipProps {
   priority?: boolean;
   /** Optional server-provided data to avoid client fetch */
   product?: TooltipProduct | null;
+  /** Visual variant: 'dark' for dark backgrounds, 'light' for light backgrounds */
+  variant?: 'dark' | 'light';
 }
 
 interface ProductApiResponse {
@@ -39,6 +41,7 @@ export function ProductTooltip({
   position,
   priority,
   product,
+  variant = 'dark',
 }: ProductTooltipProps) {
   const fetcher = useLazyFetch<ProductApiResponse>(`/api/product/${handle}`, {
     enabled: !product,
@@ -82,6 +85,7 @@ export function ProductTooltip({
       }}
       position={position}
       priority={priority}
+      variant={variant}
     />
   );
 }
