@@ -1,5 +1,5 @@
-import {Link} from 'react-router';
 import type {Route} from './+types/blog._index';
+import {BlogCard} from '@wakey/ui';
 import {getAllArticles} from '~/content/blog';
 
 export const meta: Route.MetaFunction = () => {
@@ -32,50 +32,34 @@ export default function BlogIndex({loaderData}: Route.ComponentProps) {
       </header>
       <div className="px-4 pt-8 pb-8 md:px-8 md:pt-12 md:pb-12">
         <div className="grid gap-8 md:grid-cols-3 md:gap-6">
-          {articles.map((article) => (
-            <ArticleCard key={article.slug} article={article} />
-          ))}
+          {articles.map((article, index) => {
+            const publishedAt = new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }).format(new Date(article.publishedAt));
+
+            return (
+              <BlogCard
+                key={article.slug}
+                to={`/blog/${article.slug}`}
+                image={
+                  article.featuredImage
+                    ? {
+                        src: article.featuredImage.url,
+                        alt: article.featuredImage.alt,
+                      }
+                    : undefined
+                }
+                title={article.title}
+                description={article.description}
+                date={publishedAt}
+                loading={index < 3 ? 'eager' : 'lazy'}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
-  );
-}
-
-function ArticleCard({
-  article,
-}: {
-  article: ReturnType<typeof getAllArticles>[number];
-}) {
-  const publishedAt = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(article.publishedAt));
-
-  return (
-    <article className="flex flex-col">
-      <Link to={`/blog/${article.slug}`} className="block">
-        {article.featuredImage && (
-          <img
-            src={article.featuredImage.url}
-            alt={article.featuredImage.alt || article.title}
-            className="w-full object-cover"
-            width={article.featuredImage.width}
-            height={article.featuredImage.height}
-            loading="lazy"
-            style={{aspectRatio: '9/5'}}
-          />
-        )}
-        <div className="pt-2 pb-8 flex flex-col gap-3 md:pt-3">
-          <h2 className="text-s1 font-display">{article.title}</h2>
-          <div className="flex items-center gap-2 text-small text-text/60">
-            <time dateTime={article.publishedAt}>{publishedAt}</time>
-          </div>
-          <p className="text-paragraph text-text/75 font-display">
-            {article.description}
-          </p>
-        </div>
-      </Link>
-    </article>
   );
 }
