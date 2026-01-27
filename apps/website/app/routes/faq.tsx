@@ -1,5 +1,6 @@
 import type {Route} from './+types/faq';
 import FAQPage from '~/content/faq.mdx';
+import {shippingContent} from '~/content/shipping';
 
 // FAQ items for JSON-LD schema
 const FAQ_ITEMS = [
@@ -14,8 +15,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What are the shipping costs?',
-    answer:
-      'Shipping is €3.95 for Netherlands and Belgium. Orders above €50 qualify for free shipping.',
+    answer: shippingContent.faqAnswer,
   },
   {
     question: 'What is your return policy?',

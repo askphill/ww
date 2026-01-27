@@ -1,4 +1,5 @@
 import {FAQ, PageHeader} from '~/components/sections';
+import {shippingContent} from '~/content/shipping';
 
 <PageHeader
   title="FAQ"
@@ -23,8 +24,7 @@ import {FAQ, PageHeader} from '~/components/sections';
     {
       id: 'shipping-cost',
       title: 'What are the shipping costs?',
-      content:
-        'Shipping is €3.95 for Netherlands and Belgium. Orders above €50 qualify for free shipping.',
+      content: shippingContent.faqAnswer,
     },
   ]}
 />
