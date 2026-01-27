@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react';
 import {Link} from 'react-router';
 
 interface ProductCardProps {
@@ -7,7 +8,7 @@ interface ProductCardProps {
     alt?: string;
   };
   title: string;
-  price: string;
+  price: ReactNode;
   loading?: 'eager' | 'lazy';
   className?: string;
 }
