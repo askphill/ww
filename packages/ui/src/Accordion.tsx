@@ -8,11 +8,14 @@ interface AccordionItem {
 
 interface AccordionProps {
   items: AccordionItem[];
-  defaultOpenIndex?: number;
+  /** Index of the item to open by default. Pass null or -1 to have all items closed. Defaults to 0 (first item open). */
+  defaultOpenIndex?: number | null;
 }
 
 export function Accordion({items, defaultOpenIndex = 0}: AccordionProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(defaultOpenIndex);
+  const [openIndex, setOpenIndex] = useState<number | null>(
+    defaultOpenIndex === -1 ? null : defaultOpenIndex,
+  );
 
   const toggleItem = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);

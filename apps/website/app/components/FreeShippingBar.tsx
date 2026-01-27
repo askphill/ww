@@ -1,5 +1,6 @@
 import {Money} from '@shopify/hydrogen';
 import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
+import {FREE_SHIPPING_THRESHOLD, shippingContent} from '~/content/shipping';
 
 export type FreeShippingBarProps = {
   /** Current cart total in the base currency unit (e.g., euros) */
@@ -8,11 +9,9 @@ export type FreeShippingBarProps = {
   currencyCode?: CurrencyCode;
 };
 
-const FREE_SHIPPING_THRESHOLD = 80;
-
 /**
  * A progress bar showing how close the user is to free shipping.
- * Hardcoded threshold at 80 euros.
+ * Threshold is configured in ~/content/shipping.ts
  */
 export function FreeShippingBar({
   currentTotal,
@@ -39,7 +38,7 @@ export function FreeShippingBar({
       {/* Message text */}
       <p className="mt-2 text-small text-text">
         {isFreeShipping ? (
-          'Congrats! You get free standard shipping.'
+          shippingContent.freeShippingAchieved
         ) : (
           <span className="whitespace-nowrap">
             <span className="font-display inline">
@@ -52,7 +51,7 @@ export function FreeShippingBar({
                 as="span"
               />
             </span>{' '}
-            away from free shipping
+            {shippingContent.freeShippingProgress}
           </span>
         )}
       </p>

@@ -12,12 +12,14 @@ import {
   FAQ,
   ImageBanner,
   IngredientsSection,
-  ProductDescription,
   ProductReviews,
   USPSection,
+  WhyYouLoveIt,
 } from '~/components/sections';
 import {ProductCarousel} from '~/components/ProductCarousel';
+import {ProductInfo} from '~/components/ProductInfo';
 import {StickyAddToCart} from '~/components/StickyAddToCart';
+import {shippingContent} from '~/content/shipping';
 
 const INGREDIENTS_LIST = `Sweet Almond Oil, Stearic Acid, Squalane, Coconut Oil, Candelilla Wax, Triethyl Citrate, Shea Butter, Tapioca Starch, Arrowroot Powder, Magnesium Hydroxide, Tocopherol (Vitamin E), Citrus Aurantium Bergamia (Bergamot) Fruit Oil, Lavendula Augustifolia (Lavender) Oil, Citrus Aurantium Dulcis Peel Oil (Sweet Orange) Expressed, Citrus Paradisi (Grapefruit) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil.`;
 
@@ -272,21 +274,63 @@ export default function Product() {
   // only when no search params are set in the url
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
+  // Parse review data for rating display
+  const ratingValue = product.reviewRating?.value
+    ? parseFloat(product.reviewRating.value)
+    : 5;
+  let reviewCount = 0;
+  try {
+    if (product.reviews?.value) {
+      const reviews = JSON.parse(product.reviews.value as string);
+      reviewCount = Array.isArray(reviews) ? reviews.length : 0;
+    }
+  } catch {
+    reviewCount = 0;
+  }
+
   return (
     <>
       {/* Media Carousel - full bleed */}
       <ProductCarousel media={product.media.nodes} />
 
-      {/* Description Section - sand background */}
-      <ProductDescription
-        title="Why you love it"
-        descriptionHtml={product.descriptionHtml}
-        usps={[
-          'Formulated without aluminum, baking soda, exfoliating acids or any other ingredients that are harmful.',
-          'Plastic free compostable packaging.',
-          'Vegan and cruelty-free, made without animal testing - only humans who willingly volunteer.',
-        ]}
-      />
+      {/* Product Info Section */}
+      <section className="md:px-0">
+        <ProductInfo
+          subtitle={product.subtitle?.value || 'Mighty Citrus'}
+          title={product.title}
+          description={product.description}
+          rating={ratingValue}
+          reviewCount={reviewCount}
+          badges={['100% NATURAL', 'GENTLE', 'BAKING SODA FREE']}
+          sizeOptions={[{value: '40g', label: '40g'}]}
+          selectedSize="40g"
+          selectedVariant={selectedVariant}
+          productImage={selectedVariant?.image?.url}
+          benefits="Our natural deodorant keeps you fresh all day with a gentle formula that's kind to your skin. The plant-based ingredients work with your body's natural processes while neutralizing odor-causing bacteria."
+          howToUse="Apply 2-3 swipes to clean, dry underarms. A little goes a long way! For best results, apply in the morning after showering. Allow to dry before dressing."
+          keyIngredients="Sweet Almond Oil nourishes skin, Coconut Oil provides antibacterial protection, Shea Butter soothes and moisturizes, Tapioca Starch absorbs moisture naturally, and essential oils of Bergamot, Sweet Orange & Lavender create a refreshing citrus scent."
+          whyYouLoveItTitle="Why you love it"
+          whyYouLoveItHtml={product.descriptionHtml}
+          whyYouLoveItUsps={[
+            'Formulated without aluminum, baking soda, exfoliating acids or any other ingredients that are harmful.',
+            'Plastic free compostable packaging.',
+            'Vegan and cruelty-free, made without animal testing - only humans who willingly volunteer.',
+          ]}
+          analytics={{
+            products: [
+              {
+                productGid: product.id,
+                variantGid: selectedVariant?.id,
+                name: product.title,
+                variantName: selectedVariant?.title,
+                brand: product.vendor,
+                price: selectedVariant?.price.amount,
+                quantity: 1,
+              },
+            ],
+          }}
+        />
+      </section>
 
       {/* USP Section */}
       <USPSection
@@ -300,8 +344,8 @@ export default function Product() {
             body: 'a refreshing blend of bergamot, sweet orange, and lavender.',
           },
           {
-            title: 'Free shipping above €50',
-            body: 'same-day shipping available on orders placed before 2pm.',
+            title: shippingContent.uspTitle,
+            body: shippingContent.uspBody,
           },
         ]}
       />
@@ -331,6 +375,17 @@ export default function Product() {
       <ProductReviews
         productHandle={product.handle}
         videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+      />
+
+      {/* Why You Love It Section */}
+      <WhyYouLoveIt
+        title="Why you love it"
+        descriptionHtml={product.descriptionHtml}
+        usps={[
+          'Formulated without aluminum, baking soda, exfoliating acids or any other ingredients that are harmful.',
+          'Plastic free compostable packaging.',
+          'Vegan and cruelty-free, made without animal testing - only humans who willingly volunteer.',
+        ]}
       />
 
       {/* Analytics */}

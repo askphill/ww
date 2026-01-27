@@ -10,6 +10,7 @@ export {SocialSection} from './SocialSection';
 export {CloudSection} from './CloudSection';
 export {ImageBanner} from './ImageBanner';
 export {ProductDescription} from './ProductDescription';
+export {WhyYouLoveIt} from './WhyYouLoveIt';
 export {USPSection} from './USPSection';
 export {BlogArticle} from './BlogArticle';
 export type {BlogArticleFrontmatter} from './BlogArticle';

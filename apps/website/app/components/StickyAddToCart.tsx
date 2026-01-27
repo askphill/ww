@@ -57,6 +57,7 @@ export function StickyAddToCart({
   // Animation states (only used when not inline)
   const [isReady, setIsReady] = useState(inline);
   const [isOutOfView, setIsOutOfView] = useState(false);
+  const [isProductInfoVisible, setIsProductInfoVisible] = useState(true);
 
   // Initialize on mount - slide up animation (skip if inline)
   useEffect(() => {
@@ -79,6 +80,36 @@ export function StickyAddToCart({
     return () => observer.disconnect();
   }, [inline]);
 
+  // Product info observer - hide when product add-to-cart is visible
+  useEffect(() => {
+    if (inline) return;
+
+    let observer: IntersectionObserver | null = null;
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      const productAddToCart = document.querySelector(
+        '[data-product-add-to-cart]',
+      );
+      if (!productAddToCart) {
+        // Element not found, show the sticky bar
+        setIsProductInfoVisible(false);
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        ([entry]) => setIsProductInfoVisible(entry.isIntersecting),
+        {threshold: 0},
+      );
+      observer.observe(productAddToCart);
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      observer?.disconnect();
+    };
+  }, [inline]);
+
   // Cart lines for submission
   const lines: OptimisticCartLineInput[] = selectedVariant?.id
     ? [
@@ -92,7 +123,10 @@ export function StickyAddToCart({
 
   const isAvailable = selectedVariant?.availableForSale;
 
-  const isHidden = !inline && (!isReady || isOutOfView);
+  // Hide when product info add-to-cart is visible (on both mobile and desktop)
+  // Also hide when not ready or footer is visible
+  const shouldHide = !isReady || isOutOfView || isProductInfoVisible;
+  const isHidden = !inline && shouldHide;
 
   return (
     <div
@@ -102,7 +136,7 @@ export function StickyAddToCart({
       className={
         inline
           ? 'w-full flex justify-start'
-          : `fixed bottom-0 left-0 right-0 z-40 p-4 transition-transform duration-[400ms] [transition-timing-function:var(--ease-out-back)] flex justify-center ${isReady && !isOutOfView ? 'translate-y-0' : 'translate-y-[120%]'}`
+          : `fixed bottom-0 left-0 right-0 z-40 p-4 transition-transform duration-[400ms] [transition-timing-function:var(--ease-out-back)] flex justify-center ${shouldHide ? 'translate-y-[120%]' : 'translate-y-0'}`
       }
       aria-hidden={isHidden || undefined}
     >

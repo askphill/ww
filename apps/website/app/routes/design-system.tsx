@@ -54,6 +54,7 @@ import {Hero, TextSection} from '~/components/sections/Hero';
 import {FeaturedProduct} from '~/components/sections/FeaturedProduct';
 import {IngredientsSection} from '~/components/sections/IngredientsSection';
 import {ProductDescription} from '~/components/sections/ProductDescription';
+import {WhyYouLoveIt} from '~/components/sections/WhyYouLoveIt';
 import {SocialSection} from '~/components/sections/SocialSection';
 import {Founder} from '~/components/sections/Founder';
 import {CloudSection} from '~/components/sections/CloudSection';
@@ -207,6 +208,7 @@ const SIDEBAR_NAV = [
       {id: 'intro-section', label: 'IntroSection'},
       {id: 'usp-section', label: 'USPSection'},
       {id: 'product-description', label: 'ProductDescription'},
+      {id: 'why-you-love-it', label: 'WhyYouLoveIt'},
       {id: 'text-section', label: 'TextSection'},
       {id: 'blog-article', label: 'BlogArticle'},
       {id: 'faq', label: 'FAQ'},
@@ -1581,6 +1583,26 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                         'The Netherlands',
                       ],
                     },
+                  ]}
+                />
+              </div>
+            </Section>
+
+            {/* WhyYouLoveIt */}
+            <Section id="why-you-love-it" title="WhyYouLoveIt">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Standalone &quot;Why you love it&quot; section for product
+                pages.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <WhyYouLoveIt
+                  title="Why you love it"
+                  descriptionHtml="Our deodorant is crafted with care using only the <em>finest natural ingredients</em>. No aluminum, no parabens, just pure freshness that lasts all day."
+                  usps={[
+                    '100% Natural ingredients',
+                    '24-hour protection',
+                    'Dermatologically tested',
+                    'Vegan & cruelty-free',
                   ]}
                 />
               </div>
