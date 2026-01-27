@@ -194,23 +194,23 @@ const SIDEBAR_NAV = [
     items: [
       {id: 'header', label: 'Header'},
       {id: 'footer', label: 'Footer'},
-      {id: 'page-header', label: 'PageHeader'},
-      {id: 'intro-section', label: 'IntroSection'},
-      {id: 'usp-section', label: 'USPSection'},
-      {id: 'faq', label: 'FAQ'},
-      {id: 'contact-section', label: 'ContactSection'},
-      {id: 'product-description', label: 'ProductDescription'},
-      {id: 'ingredients-section', label: 'IngredientsSection'},
-      {id: 'text-section', label: 'TextSection'},
-      {id: 'blog-article', label: 'BlogArticle'},
       {id: 'hero', label: 'Hero'},
       {id: 'featured-product', label: 'FeaturedProduct'},
       {id: 'image-banner', label: 'ImageBanner'},
+      {id: 'text-media', label: 'TextMedia'},
       {id: 'founder', label: 'Founder'},
       {id: 'social-section', label: 'SocialSection'},
       {id: 'cloud-section', label: 'CloudSection'},
-      {id: 'text-media', label: 'TextMedia'},
+      {id: 'ingredients-section', label: 'IngredientsSection'},
       {id: 'product-reviews', label: 'ProductReviews'},
+      {id: 'page-header', label: 'PageHeader'},
+      {id: 'intro-section', label: 'IntroSection'},
+      {id: 'usp-section', label: 'USPSection'},
+      {id: 'product-description', label: 'ProductDescription'},
+      {id: 'text-section', label: 'TextSection'},
+      {id: 'blog-article', label: 'BlogArticle'},
+      {id: 'faq', label: 'FAQ'},
+      {id: 'contact-section', label: 'ContactSection'},
     ],
   },
 ];
@@ -419,7 +419,10 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
         {/* Main Content */}
         <main className="px-4 md:px-8 pt-8 md:pt-12 pb-24 space-y-8">
           {/* INTRODUCTION */}
-          <section id="introduction" className="scroll-mt-8 mb-8">
+          <div
+            id="introduction"
+            className="bg-sand rounded-card p-6 md:p-10 scroll-mt-8"
+          >
             <div className="max-w-3xl">
               <h1 className="text-h1 font-display mb-4">Design System</h1>
               <p className="text-s1 font-display text-text/80 mb-6">
@@ -439,19 +442,19 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                 </p>
               </div>
               <div className="mt-8 flex flex-wrap gap-4">
-                <div className="border border-black/10 rounded-card p-4 flex-1 min-w-48">
+                <div className="bg-white rounded-card p-4 flex-1 min-w-48">
                   <p className="text-s2 font-display text-black mb-1">Tokens</p>
                   <p className="text-body-small font-display text-text/60">
                     Typography, colors, spacing, and motion
                   </p>
                 </div>
-                <div className="border border-black/10 rounded-card p-4 flex-1 min-w-48">
+                <div className="bg-white rounded-card p-4 flex-1 min-w-48">
                   <p className="text-s2 font-display text-black mb-1">Blocks</p>
                   <p className="text-body-small font-display text-text/60">
                     Reusable UI components from @wakey/ui
                   </p>
                 </div>
-                <div className="border border-black/10 rounded-card p-4 flex-1 min-w-48">
+                <div className="bg-white rounded-card p-4 flex-1 min-w-48">
                   <p className="text-s2 font-display text-black mb-1">
                     Sections
                   </p>
@@ -461,7 +464,7 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                 </div>
               </div>
             </div>
-          </section>
+          </div>
 
           {/* TOKENS */}
           <CategoryCard
@@ -1184,6 +1187,202 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
               </div>
             </Section>
 
+            {/* Hero */}
+            <Section id="hero" title="Hero">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Full-bleed hero with Wakey logo and optional product tooltip.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <Hero
+                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  showLogo={true}
+                  logoColor="#fad103"
+                />
+              </div>
+            </Section>
+
+            {/* FeaturedProduct */}
+            <Section id="featured-product" title="FeaturedProduct">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Product showcase with heading, CTA, and optional tooltip.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <FeaturedProduct
+                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  heading={
+                    <>
+                      Fresh starts
+                      <br />
+                      <em>every morning</em>
+                    </>
+                  }
+                  buttonText="Shop now"
+                  buttonTo="/products/deodorant"
+                />
+              </div>
+            </Section>
+
+            {/* ImageBanner */}
+            <Section id="image-banner" title="ImageBanner">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Full-width banner with background image/video and text overlay.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ImageBanner
+                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  text="Start your day with <em>confidence</em> and fresh energy"
+                  label="New arrival"
+                  textColor="#ffffff"
+                  overlayColor="#000000"
+                  overlayOpacity={40}
+                  alignment="center"
+                />
+              </div>
+            </Section>
+
+            {/* TextMedia */}
+            <Section id="text-media" title="TextMedia">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Two-column layout with video on one side and text + CTA on the
+                other.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <TextMedia
+                  videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
+                  videoAlt="Wakey deodorant in use"
+                  text="Start your day <em>the right way</em> with natural ingredients that care for your skin."
+                  buttonText="Shop now"
+                  buttonUrl="/products/deodorant"
+                />
+              </div>
+            </Section>
+
+            {/* Founder */}
+            <Section id="founder" title="Founder">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Team member profile with image, quote, and signature.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <Founder
+                  image="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
+                  imageAlt="Founder portrait"
+                  heading="We started Wakey because we believed there had to be a better way."
+                  signature="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/sig.png?v=1662367678"
+                  name="— The Wakey Team"
+                >
+                  <p>
+                    After years of using products filled with chemicals we
+                    couldn&apos;t pronounce, we decided to create something
+                    different.
+                  </p>
+                  <p>
+                    Something natural. Something that works. Something we&apos;d
+                    be proud to share with our friends and family.
+                  </p>
+                </Founder>
+              </div>
+            </Section>
+
+            {/* SocialSection */}
+            <Section id="social-section" title="SocialSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Interactive social media gallery with mouse trail effect
+                (desktop) or carousel (mobile).
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <SocialSection
+                  heading="Get featured"
+                  hashtag="#wakeycare"
+                  images={[
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 1',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 2',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 3',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 4',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 5',
+                    },
+                    {
+                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Customer photo 6',
+                    },
+                  ]}
+                  lerpFactor={2}
+                />
+              </div>
+            </Section>
+
+            {/* CloudSection */}
+            <Section id="cloud-section" title="CloudSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Animated section with floating images and text reveal animation.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <CloudSection />
+              </div>
+            </Section>
+
+            {/* IngredientsSection */}
+            <Section id="ingredients-section" title="IngredientsSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Ingredient showcase with image carousel.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <IngredientsSection
+                  title="Ingredients"
+                  ingredientsList="<strong>Coconut Oil</strong> · <strong>Shea Butter</strong> · <strong>Aloe Vera</strong> · <strong>Essential Oils</strong>"
+                  items={[
+                    {
+                      id: 'coconut',
+                      name: 'Coconut<br/>Oil',
+                      image:
+                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    },
+                    {
+                      id: 'shea',
+                      name: 'Shea<br/>Butter',
+                      image:
+                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    },
+                    {
+                      id: 'aloe',
+                      name: 'Aloe<br/>Vera',
+                      image:
+                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                    },
+                  ]}
+                />
+              </div>
+            </Section>
+
+            {/* ProductReviews */}
+            <Section id="product-reviews" title="ProductReviews">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Reviews section with rating display, review list, and video
+                testimonial. Fetches data from /api/reviews/[handle].
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ProductReviews
+                  productHandle="deodorant"
+                  videoUrl="https://cdn.shopify.com/videos/c/vp/4d9fde73a12b42bfb9ad89d733cd91e9/4d9fde73a12b42bfb9ad89d733cd91e9.HD-1080p-7.2Mbps-59362307.mp4?v=0"
+                  videoAlt="Customer testimonial"
+                  tooltipProduct={tooltipProduct}
+                />
+              </div>
+            </Section>
+
             {/* PageHeader */}
             <Section id="page-header" title="PageHeader">
               <p className="text-body-small font-body mb-4 opacity-70">
@@ -1238,6 +1437,77 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                     },
                   ]}
                 />
+              </div>
+            </Section>
+
+            {/* ProductDescription */}
+            <Section id="product-description" title="ProductDescription">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Product description with title and USP list.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <ProductDescription
+                  title="Why you love it"
+                  descriptionHtml="Our deodorant is crafted with care using only the <em>finest natural ingredients</em>. No aluminum, no parabens, just pure freshness that lasts all day."
+                  usps={[
+                    '100% Natural ingredients',
+                    '24-hour protection',
+                    'Dermatologically tested',
+                    'Vegan & cruelty-free',
+                  ]}
+                />
+              </div>
+            </Section>
+
+            {/* TextSection */}
+            <Section id="text-section" title="TextSection">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Simple prose section for MDX content.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <TextSection>
+                  <h2>Morning essentials</h2>
+                  <p>
+                    Start your day right with products designed to make you feel
+                    confident and fresh. Our natural formulas work with your
+                    body, not against it.
+                  </p>
+                </TextSection>
+              </div>
+            </Section>
+
+            {/* BlogArticle */}
+            <Section id="blog-article" title="BlogArticle">
+              <p className="text-body-small font-body mb-4 opacity-70">
+                Blog post layout with header, featured image, and content.
+              </p>
+              <div className="rounded-card overflow-hidden border border-black/10">
+                <BlogArticle
+                  frontmatter={{
+                    title: 'The Science Behind Natural Deodorants',
+                    slug: 'science-natural-deodorants',
+                    description:
+                      'Learn how natural deodorants work and why they are better for your skin.',
+                    publishedAt: '2024-01-15',
+                    author: 'Wakey Team',
+                    tags: ['Science', 'Ingredients', 'Natural'],
+                    featuredImage: {
+                      url: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
+                      alt: 'Natural ingredients',
+                    },
+                  }}
+                >
+                  <p>
+                    Natural deodorants work differently than traditional
+                    antiperspirants. Instead of blocking your sweat glands, they
+                    neutralize odor-causing bacteria while allowing your body to
+                    function naturally.
+                  </p>
+                  <p>
+                    Our formula uses a combination of coconut oil, shea butter,
+                    and essential oils to keep you fresh throughout the day.
+                  </p>
+                </BlogArticle>
               </div>
             </Section>
 
@@ -1312,273 +1582,6 @@ export default function DesignSystem({loaderData}: Route.ComponentProps) {
                       ],
                     },
                   ]}
-                />
-              </div>
-            </Section>
-
-            {/* ProductDescription */}
-            <Section id="product-description" title="ProductDescription">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Product description with title and USP list.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <ProductDescription
-                  title="Why you love it"
-                  descriptionHtml="Our deodorant is crafted with care using only the <em>finest natural ingredients</em>. No aluminum, no parabens, just pure freshness that lasts all day."
-                  usps={[
-                    '100% Natural ingredients',
-                    '24-hour protection',
-                    'Dermatologically tested',
-                    'Vegan & cruelty-free',
-                  ]}
-                />
-              </div>
-            </Section>
-
-            {/* IngredientsSection */}
-            <Section id="ingredients-section" title="IngredientsSection">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Ingredient showcase with image carousel.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <IngredientsSection
-                  title="Ingredients"
-                  ingredientsList="<strong>Coconut Oil</strong> · <strong>Shea Butter</strong> · <strong>Aloe Vera</strong> · <strong>Essential Oils</strong>"
-                  items={[
-                    {
-                      id: 'coconut',
-                      name: 'Coconut<br/>Oil',
-                      image:
-                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                    },
-                    {
-                      id: 'shea',
-                      name: 'Shea<br/>Butter',
-                      image:
-                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                    },
-                    {
-                      id: 'aloe',
-                      name: 'Aloe<br/>Vera',
-                      image:
-                        'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                    },
-                  ]}
-                />
-              </div>
-            </Section>
-
-            {/* TextSection */}
-            <Section id="text-section" title="TextSection">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Simple prose section for MDX content.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <TextSection>
-                  <h2>Morning essentials</h2>
-                  <p>
-                    Start your day right with products designed to make you feel
-                    confident and fresh. Our natural formulas work with your
-                    body, not against it.
-                  </p>
-                </TextSection>
-              </div>
-            </Section>
-
-            {/* BlogArticle */}
-            <Section id="blog-article" title="BlogArticle">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Blog post layout with header, featured image, and content.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <BlogArticle
-                  frontmatter={{
-                    title: 'The Science Behind Natural Deodorants',
-                    slug: 'science-natural-deodorants',
-                    description:
-                      'Learn how natural deodorants work and why they are better for your skin.',
-                    publishedAt: '2024-01-15',
-                    author: 'Wakey Team',
-                    tags: ['Science', 'Ingredients', 'Natural'],
-                    featuredImage: {
-                      url: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Natural ingredients',
-                    },
-                  }}
-                >
-                  <p>
-                    Natural deodorants work differently than traditional
-                    antiperspirants. Instead of blocking your sweat glands, they
-                    neutralize odor-causing bacteria while allowing your body to
-                    function naturally.
-                  </p>
-                  <p>
-                    Our formula uses a combination of coconut oil, shea butter,
-                    and essential oils to keep you fresh throughout the day.
-                  </p>
-                </BlogArticle>
-              </div>
-            </Section>
-
-            {/* Hero */}
-            <Section id="hero" title="Hero">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Full-bleed hero with Wakey logo and optional product tooltip.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <Hero
-                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                  showLogo={true}
-                  logoColor="#fad103"
-                />
-              </div>
-            </Section>
-
-            {/* FeaturedProduct */}
-            <Section id="featured-product" title="FeaturedProduct">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Product showcase with heading, CTA, and optional tooltip.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <FeaturedProduct
-                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                  heading={
-                    <>
-                      Fresh starts
-                      <br />
-                      <em>every morning</em>
-                    </>
-                  }
-                  buttonText="Shop now"
-                  buttonTo="/products/deodorant"
-                />
-              </div>
-            </Section>
-
-            {/* ImageBanner */}
-            <Section id="image-banner" title="ImageBanner">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Full-width banner with background image/video and text overlay.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <ImageBanner
-                  backgroundImage="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                  text="Start your day with <em>confidence</em> and fresh energy"
-                  label="New arrival"
-                  textColor="#ffffff"
-                  overlayColor="#000000"
-                  overlayOpacity={40}
-                  alignment="center"
-                />
-              </div>
-            </Section>
-
-            {/* Founder */}
-            <Section id="founder" title="Founder">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Team member profile with image, quote, and signature.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <Founder
-                  image="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                  imageAlt="Founder portrait"
-                  heading="We started Wakey because we believed there had to be a better way."
-                  signature="https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975"
-                  name="— The Wakey Team"
-                >
-                  <p>
-                    After years of using products filled with chemicals we
-                    couldn&apos;t pronounce, we decided to create something
-                    different.
-                  </p>
-                  <p>
-                    Something natural. Something that works. Something we&apos;d
-                    be proud to share with our friends and family.
-                  </p>
-                </Founder>
-              </div>
-            </Section>
-
-            {/* SocialSection */}
-            <Section id="social-section" title="SocialSection">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Interactive social media gallery with mouse trail effect
-                (desktop) or carousel (mobile).
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <SocialSection
-                  heading="Get featured"
-                  hashtag="#wakeycare"
-                  images={[
-                    {
-                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Customer photo 1',
-                    },
-                    {
-                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Customer photo 2',
-                    },
-                    {
-                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Customer photo 3',
-                    },
-                    {
-                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Customer photo 4',
-                    },
-                    {
-                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Customer photo 5',
-                    },
-                    {
-                      src: 'https://cdn.shopify.com/s/files/1/0609/8747/4152/files/happy.jpg?v=1709234975',
-                      alt: 'Customer photo 6',
-                    },
-                  ]}
-                  lerpFactor={2}
-                />
-              </div>
-            </Section>
-
-            {/* CloudSection */}
-            <Section id="cloud-section" title="CloudSection">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Animated section with floating images and text reveal animation.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <CloudSection />
-              </div>
-            </Section>
-
-            {/* TextMedia */}
-            <Section id="text-media" title="TextMedia">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Two-column layout with video on one side and text + CTA on the
-                other.
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <TextMedia
-                  videoUrl="https://cdn.shopify.com/videos/c/o/v/30bfb56ee7ec4ab2862899ee934d3be2.mov"
-                  videoAlt="Wakey deodorant in use"
-                  text="Start your day <em>the right way</em> with natural ingredients that care for your skin."
-                  buttonText="Shop now"
-                  buttonUrl="/products/deodorant"
-                />
-              </div>
-            </Section>
-
-            {/* ProductReviews */}
-            <Section id="product-reviews" title="ProductReviews">
-              <p className="text-body-small font-body mb-4 opacity-70">
-                Reviews section with rating display, review list, and video
-                testimonial. Fetches data from /api/reviews/[handle].
-              </p>
-              <div className="rounded-card overflow-hidden border border-black/10">
-                <ProductReviews
-                  productHandle="deodorant"
-                  videoUrl="https://cdn.shopify.com/videos/c/vp/4d9fde73a12b42bfb9ad89d733cd91e9/4d9fde73a12b42bfb9ad89d733cd91e9.HD-1080p-7.2Mbps-59362307.mp4?v=0"
-                  videoAlt="Customer testimonial"
-                  tooltipProduct={tooltipProduct}
                 />
               </div>
             </Section>
