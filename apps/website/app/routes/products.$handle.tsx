@@ -301,7 +301,12 @@ export default function Product() {
           description={product.description}
           rating={ratingValue}
           reviewCount={reviewCount}
-          badges={['100% NATURAL', 'GENTLE', 'BAKING SODA FREE']}
+          badges={[
+            '100%\nVEGAN',
+            'BAKING\nSODA FREE',
+            'PLASTIC\nFREE',
+            'ALUMINUM\nFREE',
+          ]}
           sizeOptions={[{value: '40g', label: '40g'}]}
           selectedSize="40g"
           selectedVariant={selectedVariant}

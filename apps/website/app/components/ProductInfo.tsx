@@ -5,7 +5,17 @@ import {
   type OptimisticCartLineInput,
   useOptimisticCart,
 } from '@shopify/hydrogen';
-import {Stars, Accordion, Button, AddBagIcon, SmileyIcon} from '@wakey/ui';
+import {
+  Stars,
+  Accordion,
+  Button,
+  AddBagIcon,
+  SmileyIcon,
+  ShapeStar,
+  ShapeFlower,
+  ShapeCircle,
+  ShapeSparkle,
+} from '@wakey/ui';
 import type {
   ProductVariantFragment,
   CartApiQueryFragment,
@@ -17,6 +27,25 @@ import {
 } from 'react-router';
 import {AddedToBagPopup} from './AddedToBagPopup';
 import type {RootLoader} from '~/root';
+
+/** Map badge text to corresponding icon */
+function getBadgeIcon(badge: string) {
+  const normalized = badge.toLowerCase();
+  if (normalized.includes('vegan') || normalized.includes('natural')) {
+    return ShapeStar;
+  }
+  if (normalized.includes('baking') || normalized.includes('soda')) {
+    return ShapeSparkle;
+  }
+  if (normalized.includes('plastic')) {
+    return ShapeFlower;
+  }
+  if (normalized.includes('aluminum')) {
+    return ShapeCircle;
+  }
+  // Default to star
+  return ShapeStar;
+}
 
 /** Response type from cart action */
 type CartActionResponse = {
@@ -83,8 +112,8 @@ export function ProductInfo({
 
   const accordionItems = [
     {
-      id: 'benefits',
-      title: 'Benefits',
+      id: 'product-description',
+      title: 'Product description',
       content: <p>{benefits}</p>,
     },
     {
@@ -132,20 +161,6 @@ export function ProductInfo({
 
           {/* Description */}
           <p className="text-paragraph font-display text-text">{description}</p>
-
-          {/* Badges */}
-          <div className="flex items-center gap-3 flex-wrap">
-            {badges.map((badge, index) => (
-              <span key={badge} className="flex items-center gap-3">
-                <span className="text-label font-display uppercase tracking-wide">
-                  {badge}
-                </span>
-                {index < badges.length - 1 && (
-                  <span className="text-skyblue">—</span>
-                )}
-              </span>
-            ))}
-          </div>
 
           {/* Size Selection */}
           <div className="relative border-b border-black/20">
@@ -213,6 +228,26 @@ export function ProductInfo({
           <p className="text-small text-text/60 text-center">
             Free delivery on orders over €50
           </p>
+
+          {/* Benefits */}
+          <div>
+            <h3 className="text-s2 md:text-paragraph font-display pb-4 mb-4 border-b border-black/20">
+              Benefits
+            </h3>
+            <div className="grid grid-cols-4 gap-3 md:gap-4">
+              {badges.map((badge) => {
+                const BadgeIcon = getBadgeIcon(badge);
+                return (
+                  <div key={badge} className="flex flex-col items-center gap-2">
+                    <BadgeIcon className="w-8 h-8 md:w-10 md:h-10 text-softorange" />
+                    <span className="text-small font-display uppercase text-center whitespace-pre-line leading-tight">
+                      {badge}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Accordions */}
           <div className="mt-2">
